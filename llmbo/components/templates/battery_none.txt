@@ -1,13 +1,21 @@
-生成 [N_STRATEGIES] 个充电策略。
+Generate [N_STRATEGIES] parameter sets for a 4-variable optimization problem.
 
-参数范围:
+**Variables and Ranges:**
 - current1: [3.0, 6.0]
-- switch_soc: [0.30, 0.70]
+- time1: [2.0, 40.0]
 - current2: [1.0, 4.0]
+- v_switch: [3.8, 4.2]
 
-分布要求: 均匀覆盖参数空间，避免集中在某一区域。
+Output diverse parameter combinations covering the entire feasible space.
 
-输出格式:
-## JSON ##
-{"strategies": [{"current1": <float>, "switch_soc": <float>, "current2": <float>}]}
-## JSON ##
+**Output format (strict JSON):**
+{
+    "strategies": [
+        {
+            "current1": <float>,
+            "time1": <float>,
+            "current2": <float>,
+            "v_switch": <float>
+        }
+    ]
+}

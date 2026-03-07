@@ -6,6 +6,7 @@ GP梯度计算模块
 import numpy as np
 from typing import Dict, List
 from sklearn.gaussian_process import GaussianProcessRegressor
+from config import get_algorithm_param
 
 
 class GPGradientComputer:
@@ -122,13 +123,14 @@ class GPGradientComputer:
             # 计算雅可比矩阵
             J = self.compute_jacobian(gp_list, X)
             
-            # ========== P2修复：梯度加权求和 ==========
-            # Temp是硬约束（>313K失败），应占主导地位
-            weights = np.array([0.3, 0.5, 0.2])  # [Time, Temp, Aging]
+            # ========== 目标加权求和（从config读取）==========
+            weights = np.array(
+                get_algorithm_param('gradient', 'objective_weights', [0.3, 0.5, 0.2])
+            )  # [Time, Temp, Aging]
             grad_total = np.average(J, axis=0, weights=weights)
             
             if self.verbose and X is X_samples[0]:  # 仅第一个样本打印
-                print(f"    [梯度加权] Time:0.3, Temp:0.5, Aging:0.2")
+                print(f"    [梯度加权] Time:{weights[0]}, Temp:{weights[1]}, Aging:{weights[2]}")
             # ==========================================
             
             # 外积：grad ⊗ grad

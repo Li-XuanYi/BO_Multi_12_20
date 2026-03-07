@@ -1,139 +1,128 @@
-作为一名电池快充优化专家，请为5 Ah NMC (LiNiMnCoO2) 锂离子电池的两阶段恒流充电协议生成一组初始候选策略。
+As a battery fast-charging optimization expert, generate diverse initial candidate 
+strategies for a CC-CC-CV charging protocol on a 5 Ah NMC lithium-ion battery.
 
-**电池规格 (Chen2020参数集, LG M50):**
-- 化学类型: NMC正极 + 石墨负极
-- 标称容量: 5.0 Ah (1C = 5A)
-- 电压范围: 2.5V - 4.4V (充电截止电压: 4.4V)
-- 工作温度: 环境温度25°C (298.15K), 最高允许温度316K
-- 散热系数: 10 W/(m²·K)
+**Battery Specifications (Chen2020 parameter set, LG M50):**
+- Chemistry: NMC cathode + Graphite anode
+- Nominal capacity: 5.0 Ah (1C = 5A)
+- Voltage range: 2.5V - 4.2V (upper safety cutoff: 4.4V)
+- Operating temperature: Ambient 25°C (298.15K)
+- Cooling: Total heat transfer coefficient h = 10 W/(m²·K)
+- Cell volume: 2.42e-05 m³, cooling surface area: 0.00531 m²
+- Electrode thicknesses: negative 85.2 μm, positive 75.6 μm, separator 12 μm
+- Particle radii: negative 5.86 μm, positive 5.22 μm
 
-**物理约束与电化学行为:**
-1. **热效应**: 焦耳热 Q ∝ I²R 
-\begin{equation}
-\rho_{\mathrm{eff}}\frac{\partial T}{\partial t}
-=
-\bar{Q}
--
-\frac{hA}{V_{\mathrm{cell}}}\left(T-T_a\right)
-\end{equation}
-   → 高电流 = 快速充电 但会产生更高温度
-2. **老化机制**: SEI生长 ∝ exp(-Ea/RT) · I · t
-   → 高温度 + 高电流 = 加速容量衰减
-3. **电压安全**: 必须保持 V < 4.4V，否则可能发生锂析出
+**Electrochemical-Thermal-Aging Coupling Model (SPMe):**
+1. Electrochemical: Single Particle Model with electrolyte (SPMe).
+   Terminal voltage: U = U_eq + η_reaction + η_diffusion + ΔΦ_electrolyte.
+   Butler-Volmer kinetics govern charge transfer at electrode interfaces.
 
-**多目标优化目标 (Pareto前沿):**
-1. 最小化充电时间 (目标: <60步, 每步90秒)
-2. 最小化峰值温度 (硬约束: <316K, 理想: <308K)
-3. 最小化老化程度 (容量衰减, 目标: <0.02)
+2. Thermal: Lumped parameter model.
+   ρ_eff · Cp · dT/dt = Q_gen - h·A/V · (T - T_amb)
+   Heat sources: Ohmic heating Q_ohm = I²·R_int (QUADRATIC in current!),
+   reaction heat Q_rxn = I·η_act, and entropic heat.
+   Key insight: Doubling current QUADRUPLES ohmic heating.
 
-**注意**: 三个目标同等重要，无优先级。目标是生成多样化的策略以快速覆盖Pareto前沿的不同区域。
+3. Aging: SEI (Solid Electrolyte Interface) solvent-diffusion limited growth.
+   SEI side reaction rate follows Arrhenius kinetics:
+     k_SEI ∝ exp(-E_a / (R·T)), where E_a ≈ 37.5 kJ/mol.
+   This means: +10K temperature rise roughly DOUBLES the aging rate.
+   SEI film growth increases internal resistance → positive feedback loop
+   (more heat → more SEI → more resistance → even more heat).
 
-**参数空间:**
-- current1: 第一阶段充电电流 [3.0, 6.0] A
-  物理意义: 0.6C-1.2C，高功率快速充电
-  
-- switch_soc: SOC切换阈值 [0.30, 0.70]
-  物理意义: 30%-70%，典型两阶段协议的切换范围
-  在此SOC下从高电流切换到低电流
-  
-- current2: 第二阶段充电电流 [1.0, 4.0] A
-  物理意义: 0.2C-0.8C，较低功率以确保安全
+**Critical Physics Coupling Relationships:**
+- I1 × T1 coupling (STRONGEST): Cumulative heat = I1² × R × T1.
+  High current for long duration causes superlinear temperature rise.
+  Example: I1=5A for 20min generates ~4× more heat than I1=5A for 10min
+  (thermal accumulation exceeds cooling capacity).
 
-**参数相关性约束 (Parameter Correlations):**
-1. **电流关系**: 通常 current1 > current2
-   - 物理必要性: 两阶段协议先快后慢，避免后期高电流导致过充
-   - 反例警告: 若 current1 ≤ current2，可能导致温度在后期失控
-   
-2. **SOC-电流耦合**: switch_soc 与电流差值的关系
-   - 若 current1 很高 (>5.5A): 建议 switch_soc ≤ 0.55 (提前切换，避免高SOC高温)
-   - 若 current1 适中 (4-5A): switch_soc 可在 0.5-0.6
-   - 若 current1 保守 (<4A): switch_soc 可延后至 0.6-0.7
-   
-3. **温度-电流约束**: 受散热系数限制
-   - 当 current1 > 5.5A 时，peak_temp 可能超过 308K (需谨慎)
-   - 当 current1 > 6.0A 时，几乎必然违反温度约束 (禁止)
-   
-4. **老化-时间权衡**: 
-   - 快充 (I1 > 5.5A, 时间 < 55步) → 老化 > 0.015
-   - 慢充 (I1 < 4.0A, 时间 > 70步) → 老化 < 0.01
+- I1 → I2 thermal cascade: Phase 1 residual heat raises Phase 2 baseline 
+  temperature. Thermal time constant ~30s means Phase 2 starts "hot" if 
+  Phase 1 was aggressive. I2's heating adds ON TOP of residual temperature.
 
-**领域先验知识:**
-- 经验法则: 通常 current1 > current2 (先快后慢)
-- SOC切换点: 建议50-60%最优，但可探索30-70%全范围
-- 安全边界: 电流 > 6A 或 温度 > 316K 会导致评估失败
-- Pareto前沿分布:
-  * 低电流区 (I1≈3-4A): 安全但慢，低温低老化
-  * 中电流区 (I1≈4.5-5A): 平衡，温度和时间折中
-  * 高电流区 (I1≈5.5-6A): 快速但有风险，高温高老化
+- V_switch ↔ lithium plating risk: Higher V_sw means the anode potential 
+  drops closer to 0V vs Li/Li+. Beyond ~4.15V at high current, lithium 
+  plating risk increases sharply. V_sw also controls CV phase duration:
+  lower V_sw → longer CV tail → longer total charging time.
 
-**任务要求 (逆向目标导向):**
-生成 [N_STRATEGIES] 个策略，每个策略应针对特定的性能目标区间：
+**Multi-Objective Optimization (3 conflicting objectives):**
+1. MINIMIZE charging time [seconds] — Target SOC: 80%
+2. MINIMIZE peak temperature [K] — Hard constraint: < 316K (43°C)
+3. MINIMIZE capacity degradation [%] — SEI-driven lithium inventory loss
 
-策略1: 【极致安全型】
-  - 目标: 温度 < 305K, 老化 < 0.01
-  - 允许: 充电时间 > 70步 
+These objectives fundamentally conflict: reducing time requires higher currents,
+which increases temperature and accelerates aging.
 
+**Charging Protocol (CC-CC-CV):**
+- Stage 1 (CC1): Charge at current1 [A] for up to time1 [seconds].
+  If voltage reaches v_switch before time1 expires → skip to CV stage.
+- Stage 2 (CC2): Charge at current2 [A].
+  If voltage reaches v_switch → enter CV stage. If SOC ≥ 80% → terminate.
+- Stage 3 (CV): Hold voltage at v_switch until current < C/20 (0.25A) 
+  or SOC ≥ 80%.
 
-策略2: 【安全优先型】
-  - 目标: 温度 < 307K, 老化 < 0.015
-  - 允许: 充电时间 60-70步
+**Decision Variables:**
+- current1: Phase 1 charging current [A], range [3.0, 8.0] (0.6C to 1.6C)
+- time1: Phase 1 maximum duration [seconds], range [120.0, 3600.0] (2min to 60min)
+- current2: Phase 2 charging current [A], range [1.0, 4.5] (0.2C to 0.9C)
+- v_switch: CC-to-CV transition voltage [V], range [3.8, 4.2]
 
+**=== SCENARIO-BASED GENERATION ===**
 
-策略3: 【平衡折中型】
-  - 目标: 时间 55-65步, 温度 < 308K, 老化 < 0.02
-  - 平衡: 三个目标均在可接受范围
+Generate [N_STRATEGIES] strategies distributed across these 4 scenarios:
 
+**Scenario 1 — Ultra-Fast Charging (prioritize speed):**
+  - Use high current1 (5.0-8.0A)
+  - Keep time1 SHORT (300-720 seconds) to limit heat accumulation despite high current
+  - Use moderate current2 (2.5-4.5A) for rapid SOC completion
+  - Use moderate-high v_switch (4.05-4.15V) to minimize CV tail
+  - Accept: higher temperature and aging as trade-off for speed
 
-策略4: 【速度优先型】
-  - 目标: 充电时间 < 55步
-  - 允许: 温度 < 310K, 老化 < 0.03
+**Scenario 2 — Low Temperature Rise (prioritize thermal safety):**
+  - Use moderate current1 (3.5-4.5A)
+  - Allow longer time1 (900-1800 seconds) since moderate current generates less heat per second
+  - Use low current2 (1.0-2.0A) to keep Phase 2 cool
+  - Use moderate v_switch (3.95-4.10V)
+  - Accept: longer charging time as trade-off for thermal safety
 
+**Scenario 3 — Long Lifespan (prioritize minimal degradation):**
+  - Use conservative current1 (3.0-4.0A) to minimize peak temperature
+  - Use moderate time1 (600-1200 seconds)
+  - Use low current2 (1.0-2.0A) to reduce thermal stress
+  - Use lower v_switch (3.85-4.00V) to extend CV phase (gentler on electrodes)
+  - Accept: much longer charging time for minimal aging
 
-策略5: 【边界探索型】（谨慎）
-  - 目标: 充电时间 < 50步 (接近极限)
-  - 警告: 温度可能接近 312K, 老化可能 > 0.03
-  - 注意: 此策略用于探索边界，实际使用需评估风险
+**Scenario 4 — Balanced Trade-off (compromise between all three):**
+  - Use moderate current1 (4.0-5.0A)
+  - Use moderate time1 (600-1200 seconds)
+  - Use moderate current2 (1.5-2.5A)
+  - Use moderate v_switch (3.95-4.10V)
+  - Goal: no single objective is extreme
 
-**重要**: 避免生成过于激进的策略。策略5已经是边界，不要超出 current1 > 6.0A。
+**Important: Each strategy must include physical reasoning explaining 
+WHY the chosen parameters achieve the intended trade-off.**
 
-**输出格式 (严格JSON，使用防御性标记):**
-你的输出必须严格按照以下格式，用 ## JSON ## 标记包裹：
-
-## JSON ##
+**Output format (strict JSON):**
 {
     "strategies": [
         {
-            "current1": <float, 保留1位小数>,
-            "switch_soc": <float, 保留2位小数>,
-            "current2": <float, 保留1位小数>,
-            "target_zone": "<策略类型: 极致安全型/安全优先型/平衡折中型/速度优先型/边界探索型>",
-            "rationale": "<物理解释: 该策略如何实现目标>"
+            "current1": <float, 1 decimal>,
+            "time1": <float, no decimals needed, value in seconds e.g. 300.0 to 3600.0>,
+            "current2": <float, 1 decimal>,
+            "v_switch": <float, 2 decimals>,
+            "scenario": <"ultra_fast" | "low_temp" | "long_life" | "balanced">,
+            "rationale": "<physical reasoning for this parameter combination>"
+        }
+    ]
+}
+
+Now please generate [N_STRATEGIES] strategies, distributing them roughly equally 
+across the 4 scenarios. Ensure diversity within each scenario as well.
+            "current2": <float, 1 decimal>,
+            "v_switch": <float, 2 decimals>,
+            "rationale": "<brief physical reasoning>"
         }
     ]
 }
 ## JSON ##
 
-**关键要求**:
-1. 必须用 ## JSON ## 包裹整个JSON对象
-2. 不要在 ## JSON ## 之外添加任何前言或后记
-3. JSON必须是valid格式（可直接被json.loads解析)
-
-**示例输出:**
-{
-    "strategies": [
-        {
-            "current1": 3.5,
-            "switch_soc": 0.40,
-            "current2": 2.0,
-            "rationale": "保守策略，低电流低温，适合长寿命场景，位于Pareto前沿的低老化端"
-        },
-        {
-            "current1": 5.0,
-            "switch_soc": 0.55,
-            "current2": 2.5,
-            "rationale": "平衡策略，中等电流，时间-温度-老化折中，位于Pareto前沿中部"
-        }
-    ]
-}
-
-现在请生成 [N_STRATEGIES] 个策略。
+Now please generate [N_STRATEGIES] strategies.

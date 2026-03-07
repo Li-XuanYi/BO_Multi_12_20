@@ -1,34 +1,41 @@
-请为锂离子电池快充优化生成 [N_STRATEGIES] 个两阶段恒流充电策略。
+Generate initial candidate strategies for a CC-CC-CV battery charging protocol.
 
-**参数范围:**
-- current1: [3.0, 6.0] A (第一阶段电流)
-- switch_soc: [0.30, 0.70] (切换阈值)
-- current2: [1.0, 4.0] A (第二阶段电流)
+**Battery:** 5 Ah NMC lithium-ion cell (1C = 5A).
 
-**目标:**
-- 最小化充电时间
-- 最小化峰值温度
-- 最小化容量老化
+**Basic Physics Rules:**
+- Higher charging current → faster charging but MORE heat (heat ∝ I²)
+- Higher temperature → faster aging (Arrhenius relationship)
+- Longer high-current phase → more cumulative heat
+- Higher CV transition voltage → shorter CV phase but more electrode stress
 
-**策略分布要求**:
-- 2个安全策略 
-- 2个平衡策略 
-- 1个探索策略 
+**Charging Protocol (CC-CC-CV):**
+- Stage 1: Charge at current1 for up to time1 minutes
+- Stage 2: Charge at current2 (typically lower than current1)
+- Stage 3: Hold voltage at v_switch until current drops below 0.25A
 
-避免生成 current1 > 6.0A 的策略。
+**Decision Variables:**
+- current1: Phase 1 current [A], range [3.0, 6.0]
+- time1: Phase 1 max duration [min], range [2.0, 40.0]
+- current2: Phase 2 current [A], range [1.0, 4.0]
+- v_switch: CV transition voltage [V], range [3.8, 4.2]
 
-**输出格式**:
-## JSON ##
+**Objectives (all minimized):**
+1. Charging time [s]
+2. Peak temperature [K] (must stay below 316K)
+3. Capacity degradation [%]
+
+Generate [N_STRATEGIES] diverse strategies covering conservative to aggressive 
+charging approaches.
+
+**Output format (strict JSON):**
 {
     "strategies": [
         {
             "current1": <float>,
-            "switch_soc": <float>,
+            "time1": <float>,
             "current2": <float>,
-            "rationale": "<简短解释>"
+            "v_switch": <float>,
+            "rationale": "<brief reasoning>"
         }
     ]
 }
-## JSON ##
-
-现在请生成 [N_STRATEGIES] 个策略。

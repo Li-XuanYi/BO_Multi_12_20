@@ -109,7 +109,7 @@ class TchebycheffScalarizer:
         normalize: bool = True
     ) -> np.ndarray:
         """
-        批量标量化（向量化版本，10x加速）
+        批量标量化（向量化版本）
         
         参数：
             objectives_batch: (n_samples, n_objectives)
@@ -127,13 +127,6 @@ class TchebycheffScalarizer:
         
         # 直接调用向量化的scalarize
         return self.scalarize(objectives_batch, weights, normalize)
-        n_samples = objectives_batch.shape[0]
-        scalars = np.zeros(n_samples)
-        
-        for i in range(n_samples):
-            scalars[i] = self.scalarize(objectives_batch[i], weights, normalize)
-        
-        return scalars
     
     def update_bounds(self, database: list):
         """

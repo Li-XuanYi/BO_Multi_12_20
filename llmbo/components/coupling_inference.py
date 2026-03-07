@@ -1,12 +1,4 @@
-"""
-LLM耦合矩阵推理模块 (ICLR 2024 LLAMBO 风格重构版)
 
-核心改进：
-1. 移除诱导性Prompt：不再告诉LLM"谁和谁耦合"，而是让它基于物理定义分析。
-2. 语义序列化：将参数数值翻译为物理场景描述 (e.g., "High Power Phase").
-3. 基于证据推理：利用 Pilot Data 让 LLM 自己从数据中发现协变规律。
-4. 防御性解析：使用 ## 定界符确保 JSON 解析 100% 成功。
-"""
 
 import numpy as np
 import json
@@ -17,14 +9,17 @@ from openai import AsyncOpenAI
 
 # 导入config
 from config import LLM_CONFIG, get_llm_param
+# 导入 PSD 保证函数
+from models.kernels import ensure_psd
 
 class LLMCouplingInference:
-    def __init__(self, api_key: str = None, base_url: str = None, model: str = None, verbose: bool = False):
-        """初始化LLM耦合推理（参数从config读取）"""
-        # 从config读取默认值
+    def __init__(self, api_key: str = None, base_url: str = None, model: str = None, n_dims: int = 4, verbose: bool = False):
+        """初始化LLM耦合推理（参数从 config 读取）"""
+        # 从 config 读取默认值
         self.api_key = api_key or LLM_CONFIG['api_key']
         self.base_url = base_url or LLM_CONFIG['base_url']
         self.model = model or LLM_CONFIG['model']
+        self.n_dims = n_dims  # 决策空间维度
         self.verbose = verbose
         
         # 创建客户端
@@ -36,7 +31,7 @@ class LLMCouplingInference:
         current_data: List[Dict] = None
     ) -> np.ndarray:
         """
-        推理参数耦合矩阵 W (3x3)
+        推理参数耦合矩阵 W (4x4)
         """
         # 1. 构建基于 LLAMBO 逻辑的 Prompt (无诱导)
         prompt = self._build_inference_prompt(param_names, current_data)
@@ -97,9 +92,20 @@ class LLMCouplingInference:
         # 仅仅定义物理意义，绝不暗示耦合关系
         param_desc = """
 **Parameter Definitions:**
-1. `current1` (I1): Constant current applied during the 1st phase. (Physical driver: Joule Heating Power $P = I^2 R$).
-2. `switch_soc` (SOC_sw): The SOC threshold to stop Phase 1. (Physical driver: Duration of Phase 1).
-3. `current2` (I2): Constant current for the 2nd phase (Replenishment phase).
+1. `current1` (I1): Constant current during Phase 1 [A]. Range [3.0, 6.0].
+   Physical driver: Joule heating power P = I²R(SOC), dominant heat source.
+   
+2. `time1` (T1): Maximum duration of Phase 1 [minutes]. Range [2.0, 40.0].
+   Physical driver: Controls the total energy input and cumulative heat 
+   during the high-power phase. Accumulated heat Q_total = ∫₀^{T1} I1²R(t)dt.
+   
+3. `current2` (I2): Constant current during Phase 2 [A]. Range [1.0, 4.0].
+   Physical driver: Replenishment current after high-power phase. 
+   Effectiveness depends on residual temperature from Phase 1.
+   
+4. `v_switch` (V_sw): CC-to-CV transition voltage [V]. Range [3.8, 4.2].
+   Physical driver: Higher V_sw extends CC phase but pushes electrode 
+   closer to lithium plating threshold. Controls CV phase duration.
 """
 
         # Part B: 观测数据序列化 (Data Serialization - LLAMBO Style)
@@ -107,19 +113,44 @@ class LLMCouplingInference:
         data_section = ""
         if data_samples and len(data_samples) > 0:
             data_section = "**Experimental Observations (Pilot Data):**\n"
-            # 取前 10 个样本 (← P1修复: 5→10)
-            for i, sample in enumerate(data_samples[:10]):
+            # 取前 10 个样本
+            valid_samples = [s for s in data_samples if s.get('valid', True)]
+            for i, sample in enumerate(valid_samples[:10]):
                 p = sample['params']
                 # 尝试获取目标值，处理可能缺失的情况
+                time_s = sample.get('time', 0)
                 t = sample.get('temp', 0)
                 aging = sample.get('aging', 0)
                 
                 # 序列化：转化为自然语言描述
                 data_section += (
                     f"Trial {i+1}: "
-                    f"Applied I1 = {p['current1']:.1f}A until SOC reached {p['switch_soc']:.2f}. "
-                    f"Outcome: Peak Temp = {t:.1f}K, Aging Impact = {aging:.5f}.\n"
+                    f"Applied I1={p['current1']:.1f}A for up to {p['time1']:.1f}min, "
+                    f"then I2={p['current2']:.1f}A, CV transition at {p['v_switch']:.2f}V. "
+                    f"Outcome: Time={time_s:.0f}s, Peak Temp={t:.1f}K, Aging={aging:.5f}%.\n"
                 )
+            
+            # 添加统计摘要：计算相关系数
+            if len(valid_samples) >= 3:
+                params_matrix = np.array([[s['params']['current1'], s['params']['time1'], 
+                                          s['params']['current2'], s['params']['v_switch']] 
+                                         for s in valid_samples])
+                objectives_matrix = np.array([[s.get('time', 0), s.get('temp', 0), s.get('aging', 0)] 
+                                              for s in valid_samples])
+                
+                data_section += "\n**Correlation Summary (Parameter vs Objectives):**\n"
+                param_labels = ['current1', 'time1', 'current2', 'v_switch']
+                obj_labels = ['time', 'temp', 'aging']
+                
+                for i, param in enumerate(param_labels):
+                    for j, obj in enumerate(obj_labels):
+                        # 计算Pearson相关系数
+                        if params_matrix[:, i].std() > 1e-6 and objectives_matrix[:, j].std() > 1e-6:
+                            corr = np.corrcoef(params_matrix[:, i], objectives_matrix[:, j])[0, 1]
+                            if abs(corr) > 0.5:
+                                strength = "strong" if abs(corr) > 0.7 else "moderate"
+                                direction = "positive" if corr > 0 else "negative"
+                                data_section += f"  {param} vs {obj}: {corr:.2f} ({strength} {direction})\n"
             
             data_section += "\n(Analyze the data above: Do you see patterns where specific parameter combinations lead to extreme outcomes?)\n"
 
@@ -131,37 +162,63 @@ class LLMCouplingInference:
 - Capacity: 5.0 Ah (1C = 5A)
 - Chemistry: NMC cathode + Graphite anode
 - Thermal: Heat transfer coefficient 10 W/(m²·K), thermal mass ~50 J/K
-- Safety: Max temp 313K (40°C), Max voltage 4.4V
+- Safety: Max temp 316K (43°C), Max voltage 4.2V
 
 **Physics (Detailed):**
 - Heat generation: Q̇ = I²R(SOC) where R increases at high SOC
-- Heat accumulation: ΔT = ∫Q̇ dt / (m·Cp) 
-  → High I1 + Long phase1 (high switch_soc) = superlinear heating
-- Thermal cascade: Phase1 heat → Phase2 starting temp ↑
-  → I1-I2 coupling through thermal inertia (~30s time constant)
-Construct a 3x3 Interaction Matrix (Coupling Matrix) $W$ where $w_{{ij}}$ represents the interaction strength between parameter $i$ and $j$.
+- Heat accumulation: ΔT = ∫Q̇ dt / (m·Cp)
+  → High I1 combined with long time1 leads to superlinear heating
+- Thermal cascade: Phase1 heat affects Phase2 starting temperature
+  → I1-I2 interaction through thermal inertia (~30s time constant)
+- CV phase: Higher V_sw extends CC phase, increasing heating before voltage control
+
+Construct a 4x4 Interaction Matrix (Coupling Matrix) $W$ where $w_{{ij}}$ represents the interaction strength between parameter $i$ and $j$.
 
 **Reasoning Steps (Chain of Thought):**
-1. **Analyze I1 <-> switch_soc**: 
-   - From Physics: Heat is the integral of power over time. `current1` controls Power, `switch_soc` controls Time.
-   - From Data: In the trials above, did high I1 *combined* with high switch_soc cause a non-linear spike in Temp?
-   - If yes, they are coupled (Value 0.6-0.9). If independent, low value.
-   
-2. **Analyze I1 <-> I2**:
-   - Does the value of `current1` physically alter how `current2` behaves?
-   - Or are they separate temporal phases? (Likely lower coupling).
+1. **I1 ↔ T1 (Current × Duration)**:
+   Heat accumulation is the integral of power over time: Q = I1² × R × T1.
+   I1 controls Power, T1 controls Duration → their joint effect on temperature 
+   is multiplicative (superlinear interaction).
 
-3. **Construct Matrix**:
-   - Diagonal ($w_{{ii}}$) must be 1.0.
-   - Matrix must be symmetric.
-   - Values range [0, 1]. 0 = Independent, 1 = Strongly Coupled.
+2. **I1 ↔ I2 (Thermal Cascade)**:
+   Phase 1 residual heat affects Phase 2 starting temperature.
+   High I1 creates elevated baseline for I2's heating effects.
+   Coupling occurs through thermal inertia (time constant ~30s).
+
+3. **I1 ↔ V_sw (Current vs Voltage Threshold)**:
+   I1 determines how fast voltage rises; V_sw determines when to switch.
+   Higher I1 with same V_sw results in shorter CC phase duration.
+
+4. **T1 ↔ I2 (Duration of Phase 1 vs Phase 2 Current)**:
+   Longer T1 increases heat accumulated, affecting I2's effectiveness.
+   Temporal separation between phases may weaken this coupling.
+
+5. **T1 ↔ V_sw (Duration vs Voltage Threshold)**:
+   T1 limits Phase 1 duration, but V_sw can trigger early CV transition.
+   If voltage hits V_sw before T1 expires, T1 becomes less relevant.
+
+6. **I2 ↔ V_sw (Phase 2 Current vs CV Voltage)**:
+   V_sw determines when CV starts; I2 determines approach rate.
+   Lower I2 results in slower voltage rise and delayed V_sw transition.
+
+Analyze the experimental data above carefully. The coupling strengths should reflect patterns you observe in the data, not just theoretical expectations. If the data shows that two parameters have unexpectedly strong or weak interaction, your matrix should reflect that.
+
+**Construct a 4×4 symmetric matrix.**
+- Diagonal elements w_ii = 1.0.
+- Off-diagonal values in [0, 1].
+- Matrix must be symmetric.
 
 **Output Format:**
-You must wrap the final JSON list of lists in '##' delimiters.
-Example:
+You must wrap the final matrix in '##' delimiters. Use this format:
+
 ##
-[[1.0, 0.5, 0.2], [0.5, 1.0, 0.3], [0.2, 0.3, 1.0]]
+[[1.0, <value>, <value>, <value>],
+ [<value>, 1.0, <value>, <value>],
+ [<value>, <value>, 1.0, <value>],
+ [<value>, <value>, <value>, 1.0]]
 ##
+
+where <value> represents the coupling strength you determine from the data and physical reasoning.
 """
         return param_desc + "\n" + data_section + "\n" + task_section
 
@@ -188,13 +245,15 @@ Example:
 
     def _post_process_matrix(self, matrix: np.ndarray) -> np.ndarray:
         """
-        后处理：确保矩阵的数学性质 (对称, 对角线为1, 归一化)
+        后处理：确保矩阵的数学性质 (对称, 对角线为1, 归一化, PSD)
         """
+        expected_dim = self.n_dims
+        
         # 尺寸检查
-        if matrix.shape != (3, 3):
+        if matrix.shape != (expected_dim, expected_dim):
             # 尝试截断或填充
-            new_mat = np.eye(3)
-            min_dim = min(matrix.shape[0], 3)
+            new_mat = np.eye(expected_dim)
+            min_dim = min(matrix.shape[0], expected_dim)
             new_mat[:min_dim, :min_dim] = matrix[:min_dim, :min_dim]
             matrix = new_mat
 
@@ -205,6 +264,13 @@ Example:
         matrix = (matrix + matrix.T) / 2.0
         
         # 强制对角线为 1
+        np.fill_diagonal(matrix, 1.0)
+        
+        # PSD 修正
+        eps_psd = get_llm_param('composite_kernel', 'eps_psd', 1e-6) or 1e-6
+        matrix = ensure_psd(matrix, eps=eps_psd)
+        
+        # 再次强制对角线为 1（PSD 修正可能微调对角线）
         np.fill_diagonal(matrix, 1.0)
         
         return matrix
@@ -226,15 +292,15 @@ if __name__ == "__main__":
         inferencer = LLMCouplingInference(api_key, verbose=True)
         
         # 模拟几条 Pilot GP 跑出来的真实数据
-        # 这种数据体现了：单有大电流不够，必须配合高SOC才会过热（体现耦合）
+        # 这种数据体现了：单有大电流不够，必须配合长时间才会过热（体现耦合）
         mock_data = [
-            {'params': {'current1': 6.0, 'switch_soc': 0.3, 'current2': 2.0}, 'temp': 305.0, 'aging': 0.005}, # I1大但时间短 -> 温升尚可
-            {'params': {'current1': 3.0, 'switch_soc': 0.7, 'current2': 2.0}, 'temp': 302.0, 'aging': 0.002}, # I1小但时间长 -> 温升低
-            {'params': {'current1': 6.0, 'switch_soc': 0.7, 'current2': 2.0}, 'temp': 320.0, 'aging': 0.030}, # I1大且时间长 -> 温升爆炸 (耦合证据!)
+            {'params': {'current1': 6.0, 'time1': 5.0, 'current2': 2.0, 'v_switch': 4.1}, 'time': 600, 'temp': 305.0, 'aging': 0.005}, # I1大但时间短 -> 温升尚可
+            {'params': {'current1': 3.0, 'time1': 30.0, 'current2': 2.0, 'v_switch': 4.0}, 'time': 2400, 'temp': 302.0, 'aging': 0.002}, # I1小但时间长 -> 温升低
+            {'params': {'current1': 6.0, 'time1': 30.0, 'current2': 2.0, 'v_switch': 4.2}, 'time': 2100, 'temp': 320.0, 'aging': 0.030}, # I1大且时间长 -> 温升爆炸 (耦合证据!)
         ]
         
         W = await inferencer.infer_coupling_matrix(
-            param_names=['current1', 'switch_soc', 'current2'],
+            param_names=['current1', 'time1', 'current2', 'v_switch'],
             current_data=mock_data
         )
         

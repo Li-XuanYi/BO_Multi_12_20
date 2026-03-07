@@ -19,13 +19,13 @@ BATTERY_CONFIG = {
     'param_set': 'Chen2020',
     
     # 初始状态
-    'init_voltage': 3.0,      # 初始电压 [V]
+    'init_voltage': 3.0,      # 初始电压 [V]（统一值）
     'init_temp': 298.15,      # 初始温度 [K] = 25°C
-    'sample_time': 90.0,      # 每步时长 [s] (原来30*3=90)
+    'sample_time': 90.0,      # 每步时长 [s]
     
     # 安全约束（全局统一）
     'voltage_max': 4.2,       # 最大电压 [V]
-    'temp_max': 316.0,        # 最大温度 [K] = 43°C
+    'temp_max': 323.15,       # 最大温度 [K] = 45°C（统一值）
     'soc_target': 0.8,        # 充电目标SOC
 }
 
@@ -33,20 +33,12 @@ BATTERY_CONFIG = {
 # 2. 充电策略参数空间（PARAM_BOUNDS）
 # ============================================================
 PARAM_BOUNDS = {
-    'current1': (3.0, 6.0),           # 第一阶段电流 [A]
-    'switch_soc': (0.3, 0.7),         # SOC切换阈值 [0-1]
-    'current2': (1.0, 4.0),           # 第二阶段电流 [A]
+    'I1': (0.0, 8.0),       # 第一阶段电流 [A] (0.6C-1.6C)
+    'SOC1': (120.0, 3600.0),     # 第一阶段持续时间 [s]（2min-60min）
+    'I2': (0.0, 8.0),       # 第二阶段电流 [A] (0.2C-0.8C)
 }
 
-# ============================================================
-# 3. 老化计算参数（AGING_CONFIG）
-# ============================================================
-AGING_CONFIG = {
-    'k_sei': 5e-5,           # SEI生长速率常数 [%/(A·h)]
-    'E_a': 30000,            # 活化能 [J/mol]
-    'R': 8.314,              # 气体常数 [J/(mol·K)]
-    'T_ref': 298.15,         # 参考温度 [K]
-}
+
 
 # ============================================================
 # 4. 贝叶斯优化参数（BO_CONFIG）
@@ -76,17 +68,19 @@ ALGORITHM_CONFIG = {
         'kernel_length_scale_bounds': (1e-2, 1e2),
         'constant_value': 1.0,             # 常数核系数
         'constant_value_bounds': (1e-3, 1e3),
-        'alpha': 1e-6,                     # 噪声水平
+        'alpha': 1e-5,                     # 噪声水平（从1e-6改为1e-4，防止PSD崩溃）
         'n_restarts_optimizer': 5,         # 超参数优化重启次数
         'normalize_y': True,               # 是否归一化y
     },
     
     # 5.2 复合核参数
     'composite_kernel': {
-        'gamma_init': 0.5,                 # 耦合强度
+        'gamma_init': 0.3,                 # 耦合强度
         'gamma_bounds': (0.1, 2.0),        # gamma调整范围
         'use_coupling': True,              # 是否使用耦合核
-        'coupling_matrix_alpha': 0.5,      # W融合权重（data vs LLM）
+        'coupling_matrix_alpha': 0.95,      # W融合权重（data vs LLM）
+        'phi_length_scale_init': 1.0,      # φ_j 内部长度尺度初始值
+        'eps_psd': 1e-5,                   # PSD 特征值下限
     },
     
     # 5.3 采集函数参数
@@ -117,15 +111,15 @@ MOBO_CONFIG = {
     
     # 参考点（最坏情况，用于归一化）
     'reference_point': {
-        'time': 150,      # 最多150步
-        'temp': 318.0,    # 最高45°C
-        'aging': 0.1,     # 最大老化10%
+        'time': 7200.0,   # 最多 90 分钟 = 5400 秒
+        'temp': 323.15,   
+        'aging': 0.008,    # 从0.05改为0.008（贴近实际观测范围的2-3倍）
     },
     
     # 理想点（最好情况）
     'ideal_point': {
-        'time': 10,       # 最快10步
-        'temp': 298.15,   # 室温25°C
+        'time': 1200.0,    # 最快 20 分钟 = 300 秒
+        'temp': 298.15,   # 室温 25°C
         'aging': 1e-6,    # 接近无老化（不能为0，log10问题）
     }
 }
@@ -135,7 +129,7 @@ MOBO_CONFIG = {
 # ============================================================
 LLM_CONFIG = {
     # 7.1 通用配置
-    'api_key': os.getenv('LLM_API_KEY', None),  # 从环境变量读取
+    'api_key': os.getenv('LLM_API_KEY', "sk-Sq1zyC8PLM8gafI2fpAccWpzBAzZvuNOPU6ZC9aWA6C883IK"),  # 从环境变量读取
     'base_url': 'https://api.nuwaapi.com/v1',
     'model': 'gpt-4o',
     
@@ -172,6 +166,29 @@ LLM_CONFIG = {
         'sigma_scale': 0.15,           # σ缩放因子
         'update_interval': 5,          # 每N轮更新一次焦点
         'min_pareto_points': 3,        # 最少Pareto点数
+        
+        # ARD长度尺度驱动（Round 2新增）
+        'length_scale_base': 0.5,      # 基础长度尺度 ℓ_base
+        'length_scale_alpha': 0.8,     # 敏感度指数 α_ℓ (公式: ℓ = ℓ_base * (rank/d)^α)
+        
+        # 敏感度排序推理
+        'sensitivity_temperature': 0.2,  # 低温度确保稳定排序
+        'sensitivity_max_tokens': 400,   # 只需输出排序
+        'sensitivity_max_retries': 3,    # 最大重试次数
+    },
+    
+    # 7.5 Acquisition专用配置（Round 2新增）
+    'acquisition': {
+        'beta': 2.0,                    # GP-LCB的置信参数 β
+        'n_batch': 20,                  # 单次LLM生成的候选点数（从50改为20，防止JSON截断）
+        'gen_temperatures': [0.6, 0.8, 1.0],  # 多温度生成以增加多样性
+        'gen_max_tokens': 4000,         # 候选生成最大tokens（从1500改为4000，确保20个候选完整生成）
+        'gen_max_retries': 3,           # 生成重试次数
+        
+        # 阈值退火参数（§4.2）
+        'threshold_gamma_0': 50.0,      # 初始百分位 γ_0（探索）
+        'threshold_gamma_T': 99.0,      # 最终百分位 γ_T（开发）
+        'B_explore_ratio_init': 0.1,    # 初始高方差区域比例
     },
 }
 

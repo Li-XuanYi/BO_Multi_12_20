@@ -1,0 +1,485 @@
+{
+  "database": [
+    {
+      "params": {
+        "current1": 7.5,
+        "time1": 600.0,
+        "current2": 4.0,
+        "v_switch": 4.1
+      },
+      "time": 6271.073055911145,
+      "temp": 314.7846604003573,
+      "aging": 0.00408873182083938,
+      "valid": true,
+      "violation": null,
+      "rationale": "High initial current rapidly increases SOC, while a moderate time1 limits overheating. The high current2 ensures fast completion, and a higher v_switch minimizes the CV phase duration, achieving fast charging at the cost of higher temperature and aging.",
+      "scenario": "ultra_fast"
+    },
+    {
+      "params": {
+        "current1": 4.0,
+        "time1": 1800.0,
+        "current2": 1.5,
+        "v_switch": 4.0
+      },
+      "time": 6871.419535644577,
+      "temp": 306.64437266661923,
+      "aging": 0.0038456507467888247,
+      "valid": true,
+      "violation": null,
+      "rationale": "Moderate current1 reduces heat generation, allowing longer time1 for gradual charge accumulation. A low current2 maintains low thermal stress, and a moderate v_switch balances between reducing CV duration and preventing excessive lithium plating, prioritizing thermal safety.",
+      "scenario": "low_temp"
+    },
+    {
+      "params": {
+        "current1": 3.5,
+        "time1": 1000.0,
+        "current2": 1.2,
+        "v_switch": 3.9
+      },
+      "time": 8334.566140438257,
+      "temp": 304.0830683206775,
+      "aging": 0.004279507456213604,
+      "valid": true,
+      "violation": null,
+      "rationale": "Conservative current1 minimizes peak temperature, with time1 ensuring charge progression without thermal accumulation. Low current2 further reduces thermal stress, and a lower v_switch extends CV phase gently, significantly reducing aging for a longer lifespan.",
+      "scenario": "long_life"
+    },
+    {
+      "params": {
+        "current1": 4.5,
+        "time1": 900.0,
+        "current2": 2.0,
+        "v_switch": 4.05
+      },
+      "time": 7384.734744635261,
+      "temp": 306.73784406878895,
+      "aging": 0.004078537840522425,
+      "valid": true,
+      "violation": null,
+      "rationale": "Moderate current1 and time1 balance between speed and thermal safety, while current2 ensures reasonable completion time without excessive heat. A moderate v_switch balances CV phase duration and lithium plating risk, achieving a balanced trade-off across all objectives.",
+      "scenario": "balanced"
+    },
+    {
+      "params": {
+        "current1": 5.5,
+        "time1": 720.0,
+        "current2": 3.5,
+        "v_switch": 4.15
+      },
+      "time": 6928.993824809857,
+      "temp": 308.9485897850196,
+      "aging": 0.004241388638492964,
+      "valid": true,
+      "violation": null,
+      "rationale": "Using high current1 and a short time1 rapidly increases SOC while controlling heat. High current2 maintains fast charging, and a higher v_switch ensures minimal CV duration. This strategy accepts high temperature and aging as trade-offs for speed.",
+      "scenario": "ultra_fast"
+    },
+    {
+      "params": {
+        "current1": 5.434598457802423,
+        "time1": 3376.2106711647216,
+        "current2": 2.4550409956459536,
+        "v_switch": 4.00944700637353
+      },
+      "time": 5081.413036897388,
+      "temp": 311.97155328379296,
+      "aging": 0.0033145879175745167,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 3.160857602026807,
+        "time1": 1467.4329566047506,
+        "current2": 2.9127535030292373,
+        "v_switch": 4.024150543849388
+      },
+      "time": 6319.470718996746,
+      "temp": 303.7393552320228,
+      "aging": 0.00359003237933179,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 3.209356437015731,
+        "time1": 3510.2107780440037,
+        "current2": 3.1789069695905154,
+        "v_switch": 3.8389946012311587
+      },
+      "time": 5229.475239881056,
+      "temp": 304.14858078024025,
+      "aging": 0.0029286719494121503,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 5.921475208091616,
+        "time1": 2294.891978663101,
+        "current2": 1.3201597309735973,
+        "v_switch": 3.837768498623053
+      },
+      "time": 5915.336756904984,
+      "temp": 311.15408049725863,
+      "aging": 0.003367874668683484,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 3.236180659744764,
+        "time1": 1625.6173071720011,
+        "current2": 2.9218893969579023,
+        "v_switch": 4.102535722594195
+      },
+      "time": 7997.4843685874475,
+      "temp": 304.06286095711647,
+      "aging": 0.004456035904890758,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 3.3393580582181874,
+        "time1": 1482.1592876041932,
+        "current2": 3.678902782854669,
+        "v_switch": 3.807015290946505
+      },
+      "time": 4808.598134147478,
+      "temp": 304.8569067272597,
+      "aging": 0.0027158647364327916,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 3.7536166185889295,
+        "time1": 1071.554448547538,
+        "current2": 1.8793106764673824,
+        "v_switch": 4.004442680101289
+      },
+      "time": 7304.664203444208,
+      "temp": 304.9640220791327,
+      "aging": 0.003954213970973394,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 3.9399208557523515,
+        "time1": 3222.3191337962676,
+        "current2": 1.2085861756293523,
+        "v_switch": 3.8119286614714185
+      },
+      "time": 5535.977874878509,
+      "temp": 306.1799361804904,
+      "aging": 0.0030643061636427067,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 5.219916398211524,
+        "time1": 2997.21874541968,
+        "current2": 4.049479781268177,
+        "v_switch": 3.879714441877731
+      },
+      "time": 4591.794193321544,
+      "temp": 310.1381428203466,
+      "aging": 0.0028813810591010866,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 5.341971144252785,
+        "time1": 1088.8686333308538,
+        "current2": 1.284633771536525,
+        "v_switch": 3.9117478960964887
+      },
+      "time": 6319.237410139947,
+      "temp": 310.3574426863035,
+      "aging": 0.003602743366020885,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 5.9,
+        "time1": 1600.0,
+        "current2": 2.8,
+        "v_switch": 4.0
+      },
+      "time": 4866.383794751475,
+      "temp": 313.4355968937867,
+      "aging": 0.003253534318891574,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 5.7,
+        "time1": 1750.0,
+        "current2": 2.9,
+        "v_switch": 4.06
+      },
+      "time": 5133.140808443281,
+      "temp": 313.30762883547834,
+      "aging": 0.0034888221196345956,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 5.0,
+        "time1": 1800.0,
+        "current2": 2.75,
+        "v_switch": 4.0
+      },
+      "time": 4983.279776425012,
+      "temp": 310.3948270074522,
+      "aging": 0.003215760945320288,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 5.0,
+        "time1": 1800.0,
+        "current2": 2.5,
+        "v_switch": 3.95
+      },
+      "time": 4632.76219084812,
+      "temp": 310.0802541786905,
+      "aging": 0.0029557097394739876,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 5.117836073723143,
+        "time1": 1688.007929548473,
+        "current2": 2.605965607408295,
+        "v_switch": 3.980367911181453
+      },
+      "time": 4850.145170058455,
+      "temp": 310.6749629547001,
+      "aging": 0.003125564893120666,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 5.3387362158954375,
+        "time1": 2340.1189829192735,
+        "current2": 2.832093896557742,
+        "v_switch": 4.006709081435169
+      },
+      "time": 4946.031912613531,
+      "temp": 311.6181165526426,
+      "aging": 0.0032504037965803054,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 6.315868187057483,
+        "time1": 2034.2077317422406,
+        "current2": 2.8469328237522347,
+        "v_switch": 4.022447373823567
+      },
+      "time": 4942.565526413343,
+      "temp": 315.0906019246574,
+      "aging": 0.0033804925774166272,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 5.853428127655332,
+        "time1": 1601.2666019884123,
+        "current2": 2.7697133119058552,
+        "v_switch": 4.019268226382993
+      },
+      "time": 4974.036357504923,
+      "temp": 313.5044931523109,
+      "aging": 0.003340093345816627,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 5.016860598474443,
+        "time1": 1832.0099185220802,
+        "current2": 2.7314807344496757,
+        "v_switch": 3.965388404866825
+      },
+      "time": 4676.380975169106,
+      "temp": 310.23812560122605,
+      "aging": 0.0030122954048053346,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "params": {
+        "current1": 5.0772533090293495,
+        "time1": 1738.5340586482175,
+        "current2": 3.0602542394160803,
+        "v_switch": 3.955188802160584
+      },
+      "time": 4493.862605946392,
+      "temp": 310.3638654958544,
+      "aging": 0.002925435848978782,
+      "valid": true,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    }
+  ],
+  "pareto_front": [
+    {
+      "id": 7,
+      "timestamp": "2026-02-24T00:00:41.230401",
+      "current1": 3.160857602026807,
+      "time1": 1467.4329566047506,
+      "current2": 2.9127535030292373,
+      "v_switch": 4.024150543849388,
+      "time": 6319.470718996746,
+      "temp": 303.7393552320228,
+      "aging": 0.00359003237933179,
+      "valid": 1,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "id": 8,
+      "timestamp": "2026-02-24T00:00:44.943583",
+      "current1": 3.209356437015731,
+      "time1": 3510.2107780440037,
+      "current2": 3.1789069695905154,
+      "v_switch": 3.8389946012311587,
+      "time": 5229.475239881056,
+      "temp": 304.14858078024025,
+      "aging": 0.0029286719494121503,
+      "valid": 1,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "id": 11,
+      "timestamp": "2026-02-24T00:00:56.199134",
+      "current1": 3.3393580582181874,
+      "time1": 1482.1592876041932,
+      "current2": 3.678902782854669,
+      "v_switch": 3.807015290946505,
+      "time": 4808.598134147478,
+      "temp": 304.8569067272597,
+      "aging": 0.0027158647364327916,
+      "valid": 1,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "id": 14,
+      "timestamp": "2026-02-24T00:01:07.752330",
+      "current1": 5.219916398211524,
+      "time1": 2997.21874541968,
+      "current2": 4.049479781268177,
+      "v_switch": 3.879714441877731,
+      "time": 4591.794193321544,
+      "temp": 310.1381428203466,
+      "aging": 0.0028813810591010866,
+      "valid": 1,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "id": 19,
+      "timestamp": "2026-02-24T09:11:30.596899",
+      "current1": 5.0,
+      "time1": 1800.0,
+      "current2": 2.5,
+      "v_switch": 3.95,
+      "time": 4632.76219084812,
+      "temp": 310.0802541786905,
+      "aging": 0.0029557097394739876,
+      "valid": 1,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    },
+    {
+      "id": 25,
+      "timestamp": "2026-02-24T14:02:21.406705",
+      "current1": 5.0772533090293495,
+      "time1": 1738.5340586482175,
+      "current2": 3.0602542394160803,
+      "v_switch": 3.955188802160584,
+      "time": 4493.862605946392,
+      "temp": 310.3638654958544,
+      "aging": 0.002925435848978782,
+      "valid": 1,
+      "violation": null,
+      "rationale": "",
+      "scenario": ""
+    }
+  ],
+  "n_evaluations": 25,
+  "n_valid": 25,
+  "hv_history": [
+    0.2560414865918927,
+    0.2560414865918927,
+    0.2560414865918927,
+    0.2560745740692357,
+    0.2560745740692357,
+    0.2560745740692357,
+    0.2560745740692357,
+    0.2560745740692357,
+    0.2560745740692357,
+    0.2585680547990074
+  ]
+}
