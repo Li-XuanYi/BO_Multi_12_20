@@ -16,7 +16,7 @@ from scipy.optimize import minimize
 from scipy.stats import norm
 from openai import AsyncOpenAI
 
-from acquisition.scalarization import TchebycheffScalarizer
+from acquisition.tchebycheff import TchebycheffScalarizer
 from config import MOBO_CONFIG, LLM_CONFIG, get_algorithm_param, get_llm_param
 
 

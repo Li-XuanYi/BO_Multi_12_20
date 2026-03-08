@@ -28,59 +28,60 @@ REFERENCE_POINT = {"time": 5400.0, "temp": 318.0, "aging": 0.1}
 # V6 (Vanilla)     ✗            ✗           ✗        ✗          ✗
 
 ABLATION_CONFIGS = {
+    # 约束 C-6: gamma_init 统一为 0.1；V2/V6 无物理核时 gamma_init=0.0 合理
     "V0_Full": {
         "use_warmstart": True,
         "use_coupling": True,
-        "use_llm_acq": True,
-        "use_llm_weighting": True,
+        "use_adaptive_W": True,
+        "use_llm_sampling": True,
         "gamma_adaptive": True,
-        "gamma_init": 0.5,
+        "gamma_init": 0.1,        # C-6
     },
     "V1_NoWarmStart": {
         "use_warmstart": False,
         "use_coupling": True,
-        "use_llm_acq": True,
-        "use_llm_weighting": True,
+        "use_adaptive_W": True,
+        "use_llm_sampling": True,
         "gamma_adaptive": True,
-        "gamma_init": 0.5,
+        "gamma_init": 0.1,
     },
     "V2_NoPhysicsKernel": {
         "use_warmstart": True,
-        "use_coupling": False,
-        "use_llm_acq": True,
-        "use_llm_weighting": True,
-        "gamma_adaptive": False,  # γ≡0 无意义做自适应
+        "use_coupling": False,    # 无物理核
+        "use_adaptive_W": False,  # 无核则无自适应矩阵
+        "use_llm_sampling": True,
+        "gamma_adaptive": False,  # γ≡0 无意义
         "gamma_init": 0.0,
     },
     "V3_NoGenAcq": {
         "use_warmstart": True,
         "use_coupling": True,
-        "use_llm_acq": False,     # 回退到经典MC-EI
-        "use_llm_weighting": True,
+        "use_adaptive_W": True,
+        "use_llm_sampling": False, # 无 LLM 采样，回退随机候选
         "gamma_adaptive": True,
-        "gamma_init": 0.5,
+        "gamma_init": 0.1,
     },
-    "V4_NoLLMWeighting": {
+    "V4_NoAdaptiveW": {
         "use_warmstart": True,
         "use_coupling": True,
-        "use_llm_acq": True,
-        "use_llm_weighting": False,  # W_LLM ≡ 1
+        "use_adaptive_W": False,  # W^(t) 固定为单位矩阵
+        "use_llm_sampling": True,
         "gamma_adaptive": True,
-        "gamma_init": 0.5,
+        "gamma_init": 0.1,
     },
     "V5_NoHVFeedback": {
         "use_warmstart": True,
         "use_coupling": True,
-        "use_llm_acq": True,
-        "use_llm_weighting": True,
-        "gamma_adaptive": False,     # γ固定
-        "gamma_init": 0.5,
+        "use_adaptive_W": True,
+        "use_llm_sampling": True,
+        "gamma_adaptive": False,  # γ 固定，无 HV 反馈
+        "gamma_init": 0.1,
     },
     "V6_VanillaBO": {
         "use_warmstart": False,
         "use_coupling": False,
-        "use_llm_acq": False,
-        "use_llm_weighting": False,
+        "use_adaptive_W": False,
+        "use_llm_sampling": False,
         "gamma_adaptive": False,
         "gamma_init": 0.0,
     },

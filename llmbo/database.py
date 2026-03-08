@@ -91,7 +91,7 @@ class ExperimentDatabase:
     def add_experiment(self, params: Dict, result: Dict, meta: Dict = None):
         """
         添加实验记录
-        
+
         参数:
             params: {'current1': ..., 'time1': ..., 'current2': ..., 'v_switch': ...}
             result: {'time': ..., 'temp': ..., 'aging': ..., 'valid': ..., 'violation': ...}
@@ -99,7 +99,7 @@ class ExperimentDatabase:
         """
         cursor = self.conn.cursor()
         meta = meta or {}
-        
+
         cursor.execute('''
             INSERT INTO experiments (
                 timestamp, current1, time1, current2, v_switch,
@@ -108,6 +108,33 @@ class ExperimentDatabase:
         ''', (
             datetime.now().isoformat(),
             params['current1'], params['time1'], params['current2'], params['v_switch'],
+            result['time'], result['temp'], result['aging'],
+            int(result['valid']), result.get('violation', ''),
+            meta.get('rationale', ''), meta.get('scenario', '')
+        ))
+        self.conn.commit()
+
+    def add_experiment_3d(self, params: Dict, result: Dict, meta: Dict = None):
+        """
+        添加 3D 实验记录（I1, SOC1, I2 参数空间）
+
+        参数:
+            params: {'I1': ..., 'SOC1': ..., 'I2': ...}
+            result: {'time': ..., 'temp': ..., 'aging': ..., 'valid': ..., 'violation': ...}
+            meta: {'rationale': ..., 'scenario': ...} (可选)
+        """
+        cursor = self.conn.cursor()
+        meta = meta or {}
+
+        # 3D -> 4D 映射：I1->current1, SOC1->time1, I2->current2, v_switch 固定为 4.0
+        cursor.execute('''
+            INSERT INTO experiments (
+                timestamp, current1, time1, current2, v_switch,
+                time, temp, aging, valid, violation, rationale, scenario
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            datetime.now().isoformat(),
+            params['I1'], params['SOC1'], params['I2'], 4.0,
             result['time'], result['temp'], result['aging'],
             int(result['valid']), result.get('violation', ''),
             meta.get('rationale', ''), meta.get('scenario', '')
@@ -280,6 +307,35 @@ class ExperimentDatabase:
         
         return legacy_db
     
+
+    def to_legacy_format_3d(self) -> List[Dict]:
+        """
+        转换为 3D 格式（兼容 GP 训练、可视化等下游模块）
+
+        返回:
+            [{'params': {'I1': ..., 'SOC1': ..., 'I2': ...}, 'time': ..., 'temp': ..., 'aging': ..., 'valid': ...}, ...]
+        """
+        experiments = self.get_all_experiments()
+
+        legacy_db = []
+        for exp in experiments:
+            legacy_db.append({
+                'params': {
+                    'I1': exp['current1'],
+                    'SOC1': exp['time1'],
+                    'I2': exp['current2']
+                },
+                'time': exp['time'],
+                'temp': exp['temp'],
+                'aging': exp['aging'],
+                'valid': bool(exp['valid']),
+                'violation': exp['violation'],
+                'rationale': exp.get('rationale', ''),
+                'scenario': exp.get('scenario', '')
+            })
+
+        return legacy_db
+
     def get_hv_history(self) -> List[float]:
         """获取HV历史（按迭代顺序）"""
         cursor = self.conn.cursor()

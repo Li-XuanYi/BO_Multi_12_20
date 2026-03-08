@@ -30,13 +30,19 @@ BATTERY_CONFIG = {
 }
 
 # ============================================================
-# 2. 充电策略参数空间（PARAM_BOUNDS）
+# 2. 充电策略参数空间（PARAM_BOUNDS）- 3D 决策空间
 # ============================================================
+# FrameWork.md §0: θ = (I1, SOC1, I2)
 PARAM_BOUNDS = {
-    'I1': (0.0, 8.0),       # 第一阶段电流 [A] (0.6C-1.6C)
-    'SOC1': (120.0, 3600.0),     # 第一阶段持续时间 [s]（2min-60min）
-    'I2': (0.0, 8.0),       # 第二阶段电流 [A] (0.2C-0.8C)
+    'I1': (0.01, 7.99),    # 第一阶段电流 [A]，避免边界奇点 (0, 8)
+    'SOC1': (0.1, 0.7),    # 切换 SOC [0.1, 0.7]
+    'I2': (0.01, 7.99),    # 第二阶段电流 [A]，避免边界奇点 (0, 8)
 }
+
+# 充电范围
+SOC0 = 0.1       # 初始 SOC
+SOC_END = 0.8    # 充电终止 SOC
+Q_NOM = 18000    # 标称容量 [C] = 5Ah × 3600
 
 
 
@@ -48,12 +54,20 @@ BO_CONFIG = {
     'n_warmstart': 5,         # LLM热启动样本数
     'n_random_init': 10,      # 额外随机初始化
     'n_iterations': 50,       # BO迭代次数
-    
-    # 初始耦合强度
-    'gamma_init': 0.5,        # 初始gamma值
-    'gamma_min': 0.1,         # gamma下限
-    'gamma_max': 2.0,         # gamma上限
-    'gamma_update_rate': 0.1, # gamma自适应调整率
+
+    # 约束 C-6: 核心超参数（必须与 IMPLEMENTATION_CONSTRAINTS.md 严格一致）
+    'gamma_init': 0.1,        # GAMMA_INIT = 0.1
+    'gamma_min': 0.001,       # gamma 下限
+    'gamma_max': 2.0,         # gamma 上限
+    'gamma_update_rate': 0.1, # γ 更新率 ρ
+
+    # 约束 C-6: 采集函数超参数
+    'alpha_max': 0.7,         # ALPHA_MAX
+    'alpha_min': 0.05,        # ALPHA_MIN
+    't_decay_alpha': 60,      # T_DECAY_ALPHA
+    'kappa': 0.20,            # KAPPA
+    'eps_sigma': 0.001,       # EPS_SIGMA
+    'rho': 0.1,               # RHO（停滞扩展率）
 }
 
 # ============================================================
@@ -75,8 +89,8 @@ ALGORITHM_CONFIG = {
     
     # 5.2 复合核参数
     'composite_kernel': {
-        'gamma_init': 0.3,                 # 耦合强度
-        'gamma_bounds': (0.1, 2.0),        # gamma调整范围
+        'gamma_init': 0.1,                 # 耦合强度（与 C-6 一致）
+        'gamma_bounds': (0.001, 2.0),      # gamma调整范围
         'use_coupling': True,              # 是否使用耦合核
         'coupling_matrix_alpha': 0.95,      # W融合权重（data vs LLM）
         'phi_length_scale_init': 1.0,      # φ_j 内部长度尺度初始值
@@ -85,6 +99,9 @@ ALGORITHM_CONFIG = {
     
     # 5.3 采集函数参数
     'acquisition': {
+        # 约束 C-6: 物理加权采集函数参数
+        'N_cand': 15,                      # LLM 生成候选数
+        'N_select': 3,                     # 选择评估数
         'n_candidates': 2000,              # 随机海选点数
         'n_mc_samples': 128,               # MC-EI采样数
         'n_top_local': 5,                  # 局部优化的top点数
@@ -103,6 +120,9 @@ ALGORITHM_CONFIG = {
 # 6. 多目标优化参数（MOBO_CONFIG）
 # ============================================================
 MOBO_CONFIG = {
+    # 约束 C-3: Tchebycheff 权重数量
+    'N_WEIGHTS': 15,                 # Riesz s-energy 权重集合大小
+
     # Dirichlet分布参数（均匀采样）
     'dirichlet_alpha': [1.0, 1.0, 1.0],
     
@@ -128,10 +148,10 @@ MOBO_CONFIG = {
 # 7. LLM 配置（LLM_CONFIG）
 # ============================================================
 LLM_CONFIG = {
-    # 7.1 通用配置
-    'api_key': os.getenv('LLM_API_KEY', "sk-Sq1zyC8PLM8gafI2fpAccWpzBAzZvuNOPU6ZC9aWA6C883IK"),  # 从环境变量读取
-    'base_url': 'https://api.nuwaapi.com/v1',
-    'model': 'gpt-4o',
+    # 7.1 通用配置（OpenAI-compatible API）
+    'api_key': os.getenv('LLM_API_KEY', 'sk-Sq1zyC8PLM8gafI2fpAccWpzBAzZvuNOPU6ZC9aWA6C883IK'),
+    'base_url': os.getenv('LLM_BASE_URL', 'https://api.nuwaapi.com/v1'),
+    'model': os.getenv('LLM_MODEL', 'gpt-4o'),  # gpt-4o / gpt-4o-mini / gpt-3.5-turbo
     
     # 功能开关
     'enable_warmstart': True,
@@ -179,6 +199,9 @@ LLM_CONFIG = {
     
     # 7.5 Acquisition专用配置（Round 2新增）
     'acquisition': {
+        # 约束 C-6: 物理加权采集函数参数
+        'N_cand': 15,                      # LLM 生成候选数
+        'N_select': 3,                     # 选择评估数
         'beta': 2.0,                    # GP-LCB的置信参数 β
         'n_batch': 20,                  # 单次LLM生成的候选点数（从50改为20，防止JSON截断）
         'gen_temperatures': [0.6, 0.8, 1.0],  # 多温度生成以增加多样性
@@ -207,6 +230,16 @@ DATA_CONFIG = {
 
 # ============================================================
 # 9. 辅助函数
+# ============================================================
+# ============================================================
+# 10. 约束 C-6 全局常量
+# ============================================================
+PSI_R1 = 0.01  # [Ohm] 焦耳热代理函数 R1_bar
+PSI_R2 = 0.01  # [Ohm] 焦耳热代理函数 R2_bar
+GAMMA_INIT = 0.1  # 初始耦合强度 (与 BO_CONFIG.gamma_init 一致)
+
+# ============================================================
+# 11. 辅助函数
 # ============================================================
 def get_algorithm_param(module: str, param: str, default=None):
     """

@@ -7,7 +7,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from typing import List, Dict, Optional
-import pygmo as pg
+try:
+    import pygmo as pg
+    HAS_PYGMO = True
+except ImportError:
+    HAS_PYGMO = False
+    pg = None
 
 
 def compute_hv_history(database: List[Dict], ref_point: np.ndarray) -> List[float]:
@@ -438,3 +443,88 @@ if __name__ == "__main__":
     plot_optimization_history(fake_database, save_path='test_history.png', show=False)
     
     print("\n测试完成！")
+
+
+def select_pareto_representatives(
+    pareto_front: List[Dict],
+    k: int = 6
+) -> List[Dict]:
+    """
+    混合策略选择 Pareto 代表点（约束 C-7 实现）
+    
+    策略：
+    1. 强制选 3 个极端点（每个目标的最优解）
+    2. 选 1 个膝点（距 CHIM 平面最远）
+    3. FPS 补充剩余名额（最多 6 个）
+    
+    参数：
+        pareto_front: Pareto 前沿
+        k: 最多选择 k 个代表点（约束 C-7: 最多 6 个）
+    
+    返回：
+        representatives: 代表点列表
+    """
+    if len(pareto_front) == 0:
+        return []
+    
+    # 提取目标值
+    objectives = np.array([[
+        r['time'],
+        r['temp'],
+        r['aging']
+    ] for r in pareto_front])
+    
+    n = len(objectives)
+    selected_indices = []
+    
+    # ========== Step 1: 强制选 3 个极端点 ==========
+    for dim in range(3):
+        idx = int(np.argmin(objectives[:, dim]))
+        if idx not in selected_indices:
+            selected_indices.append(idx)
+    
+    # ========== Step 2: 选 1 个膝点（距 CHIM 平面最远） ==========
+    if len(selected_indices) >= 3:
+        # 三个极端点构成 CHIM 平面
+        anchors = objectives[selected_indices[:3]]
+        
+        # 平面法向量
+        v1 = anchors[1] - anchors[0]
+        v2 = anchors[2] - anchors[0]
+        normal = np.cross(v1, v2)
+        normal_norm = np.linalg.norm(normal)
+        
+        if normal_norm > 1e-10:
+            normal = normal / normal_norm
+            
+            # 计算每个点到 CHIM 平面的距离
+            dists = np.abs((objectives - anchors[0]) @ normal)
+            
+            # 选择距离最远的点（膝点）
+            remaining_dists = dists.copy()
+            for idx in selected_indices:
+                remaining_dists[idx] = -1
+            
+            knee_idx = int(np.argmax(remaining_dists))
+            if remaining_dists[knee_idx] > 0:
+                selected_indices.append(knee_idx)
+    
+    # ========== Step 3: FPS 补充剩余名额 ==========
+    while len(selected_indices) < k and len(selected_indices) < n:
+        min_dists = []
+        for i in range(n):
+            if i in selected_indices:
+                min_dists.append(-1)
+                continue
+            
+            dists_to_selected = [np.linalg.norm(objectives[i] - objectives[j]) for j in selected_indices]
+            min_dists.append(np.min(dists_to_selected))
+        
+        remaining_indices = [i for i in range(n) if i not in selected_indices]
+        if not remaining_indices:
+            break
+        
+        best_idx = max(remaining_indices, key=lambda i: min_dists[i])
+        selected_indices.append(best_idx)
+    
+    return [pareto_front[i] for i in selected_indices]

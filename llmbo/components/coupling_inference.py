@@ -275,9 +275,125 @@ where <value> represents the coupling strength you determine from the data and p
         
         return matrix
 
-# ============================================================
-# 快速测试
-# ============================================================
+    async def get_objective_coupling_matrices(self) -> Dict[str, np.ndarray]:
+        """
+        Touchpoint 1a — 一次性获取三个目标各自的耦合矩阵。
+
+        按 FrameWork §4.1 (Partial Context) 调用 LLM，分别推断：
+          W_time  : 面向充电时间目标的耦合矩阵
+          W_temp  : 面向峰值温度目标的耦合矩阵
+          W_aging : 面向老化程度目标的耦合矩阵
+
+        返回：
+            {"W_time": np.ndarray(3,3), "W_temp": ..., "W_aging": ...}
+        """
+        param_names = ['I1', 'SOC1', 'I2']
+        results = {}
+
+        objective_prompts = {
+            "W_time":  "coupling for minimizing total charging time",
+            "W_temp":  "coupling for minimizing peak temperature",
+            "W_aging": "coupling for minimizing aging (capacity fade via SEI growth)",
+        }
+
+        for matrix_key, objective_desc in objective_prompts.items():
+            if self.verbose:
+                print(f"  [1a] 推断 {matrix_key} ({objective_desc[:30]}...)")
+            try:
+                # 使用专用 prompt 进行推断
+                W = await self._infer_single_objective_matrix(
+                    param_names, objective_desc
+                )
+                results[matrix_key] = W
+            except Exception as e:
+                if self.verbose:
+                    print(f"  [1a] {matrix_key} 失败: {e}，使用单位矩阵")
+                results[matrix_key] = np.eye(len(param_names))
+
+        return results
+
+    async def _infer_single_objective_matrix(
+        self,
+        param_names: List[str],
+        objective_description: str
+    ) -> np.ndarray:
+        """
+        针对单个目标推断 3×3 耦合矩阵（FrameWork §4.1 Partial Context）
+        """
+        n = len(param_names)
+        prompt = f"""As an electrochemistry expert, analyze the physical coupling
+between parameters in a two-stage CC lithium-ion battery fast
+charging protocol theta = (I1, SOC1, I2) for an NMC811/graphite
+cell (5Ah). The battery is charged from SOC 0.1 to 0.8.
+
+Provide a {n}x{n} symmetric coupling matrix W for the objective:
+  {objective_description}
+
+Each entry wij in [0,1] quantifies how strongly parameter i and
+parameter j interact when optimizing for that specific objective.
+Parameters: I1 (Phase-1 current [A]), SOC1 (switch SOC), I2 (Phase-2 current [A]).
+
+Output JSON only:
+{{"W": [[w11,w12,w13],[w12,w22,w23],[w13,w23,w33]],
+  "rationale": {{"I1_SOC1": "...", "SOC1_I2": "...", "I1_I2": "..."}}}}"""
+
+        MAX_RETRIES = get_llm_param('coupling', 'max_retries', 3)
+        for retry in range(MAX_RETRIES):
+            try:
+                response = await self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {"role": "system", "content": (
+                            "You are a battery electrochemistry expert. "
+                            "Output strictly valid JSON."
+                        )},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=get_llm_param('coupling', 'temperature', 0.2),
+                    max_tokens=get_llm_param('coupling', 'max_tokens', 800),
+                )
+                content = response.choices[0].message.content
+                parsed = self._parse_single_matrix(content, n)
+                return self._post_process_3x3(parsed, n)
+            except Exception as e:
+                if retry < MAX_RETRIES - 1:
+                    await asyncio.sleep(2 ** retry)
+                else:
+                    raise e
+
+        return np.eye(n)
+
+    def _parse_single_matrix(self, content: str, n: int) -> np.ndarray:
+        """从 LLM 输出解析单个 n×n 矩阵"""
+        try:
+            # 尝试直接解析 JSON
+            json_match = re.search(r'\{.*\}', content, re.DOTALL)
+            if json_match:
+                data = json.loads(json_match.group())
+                W = data.get("W", None)
+                if W is not None:
+                    return np.array(W, dtype=float)
+        except Exception:
+            pass
+        # fallback
+        return np.eye(n)
+
+    def _post_process_3x3(self, matrix: np.ndarray, n: int) -> np.ndarray:
+        """后处理：裁剪、对称、PSD 保证"""
+        if matrix.shape != (n, n):
+            new_mat = np.eye(n)
+            m = min(matrix.shape[0], n)
+            new_mat[:m, :m] = matrix[:m, :m]
+            matrix = new_mat
+        matrix = np.clip(matrix, 0.0, 1.0)
+        matrix = (matrix + matrix.T) / 2.0
+        np.fill_diagonal(matrix, 1.0)
+        eps = get_llm_param('composite_kernel', 'eps_psd', 1e-6) or 1e-6
+        matrix = ensure_psd(matrix, eps=eps)
+        np.fill_diagonal(matrix, 1.0)
+        return matrix
+
+
 if __name__ == "__main__":
     import asyncio
     import os

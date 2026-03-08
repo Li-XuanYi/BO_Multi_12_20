@@ -70,29 +70,28 @@ class LLAMBOWeighting:
         else:
             self.client = None
         
-        # 参数维度（4D）
-        self.param_names = ['current1', 'time1', 'current2', 'v_switch']
-        self.d = len(self.param_names)  # d=4
-        
+        # 参数维度：自动检测 3D (I1/SOC1/I2) 或 4D (current1/time1/current2/v_switch)
+        if 'I1' in param_bounds:
+            self.param_names = ['I1', 'SOC1', 'I2']
+        else:
+            self.param_names = ['current1', 'time1', 'current2', 'v_switch']
+        self.d = len(self.param_names)
+
         # 焦点参数（初始化为参数空间中心）
         self.mu_focus = np.array([
-            (param_bounds['current1'][0] + param_bounds['current1'][1]) / 2,
-            (param_bounds['time1'][0] + param_bounds['time1'][1]) / 2,
-            (param_bounds['current2'][0] + param_bounds['current2'][1]) / 2,
-            (param_bounds['v_switch'][0] + param_bounds['v_switch'][1]) / 2
+            (param_bounds[k][0] + param_bounds[k][1]) / 2
+            for k in self.param_names
         ])
-        
+
         # 焦点宽度（初始化为参数范围的sigma_scale）
         param_ranges = np.array([
-            param_bounds['current1'][1] - param_bounds['current1'][0],
-            param_bounds['time1'][1] - param_bounds['time1'][0],
-            param_bounds['current2'][1] - param_bounds['current2'][0],
-            param_bounds['v_switch'][1] - param_bounds['v_switch'][0]
+            param_bounds[k][1] - param_bounds[k][0]
+            for k in self.param_names
         ])
         self.sigma_focus = self.sigma_scale * param_ranges
-        
-        # 敏感度排序（初始化为均等：[1,2,3,4]）
-        self.sensitivity_ranking = np.array([1, 2, 3, 4], dtype=int)
+
+        # 敏感度排序（初始化为均等：[1..d]）
+        self.sensitivity_ranking = np.arange(1, self.d + 1, dtype=int)
         
         # ARD长度尺度（初始化并计算）
         self.ard_length_scales = np.full(self.d, self.length_scale_base)
@@ -527,6 +526,167 @@ Output JSON:
             if self.verbose:
                 print(f"  [LLM Weighting] 焦点更新失败: {e}")
     
+    # ========================================
+    # Touchpoint 2: LLM 候选生成（FrameWork.md §5）
+    # ========================================
+    async def generate_candidates(
+        self,
+        database: list,
+        weights: np.ndarray,
+        grad_psi: np.ndarray,
+        iteration: int,
+        total_iterations: int,
+        n_candidates: int = 15,
+    ) -> list:
+        """
+        Touchpoint 2：向 LLM 请求 n_candidates 个候选充电协议。
+
+        3D 参数空间：I1 ∈ (0.01,7.99)A, SOC1 ∈ [0.1,0.7], I2 ∈ (0.01,7.99)A
+
+        返回 list of dict，每个 dict 包含 'I1', 'SOC1', 'I2' 键。
+        失败时回退随机采样。
+        """
+        if self.client is None:
+            return self._fallback_random(n_candidates)
+
+        prompt = self._build_candidates_prompt(database, weights, grad_psi,
+                                               iteration, total_iterations, n_candidates)
+        max_retries = get_llm_param('acquisition', 'gen_max_retries', 3)
+        for attempt in range(max_retries):
+            try:
+                response = await self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": (
+                                "You are an expert in lithium-ion battery fast-charging optimization. "
+                                "Suggest charging protocols as JSON arrays. "
+                                "Each protocol has keys 'I1' (float), 'SOC1' (float), 'I2' (float). "
+                                "Output ONLY valid JSON."
+                            ),
+                        },
+                        {"role": "user", "content": prompt},
+                    ],
+                    temperature=0.7,
+                    max_tokens=get_llm_param('acquisition', 'gen_max_tokens', 2000),
+                    response_format={"type": "json_object"},
+                )
+                raw = response.choices[0].message.content.strip()
+                candidates = self._parse_candidates_response(raw, n_candidates)
+                if candidates:
+                    if self.verbose:
+                        print(f"  [Touchpoint 2] 获取 {len(candidates)} 个 LLM 候选")
+                    return candidates
+            except Exception as e:
+                if self.verbose:
+                    print(f"  [Touchpoint 2] 尝试 {attempt+1}/{max_retries} 失败: {e}")
+        return self._fallback_random(n_candidates)
+
+    def _build_candidates_prompt(
+        self, database, weights, grad_psi, iteration, total_iterations, n_candidates
+    ) -> str:
+        """构建 Touchpoint 2 的 Prompt（包含完整上下文）。"""
+        from config import PARAM_BOUNDS
+        I1_lo, I1_hi = PARAM_BOUNDS['I1']
+        S1_lo, S1_hi = PARAM_BOUNDS['SOC1']
+        I2_lo, I2_hi = PARAM_BOUNDS['I2']
+
+        # 有效样本摘要（最多 8 个最优）
+        valid = [r for r in database if r.get('valid', False)]
+        obs_str = "No valid data yet.\n"
+        if valid:
+            top = sorted(valid, key=lambda r: r.get('time', 1e9))[:8]
+            lines = []
+            for r in top:
+                p = r.get('params', r)
+                i1 = p.get('I1', p.get('current1', '?'))
+                s1 = p.get('SOC1', p.get('time1', '?'))
+                i2 = p.get('I2', p.get('current2', '?'))
+                lines.append(
+                    f"  I1={i1:.2f}A SOC1={s1:.3f} I2={i2:.2f}A"
+                    f" → time={r.get('time',0):.0f}s"
+                    f" temp={r.get('temp',0):.1f}K"
+                    f" aging={r.get('aging',0):.2e}"
+                )
+            obs_str = "\n".join(lines) + "\n"
+
+        w_str = f"time={weights[0]:.3f}, temp={weights[1]:.3f}, aging={weights[2]:.3f}"
+        g_str = f"[{grad_psi[0]:.3f}, {grad_psi[1]:.3f}, {grad_psi[2]:.3f}]" if grad_psi is not None else "N/A"
+
+        prompt = f"""
+Battery fast-charging optimization — Iteration {iteration}/{total_iterations}
+
+**Parameter space (3D, 2-stage CC protocol):**
+- I1  (Phase-1 current): [{I1_lo:.2f}, {I1_hi:.2f}] A
+- SOC1 (switch SOC):     [{S1_lo:.2f}, {S1_hi:.2f}]
+- I2  (Phase-2 current): [{I2_lo:.2f}, {I2_hi:.2f}] A
+
+**Objectives to minimise:** charging time (s), peak temperature (K), capacity fade (aging).
+
+**Current scalarisation weights:** {w_str}
+
+**Physics proxy gradient ∇Ψ at best point:** {g_str}
+
+**Best observed protocols (sorted by time):**
+{obs_str}
+**Physics hints:**
+- Ψ(θ) = R̄₁·I₁²·t₁ + R̄₂·I₂²·t₂  (R̄ ≈ 0.01 Ω)
+- High I1 → faster but hotter; high SOC1 → longer Phase-1
+- I2 ≪ I1 reduces thermal stress near full charge
+
+**Task:** Suggest {n_candidates} diverse charging protocols that are likely to improve on the current best, considering the given weights.
+
+Output a JSON object with a single key "candidates" containing an array of {n_candidates} objects:
+{{
+  "candidates": [
+    {{"I1": <float>, "SOC1": <float>, "I2": <float>}},
+    ...
+  ]
+}}
+All values must be within the stated bounds.
+"""
+        return prompt
+
+    def _parse_candidates_response(self, raw: str, n_candidates: int) -> list:
+        """解析 LLM JSON 响应，提取候选点列表。"""
+        from config import PARAM_BOUNDS
+        try:
+            data = json.loads(raw)
+            cands_raw = data.get("candidates", data) if isinstance(data, dict) else data
+            if not isinstance(cands_raw, list):
+                return []
+            result = []
+            for c in cands_raw:
+                if not isinstance(c, dict):
+                    continue
+                try:
+                    I1 = float(c.get("I1", c.get("i1", 3.0)))
+                    S1 = float(c.get("SOC1", c.get("soc1", 0.4)))
+                    I2 = float(c.get("I2", c.get("i2", 2.0)))
+                    I1 = float(np.clip(I1, *PARAM_BOUNDS['I1']))
+                    S1 = float(np.clip(S1, *PARAM_BOUNDS['SOC1']))
+                    I2 = float(np.clip(I2, *PARAM_BOUNDS['I2']))
+                    result.append({"I1": I1, "SOC1": S1, "I2": I2, "source": "llm_sample"})
+                except (ValueError, TypeError):
+                    continue
+            return result[:n_candidates]
+        except json.JSONDecodeError:
+            return []
+
+    def _fallback_random(self, n: int) -> list:
+        """LLM 失败时的随机回退。"""
+        from config import PARAM_BOUNDS
+        return [
+            {
+                "I1": float(np.random.uniform(*PARAM_BOUNDS['I1'])),
+                "SOC1": float(np.random.uniform(*PARAM_BOUNDS['SOC1'])),
+                "I2": float(np.random.uniform(*PARAM_BOUNDS['I2'])),
+                "source": "random_fallback",
+            }
+            for _ in range(n)
+        ]
+
     def compute_weight(self, x: np.ndarray) -> float:
         """
         计算LLAMBO公式(9)的权重（4D版本）

@@ -23,8 +23,11 @@ from exp.configs import (
     ABLATION_CONFIGS, BASELINE_CONFIGS
 )
 from exp.baselines import run_baseline
-from pymoo.config import Config
-Config.warnings['not_compiled'] = False
+try:
+    from pymoo.config import Config
+    Config.warnings['not_compiled'] = False
+except Exception:
+    pass
 
 def _get_result_dir(base_dir: str = "./results") -> str:
     os.makedirs(base_dir, exist_ok=True)
@@ -76,7 +79,7 @@ async def run_ablation_variant(
     base_dir: str = "./results"
 ) -> Dict:
     """运行单个消融变体"""
-    from main_r3 import LLMMOBO
+    from main import LLMMOBO
     
     config = ABLATION_CONFIGS[method_name]
     budget = DEFAULT_BUDGET
@@ -110,8 +113,8 @@ async def run_ablation_variant(
         verbose=True,
         use_coupling=config["use_coupling"],
         use_warmstart=config["use_warmstart"],
-        use_llm_acq=config["use_llm_acq"],
-        use_llm_weighting=config.get("use_llm_weighting", True),
+        use_llm_sampling=config["use_llm_sampling"],   # 与 LLMMOBO 一致
+        use_adaptive_W=config["use_adaptive_W"],        # 与 LLMMOBO 一致
         gamma_adaptive=config.get("gamma_adaptive", True),
         db_path=":memory:"
     )

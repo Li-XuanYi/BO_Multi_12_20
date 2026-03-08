@@ -324,6 +324,47 @@ class BatterySimulator:
         soc = (c_neg - c_min) / (c_max - c_min)
         return float(np.clip(soc, 0.0, 1.0))
     
+    def simulate_3d(
+        self,
+        I1: float,
+        SOC1: float,
+        I2: float
+    ) -> Dict:
+        """
+        执行两阶段 CC 充电协议（3D 决策空间 - FrameWork.md §0）
+        
+        输入：theta = (I1, SOC1, I2)
+        - I1: 第一阶段电流 [A]
+        - SOC1: 第一阶段结束时的 SOC（切换点）
+        - I2: 第二阶段电流 [A]
+        
+        输出：三目标 (time, temp, aging)
+        
+        充电协议：CC1 → CC2 → CV
+        - 阶段 1 (CC1): 以 I1 恒流充电，直到 SOC 达到 SOC1
+        - 阶段 2 (CC2): 以 I2 恒流充电，直到 SOC 达到 0.8
+        - 阶段 3 (CV): 恒压充电直到电流 < C/20
+        
+        持续时间计算：
+        t1 = (SOC1 - SOC0) * Q_NOM / I1
+        t2 = (SOC_END - SOC1) * Q_NOM / I2
+        """
+        from config import SOC0, SOC_END, Q_NOM
+        
+        # 计算持续时间（秒）
+        t1 = (SOC1 - SOC0) * Q_NOM / I1
+        t2 = (SOC_END - SOC1) * Q_NOM / I2
+        
+        # 调用原有的 4D simulate 方法
+        # 注意：这里将 3D 参数转换为 4D 接口
+        # time1 = t1, v_switch = 4.2（上限）
+        return self.simulate(
+            current1=I1,
+            time1=t1,
+            current2=I2,
+            v_switch=4.2
+        )
+
     def _calculate_aging_from_sei(self, cumulative_sei_loss_mol: float) -> float:
         """
         从 PyBaMM SEI 模型输出计算容量衰减百分比
