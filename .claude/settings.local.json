@@ -1,9 +1,18 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python main.py)",
-      "Bash(conda activate llambo)",
-      "Bash(/c/Users/aa133/miniconda3/envs/llambo/python.exe main.py)"
+      "Read(//d/Users/aa133/Desktop/**)",
+      "Bash(powershell -Command \"Get-Content LLM-MOBO.txt -Encoding UTF8 | Select-Object -First 127 | Out-File -Encoding UTF8 temp_intro.txt\")",
+      "Bash(dir /b /s d:Usersaa133DesktopBO_Multi_12_20llmbocomponentsprompts)",
+      "Bash(Get-Content \"d:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\llmbo\\components\\warmstart.py\" -Encoding UTF8)",
+      "Bash(Select-Object -Last 80)",
+      "Bash(python pybamm_simulator.py)",
+      "Bash(pip show pybamm)",
+      "Bash(powershell -Command \"cd ''D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO''; python pybamm_simulator.py\")",
+      "Bash(powershell -Command \"cd ''''D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO''''; python pybamm_simulator.py\")",
+      "Bash(Select-Object -First 100)",
+      "Bash(timeout 120 python pybamm_simulator.py)",
+      "Bash(python -c \"import pybamm; print(pybamm.__version__)\")"
     ],
     "deny": [],
     "ask": []

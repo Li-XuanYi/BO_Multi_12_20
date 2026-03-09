@@ -66,29 +66,38 @@ class LLMWarmStart:
     
     @staticmethod
     def _default_template() -> str:
-        """内联默认模板（当模板文件缺失时使用）"""
-        return """You are optimizing a lithium-ion battery CC-CC-CV fast-charging protocol.
+        """内联默认模板（当模板文件缺失时使用）- 3D 参数空间"""
+        return """You are optimizing a lithium-ion battery two-stage CC fast-charging protocol.
 
-Decision variables:
-- current1 (I1): Phase 1 current [3.0-6.0] A
-- time1 (T1): Phase 1 duration [120-3600] s
-- current2 (I2): Phase 2 current [1.0-4.5] A
-- v_switch (V_sw): CC-to-CV voltage [3.8-4.2] V
+**Decision Variables (3D):**
+- I1 (Phase 1 current): [3.0, 7.0] A
+- SOC1 (Switch SOC point): [0.1, 0.7]
+- I2 (Phase 2 current): [1.0, 5.0] A
 
-Objectives to MINIMIZE: charging time (s), peak temperature (K), capacity fade (aging %).
+**Constraint:** I2 <= I1
 
-Physical constraints:
+**Objectives to MINIMIZE:**
+1. Charging time (s)
+2. Peak temperature (K)
+3. Capacity fade (aging %)
+
+**Physical Constraints:**
 - High current → fast charging but more heat (Joule heating ∝ I²R)
 - High temperature → accelerated SEI growth → more aging
 - Temperature must stay below 318.15K (45°C)
+- Higher SOC1 extends Phase 1 duration, increasing thermal accumulation
 
 Generate [N_STRATEGIES] diverse charging strategies as JSON.
-IMPORTANT: Each strategy must explore a DIFFERENT region of the parameter space. 
-Include a mix of: conservative (low I1 ~3-4A), moderate (I1 ~4-5A), and aggressive (I1 ~5-6A) approaches.
-Avoid generating strategies with I1 > 6A as they risk thermal violation (>318K).
+
+**Diversity Requirements:**
+- Include conservative (low I1 ~3-4A), moderate (I1 ~4-5A), and aggressive (I1 ~5-6A) approaches
+- Each strategy must explore a DIFFERENT region of the parameter space
+- Avoid I1 > 6.0A as it risks thermal violation
+
+**Output format (strict JSON):**
 {
   "strategies": [
-    {"current1": <value>, "time1": <value>, "current2": <value>, "v_switch": <value>, "rationale": "<brief>"},
+    {"I1": <value>, "SOC1": <value>, "I2": <value>, "rationale": "<brief physics explanation>"},
     ...
   ]
 }
@@ -102,22 +111,21 @@ Avoid generating strategies with I1 > 6A as they risk thermal violation (>318K).
     ) -> List[Dict]:
         """
         生成初始充电策略（真正的并行多次生成版本）
-        
+
         参数：
             n_strategies: 需要生成的策略数量
             param_bounds: 参数边界
             save_path: 保存路径（可选）
-        
+
         返回：
-            strategies: [{'current1': ..., 'switch_soc': ..., 'current2': ...}, ...]
+            strategies: [{'I1': ..., 'SOC1': ..., 'I2': ...}, ...]
         """
-        # 默认参数边界（4D，time1 单位为秒）
+        # 默认参数边界（3D 参数空间：I1, SOC1, I2）
         if param_bounds is None:
             param_bounds = {
-                'current1': (3.0, 6.0),
-                'time1': (120.0, 3600.0),
-                'current2': (1.0, 4.5),
-                'v_switch': (3.8, 4.2)
+                'I1': (3.0, 7.0),
+                'SOC1': (0.1, 0.7),
+                'I2': (1.0, 5.0)
             }
         
         # 构建prompt

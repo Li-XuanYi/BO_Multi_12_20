@@ -1,0 +1,72 @@
+# ============================================================================
+# LLM WarmStart Prompt - Full Context (LLAMBO Four-Layer Structure)
+# Role & Meta-data + In-Context History + Algorithmic Directives + Format Constraints
+# ============================================================================
+
+## 1. Role & Meta-data (Domain Role & Metadata Injection)
+
+As an expert in electrochemical modeling and Bayesian optimization, your task is to generate diverse and physically plausible initial candidate strategies for a 2-stage CC charging protocol optimization on a 5 Ah NMC (NMC811/Graphite) lithium-ion battery.
+
+**Battery Specifications & Physical Constraints:**
+- Nominal capacity: 5.0 Ah (1C = 5A), Operating ambient: 25°C (298.15K)
+- Decision Variables: I1 ∈ [3.0, 7.0] A; SOC1 ∈ [0.1, 0.7]; I2 ∈ [1.0, 5.0] A.
+- Constraint: I2 ≤ I1 to mitigate electrochemical stress near the upper cutoff voltage.
+
+**Electrochemical-Thermal-Aging Coupling Mechanisms (SPMe):**
+1. Nonlinear Spatiotemporal Thermal Accumulation: Heat generation is governed by Joule heating (quadratic to current). The cumulative thermal load is highly sensitive to SOC1 which determines Phase 1 duration.
+2. Degradation Kinetics: SEI layer growth is diffusion-limited and heavily dependent on the Arrhenius temperature relationship. High residual heat from aggressive I1 translates into elevated starting temperatures, accelerating capacity fade.
+3. Lithium Plating Threshold: At high C-rates (>1.2C), solid-phase diffusion limitations cause severe anode potential polarization. Delaying the transition (i.e., higher SOC1) significantly elevates the risk of lithium plating.
+
+**Optimization Objectives (Multi-Objective, Minimized):**
+1. Charging Time (s)
+2. Peak Temperature (K)
+3. Capacity Degradation (SEI-loss fraction)
+
+## 2. In-Context History (Dynamic Context & Historical Observations)
+
+{HISTORY_SECTION}
+
+## 3. Algorithmic Directives (Algorithm Mechanism & Task Instructions)
+
+**Task Instructions:**
+Generate {N_STRATEGIES} diverse charging strategies to initialize the Bayesian Optimization search space.
+
+**Diversity Strategy (Space-Filling Design):**
+1. Conservative Region (20%): Low I1 (~3.0-4.0A), moderate SOC1 (~0.3-0.4) - prioritizes thermal safety
+2. Moderate Region (50%): Medium I1 (~4.0-5.0A), balanced SOC1 (~0.4-0.5) - explores trade-offs
+3. Aggressive Region (30%): High I1 (~5.0-6.0A), varied SOC1 - pushes performance boundaries
+
+**Physics-Guided Exploration:**
+- Avoid I1 > 6.0A as it risks thermal violation (>318K) due to I²R Joule heating
+- Higher SOC1 extends Phase 1 duration, increasing cumulative thermal load: Q_total = ∫ I1²·R(SOC)·dt
+- Lower I2 reduces electrochemical stress in final stage but increases total charging time
+- Key coupling insight: High I1 combined with High SOC1 creates potential thermal runaway condition
+
+**BO Initialization Requirements:**
+- Maximize generalized variance of the initial design
+- Cover boundaries without clustering (Latin Hypercube-like spread)
+- Include strategies that individually optimize each objective (time, temp, aging)
+
+## 4. Format Constraints (Strict Output Format)
+
+**Output format (strict JSON):**
+{
+    "strategies": [
+        {
+            "I1": <float, 1 decimal>,
+            "SOC1": <float, 2 decimals>,
+            "I2": <float, 1 decimal>,
+            "rationale": "<brief physics-based explanation>"
+        }
+    ],
+    "metadata": {
+        "context_level": "full",
+        "n_strategies": {N_STRATEGIES}
+    }
+}
+
+**Critical Constraints:**
+- All values MUST be within specified bounds
+- I2 <= I1 constraint must be satisfied
+- No duplicate strategies
+- Avoid exact boundary values unless physically justified

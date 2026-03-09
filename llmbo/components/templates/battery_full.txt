@@ -1,128 +1,28 @@
-As a battery fast-charging optimization expert, generate diverse initial candidate 
-strategies for a CC-CC-CV charging protocol on a 5 Ah NMC lithium-ion battery.
+As an expert in electrochemical modeling and Bayesian optimization, your task is to generate diverse and physically plausible initial candidate strategies for a 2-stage CC-CC charging protocol optimization on a 5 Ah NMC (NMC811/Graphite) lithium-ion battery.
 
-**Battery Specifications (Chen2020 parameter set, LG M50):**
-- Chemistry: NMC cathode + Graphite anode
-- Nominal capacity: 5.0 Ah (1C = 5A)
-- Voltage range: 2.5V - 4.2V (upper safety cutoff: 4.4V)
-- Operating temperature: Ambient 25°C (298.15K)
-- Cooling: Total heat transfer coefficient h = 10 W/(m²·K)
-- Cell volume: 2.42e-05 m³, cooling surface area: 0.00531 m²
-- Electrode thicknesses: negative 85.2 μm, positive 75.6 μm, separator 12 μm
-- Particle radii: negative 5.86 μm, positive 5.22 μm
+**Battery Specifications & Physical Constraints:**
+- Nominal capacity: 5.0 Ah (1C = 5A), Operating ambient: 25°C (298.15K)
+- Decision Variables: Stage 1 current I1 ∈ [3.0, 7.0] A; Switch point SOC1 ∈ [0.1, 0.7]; Stage 2 current I2 ∈ [1.0, 5.0] A.
+- Constraint: I2 ≤ I1 to mitigate electrochemical stress near the upper cutoff voltage.
 
-**Electrochemical-Thermal-Aging Coupling Model (SPMe):**
-1. Electrochemical: Single Particle Model with electrolyte (SPMe).
-   Terminal voltage: U = U_eq + η_reaction + η_diffusion + ΔΦ_electrolyte.
-   Butler-Volmer kinetics govern charge transfer at electrode interfaces.
+**Electrochemical-Thermal-Aging Coupling Mechanisms (SPMe):**
+1. Nonlinear Spatiotemporal Thermal Accumulation: Heat generation is governed by Joule heating (quadratic to current) and reaction kinetics (Butler-Volmer overpotential). The cumulative thermal load in Stage 1 is highly sensitive to the temporal duration defined by SOC1.
+2. Degradation Kinetics: SEI layer growth is diffusion-limited and heavily dependent on the Arrhenius temperature relationship. High residual heat from an aggressive I1 translates into elevated starting temperatures for Stage 2, accelerating capacity fade.
+3. Lithium Plating Threshold: At high C-rates (>1.2C), solid-phase diffusion limitations cause severe anode potential polarization. Delaying the transition (i.e., higher SOC1) significantly elevates the risk of lithium plating.
 
-2. Thermal: Lumped parameter model.
-   ρ_eff · Cp · dT/dt = Q_gen - h·A/V · (T - T_amb)
-   Heat sources: Ohmic heating Q_ohm = I²·R_int (QUADRATIC in current!),
-   reaction heat Q_rxn = I·η_act, and entropic heat.
-   Key insight: Doubling current QUADRUPLES ohmic heating.
+**Optimization Objectives (Multi-Objective, Minimized):**
+1. Charging Time (s)
+2. Peak Temperature (K)
+3. Capacity Degradation (SEI-loss fraction)
 
-3. Aging: SEI (Solid Electrolyte Interface) solvent-diffusion limited growth.
-   SEI side reaction rate follows Arrhenius kinetics:
-     k_SEI ∝ exp(-E_a / (R·T)), where E_a ≈ 37.5 kJ/mol.
-   This means: +10K temperature rise roughly DOUBLES the aging rate.
-   SEI film growth increases internal resistance → positive feedback loop
-   (more heat → more SEI → more resistance → even more heat).
-
-**Critical Physics Coupling Relationships:**
-- I1 × T1 coupling (STRONGEST): Cumulative heat = I1² × R × T1.
-  High current for long duration causes superlinear temperature rise.
-  Example: I1=5A for 20min generates ~4× more heat than I1=5A for 10min
-  (thermal accumulation exceeds cooling capacity).
-
-- I1 → I2 thermal cascade: Phase 1 residual heat raises Phase 2 baseline 
-  temperature. Thermal time constant ~30s means Phase 2 starts "hot" if 
-  Phase 1 was aggressive. I2's heating adds ON TOP of residual temperature.
-
-- V_switch ↔ lithium plating risk: Higher V_sw means the anode potential 
-  drops closer to 0V vs Li/Li+. Beyond ~4.15V at high current, lithium 
-  plating risk increases sharply. V_sw also controls CV phase duration:
-  lower V_sw → longer CV tail → longer total charging time.
-
-**Multi-Objective Optimization (3 conflicting objectives):**
-1. MINIMIZE charging time [seconds] — Target SOC: 80%
-2. MINIMIZE peak temperature [K] — Hard constraint: < 316K (43°C)
-3. MINIMIZE capacity degradation [%] — SEI-driven lithium inventory loss
-
-These objectives fundamentally conflict: reducing time requires higher currents,
-which increases temperature and accelerates aging.
-
-**Charging Protocol (CC-CC-CV):**
-- Stage 1 (CC1): Charge at current1 [A] for up to time1 [seconds].
-  If voltage reaches v_switch before time1 expires → skip to CV stage.
-- Stage 2 (CC2): Charge at current2 [A].
-  If voltage reaches v_switch → enter CV stage. If SOC ≥ 80% → terminate.
-- Stage 3 (CV): Hold voltage at v_switch until current < C/20 (0.25A) 
-  or SOC ≥ 80%.
-
-**Decision Variables:**
-- current1: Phase 1 charging current [A], range [3.0, 8.0] (0.6C to 1.6C)
-- time1: Phase 1 maximum duration [seconds], range [120.0, 3600.0] (2min to 60min)
-- current2: Phase 2 charging current [A], range [1.0, 4.5] (0.2C to 0.9C)
-- v_switch: CC-to-CV transition voltage [V], range [3.8, 4.2]
-
-**=== SCENARIO-BASED GENERATION ===**
-
-Generate [N_STRATEGIES] strategies distributed across these 4 scenarios:
-
-**Scenario 1 — Ultra-Fast Charging (prioritize speed):**
-  - Use high current1 (5.0-8.0A)
-  - Keep time1 SHORT (300-720 seconds) to limit heat accumulation despite high current
-  - Use moderate current2 (2.5-4.5A) for rapid SOC completion
-  - Use moderate-high v_switch (4.05-4.15V) to minimize CV tail
-  - Accept: higher temperature and aging as trade-off for speed
-
-**Scenario 2 — Low Temperature Rise (prioritize thermal safety):**
-  - Use moderate current1 (3.5-4.5A)
-  - Allow longer time1 (900-1800 seconds) since moderate current generates less heat per second
-  - Use low current2 (1.0-2.0A) to keep Phase 2 cool
-  - Use moderate v_switch (3.95-4.10V)
-  - Accept: longer charging time as trade-off for thermal safety
-
-**Scenario 3 — Long Lifespan (prioritize minimal degradation):**
-  - Use conservative current1 (3.0-4.0A) to minimize peak temperature
-  - Use moderate time1 (600-1200 seconds)
-  - Use low current2 (1.0-2.0A) to reduce thermal stress
-  - Use lower v_switch (3.85-4.00V) to extend CV phase (gentler on electrodes)
-  - Accept: much longer charging time for minimal aging
-
-**Scenario 4 — Balanced Trade-off (compromise between all three):**
-  - Use moderate current1 (4.0-5.0A)
-  - Use moderate time1 (600-1200 seconds)
-  - Use moderate current2 (1.5-2.5A)
-  - Use moderate v_switch (3.95-4.10V)
-  - Goal: no single objective is extreme
-
-**Important: Each strategy must include physical reasoning explaining 
-WHY the chosen parameters achieve the intended trade-off.**
 
 **Output format (strict JSON):**
 {
     "strategies": [
         {
-            "current1": <float, 1 decimal>,
-            "time1": <float, no decimals needed, value in seconds e.g. 300.0 to 3600.0>,
-            "current2": <float, 1 decimal>,
-            "v_switch": <float, 2 decimals>,
-            "scenario": <"ultra_fast" | "low_temp" | "long_life" | "balanced">,
-            "rationale": "<physical reasoning for this parameter combination>"
+            "I1": <float, 1 decimal>,
+            "SOC1": <float, 2 decimals>,
+            "I2": <float, 1 decimal>
         }
     ]
 }
-
-Now please generate [N_STRATEGIES] strategies, distributing them roughly equally 
-across the 4 scenarios. Ensure diversity within each scenario as well.
-            "current2": <float, 1 decimal>,
-            "v_switch": <float, 2 decimals>,
-            "rationale": "<brief physical reasoning>"
-        }
-    ]
-}
-## JSON ##
-
-Now please generate [N_STRATEGIES] strategies.

@@ -1,4 +1,4 @@
-﻿"""
+"""
 LLM-MOBO 主程序（FrameWork.md 实现）
 
 决策空间: 3D (I1, SOC1, I2)
@@ -26,7 +26,7 @@ from typing import Dict, List, Optional
 from config import (
     BATTERY_CONFIG, PARAM_BOUNDS, MOBO_CONFIG, BO_CONFIG,
     LLM_CONFIG, DATA_CONFIG, Q_NOM, SOC0, SOC_END,
-    get_algorithm_param,
+    get_algorithm_param, get_llm_param,
 )
 from battery_env.wrapper import BatterySimulator
 from models.gp_model import MOGPModel
@@ -178,11 +178,16 @@ class LLMMOBO:
             from components.coupling_inference import LLMCouplingInference
             from components.llm_weighting import LLAMBOWeighting
 
+            # 使用新的 prompts 目录结构加载 LLM Prompt 模板
             self._warmstart_client = LLMWarmStart(
-                api_key=self.llm_api_key, verbose=self.verbose
+                api_key=self.llm_api_key, 
+                verbose=self.verbose,
+                context_level=get_llm_param('warmstart', 'context_level', 'full')
             )
             self._coupling_client = LLMCouplingInference(
-                api_key=self.llm_api_key, verbose=self.verbose
+                api_key=self.llm_api_key, 
+                verbose=self.verbose,
+                n_dims=3  # 3D 决策空间 (I1, SOC1, I2)
             )
             if self.use_llm_sampling:
                 self._llm_sampler = LLAMBOWeighting(
@@ -191,6 +196,7 @@ class LLMMOBO:
                     base_url=LLM_CONFIG.get("base_url"),
                     model=LLM_CONFIG.get("model"),
                     verbose=self.verbose,
+                    prompt_dir="prompts"  # 使用新的 prompts 目录
                 )
 
         # C-2: W_time, W_temp, W_aging（Touchpoint 1a 初始化时一次获取）

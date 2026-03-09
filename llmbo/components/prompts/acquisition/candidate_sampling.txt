@@ -1,0 +1,95 @@
+# ============================================================================
+# LLM Candidate Sampling Prompt (LLAMBO Four-Layer Structure)
+# For Touchpoint 2: Generating Candidate Points for Acquisition Function
+# ============================================================================
+
+## 1. Role & Meta-data (Domain Role & Metadata Injection)
+
+**Battery Fast-Charging Optimization Context:**
+
+You are an expert in lithium-ion battery fast-charging optimization, assisting with the candidate sampling phase of a Bayesian Optimization process.
+
+**Decision Variables (3D Parameter Space):**
+| Variable | Symbol | Physical Meaning | Range | Unit |
+|----------|--------|------------------|-------|------|
+| I1 | current1 | Phase 1 constant current | [3.0, 7.0] | A |
+| SOC1 | switch_soc | State-of-charge at transition | [0.1, 0.7] | - |
+| I2 | current2 | Phase 2 constant current | [1.0, 5.0] | A |
+
+**Constraint:** I2 <= I1
+
+**Optimization Objectives (Minimize):**
+1. Charging time (s)
+2. Peak temperature (K)
+3. Capacity fade (aging, %)
+
+**Current Scalarization Weights:**
+- time: {W_TIME}
+- temp: {W_TEMP}
+- aging: {W_AGING}
+
+**Physics Proxy Gradient (Ψ):**
+- ∇Ψ = [{GRAD_PSI_0}, {GRAD_PSI_1}, {GRAD_PSI_2}]
+
+## 2. In-Context History (Dynamic Context & Historical Observations)
+
+**Best Observed Protocols (sorted by scalarized objective):**
+{OBSERVATION_SECTION}
+
+**Failed Experiments (constraint violations):**
+{FAILURE_SECTION}
+
+## 3. Algorithmic Directives (Algorithm Mechanism & Task Instructions)
+
+**Task:**
+Generate {N_CANDIDATES} diverse charging protocol candidates that are likely to improve upon the current best observation.
+
+**Candidate Generation Strategy:**
+
+1. **Exploitation (60% of candidates):**
+   - Focus near the current best-known configuration
+   - Small perturbations around promising regions
+   - Refine understanding of local optimum
+
+2. **Exploration (30% of candidates):**
+   - Explore under-sampled regions of parameter space
+   - Target areas with high GP predictive uncertainty
+   - Discover potentially better optima
+
+3. **Constraint-Aware (10% of candidates):**
+   - Approach constraint boundaries safely
+   - Test limits: I2 ≈ I1, high I1 with moderate SOC1
+   - Map feasible region boundaries
+
+**Physics-Guided Reasoning:**
+- Ψ(θ) = R̄₁·I₁²·t₁ + R̄₂·I₂²·t₂ (Joule heating proxy, R̄ ≈ 0.01 Ω)
+- High I1 → faster charging but hotter (quadratic heating)
+- High SOC1 → longer Phase 1 exposure, more thermal accumulation
+- I2 << I1 reduces thermal stress near full charge
+
+**Diversity Requirements:**
+- Avoid clustering (minimum inter-point distance)
+- Cover different trade-off regions
+- Include variations in all three dimensions
+
+## 4. Format Constraints (Strict Output Format)
+
+**Output Format (STRICT JSON):**
+{
+  "candidates": [
+    {"I1": <float>, "SOC1": <float>, "I2": <float>},
+    {"I1": <float>, "SOC1": <float>, "I2": <float>}
+  ],
+  "metadata": {
+    "n_candidates": {N_CANDIDATES},
+    "iteration": {ITERATION}/{TOTAL_ITERATIONS},
+    "strategy": "exploitation_exploration_mix"
+  }
+}
+
+**Critical Constraints:**
+- All values MUST be within bounds: I1∈[3.0,7.0], SOC1∈[0.1,0.7], I2∈[1.0,5.0]
+- I2 <= I1 for all candidates
+- No duplicate candidates
+- Avoid exact boundary values unless justified
+- Output ONLY the JSON object, no explanations

@@ -384,9 +384,9 @@ if __name__ == "__main__":
     for i in range(20):
         fake_database.append({
             'params': {
-                'I1': np.random.uniform(0.01, 7.99),
+                'I1': np.random.uniform(3.0, 7.99),
                 'SOC1': np.random.uniform(0.1, 0.7),
-                'I2': np.random.uniform(0.01, 7.99)
+                'I2': np.random.uniform(2.0, 7.99)
             },
             'time': np.random.uniform(600, 3600),   # 秒
             'temp': np.random.uniform(300, 315),     # K

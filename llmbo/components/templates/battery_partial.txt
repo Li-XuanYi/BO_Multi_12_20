@@ -1,41 +1,24 @@
-Generate initial candidate strategies for a CC-CC-CV battery charging protocol.
+Generate initial candidate parameter sets for a Bayesian Optimization process aimed at tuning a 2-stage CC-CC battery charging protocol. 
 
-**Battery:** 5 Ah NMC lithium-ion cell (1C = 5A).
+**Task Description:**
+- Battery: 5 Ah NMC lithium-ion cell (1C = 5A). SOC range: 10% → 80%.
+- Variables: I1 ∈ [3.0, 7.0] A; SOC1 ∈ [0.1, 0.7]; I2 ∈ [1.0, 5.0] A. (Constraint: I2 ≤ I1)
+- Objectives (to minimize): Charging Time, Peak Temperature, Capacity Degradation.
 
-**Basic Physics Rules:**
-- Higher charging current → faster charging but MORE heat (heat ∝ I²)
-- Higher temperature → faster aging (Arrhenius relationship)
-- Longer high-current phase → more cumulative heat
-- Higher CV transition voltage → shorter CV phase but more electrode stress
+**Domain Meta-Features:**
+- Thermal Dynamics: Higher currents exponentially increase heat generation. Prolonging Stage 1 (higher SOC1) leads to significant thermal accumulation.
+- Aging Dynamics: Elevated temperatures accelerate degradation exponentially. Early transition to Stage 2 (lower SOC1) mitigates both thermal and electrochemical stress but increases overall charging time.
 
-**Charging Protocol (CC-CC-CV):**
-- Stage 1: Charge at current1 for up to time1 minutes
-- Stage 2: Charge at current2 (typically lower than current1)
-- Stage 3: Hold voltage at v_switch until current drops below 0.25A
-
-**Decision Variables:**
-- current1: Phase 1 current [A], range [3.0, 6.0]
-- time1: Phase 1 max duration [min], range [2.0, 40.0]
-- current2: Phase 2 current [A], range [1.0, 4.0]
-- v_switch: CV transition voltage [V], range [3.8, 4.2]
-
-**Objectives (all minimized):**
-1. Charging time [s]
-2. Peak temperature [K] (must stay below 316K)
-3. Capacity degradation [%]
-
-Generate [N_STRATEGIES] diverse strategies covering conservative to aggressive 
-charging approaches.
+**Task Instructions:**
+Suggest [N_STRATEGIES] diverse yet effective configurations to warm-start the optimization. These configurations should be carefully customized to cover different regions of the feasible parameter space, representing different trade-offs between the three conflicting objectives.
 
 **Output format (strict JSON):**
 {
     "strategies": [
         {
-            "current1": <float>,
-            "time1": <float>,
-            "current2": <float>,
-            "v_switch": <float>,
-            "rationale": "<brief reasoning>"
+            "I1": <float>,
+            "SOC1": <float>,
+            "I2": <float>
         }
     ]
 }

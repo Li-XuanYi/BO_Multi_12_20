@@ -1,0 +1,97 @@
+# ============================================================================
+# LLM Coupling Inference Prompt (LLAMBO Four-Layer Structure)
+# For Touchpoint 1a: Generating Coupling Matrices for GP Surrogate Model
+# ============================================================================
+
+## 1. Role & Meta-data (Domain Role & Metadata Injection)
+
+**Parameter Definitions:**
+1. `current1` (I1): Constant current during Phase 1 [A]. Range [3.0, 6.0].
+   Physical driver: Joule heating power P = I²R(SOC), dominant heat source.
+
+2. `time1` (T1): Maximum duration of Phase 1 [minutes]. Range [2.0, 40.0].
+   Physical driver: Controls the total energy input and cumulative heat
+   during the high-power phase. Accumulated heat Q_total = ∫₀^{T1} I1²R(t)dt.
+
+3. `current2` (I2): Constant current during Phase 2 [A]. Range [1.0, 4.0].
+   Physical driver: Replenishment current after high-power phase.
+   Effectiveness depends on residual temperature from Phase 1.
+
+4. `v_switch` (V_sw): CC-to-CV transition voltage [V]. Range [3.8, 4.2].
+   Physical driver: Higher V_sw extends CC phase but pushes electrode
+   closer to lithium plating threshold. Controls CV phase duration.
+
+**Battery Specifications (Chen2020 LG M50):**
+- Capacity: 5.0 Ah (1C = 5A)
+- Chemistry: NMC cathode + Graphite anode
+- Thermal: Heat transfer coefficient 10 W/(m²·K), thermal mass ~50 J/K
+- Safety: Max temp 316K (43°C), Max voltage 4.2V
+
+**Physics (Detailed):**
+- Heat generation: Q̇ = I²R(SOC) where R increases at high SOC
+- Heat accumulation: ΔT = ∫Q̇ dt / (m·Cp)
+  → High I1 combined with long time1 leads to superlinear heating
+- Thermal cascade: Phase1 heat affects Phase2 starting temperature
+  → I1-I2 interaction through thermal inertia (~30s time constant)
+- CV phase: Higher V_sw extends CC phase, increasing heating before voltage control
+
+## 2. In-Context History (Dynamic Context & Historical Observations)
+
+{DATA_SECTION}
+
+## 3. Algorithmic Directives (Algorithm Mechanism & Task Instructions)
+
+**Task:**
+Construct a 4x4 Interaction Matrix (Coupling Matrix) W where w_{ij} represents the interaction strength between parameter i and j.
+
+**Reasoning Steps (Chain of Thought):**
+
+1. **I1 ↔ T1 (Current × Duration):**
+   Heat accumulation is the integral of power over time: Q = I1² × R × T1.
+   I1 controls Power, T1 controls Duration → their joint effect on temperature
+   is multiplicative (superlinear interaction).
+
+2. **I1 ↔ I2 (Thermal Cascade):**
+   Phase 1 residual heat affects Phase 2 starting temperature.
+   High I1 creates elevated baseline for I2's heating effects.
+   Coupling occurs through thermal inertia (time constant ~30s).
+
+3. **I1 ↔ V_sw (Current vs Voltage Threshold):**
+   I1 determines how fast voltage rises; V_sw determines when to switch.
+   Higher I1 with same V_sw results in shorter CC phase duration.
+
+4. **T1 ↔ I2 (Duration of Phase 1 vs Phase 2 Current):**
+   Longer T1 increases heat accumulated, affecting I2's effectiveness.
+   Temporal separation between phases may weaken this coupling.
+
+5. **T1 ↔ V_sw (Duration vs Voltage Threshold):**
+   T1 limits Phase 1 duration, but V_sw can trigger early CV transition.
+   If voltage hits V_sw before T1 expires, T1 becomes less relevant.
+
+6. **I2 ↔ V_sw (Phase 2 Current vs CV Voltage):**
+   V_sw determines when CV starts; I2 determines approach rate.
+   Lower I2 results in slower voltage rise and delayed V_sw transition.
+
+**Matrix Construction Rules:**
+- Diagonal elements w_ii = 1.0 (self-coupling is maximum)
+- Off-diagonal values in [0, 1] (symmetric)
+- Higher values indicate stronger interaction between parameters
+
+## 4. Format Constraints (Strict Output Format)
+
+**Output Format:**
+You must wrap the final matrix in '##' delimiters. Use this format:
+
+##
+[[1.0, <value>, <value>, <value>],
+ [<value>, 1.0, <value>, <value>],
+ [<value>, <value>, 1.0, <value>],
+ [<value>, <value>, <value>, 1.0]]
+##
+
+where <value> represents the coupling strength you determine from the data and physical reasoning.
+
+**Critical:**
+- Matrix must be symmetric (w_ij = w_ji)
+- All values must be in [0, 1]
+- Diagonal must be exactly 1.0

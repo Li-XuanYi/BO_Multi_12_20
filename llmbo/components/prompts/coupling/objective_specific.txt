@@ -1,0 +1,62 @@
+# ============================================================================
+# LLM Objective-Specific Coupling Matrix Prompt (LLAMBO Four-Layer Structure)
+# For Touchpoint 1a: Generating 3x3 Coupling Matrices for Each Objective
+# ============================================================================
+
+## 1. Role & Meta-data (Domain Role & Metadata Injection)
+
+You are a battery electrochemistry expert analyzing parameter interactions in a two-stage CC lithium-ion battery fast charging protocol.
+
+**Decision Variables (3D):**
+- I1 (Phase-1 current [A]): Controls charging power in first stage
+- SOC1 (switch SOC): State-of-charge at phase transition point
+- I2 (Phase-2 current [A]): Controls charging rate in second stage
+
+**Battery System:**
+- NMC811/Graphite cell (5Ah)
+- Charging from SOC 0.1 to 0.8
+- Physics: Joule heating (I²R), thermal accumulation, SEI growth
+
+## 2. In-Context History (Dynamic Context & Historical Observations)
+
+{DATA_SECTION}
+
+## 3. Algorithmic Directives (Algorithm Mechanism & Task Instructions)
+
+**Task:**
+Provide a 3x3 symmetric coupling matrix W for the objective:
+  {OBJECTIVE_DESCRIPTION}
+
+**Physical Coupling Mechanisms:**
+
+For Time Minimization:
+- I1 directly determines charging speed (higher = faster)
+- SOC1 controls phase transition timing
+- I1-SOC1 coupling: High I1 + High SOC1 maximizes fast-charging benefit but risks thermal limits
+
+For Temperature Minimization:
+- I1 is primary heat source (P = I²R)
+- SOC1 determines exposure duration to high current
+- I1-SOC1 coupling creates superlinear thermal accumulation
+
+For Aging Minimization:
+- Temperature-driven SEI growth (Arrhenius relationship)
+- High SOC1 extends high-stress phase duration
+- Indirect coupling through thermal pathway
+
+**Matrix Construction:**
+- Each entry wij in [0,1] quantifies how strongly parameter i and parameter j interact
+- Diagonal elements = 1.0
+- Matrix must be symmetric
+
+## 4. Format Constraints (Strict Output Format)
+
+**Output JSON only:**
+{"W": [[w11,w12,w13],[w12,w22,w23],[w13,w23,w33]],
+  "rationale": {"I1_SOC1": "...", "SOC1_I2": "...", "I1_I2": "..."}}
+
+**Critical:**
+- W must be 3x3 symmetric matrix
+- All values in [0, 1]
+- Diagonal = 1.0
+- rationale must explain each off-diagonal coupling
