@@ -85,10 +85,10 @@ class LLMConfig:
 
     def __init__(
         self,
-        backend:     str   = "ollama",
-        model:       str   = "qwen2.5:7b",
-        api_base:    str   = "http://localhost:11434/v1",
-        api_key:     str   = "ollama",
+        backend:     str   = "openai",
+        model:       str   = "gpt-4o",
+        api_base:    str   = "https://api.nuwaapi.com/v1/chat",
+        api_key:     str   = "sk-Sq1zyC8PLM8gafI2fpAccWpzBAzZvuNOPU6ZC9aWA6C883IK",
         temperature: float = 0.7,
         n_samples:   int   = 5,
         timeout:     int   = 120,
@@ -948,10 +948,10 @@ class LLMInterface:
 
 def build_llm_interface(
     param_bounds:  Dict[str, Tuple[float, float]],
-    backend:       str   = "ollama",
-    model:         str   = "qwen2.5:7b",
-    api_base:      str   = "http://localhost:11434/v1",
-    api_key:       str   = "ollama",
+    backend:       str   = "openai",
+    model:         str   = "gpt-4o",
+    api_base:      str   = "https://api.nuwaapi.com/v1",
+    api_key:       str   = "sk-Sq1zyC8PLM8gafI2fpAccWpzBAzZvuNOPU6ZC9aWA6C883IK",
     n_samples:     int   = 5,
     temperature:   float = 0.7,
     battery_model: str   = "LG M50 (Chen2020)",

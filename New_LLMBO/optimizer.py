@@ -46,7 +46,7 @@ DEFAULT_CONFIG = {
     # ── LLM 配置 ──────────────────────────────────────────────────────────
     "llm_backend":      "openai", # "ollama" / "openai" / "anthropic" / "mock"
     "llm_model":        "gpt-4o",
-    "llm_api_base":     "https://api.nuwaapi.com/v1",
+    "llm_api_base":     "https://api.nuwaapi.com/v1/chat",
     "llm_api_key":      "sk-Sq1zyC8PLM8gafI2fpAccWpzBAzZvuNOPU6ZC9aWA6C883IK",
     "llm_n_samples":    5,
     "llm_temperature":  0.7,
