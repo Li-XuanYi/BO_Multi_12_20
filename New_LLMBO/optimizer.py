@@ -48,15 +48,15 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_CONFIG = {
     # ── 实验规模 ──────────────────────────────────────────────────────────
-    "max_iterations":   50,
+    "max_iterations":   20,
     "n_warmstart":      10,
     "n_candidates":     15,
-    "n_select":         3,
+    "n_select":         1,
 
     # ── LLM 配置 ──────────────────────────────────────────────────────────
     # FIX: api_base 不含 /chat 后缀；OpenAI SDK 会自动拼接 /chat/completions
     "llm_backend":      "openai",
-    "llm_model":        "gpt-4o",
+    "llm_model":        "gpt-3.5turbo",
     "llm_api_base":     "https://api.nuwaapi.com/v1",   # ← 修正（去掉 /chat）
     "llm_api_key":      "sk-Sq1zyC8PLM8gafI2fpAccWpzBAzZvuNOPU6ZC9aWA6C883IK",
     "llm_n_samples":    5,
@@ -767,7 +767,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="LLAMBO-MO 锂电池快充优化")
     parser.add_argument("--backend",    default="openai",    help="LLM 后端")
-    parser.add_argument("--model",      default="gpt-4o",    help="LLM 模型")
+    parser.add_argument("--model",      default="gpt-3.5-turbo",    help="LLM 模型")
     parser.add_argument("--api-base",   default="https://api.nuwaapi.com/v1", help="API 地址")
     parser.add_argument("--api-key",    default="sk-Sq1zyC8PLM8gafI2fpAccWpzBAzZvuNOPU6ZC9aWA6C883IK", help="API Key")
     parser.add_argument("--iters",      type=int, default=50, help="优化迭代次数")
