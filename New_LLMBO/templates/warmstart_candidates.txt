@@ -12,14 +12,6 @@ Three objectives to minimize simultaneously:
   2. Peak temperature — maximum cell surface temperature during charging
   3. Aging degree — lithium-ion inventory loss (SEI growth + lithium plating)
 
-Physical considerations:
-- Higher I₁ reduces Phase-1 time but increases temperature and aging risk at low SOC.
-- Higher I₂ at high SOC dramatically increases lithium plating and aging.
-- SOC₁ controls when to switch: early switch (low SOC₁) → longer fast phase but riskier; late switch → shorter fast phase, safer aging.
-- Typical safe protocols use moderate I₁ (4-6A), switch around SOC₁=0.3-0.5, then reduce to I₂=1.5-3A.
-- Aggressive fast charging: high I₁ near 7A with early SOC₁ switch (~0.2) and low I₂.
-- Conservative protocols: I₁≈3-4A, late switch SOC₁≈0.5-0.6, I₂≈1-2A.
-
 Suggest [NUM_CANDIDATES] diverse charging protocols to initialize a Bayesian Optimization procedure. The suggestions should:
   - Cover different trade-off regions (fast-but-hot, slow-but-safe, balanced)
   - Respect the parameter bounds strictly

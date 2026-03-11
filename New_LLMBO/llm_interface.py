@@ -86,7 +86,7 @@ class LLMConfig:
     def __init__(
         self,
         backend:     str   = "openai",
-        model:       str   = "gpt-3.5-turbo",
+        model:       str   = "gpt-4o",
         api_base:    str   = "https://api.nuwaapi.com/v1",
         api_key:     str   = "sk-Sq1zyC8PLM8gafI2fpAccWpzBAzZvuNOPU6ZC9aWA6C883IK",
         temperature: float = 0.7,

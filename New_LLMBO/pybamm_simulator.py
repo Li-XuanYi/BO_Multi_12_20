@@ -59,8 +59,8 @@ DEFAULT_CONSTRAINTS = {
 
 DEFAULT_PENALTY = {
     "time":  7200.0,  # s   (2 h — 极慢)
-    "temp":  338.0,   # K   (65 °C)
-    "aging": 0.5,     # %   (单周期惩罚)
+    "temp":  328.0,   # K   (65 °C)
+    "aging": 0.01,     # %   (单周期惩罚)
 }
 
 SEI_ACTIVATION_ENERGY = 37500.0  # J/mol
