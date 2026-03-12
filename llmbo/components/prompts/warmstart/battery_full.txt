@@ -5,12 +5,13 @@
 
 ## 1. Role & Meta-data (Domain Role & Metadata Injection)
 
-As an expert in electrochemical modeling and Bayesian optimization, your task is to generate diverse and physically plausible initial candidate strategies for a 2-stage CC charging protocol optimization on a 5 Ah NMC (NMC811/Graphite) lithium-ion battery.
+As an expert in electrochemical modeling and Bayesian optimization, your task is to generate diverse and physically plausible initial candidate strategies for a 2-stage CC charging protocol optimization on a {BATTERY_MODEL} lithium-ion battery.
 
 **Battery Specifications & Physical Constraints:**
-- Nominal capacity: 5.0 Ah (1C = 5A), Operating ambient: 25°C (298.15K)
-- Decision Variables: I1 ∈ [3.0, 7.0] A; SOC1 ∈ [0.1, 0.7]; I2 ∈ [1.0, 5.0] A.
+- Nominal capacity: {Q_NOM} Ah, Operating ambient: {INIT_TEMP}°C ({INIT_TEMP_K}K)
+- Decision Variables: I1 ∈ [{I1_MIN}, {I1_MAX}] A; SOC1 ∈ [{SOC1_MIN}, {SOC1_MAX}]; I2 ∈ [{I2_MIN}, {I2_MAX}] A.
 - Constraint: I2 ≤ I1 to mitigate electrochemical stress near the upper cutoff voltage.
+- Charging range: SOC from {SOC0} to {SOC_END}
 
 **Electrochemical-Thermal-Aging Coupling Mechanisms (SPMe):**
 1. Nonlinear Spatiotemporal Thermal Accumulation: Heat generation is governed by Joule heating (quadratic to current). The cumulative thermal load is highly sensitive to SOC1 which determines Phase 1 duration.
@@ -29,15 +30,15 @@ As an expert in electrochemical modeling and Bayesian optimization, your task is
 ## 3. Algorithmic Directives (Algorithm Mechanism & Task Instructions)
 
 **Task Instructions:**
-Generate {N_STRATEGIES} diverse charging strategies to initialize the Bayesian Optimization search space.
+Generate {N_WARMSTART} diverse charging strategies to initialize the Bayesian Optimization search space.
 
 **Diversity Strategy (Space-Filling Design):**
-1. Conservative Region (20%): Low I1 (~3.0-4.0A), moderate SOC1 (~0.3-0.4) - prioritizes thermal safety
-2. Moderate Region (50%): Medium I1 (~4.0-5.0A), balanced SOC1 (~0.4-0.5) - explores trade-offs
-3. Aggressive Region (30%): High I1 (~5.0-6.0A), varied SOC1 - pushes performance boundaries
+1. Conservative Region (20%): Low I1 (~{I1_CONSERVATIVE_MIN}-{I1_CONSERVATIVE_MAX}A), moderate SOC1 (~0.3-0.4) - prioritizes thermal safety
+2. Moderate Region (50%): Medium I1 (~{I1_MODERATE_MIN}-{I1_MODERATE_MAX}A), balanced SOC1 (~0.4-0.5) - explores trade-offs
+3. Aggressive Region (30%): High I1 (~{I1_AGGRESSIVE_MIN}-{I1_AGGRESSIVE_MAX}A), varied SOC1 - pushes performance boundaries
 
 **Physics-Guided Exploration:**
-- Avoid I1 > 6.0A as it risks thermal violation (>318K) due to I²R Joule heating
+- Avoid I1 > {I1_AGGRESSIVE_MAX}A as it risks thermal violation (>{TEMP_MAX}K) due to I²R Joule heating
 - Higher SOC1 extends Phase 1 duration, increasing cumulative thermal load: Q_total = ∫ I1²·R(SOC)·dt
 - Lower I2 reduces electrochemical stress in final stage but increases total charging time
 - Key coupling insight: High I1 combined with High SOC1 creates potential thermal runaway condition
@@ -61,7 +62,7 @@ Generate {N_STRATEGIES} diverse charging strategies to initialize the Bayesian O
     ],
     "metadata": {
         "context_level": "full",
-        "n_strategies": {N_STRATEGIES}
+        "n_strategies": {N_WARMSTART}
     }
 }
 

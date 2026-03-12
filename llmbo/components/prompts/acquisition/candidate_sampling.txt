@@ -9,12 +9,12 @@
 
 You are an expert in lithium-ion battery fast-charging optimization, assisting with the candidate sampling phase of a Bayesian Optimization process.
 
-**Decision Variables (3D Parameter Space):**
+**Decision Variables (3D Parameter Space - Canonical Keys):**
 | Variable | Symbol | Physical Meaning | Range | Unit |
 |----------|--------|------------------|-------|------|
-| I1 | current1 | Phase 1 constant current | [3.0, 7.0] | A |
-| SOC1 | switch_soc | State-of-charge at transition | [0.1, 0.7] | - |
-| I2 | current2 | Phase 2 constant current | [1.0, 5.0] | A |
+| I1 | current1 | Phase 1 constant current | [{I1_MIN}, {I1_MAX}] | A |
+| SOC1 | switch_soc | State-of-charge at transition | [{SOC1_MIN}, {SOC1_MAX}] | - |
+| I2 | current2 | Phase 2 constant current | [{I2_MIN}, {I2_MAX}] | A |
 
 **Constraint:** I2 <= I1
 
@@ -42,7 +42,7 @@ You are an expert in lithium-ion battery fast-charging optimization, assisting w
 ## 3. Algorithmic Directives (Algorithm Mechanism & Task Instructions)
 
 **Task:**
-Generate {N_CANDIDATES} diverse charging protocol candidates that are likely to improve upon the current best observation.
+Generate {N_CANDIDATES_LLM} diverse charging protocol candidates that are likely to improve upon the current best observation.
 
 **Candidate Generation Strategy:**
 
@@ -75,17 +75,17 @@ Generate {N_CANDIDATES} diverse charging protocol candidates that are likely to 
 ## 4. Format Constraints (Strict Output Format)
 
 **Output Format (STRICT JSON):**
-{
+{{
   "candidates": [
-    {"I1": <float>, "SOC1": <float>, "I2": <float>},
-    {"I1": <float>, "SOC1": <float>, "I2": <float>}
+    {{"I1": <float>, "SOC1": <float>, "I2": <float>}},
+    {{"I1": <float>, "SOC1": <float>, "I2": <float>}}
   ],
-  "metadata": {
-    "n_candidates": {N_CANDIDATES},
+  "metadata": {{
+    "n_candidates": {N_CANDIDATES_LLM},
     "iteration": {ITERATION}/{TOTAL_ITERATIONS},
     "strategy": "exploitation_exploration_mix"
-  }
-}
+  }}
+}}
 
 **Critical Constraints:**
 - All values MUST be within bounds: I1∈[3.0,7.0], SOC1∈[0.1,0.7], I2∈[1.0,5.0]

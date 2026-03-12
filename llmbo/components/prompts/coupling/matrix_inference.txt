@@ -5,35 +5,31 @@
 
 ## 1. Role & Meta-data (Domain Role & Metadata Injection)
 
-**Parameter Definitions:**
-1. `current1` (I1): Constant current during Phase 1 [A]. Range [3.0, 6.0].
+**Parameter Definitions (3D Decision Space - Canonical Keys):**
+1. `I1` (current1): Phase 1 constant current [A]. Range [{I1_MIN}, {I1_MAX}].
    Physical driver: Joule heating power P = I²R(SOC), dominant heat source.
 
-2. `time1` (T1): Maximum duration of Phase 1 [minutes]. Range [2.0, 40.0].
-   Physical driver: Controls the total energy input and cumulative heat
-   during the high-power phase. Accumulated heat Q_total = ∫₀^{T1} I1²R(t)dt.
+2. `SOC1` (switch_soc): Switching state-of-charge. Range [{SOC1_MIN}, {SOC1_MAX}].
+   Physical driver: Controls duration allocation between phases.
+   Higher SOC1 extends Phase 1, increasing cumulative thermal load.
 
-3. `current2` (I2): Constant current during Phase 2 [A]. Range [1.0, 4.0].
+3. `I2` (current2): Phase 2 constant current [A]. Range [{I2_MIN}, {I2_MAX}].
    Physical driver: Replenishment current after high-power phase.
    Effectiveness depends on residual temperature from Phase 1.
 
-4. `v_switch` (V_sw): CC-to-CV transition voltage [V]. Range [3.8, 4.2].
-   Physical driver: Higher V_sw extends CC phase but pushes electrode
-   closer to lithium plating threshold. Controls CV phase duration.
-
-**Battery Specifications (Chen2020 LG M50):**
-- Capacity: 5.0 Ah (1C = 5A)
-- Chemistry: NMC cathode + Graphite anode
-- Thermal: Heat transfer coefficient 10 W/(m²·K), thermal mass ~50 J/K
-- Safety: Max temp 316K (43°C), Max voltage 4.2V
+**Battery Specifications:**
+- Model: {BATTERY_MODEL}
+- Capacity: {Q_NOM} Ah
+- Initial voltage: {INIT_VOLTAGE} V
+- Initial temperature: {INIT_TEMP} K ({INIT_TEMP_C}°C)
+- Safety limits: Max voltage {VOLTAGE_MAX}V, Max temp {TEMP_MAX}K
 
 **Physics (Detailed):**
 - Heat generation: Q̇ = I²R(SOC) where R increases at high SOC
 - Heat accumulation: ΔT = ∫Q̇ dt / (m·Cp)
-  → High I1 combined with long time1 leads to superlinear heating
+  → High I1 combined with high SOC1 leads to superlinear heating
 - Thermal cascade: Phase1 heat affects Phase2 starting temperature
-  → I1-I2 interaction through thermal inertia (~30s time constant)
-- CV phase: Higher V_sw extends CC phase, increasing heating before voltage control
+  → I1-I2 interaction through thermal inertia
 
 ## 2. In-Context History (Dynamic Context & Historical Observations)
 
@@ -42,13 +38,13 @@
 ## 3. Algorithmic Directives (Algorithm Mechanism & Task Instructions)
 
 **Task:**
-Construct a 4x4 Interaction Matrix (Coupling Matrix) W where w_{ij} represents the interaction strength between parameter i and j.
+Construct three 3x3 Symmetric Positive Semi-Definite Coupling Matrices (W_time, W_temp, W_aging) where w_{ij} represents the interaction strength between parameter i and j for each objective.
 
 **Reasoning Steps (Chain of Thought):**
 
-1. **I1 ↔ T1 (Current × Duration):**
-   Heat accumulation is the integral of power over time: Q = I1² × R × T1.
-   I1 controls Power, T1 controls Duration → their joint effect on temperature
+1. **I1 ↔ SOC1 (Current × Switch Point):**
+   Heat accumulation is the integral of power over Phase 1 duration.
+   I1 controls Power, SOC1 controls duration → their joint effect on temperature
    is multiplicative (superlinear interaction).
 
 2. **I1 ↔ I2 (Thermal Cascade):**
@@ -56,42 +52,35 @@ Construct a 4x4 Interaction Matrix (Coupling Matrix) W where w_{ij} represents t
    High I1 creates elevated baseline for I2's heating effects.
    Coupling occurs through thermal inertia (time constant ~30s).
 
-3. **I1 ↔ V_sw (Current vs Voltage Threshold):**
-   I1 determines how fast voltage rises; V_sw determines when to switch.
-   Higher I1 with same V_sw results in shorter CC phase duration.
-
-4. **T1 ↔ I2 (Duration of Phase 1 vs Phase 2 Current):**
-   Longer T1 increases heat accumulated, affecting I2's effectiveness.
-   Temporal separation between phases may weaken this coupling.
-
-5. **T1 ↔ V_sw (Duration vs Voltage Threshold):**
-   T1 limits Phase 1 duration, but V_sw can trigger early CV transition.
-   If voltage hits V_sw before T1 expires, T1 becomes less relevant.
-
-6. **I2 ↔ V_sw (Phase 2 Current vs CV Voltage):**
-   V_sw determines when CV starts; I2 determines approach rate.
-   Lower I2 results in slower voltage rise and delayed V_sw transition.
+3. **SOC1 ↔ I2 (Switch Point × Phase 2 Current):**
+   Higher SOC1 means shorter Phase 2, making I2 impact more critical.
+   Aging is particularly sensitive to this interaction (lithium plating risk).
 
 **Matrix Construction Rules:**
 - Diagonal elements w_ii = 1.0 (self-coupling is maximum)
 - Off-diagonal values in [0, 1] (symmetric)
 - Higher values indicate stronger interaction between parameters
 
+**Objective-Specific Coupling:**
+- W_time: Dominated by I1 and I2 magnitudes (direct time contribution)
+- W_temp: I1 dominant (Joule heating at low SOC), I1-SOC1 interaction important
+- W_aging: SOC1-I2 interaction critical (lithium plating at high SOC)
+
 ## 4. Format Constraints (Strict Output Format)
 
 **Output Format:**
-You must wrap the final matrix in '##' delimiters. Use this format:
+You must output ONLY a JSON object with three matrices, no other text:
 
-##
-[[1.0, <value>, <value>, <value>],
- [<value>, 1.0, <value>, <value>],
- [<value>, <value>, 1.0, <value>],
- [<value>, <value>, <value>, 1.0]]
-##
+{{
+  "W_time": [[1.0, <value>, <value>], [<value>, 1.0, <value>], [<value>, <value>, 1.0]],
+  "W_temp": [[1.0, <value>, <value>], [<value>, 1.0, <value>], [<value>, <value>, 1.0]],
+  "W_aging": [[1.0, <value>, <value>], [<value>, 1.0, <value>], [<value>, <value>, 1.0]]
+}}
 
-where <value> represents the coupling strength you determine from the data and physical reasoning.
+where rows/columns correspond to [I1, SOC1, I2] in order.
 
 **Critical:**
-- Matrix must be symmetric (w_ij = w_ji)
+- All matrices must be symmetric (w_ij = w_ji)
 - All values must be in [0, 1]
 - Diagonal must be exactly 1.0
+- Matrices should be positive semi-definite
