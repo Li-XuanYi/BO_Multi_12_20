@@ -31,6 +31,9 @@ ParEGO (Pareto Efficient Global Optimization) 长程优化运行器。
     python parego_runner.py --iterations 10 --demo
 """
 
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import argparse
 import logging
 import sys
@@ -39,7 +42,7 @@ from pathlib import Path
 from typing import Optional
 
 # 导入 ParEGO 优化器
-from ParEGO import ParEGOOptimizer
+from llmbo.ParEGO import ParEGOOptimizer
 
 logger = logging.getLogger(__name__)
 

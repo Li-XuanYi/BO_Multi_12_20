@@ -33,10 +33,10 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
-from database import ObservationDB, DEFAULT_REF_POINT, DEFAULT_BOUNDS
-from gp_model import build_gp_stack
-from llm_interface import build_llm_interface
-from acquisition import build_acquisition_function
+from DataBase.database import ObservationDB, DEFAULT_REF_POINT, DEFAULT_BOUNDS
+from llmbo.gp_model import build_gp_stack
+from llm.llm_interface import build_llm_interface
+from llmbo.acquisition import build_acquisition_function
 from pybamm_simulator import PyBaMMSimulator
 
 logger = logging.getLogger(__name__)
@@ -304,7 +304,7 @@ class BayesOptimizer:
 
     使用方式（最简）::
 
-        from optimizer import BayesOptimizer
+        from llmbo.optimizer import BayesOptimizer
         opt = BayesOptimizer()
         opt.run()
         opt.save_results("results/")

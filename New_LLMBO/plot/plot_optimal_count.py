@@ -16,6 +16,9 @@ Excel 格式说明
 """
 
 import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import sys
 from plot_hv import plot_hv_convergence
 
 if __name__ == "__main__":

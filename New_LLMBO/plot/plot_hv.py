@@ -27,6 +27,9 @@ Excel 格式说明
 """
 
 import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import sys
 import re
 from pathlib import Path
 from collections import defaultdict
@@ -37,6 +40,13 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
+
+# 若 openpyxl 不可用，用纯 stdlib 替代实现
+try:
+    from DataBase.xlsx_io import patch_pandas_if_needed
+    patch_pandas_if_needed()
+except ImportError:
+    pass
 
 
 # ── 样式配置（模仿论文图风格） ──────────────────────────────────────────

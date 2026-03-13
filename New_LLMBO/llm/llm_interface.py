@@ -639,9 +639,9 @@ class LLMInterface:
     --------
     ::
 
-        from llm_interface import LLMInterface, LLMConfig
-        from gp_model import build_gp_stack, CouplingMatrixManager
-        from acquisition import build_acquisition_function
+        from llm.llm_interface import LLMInterface, LLMConfig
+        from llmbo.gp_model import build_gp_stack, CouplingMatrixManager
+        from llmbo.acquisition import build_acquisition_function
 
         config = LLMConfig(backend="ollama", model="qwen2.5:7b")
         llm = LLMInterface(PARAM_BOUNDS, config, battery_model="LG M50")
@@ -962,9 +962,9 @@ def build_llm_interface(
 
     典型用法::
 
-        from llm_interface import build_llm_interface
-        from gp_model import build_gp_stack
-        from acquisition import build_acquisition_function
+        from llm.llm_interface import build_llm_interface
+        from llmbo.gp_model import build_gp_stack
+        from llmbo.acquisition import build_acquisition_function
 
         BOUNDS = {"I1": (3.0, 7.0), "SOC1": (0.1, 0.7), "I2": (1.0, 5.0)}
 
@@ -1113,7 +1113,7 @@ if __name__ == "__main__":
     assert np.all(X_cand >= [3.0, 0.1, 1.0]) and np.all(X_cand <= [7.0, 0.7, 5.0])
 
     # Protocol 合规性
-    from acquisition import LLMPriorProtocol
+    from llmbo.acquisition import LLMPriorProtocol
     assert isinstance(llm, LLMPriorProtocol), "LLMInterface 不满足 LLMPriorProtocol!"
     print("  ✓ LLMPriorProtocol isinstance 检查通过")
 

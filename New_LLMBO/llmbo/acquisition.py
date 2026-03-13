@@ -53,7 +53,7 @@ import numpy as np
 from scipy.stats import norm as scipy_norm
 
 # 从 gp_model 导入并 re-export（让 optimizer.py 只需 import acquisition）
-from gp_model import GPProtocol, PsiFunction
+from llmbo.gp_model import GPProtocol, PsiFunction
 
 logger = logging.getLogger(__name__)
 
@@ -1182,8 +1182,8 @@ def build_acquisition_function(
 
     典型用法（optimizer.py 初始化阶段）::
 
-        from gp_model import build_gp_stack
-        from acquisition import build_acquisition_function
+        from llmbo.gp_model import build_gp_stack
+        from llmbo.acquisition import build_acquisition_function
 
         psi, coupling, gamma_ann, gp = build_gp_stack(PARAM_BOUNDS)
         af = build_acquisition_function(gp, psi, PARAM_BOUNDS)
@@ -1237,7 +1237,7 @@ if __name__ == "__main__":
     rng = np.random.default_rng(0)
 
     # ── Mock 对象（代替真实 GP / Database / LLM） ─────────────────────────
-    from gp_model import build_gp_stack
+    from llmbo.gp_model import build_gp_stack
 
     class MockDatabase:
         """满足 DatabaseProtocol 的最简 Mock。"""

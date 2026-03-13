@@ -47,11 +47,11 @@ from scipy.stats import norm as scipy_norm
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import Matern, WhiteKernel, ConstantKernel
 
-from database import ObservationDB, DEFAULT_REF_POINT, DEFAULT_BOUNDS
+from DataBase.database import ObservationDB, DEFAULT_REF_POINT, DEFAULT_BOUNDS
 from pybamm_simulator import PyBaMMSimulator
 
 # 复用 optimizer.py 中的工具函数（Tchebycheff 相关）
-from optimizer import (
+from llmbo.optimizer import (
     log_transform_objectives,
     compute_dynamic_bounds,
     normalize_objectives,
@@ -780,7 +780,7 @@ def run_comparison(
     -------
     dict : {"llambo_hv": float, "pareto_hv": float, "llambo_db": ObservationDB, ...}
     """
-    from optimizer import BayesOptimizer
+    from llmbo.optimizer import BayesOptimizer
 
     shared = shared_config or {}
     out = Path(output_dir)

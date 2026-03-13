@@ -18,6 +18,9 @@ Excel 格式说明
 """
 
 import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -26,6 +29,13 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+
+# 若 openpyxl 不可用，用纯 stdlib 替代实现
+try:
+    from DataBase.xlsx_io import patch_pandas_if_needed
+    patch_pandas_if_needed()
+except ImportError:
+    pass
 
 
 # ── 列名匹配 ────────────────────────────────────────────────────────────

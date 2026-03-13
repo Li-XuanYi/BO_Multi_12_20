@@ -33,7 +33,7 @@ sys.path.insert(0, str(project_root))
 # 使用显式导入（不再使用 from config import ...）
 from config.schema import Config, create_minimal_config, get_default_config
 from config.load import load_config, parse_cli_overrides
-from optimizer import BayesOptimizer
+from llmbo.optimizer import BayesOptimizer
 
 
 # ═══════════════════════════════════════════════════════════════════════════
