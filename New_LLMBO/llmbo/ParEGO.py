@@ -47,6 +47,7 @@ from scipy.stats import norm as scipy_norm
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import Matern, WhiteKernel, ConstantKernel
 
+from config.settings import Settings
 from DataBase.database import ObservationDB, DEFAULT_REF_POINT, DEFAULT_BOUNDS
 from pybamm_simulator import PyBaMMSimulator
 
@@ -70,9 +71,9 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_PAREGO_CONFIG: Dict[str, Any] = {
     # ── 实验规模 ──────────────────────────────────────────────────────────
-    "max_iterations":    300,     # 300 回合长程优化
-    "n_warmstart":       15,      # LHS 初始点数量（增加以适应长程运行）
-    "n_random_cands":    500,     # 每迭代随机候选点数（EI 优化用）
+    "max_iterations":    Settings.PAREGO.N_ITERATIONS,
+    "n_warmstart":       Settings.PAREGO.N_WARMSTART,
+    "n_random_cands":    Settings.PAREGO.N_RANDOM_CANDS,
 
     # ── Riesz 权重集合（与 LLAMBO-MO 完全一致） ───────────────────────────
     "riesz_n_div":       10,
@@ -85,7 +86,7 @@ DEFAULT_PAREGO_CONFIG: Dict[str, Any] = {
     "eta":               0.05,
 
     # ── sklearn GP 超参数 ─────────────────────────────────────────────────
-    "gp_n_restarts":     5,       # GP 优化重启次数（防止局部最优）
+    "gp_n_restarts":     Settings.PAREGO.GP_N_RESTARTS,       # GP 优化重启次数（防止局部最优）
     "gp_normalize_y":    True,    # 是否对 y 做标准化（GP 内部）
 
     # ── EI 参数 ───────────────────────────────────────────────────────────

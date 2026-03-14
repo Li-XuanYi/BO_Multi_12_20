@@ -49,6 +49,9 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 
+# 导入统一配置
+from config.settings import Settings
+
 logger = logging.getLogger(__name__)
 
 # 模块所在目录（用于定位 templates/）
@@ -72,47 +75,32 @@ class LLMConfig:
       - "anthropic" : Anthropic Claude
       - "mock"      : 不调用 LLM，返回物理启发式默认值（测试/消融用）
 
-    Parameters
-    ----------
-    backend     : str   后端类型 {"ollama", "openai", "anthropic", "mock"}
-    model       : str   模型名称（如 "qwen2.5:7b", "gpt-4o", "claude-sonnet-4-20250514"）
-    api_base    : str   API 地址（Ollama 默认 "http://localhost:11434/v1"）
-    api_key     : str   API 密钥（Ollama 默认 "ollama"）
-    temperature : float 采样温度
-    n_samples   : int   每次请求的采样数（多采样投票）
-    timeout     : int   请求超时秒数
+    配置优先级：构造函数参数 > 统一配置文件 (config/settings.py)
     """
 
     def __init__(
         self,
-        backend:     str   = "openai",
-        model:       str   = "gpt-4o",
-        api_base:    str   = "https://api.nuwaapi.com/v1",
-        api_key:     str   = "sk-Sq1zyC8PLM8gafI2fpAccWpzBAzZvuNOPU6ZC9aWA6C883IK",
-        temperature: float = 0.7,
-        n_samples:   int   = 5,
-        timeout:     int   = 120,
+        backend:     str   = None,
+        model:       str   = None,
+        api_base:    str   = None,
+        api_key:     str   = None,
+        temperature: float = None,
+        n_samples:   int   = None,
+        timeout:     int   = None,
     ):
-        self.backend     = backend
-        self.model       = model
-        self.api_base    = api_base
-        self.api_key     = api_key
-        self.temperature = temperature
-        self.n_samples   = n_samples
-        self.timeout     = timeout
+        # 从统一配置读取默认值（只在构造函数参数未指定时使用）
+        self.backend     = backend     or Settings.LLM.BACKEND
+        self.model       = model       or Settings.LLM.MODEL
+        self.api_base    = api_base    or Settings.LLM.API_BASE
+        self.api_key     = api_key     or Settings.LLM.API_KEY
+        self.temperature = float(temperature) if temperature is not None else Settings.LLM.TEMPERATURE
+        self.n_samples   = int(n_samples)   if n_samples is not None   else Settings.LLM.N_SAMPLES
+        self.timeout     = int(timeout)     if timeout is not None     else Settings.LLM.TIMEOUT
 
     @classmethod
-    def from_env(cls) -> "LLMConfig":
-        """从环境变量构建配置（兼容 LLAMBO 风格）。"""
-        return cls(
-            backend     = os.environ.get("LLM_BACKEND",     "ollama"),
-            model       = os.environ.get("LLM_MODEL",       "qwen2.5:7b"),
-            api_base    = os.environ.get("LLM_API_BASE",    "http://localhost:11434/v1"),
-            api_key     = os.environ.get("LLM_API_KEY",     "ollama"),
-            temperature = float(os.environ.get("LLM_TEMPERATURE", "0.7")),
-            n_samples   = int(os.environ.get("LLM_N_SAMPLES",   "5")),
-            timeout     = int(os.environ.get("LLM_TIMEOUT",     "120")),
-        )
+    def from_settings(cls) -> "LLMConfig":
+        """从统一配置创建（推荐使用）。"""
+        return cls()
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -948,28 +936,32 @@ class LLMInterface:
 
 def build_llm_interface(
     param_bounds:  Dict[str, Tuple[float, float]],
-    backend:       str   = "openai",
-    model:         str   = "gpt-4o",
-    api_base:      str   = "https://api.nuwaapi.com/v1",
-    api_key:       str   = "sk-Sq1zyC8PLM8gafI2fpAccWpzBAzZvuNOPU6ZC9aWA6C883IK",
-    n_samples:     int   = 5,
-    temperature:   float = 0.7,
-    battery_model: str   = "LG M50 (Chen2020)",
+    backend:       str   = None,
+    model:         str   = None,
+    api_base:      str   = None,
+    api_key:       str   = None,
+    n_samples:     int   = None,
+    temperature:   float = None,
+    battery_model: str   = None,
     template_dir:  Optional[str] = None,
 ) -> LLMInterface:
     """
     工厂函数：一步构建 LLMInterface。
 
+    配置优先级：构造函数参数 > 统一配置文件 (config/settings.py)
+
     典型用法::
 
         from llm.llm_interface import build_llm_interface
-        from llmbo.gp_model import build_gp_stack
-        from llmbo.acquisition import build_acquisition_function
+        from config.settings import Settings
 
         BOUNDS = {"I1": (3.0, 7.0), "SOC1": (0.1, 0.7), "I2": (1.0, 5.0)}
 
-        llm = build_llm_interface(BOUNDS, backend="ollama", model="qwen2.5:7b")
-        psi, coupling, gamma_ann, gp = build_gp_stack(BOUNDS)
+        # 方式 1: 使用统一配置（推荐）
+        llm = build_llm_interface(BOUNDS)
+
+        # 方式 2: 临时覆盖配置
+        llm = build_llm_interface(BOUNDS, model="claude-sonnet-4-20250514")
 
         # Touchpoint 1a
         W_time, W_temp, W_aging = llm.generate_coupling_matrices()
@@ -998,7 +990,7 @@ def build_llm_interface(
         param_bounds=param_bounds,
         config=config,
         template_dir=template_dir,
-        battery_model=battery_model,
+        battery_model=battery_model or Settings.PYBAMM.BATTERY_MODEL,
     )
 
 

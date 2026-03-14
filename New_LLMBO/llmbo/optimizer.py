@@ -33,6 +33,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
+from config.settings import Settings
 from DataBase.database import ObservationDB, DEFAULT_REF_POINT, DEFAULT_BOUNDS
 from llmbo.gp_model import build_gp_stack
 from llm.llm_interface import build_llm_interface
@@ -48,50 +49,49 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_CONFIG = {
     # ── 实验规模 ──────────────────────────────────────────────────────────
-    "max_iterations":   20,
-    "n_warmstart":      10,
-    "n_candidates":     15,
-    "n_select":         1,
+    "max_iterations":   Settings.BO.N_ITERATIONS,
+    "n_warmstart":      Settings.BO.N_WARMSTART,
+    "n_candidates":     Settings.ACQUISITION.N_CANDIDATES,
+    "n_select":         Settings.ACQUISITION.N_SELECT,
 
     # ── LLM 配置 ──────────────────────────────────────────────────────────
-    # FIX: api_base 不含 /chat 后缀；OpenAI SDK 会自动拼接 /chat/completions
-    "llm_backend":      "openai",
-    "llm_model":        "gpt-4o",
-    "llm_api_base":     "https://api.nuwaapi.com/v1",   # ← 修正（去掉 /chat）
-    "llm_api_key":      "sk-Sq1zyC8PLM8gafI2fpAccWpzBAzZvuNOPU6ZC9aWA6C883IK",
-    "llm_n_samples":    5,
-    "llm_temperature":  0.7,
+    "llm_backend":      Settings.LLM.BACKEND,
+    "llm_model":        Settings.LLM.MODEL,
+    "llm_api_base":     Settings.LLM.API_BASE,
+    "llm_api_key":      Settings.LLM.API_KEY,
+    "llm_n_samples":    Settings.LLM.N_SAMPLES,
+    "llm_temperature":  Settings.LLM.TEMPERATURE,
 
     # ── GP 超参数 ─────────────────────────────────────────────────────────
-    "gamma_max":        0.3,
-    "gamma_min":        0.05,
-    "gamma_t_decay":    20.0,
+    "gamma_max":        Settings.COUPLING.GAMMA_MAX,
+    "gamma_min":        Settings.COUPLING.GAMMA_MIN,
+    "gamma_t_decay":    Settings.COUPLING.GAMMA_T_DECAY,
 
     # ── Acquisition 超参数 ────────────────────────────────────────────────
-    "alpha_max":        0.7,
-    "alpha_min":        0.05,
-    "t_decay_alpha":    60.0,
-    "kappa":            0.20,
-    "eps_sigma":        0.001,
-    "rho":              0.1,
+    "alpha_max":        Settings.COUPLING.ALPHA_MAX,
+    "alpha_min":        Settings.COUPLING.ALPHA_MIN,
+    "t_decay_alpha":    Settings.COUPLING.T_DECAY_ALPHA,
+    "kappa":            Settings.ACQUISITION.KAPPA,
+    "eps_sigma":        Settings.ACQUISITION.EPS_SIGMA,
+    "rho":              Settings.ACQUISITION.RHO,
 
     # ── Riesz s-energy 权重集合 ───────────────────────────────────────────
-    "n_weights":        66,       # 预生成权重向量数量（Das-Dennis n_div=10 → 66 点）
-    "riesz_s":          2.0,      # Riesz s 参数（s=2 为球形势能）
-    "riesz_n_iter":     500,      # 梯度下降迭代次数
-    "riesz_lr":         5e-3,     # 学习率
-    "w_sample_seed":    None,     # 随机选取种子（None=随机）
-    "riesz_seed":       42,       # 权重集合生成种子（固定保证复现性）
+    "n_weights":        Settings.MOBO.N_WEIGHTS,
+    "riesz_s":          Settings.RIESZ.S,
+    "riesz_n_iter":     Settings.RIESZ.N_ITER,
+    "riesz_lr":         Settings.RIESZ.LR,
+    "w_sample_seed":    None,
+    "riesz_seed":       Settings.RIESZ.SEED,
 
     # ── Tchebycheff 参数 ──────────────────────────────────────────────────
-    "eta":              0.05,     # 严格 Pareto 支配 tiebreaker（Eq.1）
+    "eta":              Settings.MOBO.ETA,
 
     # ── 检查点 ────────────────────────────────────────────────────────────
-    "checkpoint_dir":   "checkpoints",
-    "checkpoint_every": 5,
+    "checkpoint_dir":   Settings.OUTPUT.SAVE_DIR,
+    "checkpoint_every": Settings.OUTPUT.CHECKPOINT_EVERY,
 
     # ── 电池模型 ──────────────────────────────────────────────────────────
-    "battery_model":    "LG M50 (Chen2020)",
+    "battery_model":    Settings.PYBAMM.BATTERY_MODEL,
 }
 
 

@@ -524,8 +524,10 @@ class PhysicsCompositeKernel:
         if gamma < 1e-12:
             return K_rbf
 
-        G  = np.stack([self.psi_fn.gradient(X[i])  for i in range(n)])   # (n,3)
-        Gp = np.stack([self.psi_fn.gradient(Xp[j]) for j in range(m)])   # (m,3)
+        X_phys  = X  * self._range + self._lo
+        Xp_phys = Xp * self._range + self._lo
+        G  = np.stack([self.psi_fn.gradient(X_phys[i])  for i in range(n)])   # (n,3)
+        Gp = np.stack([self.psi_fn.gradient(Xp_phys[j]) for j in range(m)])   # (m,3)
         # G W Gp^T：(n,3)·(3,3)·(3,m) = (n,m)
         K_phys = (G @ W) @ Gp.T                                           # (n,m)
 
@@ -705,7 +707,7 @@ class PhysicsGPModel:
         oneT_Cinv_c = self._C_inv_1 @ C_cross.T   # (m,)
 
         bracket = (
-            1.0 - cT_Cinv_c +
+            k_self - cT_Cinv_c +
             (1.0 - oneT_Cinv_c) ** 2 / self._1T_Cinv_1
         )
         var = self._sig2_hat * np.maximum(bracket, 0.0)

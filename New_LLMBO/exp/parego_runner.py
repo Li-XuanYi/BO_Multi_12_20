@@ -40,6 +40,7 @@ import sys
 import time
 from pathlib import Path
 from typing import Optional
+from config.settings import Settings
 
 # 导入 ParEGO 优化器
 from llmbo.ParEGO import ParEGOOptimizer
@@ -72,22 +73,22 @@ def create_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--iterations", "-n",
         type=int,
-        default=300,
-        help="优化迭代次数（默认：300）"
+        default=None,
+        help="优化迭代次数（默认：从 Settings.PAREGO.N_ITERATIONS 读取）"
     )
 
     parser.add_argument(
         "--warmstart", "-w",
         type=int,
-        default=15,
-        help="LHS 初始化点数（默认：15）"
+        default=None,
+        help="LHS 初始化点数（默认：从 Settings.PAREGO.N_WARMSTART 读取）"
     )
 
     parser.add_argument(
         "--n-cands",
         type=int,
-        default=500,
-        help="每迭代候选点数量（默认：500）"
+        default=None,
+        help="每迭代候选点数量（默认：从 Settings.PAREGO.N_RANDOM_CANDS 读取）"
     )
 
     # 输出配置
@@ -137,9 +138,9 @@ def create_parser() -> argparse.ArgumentParser:
 
 
 def run_parego(
-    iterations: int = 300,
-    warmstart: int = 15,
-    n_cands: int = 500,
+    iterations: int = None,
+    warmstart: int = None,
+    n_cands: int = None,
     output_dir: str = "results_parego_300",
     checkpoint_every: int = 10,
     seed: int = 42,
@@ -168,6 +169,14 @@ def run_parego(
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
         datefmt="%H:%M:%S",
     )
+
+    # 使用 Settings 默认值（如果未指定）
+    if iterations is None:
+        iterations = Settings.PAREGO.N_ITERATIONS
+    if warmstart is None:
+        warmstart = Settings.PAREGO.N_WARMSTART
+    if n_cands is None:
+        n_cands = Settings.PAREGO.N_RANDOM_CANDS
 
     # 演示模式：快速测试
     if demo:

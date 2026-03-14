@@ -37,6 +37,7 @@ import sys
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+from config.settings import Settings
 
 logger = logging.getLogger(__name__)
 
@@ -46,50 +47,78 @@ logger = logging.getLogger(__name__)
 # ═══════════════════════════════════════════════════════════════════════════
 
 DEFAULT_EIMO_CONFIG: Dict[str, Any] = {
-    "max_iterations":   50,
-    "n_warmstart":      10,
-    "n_candidates":     15,
-    "n_select":         1,
-    "llm_backend":      "openai",
-    "llm_model":        "gpt-4o",
-    "llm_api_base":     "https://api.nuwaapi.com/v1",
-    "llm_api_key":      "sk-Sq1zyC8PLM8gafI2fpAccWpzBAzZvuNOPU6ZC9aWA6C883IK",
-    "llm_n_samples":    5,
-    "llm_temperature":  0.7,
-    "gamma_max":        0.3,
-    "gamma_min":        0.05,
-    "gamma_t_decay":    20.0,
-    "alpha_max":        0.7,
-    "alpha_min":        0.05,
-    "t_decay_alpha":    60.0,
-    "kappa":            0.2,
-    "eps_sigma":        0.001,
-    "rho":              0.1,
-    "riesz_n_div":      10,
-    "riesz_s":          2.0,
-    "riesz_n_iter":     500,
-    "riesz_lr":         0.005,
-    "riesz_seed":       42,
-    "eta":              0.05,
-    "checkpoint_every": 5,
-    "battery_model":    "LG M50 (Chen2020)",
+    # ── 实验规模 ──────────────────────────────────────────────────────────
+    "max_iterations":   Settings.BO.N_ITERATIONS,
+    "n_warmstart":      Settings.BO.N_WARMSTART,
+    "n_candidates":     Settings.ACQUISITION.N_CANDIDATES,
+    "n_select":         Settings.ACQUISITION.N_SELECT,
+
+    # ── LLM 配置 ──────────────────────────────────────────────────────────
+    "llm_backend":      Settings.LLM.BACKEND,
+    "llm_model":        Settings.LLM.MODEL,
+    "llm_api_base":     Settings.LLM.API_BASE,
+    "llm_api_key":      Settings.LLM.API_KEY,
+    "llm_n_samples":    Settings.LLM.N_SAMPLES,
+    "llm_temperature":  Settings.LLM.TEMPERATURE,
+
+    # ── GP/Coupling 超参数 ───────────────────────────────────────────────
+    "gamma_max":        Settings.COUPLING.GAMMA_MAX,
+    "gamma_min":        Settings.COUPLING.GAMMA_MIN,
+    "gamma_t_decay":    Settings.COUPLING.GAMMA_T_DECAY,
+    "alpha_max":        Settings.COUPLING.ALPHA_MAX,
+    "alpha_min":        Settings.COUPLING.ALPHA_MIN,
+    "t_decay_alpha":    Settings.COUPLING.T_DECAY_ALPHA,
+
+    # ── Acquisition 超参数 ───────────────────────────────────────────────
+    "kappa":            Settings.ACQUISITION.KAPPA,
+    "eps_sigma":        Settings.ACQUISITION.EPS_SIGMA,
+    "rho":              Settings.ACQUISITION.RHO,
+
+    # ── Riesz s-energy 权重集合 ──────────────────────────────────────────
+    "riesz_n_div":      Settings.RIESZ.N_DIV,
+    "riesz_s":          Settings.RIESZ.S,
+    "riesz_n_iter":     Settings.RIESZ.N_ITER,
+    "riesz_lr":         Settings.RIESZ.LR,
+    "riesz_seed":       Settings.RIESZ.SEED,
+
+    # ── Tchebycheff 参数 ─────────────────────────────────────────────────
+    "eta":              Settings.MOBO.ETA,
+
+    # ── 检查点 ───────────────────────────────────────────────────────────
+    "checkpoint_every": Settings.OUTPUT.CHECKPOINT_EVERY,
+
+    # ── 电池模型 ─────────────────────────────────────────────────────────
+    "battery_model":    Settings.PYBAMM.BATTERY_MODEL,
 }
 
 DEFAULT_PAREGO_CONFIG: Dict[str, Any] = {
-    "max_iterations":   300,
-    "n_warmstart":      15,
-    "n_random_cands":   500,
-    "riesz_n_div":      10,
-    "riesz_s":          2.0,
-    "riesz_n_iter":     500,
-    "riesz_lr":         0.005,
-    "riesz_seed":       42,
-    "eta":              0.05,
-    "gp_n_restarts":    5,
+    # ── 实验规模 ──────────────────────────────────────────────────────────
+    "max_iterations":   Settings.PAREGO.N_ITERATIONS,
+    "n_warmstart":      Settings.PAREGO.N_WARMSTART,
+    "n_random_cands":   Settings.PAREGO.N_RANDOM_CANDS,
+
+    # ── Riesz s-energy 权重集合 ──────────────────────────────────────────
+    "riesz_n_div":      Settings.RIESZ.N_DIV,
+    "riesz_s":          Settings.RIESZ.S,
+    "riesz_n_iter":     Settings.RIESZ.N_ITER,
+    "riesz_lr":         Settings.RIESZ.LR,
+    "riesz_seed":       Settings.RIESZ.SEED,
+
+    # ── Tchebycheff 参数 ─────────────────────────────────────────────────
+    "eta":              Settings.MOBO.ETA,
+
+    # ── GP 超参数 ────────────────────────────────────────────────────────
+    "gp_n_restarts":    Settings.PAREGO.GP_N_RESTARTS,
     "gp_normalize_y":   True,
-    "xi":               0.0,
-    "checkpoint_every": 10,
-    "battery_model":    "LG M50 (Chen2020)",
+
+    # ── EI 参数 ──────────────────────────────────────────────────────────
+    "xi":               Settings.ACQUISITION.XI,
+
+    # ── 检查点 ───────────────────────────────────────────────────────────
+    "checkpoint_every": Settings.OUTPUT.CHECKPOINT_EVERY,
+
+    # ── 电池模型 ─────────────────────────────────────────────────────────
+    "battery_model":    Settings.PYBAMM.BATTERY_MODEL,
 }
 
 
@@ -413,8 +442,8 @@ def _create_parser() -> argparse.ArgumentParser:
                         help="EIMO warmstart 点数（默认：10）")
     parser.add_argument("--parego-warmstart",  type=int, default=15,
                         help="ParEGO warmstart 点数（默认：15）")
-    parser.add_argument("--llm-model", type=str, default="gpt-4o",
-                        help="LLM 模型名称（默认：gpt-4o）")
+    parser.add_argument("--llm-model", type=str, default=None,
+                        help="LLM 模型名称（默认：从 config/settings.py 读取）")
     parser.add_argument(
         "--mock-llm", action="store_true",
         help="使用 Mock LLM（不调用真实 API，用于测试）",

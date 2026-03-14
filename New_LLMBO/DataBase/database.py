@@ -175,6 +175,7 @@ class ObservationDB:
         self._theta_best: Optional[np.ndarray] = None
         self._stagnation_count: int        = 0
         self._prev_pareto_size: int        = 0   # 上次迭代 Pareto front 大小（停滞检测用）
+        self._prev_hv: float               = 0.0
 
         logger.info(
             "ObservationDB 初始化: bounds=%s  ref_point=%s",
@@ -776,14 +777,12 @@ class ObservationDB:
         self._theta_best = feasible[best_idx].theta.copy()
 
         if update_stagnation:
-            # FIX: f_tch 依赖 w_vec，跨迭代不可比；改用 Pareto front 大小变化判停滞
-            # Pareto front 增大 → 发现了新的非支配解 → 未停滞
-            current_pf_size = len(self._pareto_indices)
-            if current_pf_size > self._prev_pareto_size:
+            hv_now = self.compute_hypervolume()
+            if hv_now > self._prev_hv + 1e-8:
                 self._stagnation_count = 0
             else:
                 self._stagnation_count += 1
-            self._prev_pareto_size = current_pf_size
+            self._prev_hv = hv_now
 
     # ── DatabaseProtocol 四个必须方法 ─────────────────────────────────────
 
@@ -840,7 +839,7 @@ def _insert_2d_front(
         new_front.append(fp)
 
     if dominated:
-        return front
+        return new_front
     if not inserted:
         new_front.append(pt)
     return new_front
