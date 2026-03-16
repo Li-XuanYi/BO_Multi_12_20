@@ -1,11 +1,11 @@
 You are an expert in lithium-ion battery fast charging optimization, assisting a Bayesian Optimization loop.
 
-Protocol: two-stage CC-CC charging for [BATTERY_MODEL] ([Q_NOM] Ah), SOC₀=[SOC0] → SOC_end=[SOC_END].
+Protocol: two-stage CC-CC charging for [BATTERY_MODEL] ([Q_NOM] Ah), SOC0=[SOC0] -> SOC_end=[SOC_END].
 
 Decision variables:
-  - I₁: [I1_RANGE] A
-  - SOC₁: [SOC1_RANGE]
-  - I₂: [I2_RANGE] A
+  - I1: [I1_RANGE] A
+  - SOC1: [SOC1_RANGE]
+  - I2: [I2_RANGE] A
 
 Objectives (all minimized): charging time, peak temperature, aging degree.
 
@@ -15,20 +15,22 @@ Objectives (all minimized): charging time, peak temperature, aging degree.
 
 Current optimization state:
   - Iteration: [ITERATION] / [MAX_ITERATIONS]
-  - Current best θ: I₁=[BEST_I1], SOC₁=[BEST_SOC1], I₂=[BEST_I2]
+  - Current best theta: I1=[BEST_I1], SOC1=[BEST_SOC1], I2=[BEST_I2]
   - Current best Tchebycheff value: [BEST_FTCH]
-  - Search center μ: [MU_VALUES]
-  - Search range σ:  [SIGMA_VALUES]
+  - TARGET Tchebycheff value: [DESIRED_FTCH] (your suggestions should aim to beat this)
+  - [TARGET_DESCRIPTION]
+  - Search center mu: [MU_VALUES]
+  - Search range sigma:  [SIGMA_VALUES]
   - Stagnation count: [STAGNATION_COUNT]
-  - Current Tchebycheff weights: w_time=[W_TIME], w_temp=[W_TEMP], w_aging=[W_AGING]
 
 [EXPLORATION_GUIDANCE]
 
-Suggest [NUM_CANDIDATES] candidate protocols. The suggestions should:
-  - Focus near the search center μ ± σ, but include some exploratory points
-  - Respect parameter bounds strictly
-  - Be physically plausible (no extreme combinations like I₁=7A with SOC₁=0.7 and I₂=5A)
-  - Diversify across the promising region
+IMPORTANT: Suggest [NUM_CANDIDATES] candidate protocols that are likely to ACHIEVE OR BEAT the target Tchebycheff value of [DESIRED_FTCH].
+- Include at least 2 explorative candidates near the parameter boundaries relevant to the current weight focus.
+- Include at least 2 candidates near the current best theta with small perturbations.
+- The remaining candidates should explore unexplored promising regions.
+- Strictly respect all parameter bounds.
+- Avoid clustering all suggestions around I1=5, SOC1=0.4, I2=2.5 - cover diverse trade-off regions.
 
 Respond with ONLY a JSON list of dictionaries, no other text:
 [{"I1": value, "SOC1": value, "I2": value}, ...]

@@ -878,6 +878,8 @@ class LLMInterface:
             "DATA_SUMMARY":      state_dict.get("data_summary", ""),
             "SENSITIVITY_INFO":  state_dict.get("sensitivity_info", ""),
             "EXPLORATION_GUIDANCE": exploration,
+            "DESIRED_FTCH":      f"{state_dict.get('desired_fval', 0.0):.6f}",
+            "TARGET_DESCRIPTION": state_dict.get("target_description", ""),
         }
 
         prompt = self._engine.render("iterative_candidates", **kwargs)

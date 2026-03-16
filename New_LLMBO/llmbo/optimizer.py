@@ -101,11 +101,11 @@ DEFAULT_CONFIG = {
 
 def log_transform_objectives(Y_raw: np.ndarray) -> np.ndarray:
     """
-    对原始目标矩阵应用 log₁₀ 变换（仅对 aging 维度）。
+    对原始目标矩阵应用 log₁₀ 变换。
 
-    f̃₁ = t_charge      (不变)
-    f̃₂ = T_peak        (不变)
-    f̃₃ = log₁₀(ΔQ_aging)  (Eq.2a)
+    f̃₁ = log₁₀(time_s)
+    f̃₂ = temp_K
+    f̃₃ = log₁₀(aging_pct)
 
     Parameters
     ----------
@@ -117,6 +117,8 @@ def log_transform_objectives(Y_raw: np.ndarray) -> np.ndarray:
     """
     Y_raw = np.atleast_2d(Y_raw).astype(float)
     Y_tilde = Y_raw.copy()
+    # time_s 最小裁剪到 1s，避免 log10(0)
+    Y_tilde[:, 0] = np.log10(np.maximum(Y_raw[:, 0], 1.0))
     # aging_pct 可能极小（≈1e-8），clip 避免 log10(0)
     Y_tilde[:, 2] = np.log10(np.maximum(Y_raw[:, 2], 1e-12))
     return Y_tilde
@@ -422,6 +424,7 @@ class BayesOptimizer:
             kappa         = self.cfg["kappa"],
             eps_sigma     = self.cfg["eps_sigma"],
             rho           = self.cfg["rho"],
+            log_mode      = True,
         )
 
         logger.info("所有组件初始化完成")
@@ -439,11 +442,30 @@ class BayesOptimizer:
         n_lhs  = n_ws - n_llm               # 30% 由 LHS 补全（确保空间覆盖）
 
         llm_candidates = self.llm.generate_warmstart_candidates(n=n_llm)
-        lhs_candidates = self._generate_lhs_candidates(n_lhs)
-        warmstart_candidates = llm_candidates + lhs_candidates
+        lhs_candidates = self._generate_lhs_candidates(max(n_lhs - 3, 0))
+
+        # 强制加入 Pareto 极端方向点，补足 LLM 先验盲区
+        bounds = self.simulator.param_bounds
+        extreme_candidates = [
+            np.array([bounds["I1"][1] * 0.95,
+                      bounds["SOC1"][0] * 1.2,
+                      bounds["I2"][1] * 0.90]),
+            np.array([bounds["I1"][0] * 1.05,
+                      bounds["SOC1"][1] * 0.90,
+                      bounds["I2"][0] * 1.10]),
+            np.array([bounds["I1"][0] * 1.10,
+                      bounds["SOC1"][1] * 0.95,
+                      bounds["I2"][0] * 1.05]),
+        ]
+        lo = np.array([bounds[k][0] for k in ["I1", "SOC1", "I2"]])
+        hi = np.array([bounds[k][1] for k in ["I1", "SOC1", "I2"]])
+        extreme_candidates = [np.clip(p, lo, hi) for p in extreme_candidates]
+
+        warmstart_candidates = llm_candidates + lhs_candidates + extreme_candidates
         logger.info(
-            "Warmstart: LLM=%d 个 + LHS=%d 个 = 共 %d 个候选",
-            len(llm_candidates), len(lhs_candidates), len(warmstart_candidates)
+            "Warmstart: LLM=%d 个 + LHS=%d 个 + Extreme=%d 个 = 共 %d 个候选",
+            len(llm_candidates), len(lhs_candidates),
+            len(extreme_candidates), len(warmstart_candidates)
         )
 
         for i, theta in enumerate(warmstart_candidates):
@@ -595,16 +617,12 @@ class BayesOptimizer:
                 y_max  = self._y_tilde_max,
                 eta    = eta,
             )
-            # GP 训练在归一化的标量空间（zero-mean, unit-var）
-            f_mean = float(F_tch.mean())
-            f_std  = float(F_tch.std()) + 1e-8
-            F_tch_norm = (F_tch - f_mean) / f_std
-
-            self.gp.fit(X_train, F_tch_norm, w_vec, t=t)
+            # 直接用绝对 F_tch 训练；GP 内部 normalize_y 负责标准化
+            self.gp.fit(X_train, F_tch, w_vec, t=t)
             summary = self.gp.training_summary()
             logger.info(
-                "  GP 训练完成: n=%d  l=%.4f  γ=%.4f",
-                summary["n_train"], summary["l"], summary["gamma"]
+                "  GP 训练完成: n=%d  l=%.4f  γ=%.4f  F_tch_min=%.4f",
+                summary["n_train"], summary["l"], summary["gamma"], float(F_tch.min())
             )
 
             # ── 步骤 4：Touchpoint 2 生成候选点 ─────────────────────
@@ -612,6 +630,29 @@ class BayesOptimizer:
             data_summary = self.database.to_llm_context(
                 max_observations=20, include_pareto=True, include_top_k=5
             )
+
+            f_min_current = float(F_tch.min())
+            stagnation_count = self.database.get_stagnation_count()
+
+            improvement_target = 0.10 + 0.05 * min(stagnation_count, 2)
+            f_target = f_min_current * (1.0 - improvement_target)
+            f_target = max(f_target, 0.0)
+
+            target_desc = (
+                f"Current best scalarized value: {f_min_current:.4f}. "
+                f"Target: below {f_target:.4f} "
+                f"({improvement_target*100:.0f}% improvement). "
+                f"Current weights: time={w_vec[0]:.2f}, temp={w_vec[1]:.2f}, aging={w_vec[2]:.2f}. "
+            )
+            if w_vec[0] > 0.5:
+                target_desc += "Focus: shorter charging time - try higher I1 and I2."
+            elif w_vec[1] > 0.5:
+                target_desc += "Focus: lower peak temperature - try lower I1, moderate SOC1."
+            elif w_vec[2] > 0.5:
+                target_desc += "Focus: less aging - try lower I2 at high SOC1."
+            else:
+                target_desc += "Balanced trade-off - explore diverse region near Pareto front."
+
             state_dict = {
                 "iteration":        t,
                 "max_iterations":   self.cfg["max_iterations"],
@@ -619,7 +660,7 @@ class BayesOptimizer:
                 "f_min":            af_state.f_min,
                 "mu":               af_state.mu,
                 "sigma":            af_state.sigma,
-                "stagnation_count": af_state.stagnation_count,
+                "stagnation_count": stagnation_count,
                 "w_vec":            w_vec,
                 "data_summary":     data_summary,
                 "sensitivity_info": (
@@ -627,6 +668,8 @@ class BayesOptimizer:
                     f"∂Ψ/∂SOC₁={af_state.grad_psi_at_best[1]:.4f}, "
                     f"∂Ψ/∂I₂={af_state.grad_psi_at_best[2]:.3f}"
                 ),
+                "desired_fval":     f_target,
+                "target_description": target_desc,
             }
             X_candidates = self.llm.generate_iteration_candidates(
                 n=self.cfg["n_candidates"],
@@ -640,9 +683,8 @@ class BayesOptimizer:
             X_cand_norm = (X_candidates - lo) / (hi - lo + 1e-12)
 
             # ── 步骤 5：af.step() 选 top-k ────────────────────────────
-            # f_min 需要与 GP 预测（归一化 F_tch）同量纲
-            f_min_normalized = float((self.database.get_f_min() - f_mean) / f_std)
-            db_proxy = _DBProxy(self.database, f_min_override=f_min_normalized)
+            f_min_absolute = float(F_tch.min())
+            db_proxy = _DBProxy(self.database, f_min_override=f_min_absolute)
 
             result_af = self.af.step(
                 X_candidates=X_cand_norm,

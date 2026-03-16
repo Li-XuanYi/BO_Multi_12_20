@@ -527,8 +527,9 @@ class SearchSigmaTracker:
         # Eq.20
         sigma_raw = c / (abs_grad + self.eps_sigma)
 
-        # 裁剪：[数值下界, 参数范围 0.5 倍上界]
-        sigma_clipped = np.clip(sigma_raw, 1e-4, self._sigma_max)
+        # 下界设为参数范围的 5%，避免高敏感维度探索坍塌
+        sigma_lower = self._range * 0.05
+        sigma_clipped = np.clip(sigma_raw, sigma_lower, self._sigma_max)
         return sigma_clipped
 
 

@@ -174,6 +174,7 @@ class ObservationDB:
         self._prev_f_min: float            = float("inf")
         self._theta_best: Optional[np.ndarray] = None
         self._stagnation_count: int        = 0
+        self._prev_hv_for_stagnation: float = 0.0
         self._prev_pareto_size: int        = 0   # 上次迭代 Pareto front 大小（停滞检测用）
 
         logger.info(
@@ -756,6 +757,7 @@ class ObservationDB:
 
         # Step 2: log₁₀ 变换（Eq.2a）
         Y_tilde = Y_raw.copy()
+        Y_tilde[:, 0] = np.log10(np.maximum(Y_raw[:, 0], 1.0))
         Y_tilde[:, 2] = np.log10(np.maximum(Y_raw[:, 2], 1e-12))
 
         # Step 3: 动态 min-max 归一化（Eq.2b）
@@ -776,14 +778,14 @@ class ObservationDB:
         self._theta_best = feasible[best_idx].theta.copy()
 
         if update_stagnation:
-            # FIX: f_tch 依赖 w_vec，跨迭代不可比；改用 Pareto front 大小变化判停滞
-            # Pareto front 增大 → 发现了新的非支配解 → 未停滞
-            current_pf_size = len(self._pareto_indices)
-            if current_pf_size > self._prev_pareto_size:
+            # 用 HV delta 判停滞，跨迭代更稳定
+            current_hv = self.compute_hypervolume()
+            hv_improvement = current_hv - self._prev_hv_for_stagnation
+            if hv_improvement > 1e-6:
                 self._stagnation_count = 0
             else:
                 self._stagnation_count += 1
-            self._prev_pareto_size = current_pf_size
+            self._prev_hv_for_stagnation = current_hv
 
     # ── DatabaseProtocol 四个必须方法 ─────────────────────────────────────
 
@@ -910,6 +912,7 @@ if __name__ == "__main__":
     feasible = db.get_feasible()
     Y_raw = np.array([o.objectives for o in feasible])
     Y_tilde = Y_raw.copy()
+    Y_tilde[:, 0] = np.log10(np.maximum(Y_raw[:, 0], 1.0))
     Y_tilde[:, 2] = np.log10(np.maximum(Y_raw[:, 2], 1e-12))
     y_min = Y_tilde.min(axis=0)
     y_max = Y_tilde.max(axis=0)
