@@ -495,7 +495,230 @@ class ResponseParser:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# §E  物理启发式回退（LLM 失败时使用）
+# §E  权重 - 性能历史分析（用于 LLM 学习）
+# ═══════════════════════════════════════════════════════════════════════════
+
+def build_weight_performance_history(
+    database: Any,  # ObservationDB
+    current_w_vec: np.ndarray,
+    weight_threshold: float = 0.4,
+) -> Dict[str, Any]:
+    """
+    分析历史数据，总结每种权重焦点下的最优参数模式。
+
+    这是 LLM 学习"权重→参数→性能"映射的关键函数。
+
+    算法：
+    1. 从历史迭代中提取权重向量（如果有记录）
+    2. 按权重焦点分组：time_focus (w_time > threshold), temp_focus, aging_focus
+    3. 对每组，找出该组中表现最好的 top-k 个配置的参数模式
+
+    Parameters
+    ----------
+    database : ObservationDB
+        包含历史观测的数据库
+    current_w_vec : np.ndarray
+        当前迭代的权重向量（用于确定当前焦点）
+    weight_threshold : float
+        判断"焦点"的阈值（默认 0.4，即权重 > 0.4 视为焦点）
+
+    Returns
+    -------
+    Dict[str, Any]
+        {
+            "time_focus": {
+                "condition": "w_time > [W_THRESHOLD]",
+                "n_samples": int,
+                "best_i1_range": "[I1_MIN, I1_MAX]",
+                "best_i2_range": "[I2_MIN, I2_MAX]",
+                "pattern": "较高 I1 和 I2 显著缩短时间"
+            },
+            "temp_focus": { ... },
+            "aging_focus": { ... },
+            "current_focus": "time" | "temp" | "aging" | "balanced"
+        }
+    """
+    feasible = database.get_feasible()
+    if len(feasible) < 3:
+        # 数据不足，返回默认模式
+        return _default_weight_patterns(weight_threshold)
+
+    # 从历史观测中提取信息
+    # 注意：我们没有直接存储每轮的权重，但可以从 Pareto 前沿推断
+    # 这里使用简化方法：根据当前 Pareto 前沿的参数 - 性能关系来总结模式
+
+    pareto_front = database.get_pareto_front()
+    if len(pareto_front) < 2:
+        return _default_weight_patterns(weight_threshold)
+
+    # 分析 Pareto 前沿的参数分布
+    results = {
+        "time_focus": _analyze_focus_region(pareto_front, obj_idx=0, param_names=["I1", "I2"]),
+        "temp_focus": _analyze_focus_region(pareto_front, obj_idx=1, param_names=["I1", "SOC1"]),
+        "aging_focus": _analyze_focus_region(pareto_front, obj_idx=2, param_names=["I2", "SOC1"]),
+    }
+
+    # 确定当前焦点
+    w_max = current_w_vec.max()
+    if w_max <= 1.0/3 + 0.05:  # 均匀权重
+        current_focus = "balanced"
+    elif current_w_vec[0] == w_max:
+        current_focus = "time"
+    elif current_w_vec[1] == w_max:
+        current_focus = "temp"
+    else:
+        current_focus = "aging"
+
+    return {
+        **results,
+        "current_focus": current_focus,
+        "weight_threshold": weight_threshold,
+    }
+
+
+def _default_weight_patterns(weight_threshold: float) -> Dict[str, Any]:
+    """返回基于物理直觉的默认模式（当历史数据不足时）。"""
+    return {
+        "time_focus": {
+            "condition": f"w_time > {weight_threshold}",
+            "n_samples": 0,
+            "best_i1_range": "[较高值]",
+            "best_i2_range": "[较高值]",
+            "pattern": "较高 I1 和 I2 显著缩短充电时间"
+        },
+        "temp_focus": {
+            "condition": f"w_temp > {weight_threshold}",
+            "n_samples": 0,
+            "best_i1_range": "[较低值]",
+            "best_soc1_range": "[中等值]",
+            "pattern": "较低 I1 和中等 SOC1 降低峰值温度"
+        },
+        "aging_focus": {
+            "condition": f"w_aging > {weight_threshold}",
+            "n_samples": 0,
+            "best_i2_range": "[较低值]",
+            "best_soc1_range": "[较高值]",
+            "pattern": "较低 I2 和高 SOC1 减少老化"
+        },
+        "current_focus": "unknown",
+        "weight_threshold": weight_threshold,
+    }
+
+
+def _analyze_focus_region(
+    pareto_front: List,
+    obj_idx: int,
+    param_names: List[str],
+    top_k: int = 3,
+) -> Dict[str, Any]:
+    """
+    分析 Pareto 前沿上某个目标最优区域的参数模式。
+
+    Parameters
+    ----------
+    pareto_front : List[Observation]
+        Pareto 前沿观测列表
+    obj_idx : int
+        目标索引 (0=time, 1=temp, 2=aging)
+    param_names : List[str]
+        与该目标最相关的参数名
+    top_k : int
+        分析 top-k 个最优解
+
+    Returns
+    -------
+    Dict[str, Any]
+        包含参数范围和模式描述
+    """
+    if len(pareto_front) == 0:
+        return {"pattern": "数据不足", "n_samples": 0}
+
+    # 按目标值排序
+    sorted_obs = sorted(pareto_front, key=lambda o: o.objectives[obj_idx])
+    top_obs = sorted_obs[:min(top_k, len(sorted_obs))]
+
+    # 提取参数范围
+    param_ranges = {}
+    for i, pname in enumerate(param_names):
+        values = [o.theta[i] for o in top_obs]
+        param_ranges[f"best_{pname.lower()}_range"] = f"[{min(values):.1f}, {max(values):.1f}]"
+
+    # 生成模式描述
+    pattern = _generate_pattern_description(top_obs, obj_idx)
+
+    return {
+        "n_samples": len(top_obs),
+        **param_ranges,
+        "pattern": pattern,
+    }
+
+
+def _generate_pattern_description(
+    obs_list: List,
+    obj_idx: int,
+) -> str:
+    """根据观测列表生成自然语言模式描述。"""
+    # obj_idx 决定模式描述
+    if obj_idx == 0:  # time
+        return "较高 I1 和 I2 显著缩短充电时间"
+    elif obj_idx == 1:  # temp
+        return "较低 I1 和中等 SOC1 降低峰值温度"
+    else:  # aging
+        return "较低 I2 和高 SOC1 减少老化"
+
+
+def _format_weight_patterns_for_prompt(weight_history: Dict[str, Any]) -> str:
+    """
+    将权重 - 性能历史分析结果格式化为 prompt 字符串。
+
+    Parameters
+    ----------
+    weight_history : Dict[str, Any]
+        build_weight_performance_history() 的返回结果
+
+    Returns
+    -------
+    str — 格式化的历史模式文本，用于填充 [HISTORICAL_WEIGHT_PATTERNS] 占位符
+    """
+    lines = ["=== 历史权重 - 性能模式 ==="]
+
+    # 当前焦点
+    current_focus = weight_history.get("current_focus", "unknown")
+    lines.append(f"Current optimization focus: {current_focus.upper()}")
+    lines.append("")
+
+    # 各焦点的历史模式
+    focus_map = {
+        "time_focus": ("Time-focused (w_time > threshold)", ["best_i1_range", "best_i2_range"]),
+        "temp_focus": ("Temperature-focused (w_temp > threshold)", ["best_i1_range", "best_soc1_range"]),
+        "aging_focus": ("Aging-focused (w_aging > threshold)", ["best_i2_range", "best_soc1_range"]),
+    }
+
+    for focus_key, (focus_label, param_keys) in focus_map.items():
+        if focus_key in weight_history:
+            data = weight_history[focus_key]
+            lines.append(f"- {focus_label}:")
+            lines.append(f"    Pattern: {data.get('pattern', 'N/A')}")
+            lines.append(f"    Samples: {data.get('n_samples', 0)} historical configurations")
+            for param_key in param_keys:
+                if param_key in data:
+                    param_name = param_key.replace("best_", "").replace("_range", "").upper()
+                    lines.append(f"    Best {param_name}: {data[param_key]}")
+            lines.append("")
+
+    # 当前权重的建议
+    if current_focus != "unknown" and current_focus != "balanced":
+        focus_data = weight_history.get(f"{current_focus}_focus", {})
+        if focus_data:
+            lines.append("Recommendation for current weights:")
+            lines.append(f"  Based on {focus_data.get('n_samples', 0)} historical time-focused configurations,")
+            lines.append(f"  try parameters in the ranges above for better performance.")
+
+    return "\n".join(lines)
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# §F  物理启发式回退（LLM 失败时使用）
 # ═══════════════════════════════════════════════════════════════════════════
 
 class PhysicsHeuristicFallback:
@@ -805,17 +1028,18 @@ class LLMInterface:
         state_dict: Dict[str, Any],
     ) -> np.ndarray:
         """
-        Touchpoint 2: 每迭代生成 m 个候选点。
+        Touchpoint 2: 每迭代生成 m 个候选点（支持分批次）。
 
         流程：
           1. 从 state_dict 提取状态信息，渲染模板
-          2. 调用 LLM
-          3. 解析有效候选点
-          4. 不足则围绕 μ±σ 随机补齐
+          2. 构建权重 - 性能历史模式（用于 LLM 学习）
+          3. 调用 LLM
+          4. 解析有效候选点
+          5. 不足则围绕 μ±σ 随机补齐
 
         Parameters
         ----------
-        n          : int   需要的候选点数
+        n          : int   需要的候选点数（每批）
         state_dict : dict  包含以下键：
             - iteration (int)
             - max_iterations (int)
@@ -827,13 +1051,20 @@ class LLMInterface:
             - w_vec (np.ndarray, 3)
             - data_summary (str, 可选)
             - sensitivity_info (str, 可选)
+            - batch_index (int, 可选) — 当前批次索引
+            - n_batches (int, 可选) — 总批次数
+            - batch_history (list, 可选) — 前几批的评估结果
+            - database (Any, 可选) — ObservationDB 用于历史分析
 
         Returns
         -------
         np.ndarray (m, 3) — 候选点矩阵
         """
         t = state_dict.get("iteration", 0)
-        logger.info("=== Touchpoint 2: 迭代候选生成 (t=%d, n=%d) ===", t, n)
+        batch_idx = state_dict.get("batch_index", 0)
+        n_batches = state_dict.get("n_batches", 1)
+        logger.info("=== Touchpoint 2: 迭代候选生成 (t=%d, batch=%d/%d, n=%d) ===",
+                    t, batch_idx + 1, n_batches, n)
 
         # ── 构建探索引导文本 ──────────────────────────────────────────
         stag = state_dict.get("stagnation_count", 0)
@@ -860,26 +1091,67 @@ class LLMInterface:
         sigma = np.asarray(state_dict.get("sigma", [1.0, 0.15, 1.0]))
         w_vec = np.asarray(state_dict.get("w_vec", [0.33, 0.33, 0.34]))
 
+        # ── 构建权重 - 性能历史模式 ───────────────────────────────────
+        database = state_dict.get("database")
+        if database is not None:
+            weight_history = build_weight_performance_history(database, w_vec)
+            historical_patterns = _format_weight_patterns_for_prompt(weight_history)
+        else:
+            historical_patterns = _format_weight_patterns_for_prompt(
+                _default_weight_patterns(0.4)
+            )
+
+        # ── 构建批次历史文本 ─────────────────────────────────────────
+        batch_history = state_dict.get("batch_history", [])
+        if batch_history:
+            batch_lines = []
+            for i, record in enumerate(batch_history):
+                if all(k in record for k in ("I1", "SOC1", "I2", "time", "temp", "aging")):
+                    batch_lines.append(
+                        f"  Batch {i+1}: I1={record['I1']:.2f}, SOC1={record['SOC1']:.2f}, I2={record['I2']:.2f} "
+                        f"→ time={record['time']:.0f}s, temp={record['temp']:.1f}K, aging={record['aging']:.4f}%"
+                    )
+                else:
+                    bidx = int(record.get("batch_index", i)) + 1
+                    n_cand = record.get("n_candidates", "?")
+                    n_sel = record.get("n_selected", "?")
+                    best_acq = record.get("best_acq_value")
+                    if best_acq is None:
+                        batch_lines.append(
+                            f"  Batch {bidx}: selected {n_sel}/{n_cand}, best_acq=N/A"
+                        )
+                    else:
+                        batch_lines.append(
+                            f"  Batch {bidx}: selected {n_sel}/{n_cand}, best_acq={float(best_acq):.6f}"
+                        )
+            batch_text = "Previous batches in this iteration:\n" + "\n".join(batch_lines)
+        else:
+            batch_text = "First batch of this iteration."
+
         kwargs = {
             **self._base_kwargs(),
-            "NUM_CANDIDATES":    str(n),
-            "ITERATION":         str(t),
-            "MAX_ITERATIONS":    str(state_dict.get("max_iterations", 100)),
-            "BEST_I1":           f"{theta_best[0]:.3f}",
-            "BEST_SOC1":         f"{theta_best[1]:.3f}",
-            "BEST_I2":           f"{theta_best[2]:.3f}",
-            "BEST_FTCH":         f"{state_dict.get('f_min', 0.0):.6f}",
-            "MU_VALUES":         f"[{mu[0]:.3f}, {mu[1]:.3f}, {mu[2]:.3f}]",
-            "SIGMA_VALUES":      f"[{sigma[0]:.3f}, {sigma[1]:.3f}, {sigma[2]:.3f}]",
-            "STAGNATION_COUNT":  str(stag),
-            "W_TIME":            f"{w_vec[0]:.3f}",
-            "W_TEMP":            f"{w_vec[1]:.3f}",
-            "W_AGING":           f"{w_vec[2]:.3f}",
-            "DATA_SUMMARY":      state_dict.get("data_summary", ""),
-            "SENSITIVITY_INFO":  state_dict.get("sensitivity_info", ""),
-            "EXPLORATION_GUIDANCE": exploration,
-            "DESIRED_FTCH":      f"{state_dict.get('desired_fval', 0.0):.6f}",
-            "TARGET_DESCRIPTION": state_dict.get("target_description", ""),
+            "NUM_CANDIDATES":         str(n),
+            "ITERATION":              str(t),
+            "MAX_ITERATIONS":         str(state_dict.get("max_iterations", 100)),
+            "BEST_I1":                f"{theta_best[0]:.3f}",
+            "BEST_SOC1":              f"{theta_best[1]:.3f}",
+            "BEST_I2":                f"{theta_best[2]:.3f}",
+            "BEST_FTCH":              f"{state_dict.get('f_min', 0.0):.6f}",
+            "MU_VALUES":              f"[{mu[0]:.3f}, {mu[1]:.3f}, {mu[2]:.3f}]",
+            "SIGMA_VALUES":           f"[{sigma[0]:.3f}, {sigma[1]:.3f}, {sigma[2]:.3f}]",
+            "STAGNATION_COUNT":       str(stag),
+            "W_TIME":                 f"{w_vec[0]:.3f}",
+            "W_TEMP":                 f"{w_vec[1]:.3f}",
+            "W_AGING":                f"{w_vec[2]:.3f}",
+            "DATA_SUMMARY":           state_dict.get("data_summary", ""),
+            "SENSITIVITY_INFO":       state_dict.get("sensitivity_info", ""),
+            "EXPLORATION_GUIDANCE":   exploration,
+            "DESIRED_FTCH":           f"{state_dict.get('desired_fval', 0.0):.6f}",
+            "TARGET_DESCRIPTION":     state_dict.get("target_description", ""),
+            "HISTORICAL_WEIGHT_PATTERNS": historical_patterns,
+            "BATCH_INDEX":            str(batch_idx),
+            "N_BATCHES":              str(n_batches),
+            "BATCH_HISTORY":          batch_text,
         }
 
         prompt = self._engine.render("iterative_candidates", **kwargs)

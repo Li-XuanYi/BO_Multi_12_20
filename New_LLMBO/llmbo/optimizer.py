@@ -653,55 +653,90 @@ class BayesOptimizer:
             else:
                 target_desc += "Balanced trade-off - explore diverse region near Pareto front."
 
-            state_dict = {
-                "iteration":        t,
-                "max_iterations":   self.cfg["max_iterations"],
-                "theta_best":       af_state.theta_best,
-                "f_min":            af_state.f_min,
-                "mu":               af_state.mu,
-                "sigma":            af_state.sigma,
-                "stagnation_count": stagnation_count,
-                "w_vec":            w_vec,
-                "data_summary":     data_summary,
-                "sensitivity_info": (
-                    f"∂Ψ/∂I₁={af_state.grad_psi_at_best[0]:.3f}, "
-                    f"∂Ψ/∂SOC₁={af_state.grad_psi_at_best[1]:.4f}, "
-                    f"∂Ψ/∂I₂={af_state.grad_psi_at_best[2]:.3f}"
-                ),
-                "desired_fval":     f_target,
-                "target_description": target_desc,
-            }
-            X_candidates = self.llm.generate_iteration_candidates(
-                n=self.cfg["n_candidates"],
-                state_dict=state_dict,
-            )
-            logger.info("  LLM 生成 %d 个候选点", X_candidates.shape[0])
+            # 批量生成候选点：分 n_batches 批，每批 candidates_per_batch 个
+            n_batches = 3
+            candidates_per_batch = 5
+            batch_history: List[Dict] = []
+            all_X_candidates: List[np.ndarray] = []
+            all_acq_values: List[float] = []
 
-            # 归一化候选点（GP 在归一化 θ 空间预测）
-            lo = np.array([self.simulator.param_bounds[k][0] for k in ["I1", "SOC1", "I2"]])
-            hi = np.array([self.simulator.param_bounds[k][1] for k in ["I1", "SOC1", "I2"]])
-            X_cand_norm = (X_candidates - lo) / (hi - lo + 1e-12)
+            for batch_idx in range(n_batches):
+                # 更新状态字典，包含批次信息
+                batch_state_dict = {
+                    "iteration":        t,
+                    "max_iterations":   self.cfg["max_iterations"],
+                    "theta_best":       af_state.theta_best,
+                    "f_min":            af_state.f_min,
+                    "mu":               af_state.mu,
+                    "sigma":            af_state.sigma,
+                    "stagnation_count": stagnation_count,
+                    "w_vec":            w_vec,
+                    "data_summary":     data_summary,
+                    "sensitivity_info": (
+                        f"∂Ψ/∂I₁={af_state.grad_psi_at_best[0]:.3f}, "
+                        f"∂Ψ/∂SOC₁={af_state.grad_psi_at_best[1]:.4f}, "
+                        f"∂Ψ/∂I₂={af_state.grad_psi_at_best[2]:.3f}"
+                    ),
+                    "desired_fval":     f_target,
+                    "target_description": target_desc,
+                    "batch_index":      batch_idx,
+                    "n_batches":        n_batches,
+                    "batch_history":    batch_history,
+                }
 
-            # ── 步骤 5：af.step() 选 top-k ────────────────────────────
-            f_min_absolute = float(F_tch.min())
-            db_proxy = _DBProxy(self.database, f_min_override=f_min_absolute)
+                # 生成当前批次的候选点
+                X_batch = self.llm.generate_iteration_candidates(
+                    n=candidates_per_batch,
+                    state_dict=batch_state_dict,
+                )
+                logger.info("  LLM 生成批次 %d/%d: %d 个候选点", batch_idx + 1, n_batches, X_batch.shape[0])
 
-            result_af = self.af.step(
-                X_candidates=X_cand_norm,
-                database=db_proxy,
-                t=t,
-                w_vec=w_vec,
-            )
-            logger.info(
-                "  top-%d α 分值: %s",
-                len(result_af.selected_thetas),
-                result_af.selected_scores.round(6)
-            )
+                # 归一化当前批次候选点（GP 在归一化θ空间预测）
+                lo = np.array([self.simulator.param_bounds[k][0] for k in ["I1", "SOC1", "I2"]])
+                hi = np.array([self.simulator.param_bounds[k][1] for k in ["I1", "SOC1", "I2"]])
+                X_batch_norm = (X_batch - lo) / (hi - lo + 1e-12)
 
-            # ── 步骤 6：PyBaMM 评估 top-k ────────────────────────────
+                # 计算采集函数值并选择 top-k
+                f_min_absolute = float(F_tch.min())
+                db_proxy = _DBProxy(self.database, f_min_override=f_min_absolute)
+                result_af = self.af.step(
+                    X_candidates=X_batch_norm,
+                    database=db_proxy,
+                    t=t,
+                    w_vec=w_vec,
+                )
+
+                # 每批次选择 top-2 进行评估
+                n_to_select = min(2, len(result_af.selected_indices), len(result_af.selected_scores))
+                for sel_idx, sel_score in zip(
+                    result_af.selected_indices[:n_to_select],
+                    result_af.selected_scores[:n_to_select],
+                ):
+                    all_X_candidates.append(X_batch[sel_idx])
+                    all_acq_values.append(float(sel_score))
+
+                # 记录当前批次结果到历史，供下一批次参考
+                batch_result = {
+                    "batch_index": batch_idx,
+                    "n_candidates": X_batch.shape[0],
+                    "n_selected": n_to_select,
+                    "best_acq_value": float(result_af.selected_scores[0]) if len(result_af.selected_scores) > 0 else None,
+                }
+                batch_history.append(batch_result)
+
+            # 合并所有批次的候选点
+            if len(all_X_candidates) > 0:
+                X_candidates = np.array(all_X_candidates)
+                acq_values_array = np.array(all_acq_values)
+            else:
+                # 如果没有候选点，跳过当前迭代
+                logger.warning("  未生成有效候选点，跳过迭代 t=%d", t)
+                continue
+
+            # 步骤 5：PyBaMM 评估选中的候选点
             n_new = 0
-            for rank, sel_idx in enumerate(result_af.selected_indices):
-                theta_orig = X_candidates[sel_idx]    # 原始物理空间
+            for rank in range(len(X_candidates)):
+                theta_orig = X_candidates[rank]    # 原始物理空间
                 logger.info(
                     "  评估候选 [rank=%d]: I1=%.3f  SOC1=%.3f  I2=%.3f",
                     rank, *theta_orig
@@ -715,11 +750,11 @@ class BayesOptimizer:
                     result     = sim_result,
                     source     = "llm_gp",
                     iteration  = t + 1,
-                    acq_value  = float(result_af.selected_scores[rank]),
+                    acq_value  = acq_values_array[rank],
                     acq_type   = "EI_Wcharge",
                     gp_pred    = {
-                        "mean": float(result_af.all_mean[sel_idx]),
-                        "std":  float(result_af.all_std[sel_idx]),
+                        "mean": 0.0,
+                        "std":  0.0,
                     },
                 )
                 n_new += 1

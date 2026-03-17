@@ -13,24 +13,29 @@ Objectives (all minimized): charging time, peak temperature, aging degree.
 
 [SENSITIVITY_INFO]
 
+[HISTORICAL_WEIGHT_PATTERNS]
+
 Current optimization state:
   - Iteration: [ITERATION] / [MAX_ITERATIONS]
   - Current best theta: I1=[BEST_I1], SOC1=[BEST_SOC1], I2=[BEST_I2]
   - Current best Tchebycheff value: [BEST_FTCH]
+  - Current weights: time=[W_TIME], temp=[W_TEMP], aging=[W_AGING]
   - TARGET Tchebycheff value: [DESIRED_FTCH] (your suggestions should aim to beat this)
   - [TARGET_DESCRIPTION]
   - Search center mu: [MU_VALUES]
-  - Search range sigma:  [SIGMA_VALUES]
+  - Search range sigma: [SIGMA_VALUES]
   - Stagnation count: [STAGNATION_COUNT]
+  - Batch: [BATCH_INDEX] / [N_BATCHES]
+  - [BATCH_HISTORY]
 
 [EXPLORATION_GUIDANCE]
 
-IMPORTANT: Suggest [NUM_CANDIDATES] candidate protocols that are likely to ACHIEVE OR BEAT the target Tchebycheff value of [DESIRED_FTCH].
-- Include at least 2 explorative candidates near the parameter boundaries relevant to the current weight focus.
-- Include at least 2 candidates near the current best theta with small perturbations.
-- The remaining candidates should explore unexplored promising regions.
-- Strictly respect all parameter bounds.
-- Avoid clustering all suggestions around I1=5, SOC1=0.4, I2=2.5 - cover diverse trade-off regions.
-
-Respond with ONLY a JSON list of dictionaries, no other text:
+IMPORTANT:
+- Generate [NUM_CANDIDATES] candidates for this batch
+- Learn from [HISTORICAL_WEIGHT_PATTERNS] to suggest parameters that match the current weight focus
+- Consider the current weight focus: if time weight is high, prioritize configurations similar to historical time-focused best performers
+- Balance exploration (boundary regions) and exploitation (near mu)
+- Use batch history to adjust: if previous batch had poor performance, try different parameter regions
+- Strictly respect all parameter bounds
+- Respond with ONLY a JSON list of dictionaries, no other text:
 [{"I1": value, "SOC1": value, "I2": value}, ...]

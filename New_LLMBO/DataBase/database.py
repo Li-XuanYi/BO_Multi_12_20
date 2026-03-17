@@ -33,12 +33,19 @@ PARAM_NAMES      = ("I1", "SOC1", "I2")
 NUM_OBJECTIVES   = 3
 NUM_PARAMS       = 3
 
-DEFAULT_REF_POINT   = np.array([7200.0, 328.0, 0.1])
+# 注意：aging_pct 和 time_s 在 HV 计算时会取 log₁₀，因此参考点和理想点的第一、三维也使用 log 空间值
+# 第二维 (temp) 保持原始空间
+DEFAULT_REF_POINT   = np.array([7200.0, 328.0, 0.1])         # HV 混合空间：[log₁₀(7200)≈3.857, 328K, log₁₀(0.1)=-1]
+DEFAULT_IDEAL_POINT = np.array([1000.0, 298.0, 0.001])       # HV 混合空间：[log₁₀(1000)=3, 298K, log₁₀(0.001)=-3]
 
-# 理想点（物理下界）：充电时间 ≥ 1000 s, 温度 ≥ 298 K, 老化 ≥ 0.001 %
-# HV_max = Π(ref_i - ideal_i) 用于归一化，使 HV ∈ [0, 1]
-DEFAULT_IDEAL_POINT = np.array([2000.0, 298.0, 0.001])
-DEFAULT_HV_MAX      = float(np.prod(DEFAULT_REF_POINT - DEFAULT_IDEAL_POINT))  # ≈ 123752.0
+# HV_max 使用混合空间计算（与 _hv_3d 一致）：
+#   第一维：log10(7200) - log10(1000) = 3.857 - 3 = 0.857
+#   第二维：328 - 298 = 30
+#   第三维：log10(0.1) - log10(0.001) = -1 - (-3) = 2
+# HV_max = 0.857 × 30 × 2 ≈ 51.4
+DEFAULT_HV_MAX = (np.log10(DEFAULT_REF_POINT[0]) - np.log10(DEFAULT_IDEAL_POINT[0])) * \
+                 (DEFAULT_REF_POINT[1] - DEFAULT_IDEAL_POINT[1]) * \
+                 (np.log10(DEFAULT_REF_POINT[2]) - np.log10(DEFAULT_IDEAL_POINT[2]))
 
 DEFAULT_BOUNDS = {
     "I1":   (3.0, 7.0),
@@ -160,7 +167,11 @@ class ObservationDB:
         self.ideal_point   = (np.asarray(ideal_point) if ideal_point is not None
                               else DEFAULT_IDEAL_POINT.copy())
         # HV_max = Π(ref_i - ideal_i) — 用于归一化，使 HV ∈ [0, 1]
-        self.hv_max        = float(np.prod(self.ref_point - self.ideal_point))
+        # 注意：HV 计算时第一维 (time) 和第三维 (aging) 取 log₁₀，第二维 (temp) 保持原始空间
+        # 因此 HV_max 也必须使用混合空间计算
+        self.hv_max = float((np.log10(self.ref_point[0]) - np.log10(self.ideal_point[0])) *
+                            (self.ref_point[1] - self.ideal_point[1]) *
+                            (np.log10(self.ref_point[2]) - np.log10(self.ideal_point[2])))
         self.normalize     = normalize
 
         self._iteration_stats: List[Dict] = []
@@ -394,29 +405,62 @@ class ObservationDB:
     #  超体积
     # ============================================================
     def compute_hypervolume(self, ref_point: Optional[np.ndarray] = None) -> float:
-        """返回归一化超体积 HV ∈ [0, 1]，除以 HV_max = Π(ref_i - ideal_i)。"""
+        """
+        返回归一化超体积 HV ∈ [0, 1]，除以 HV_max = Π(ref_i - ideal_i)。
+
+        注意：time_s (第一维) 和 aging_pct (第三维) 取 log₁₀ 后再计算 HV，第二维 (temp) 保持原始空间。
+        """
         ref = ref_point if ref_point is not None else self.ref_point
         _, Y_pf = self.get_pareto_XY()
         if len(Y_pf) == 0:
             return 0.0
-        mask = np.all(Y_pf < ref, axis=1)
-        Y_pf = Y_pf[mask]
-        if len(Y_pf) == 0:
+
+        # 构建混合空间：第一维 (time) 和第三维 (aging) 取 log₁₀，第二维 (temp) 保持原始值
+        Y_hv = Y_pf.copy()
+        Y_hv[:, 0] = np.log10(np.maximum(Y_pf[:, 0], 1.0))      # time 取 log
+        Y_hv[:, 2] = np.log10(np.maximum(Y_pf[:, 2], 1e-12))    # aging 取 log
+
+        # ref 也使用混合空间
+        ref_hv = ref.copy()
+        ref_hv[0] = np.log10(ref[0])
+        ref_hv[2] = np.log10(ref[2])
+
+        # 过滤掉超出参考点的点
+        mask = np.all(Y_hv < ref_hv, axis=1)
+        Y_hv = Y_hv[mask]
+        if len(Y_hv) == 0:
             return 0.0
-        hv_raw = self._hv_3d(Y_pf, ref)
+
+        hv_raw = self._hv_3d(Y_hv, ref_hv)
         return hv_raw / self.hv_max   # 归一化到 [0, 1]
 
     def compute_hypervolume_raw(self, ref_point: Optional[np.ndarray] = None) -> float:
-        """返回未归一化的原始超体积（供调试用）。"""
+        """
+        返回未归一化的原始超体积（供调试用）。
+
+        注意：time_s (第一维) 和 aging_pct (第三维) 取 log₁₀ 后再计算 HV，第二维 (temp) 保持原始空间。
+        """
         ref = ref_point if ref_point is not None else self.ref_point
         _, Y_pf = self.get_pareto_XY()
         if len(Y_pf) == 0:
             return 0.0
-        mask = np.all(Y_pf < ref, axis=1)
-        Y_pf = Y_pf[mask]
-        if len(Y_pf) == 0:
+
+        # 构建混合空间：第一维 (time) 和第三维 (aging) 取 log₁₀，第二维 (temp) 保持原始值
+        Y_hv = Y_pf.copy()
+        Y_hv[:, 0] = np.log10(np.maximum(Y_pf[:, 0], 1.0))      # time 取 log
+        Y_hv[:, 2] = np.log10(np.maximum(Y_pf[:, 2], 1e-12))    # aging 取 log
+
+        # ref 也使用混合空间
+        ref_hv = ref.copy()
+        ref_hv[0] = np.log10(ref[0])
+        ref_hv[2] = np.log10(ref[2])
+
+        # 过滤掉超出参考点的点
+        mask = np.all(Y_hv < ref_hv, axis=1)
+        Y_hv = Y_hv[mask]
+        if len(Y_hv) == 0:
             return 0.0
-        return self._hv_3d(Y_pf, ref)
+        return self._hv_3d(Y_hv, ref_hv)
 
     @staticmethod
     def _hv_3d(points: np.ndarray, ref: np.ndarray) -> float:
@@ -906,7 +950,7 @@ if __name__ == "__main__":
 
     print(f"添加 {db.size} 条观测后 stagnation_count = {db._stagnation_count}")
     assert db._stagnation_count == 0, "BUG: add_observation 不应累积停滞计数"
-    print("✓ stagnation_count 在 add_observation 后保持 0（修复验证通过）")
+    print("[OK] stagnation_count 在 add_observation 后保持 0（修复验证通过）")
 
     # 模拟 optimizer 传入动态 min/max
     feasible = db.get_feasible()
@@ -925,4 +969,32 @@ if __name__ == "__main__":
     print(f"  has_improved = {db.has_improved()}")
     print(f"  stagnation_count = {db.get_stagnation_count()}")
 
-    print("\n✓ database.py 修复验证完成")
+    print("\n[OK] database.py 修复验证完成")
+
+    # ============================================================
+    #  HV 归一化验证测试
+    # ============================================================
+    print("\n" + "=" * 60)
+    print("HV 归一化验证测试 (time 和 aging 都取 log)")
+    print("=" * 60)
+
+    print(f"\nHV_max = {db.hv_max:.2f}")
+    print(f"  = (log10(7200)-log10(1000)) × (328-298) × (log10(0.1)-log10(0.001))")
+    print(f"  = (3.857-3.0) × 30 × 2 = 0.857 × 30 × 2 ≈ 51.4")
+
+    hv_raw = db.compute_hypervolume_raw()
+    hv_norm = db.compute_hypervolume()
+
+    print(f"\n6 个测试点的 HV 计算结果:")
+    print(f"  HV_raw (未归一化) = {hv_raw:.2f}")
+    print(f"  HV_norm (归一化)  = {hv_norm:.6f}")
+    print(f"  HV_norm × HV_max  = {hv_norm * db.hv_max:.2f}")
+
+    # 验证归一化：HV ∈ [0, 1]
+    assert 0.0 <= hv_norm <= 1.0, f"BUG: HV 归一化失败，HV={hv_norm}"
+    print("\n[OK] HV 归一化验证通过：HV ∈ [0, 1]")
+
+    # 验证 HV_raw / HV_max = HV_norm
+    expected_hv_norm = hv_raw / db.hv_max
+    assert abs(hv_norm - expected_hv_norm) < 1e-10, "BUG: HV 归一化计算错误"
+    print("[OK] HV 计算验证通过：HV_norm = HV_raw / HV_max")
