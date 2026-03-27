@@ -36,7 +36,7 @@ NUM_PARAMS       = 3
 # 注意：aging_pct 和 time_s 在 HV 计算时会取 log₁₀，因此参考点和理想点的第一、三维也使用 log 空间值
 # 第二维 (temp) 保持原始空间
 DEFAULT_REF_POINT   = np.array([7200.0, 328.0, 0.1])         # HV 混合空间：[log₁₀(7200)≈3.857, 328K, log₁₀(0.1)=-1]
-DEFAULT_IDEAL_POINT = np.array([1000.0, 298.0, 0.001])       # HV 混合空间：[log₁₀(1000)=3, 298K, log₁₀(0.001)=-3]
+DEFAULT_IDEAL_POINT = np.array([2000.0, 298.0, 0.001])       # HV 混合空间：[log₁₀(1000)=3, 298K, log₁₀(0.001)=-3]
 
 # HV_max 使用混合空间计算（与 _hv_3d 一致）：
 #   第一维：log10(7200) - log10(1000) = 3.857 - 3 = 0.857

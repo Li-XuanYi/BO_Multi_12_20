@@ -977,42 +977,67 @@ class LLMInterface:
     def generate_warmstart_candidates(
         self,
         n: int = 10,
+        batch_size: int = 20,
+        max_llm_attempts: int = 5,
     ) -> List[np.ndarray]:
         """
-        Touchpoint 1b: 生成初始 warm-start 候选协议。
+        Touchpoint 1b: 生成初始 warm-start 候选协议（支持批量生成）。
 
         流程：
-          1. 渲染 warmstart_candidates 模板
-          2. 调用 LLM（多采样）
-          3. 解析合并所有有效候选点
-          4. 若不足 n 个，用 LHS / 物理启发式补齐
-          5. 缓存结果（供 get_warmstart_center() 使用）
+          1. 分批调用 LLM（每批 batch_size 个，最多 max_llm_attempts 批）
+          2. 合并去重所有有效候选点
+          3. 若不足 n 个，用 LHS / 物理启发式补齐
+          4. 缓存结果（供 get_warmstart_center() 使用）
 
         Parameters
         ----------
         n : int  需要的候选点数量（默认 10）
+        batch_size : int  每批生成的候选点数（默认 20）
+        max_llm_attempts : int  最多尝试的批次数（默认 5）
 
         Returns
         -------
         List[np.ndarray] — n 个候选点，每个为 (3,) ndarray
         """
-        logger.info("=== Touchpoint 1b: Warm-Start 候选点生成 (n=%d) ===", n)
+        logger.info("=== Touchpoint 1b: Warm-Start 候选点生成 (n=%d, batch_size=%d) ===", n, batch_size)
 
-        kwargs = {**self._base_kwargs(), "NUM_CANDIDATES": str(n)}
-        prompt = self._engine.render("warmstart_candidates", **kwargs)
-        responses = self._caller.call(prompt)
+        all_candidates = []
+        seen_hashes = set()
 
-        candidates = self._parser.parse_candidates(responses)
-        logger.info("Touchpoint 1b: LLM 返回 %d 个有效候选点", len(candidates))
+        # 分批生成，直到达到目标数量或达到最大尝试次数
+        for batch_idx in range(max_llm_attempts):
+            if len(all_candidates) >= n:
+                break
+
+            logger.info("  批次 %d/%d: 请求 %d 个候选点", batch_idx + 1, max_llm_attempts, batch_size)
+            kwargs = {**self._base_kwargs(), "NUM_CANDIDATES": str(batch_size)}
+            prompt = self._engine.render("warmstart_candidates", **kwargs)
+            responses = self._caller.call(prompt)
+
+            batch_candidates = self._parser.parse_candidates(responses)
+
+            # 去重并添加到总列表
+            new_count = 0
+            for cand in batch_candidates:
+                h = tuple(cand.round(4).tolist())
+                if h not in seen_hashes:
+                    seen_hashes.add(h)
+                    all_candidates.append(cand)
+                    new_count += 1
+
+            logger.info("  批次 %d: 新增 %d 个有效候选点（总计 %d）",
+                       batch_idx + 1, new_count, len(all_candidates))
+
+        logger.info("Touchpoint 1b: LLM 共返回 %d 个有效候选点", len(all_candidates))
 
         # 补齐
-        if len(candidates) < n:
-            shortage = n - len(candidates)
+        if len(all_candidates) < n:
+            shortage = n - len(all_candidates)
             logger.info("Touchpoint 1b: 不足 %d 个，用启发式补 %d 个", n, shortage)
             fallback_pts = self._fallback.physics_informed_warmstart(shortage)
-            candidates.extend(fallback_pts)
+            all_candidates.extend(fallback_pts)
 
-        candidates = candidates[:n]
+        candidates = all_candidates[:n]
         self._warmstart_cache = [c.copy() for c in candidates]
 
         logger.info("Touchpoint 1b: 最终返回 %d 个 warm-start 候选点", len(candidates))

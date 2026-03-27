@@ -60,7 +60,7 @@ class BatteryConfig(BaseModel):
     )
 
     temp_max: float = Field(
-        default=323.15,
+        default=328.15,
         description="最大温度 [K] (= 45°C)",
         gt=0.0
     )
@@ -157,8 +157,8 @@ class BOConfig(BaseModel):
     """贝叶斯优化参数"""
 
     n_warmstart: int = Field(
-        default=5,
-        description="LLM 热启动样本数",
+        default=50,
+        description="LLM 热启动样本数（增加到50以提升初始HV）",
         ge=1
     )
 
@@ -171,6 +171,25 @@ class BOConfig(BaseModel):
     n_iterations: int = Field(
         default=50,
         description="BO 迭代次数",
+        ge=1
+    )
+
+    # Warmstart 批量生成参数
+    warmstart_batch_size: int = Field(
+        default=20,
+        description="每批LLM生成的候选点数",
+        ge=1
+    )
+
+    warmstart_max_llm_attempts: int = Field(
+        default=5,
+        description="最多尝试的批次数",
+        ge=1
+    )
+
+    warmstart_hv_log_interval: int = Field(
+        default=5,
+        description="每评估N个点记录一次HV",
         ge=1
     )
 

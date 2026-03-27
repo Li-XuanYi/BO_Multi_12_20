@@ -49,9 +49,14 @@ logger = logging.getLogger(__name__)
 DEFAULT_CONFIG = {
     # ── 实验规模 ──────────────────────────────────────────────────────────
     "max_iterations":   20,
-    "n_warmstart":      10,
+    "n_warmstart":      50,      # 增加到50（原10）
     "n_candidates":     15,
     "n_select":         1,
+
+    # ── Warmstart 批量生成参数 ────────────────────────────────────────────
+    "warmstart_batch_size":      20,   # 每批LLM生成20个候选点
+    "warmstart_max_llm_attempts": 5,   # 最多尝试5批（共100个候选点）
+    "warmstart_hv_log_interval":  5,   # 每评估5个点记录一次HV
 
     # ── LLM 配置 ──────────────────────────────────────────────────────────
     # FIX: api_base 不含 /chat 后缀；OpenAI SDK 会自动拼接 /chat/completions
@@ -360,6 +365,8 @@ class BayesOptimizer:
         # 动态 log 空间 min/max（供 Tchebycheff 归一化）
         self._y_tilde_min: Optional[np.ndarray] = None
         self._y_tilde_max: Optional[np.ndarray] = None
+        # Warmstart HV追踪
+        self._warmstart_hv_trace: List[Dict] = []
 
         Path(self.cfg["checkpoint_dir"]).mkdir(parents=True, exist_ok=True)
 
@@ -432,16 +439,23 @@ class BayesOptimizer:
     # ── §2 Warm-start 评估 ────────────────────────────────────────────────
 
     def run_warmstart(self) -> None:
-        """Touchpoint 1b：评估所有 warm-start 候选点。"""
+        """Touchpoint 1b：评估所有 warm-start 候选点（支持HV追踪）。"""
         logger.info("=" * 60)
         logger.info("§2 Warm-Start 评估阶段 (N_ws=%d)", self.cfg["n_warmstart"])
         logger.info("=" * 60)
 
         n_ws   = self.cfg["n_warmstart"]
-        n_llm  = max(int(n_ws * 0.7), 1)    # 70% 由 LLM 提供（含物理先验）
-        n_lhs  = n_ws - n_llm               # 30% 由 LHS 补全（确保空间覆盖）
+        n_llm  = max(int(n_ws * 0.8), 1)    # 80% 由 LLM 提供（增加比例）
+        n_lhs  = n_ws - n_llm               # 20% 由 LHS 补全
 
-        llm_candidates = self.llm.generate_warmstart_candidates(n=n_llm)
+        # 使用批量生成接口
+        batch_size = self.cfg.get("warmstart_batch_size", 20)
+        max_attempts = self.cfg.get("warmstart_max_llm_attempts", 5)
+        llm_candidates = self.llm.generate_warmstart_candidates(
+            n=n_llm,
+            batch_size=batch_size,
+            max_llm_attempts=max_attempts
+        )
         lhs_candidates = self._generate_lhs_candidates(max(n_lhs - 3, 0))
 
         # 强制加入 Pareto 极端方向点，补足 LLM 先验盲区
@@ -468,6 +482,10 @@ class BayesOptimizer:
             len(extreme_candidates), len(warmstart_candidates)
         )
 
+        # HV追踪
+        hv_log_interval = self.cfg.get("warmstart_hv_log_interval", 5)
+        hv_trace = []
+
         for i, theta in enumerate(warmstart_candidates):
             logger.info("  Warm-start [%d/%d]: θ=%s",
                         i + 1, len(warmstart_candidates), theta.round(4))
@@ -485,8 +503,33 @@ class BayesOptimizer:
                 feasible_str, np.round(result["raw_objectives"], 4), elapsed
             )
 
+            # 每隔 hv_log_interval 个点记录一次HV
+            if (i + 1) % hv_log_interval == 0 or (i + 1) == len(warmstart_candidates):
+                current_hv = self.database.compute_hypervolume()
+                hv_trace.append({
+                    "n_evaluated": i + 1,
+                    "hv": current_hv,
+                    "hv_raw": self.database.compute_hypervolume_raw(),
+                    "pareto_size": self.database.pareto_size,
+                })
+                logger.info(
+                    "  [HV追踪] 已评估 %d/%d: HV=%.6f (raw=%.1f)  |PF|=%d",
+                    i + 1, len(warmstart_candidates), current_hv,
+                    self.database.compute_hypervolume_raw(),
+                    self.database.pareto_size
+                )
+
+        final_hv = self.database.compute_hypervolume()
+        logger.info("=" * 60)
         logger.info("Warm-start 完成: %d 可行解 / %d 总计",
                     self.database.n_feasible, self.database.size)
+        logger.info("初始 HV = %.6f (raw=%.1f / max=%.1f)  |PF|=%d",
+                    final_hv, self.database.compute_hypervolume_raw(),
+                    self.database.hv_max, self.database.pareto_size)
+        logger.info("=" * 60)
+
+        # 保存HV追踪数据
+        self._warmstart_hv_trace = hv_trace
 
         # warm-start 后用均匀权重初始化 Tchebycheff 上下文
         # 同时更新动态 min/max 用于 log 空间归一化
