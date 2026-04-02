@@ -221,6 +221,9 @@ class ObservationDB:
         self._stagnation_count: int        = 0
         self._prev_hv_for_stagnation: float = 0.0
         self._prev_pareto_size: int        = 0   # 上次迭代 Pareto front 大小（停滞检测用）
+        # Fix 5: 滑动窗口（最近2步是否改进），避免单次噪声重置停滞计数
+        from collections import deque
+        self._improvement_window: deque = deque(maxlen=2)
 
         logger.info(
             "ObservationDB 初始化: bounds=%s  ref_point=%s",
@@ -259,7 +262,8 @@ class ObservationDB:
         self._observations.append(obs)
 
         if feasible:
-            self._update_pareto()
+            # Fix 4: 增量更新，传入新点目标值
+            self._update_pareto(new_obj=objectives)
             # FIX: update_stagnation=False — 迭代内添加观测不触发停滞计数
             # 停滞只在 update_tchebycheff_context（每迭代开始时）更新
             self._recompute_best(update_stagnation=False)
@@ -742,6 +746,8 @@ class ObservationDB:
             "observations":    [o.to_dict() for o in self._observations],
             "pareto_indices":  self._pareto_indices,
             "iteration_stats": self._iteration_stats,
+            # Fix 5: 保存停滞窗口状态，断点续算后不跳变
+            "improvement_window": list(self._improvement_window),
             "saved_at":        datetime.now().isoformat(),
         }
         os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
@@ -763,6 +769,9 @@ class ObservationDB:
             db._observations.append(Observation.from_dict(od))
         db._pareto_indices  = data.get("pareto_indices", [])
         db._iteration_stats = data.get("iteration_stats", [])
+        # Fix 5: 恢复停滞窗口状态
+        from collections import deque
+        db._improvement_window = deque(data.get("improvement_window", []), maxlen=2)
         db._update_pareto()
         logger.info("数据库已加载: %s (%d 条记录, |PF|=%d)", path, db.size, db.pareto_size)
         return db
@@ -882,8 +891,17 @@ class ObservationDB:
         Y_tilde[:, 2] = np.log10(np.maximum(Y_raw[:, 2], 1e-12))
 
         # Step 3: 动态 min-max 归一化（Eq.2b）
+        # Fix 6: 初始阶段 denom ≈ 0 时，用全局物理参考范围兜底（而非 1.0）
+        # 确保 F_tch 在初始阶段不全为 0，GP 可获得有效梯度信息
+        global_range = np.array([
+            np.log10(DEFAULT_REF_POINT[0]) - np.log10(DEFAULT_IDEAL_POINT[0]),  # ≈0.556
+            DEFAULT_REF_POINT[1] - DEFAULT_IDEAL_POINT[1],                       # =30
+            np.log10(DEFAULT_REF_POINT[2]) - np.log10(DEFAULT_IDEAL_POINT[2]),  # =2
+        ])
         denom = self._y_max - self._y_min
-        denom = np.where(np.abs(denom) < 1e-10, 1.0, denom)  # 避免除零
+        for i in range(3):
+            if denom[i] < 0.05 * global_range[i]:
+                denom[i] = global_range[i]
         Y_bar = (Y_tilde - self._y_min) / denom               # (n, 3)
 
         # Step 4: Tchebycheff + η tiebreaker（Eq.1）
@@ -899,14 +917,24 @@ class ObservationDB:
         self._theta_best = feasible[best_idx].theta.copy()
 
         if update_stagnation:
-            # 用 HV delta 判停滞，跨迭代更稳定
+            # Fix 5: 阈值从 1e-6 提升到 1e-3；额外检测 |PF| 变化；滑动窗口平滑
             current_hv = self.compute_hypervolume()
+            current_pareto_size = self.pareto_size
             hv_improvement = current_hv - self._prev_hv_for_stagnation
-            if hv_improvement > 1e-6:
-                self._stagnation_count = 0
-            else:
+            pf_grew = current_pareto_size > self._prev_pareto_size
+
+            # 本步是否有真实改进（HV 提升 > 0.1% 或 PF 增大）
+            improved = (hv_improvement > 1e-3) or pf_grew
+            self._improvement_window.append(improved)
+
+            # 滑动窗口满2步且两步都未改进 → 停滞计数递增；否则重置
+            if len(self._improvement_window) == 2 and not any(self._improvement_window):
                 self._stagnation_count += 1
+            elif improved:
+                self._stagnation_count = 0
+
             self._prev_hv_for_stagnation = current_hv
+            self._prev_pareto_size = current_pareto_size
 
     # ── DatabaseProtocol 四个必须方法 ─────────────────────────────────────
 

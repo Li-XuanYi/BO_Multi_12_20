@@ -774,40 +774,55 @@ class AcquisitionScorer:
         f_min:        float,
         mu:           np.ndarray,   # (3,)
         sigma:        np.ndarray,   # (3,)
+        t:            int = 0,      # Fix 2: 当前迭代
+        T:            int = 20,     # Fix 2: 总迭代数
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
-        批量计算 α = EI × W_charge。
+        Fix 2: 基于排名的平衡采集函数，解决 W_charge 动态范围主导问题。
+
+        EI 动态范围 ~10⁴×，W_charge 动态范围 ~10²⁶×，直接相乘等价于只看 W_charge。
+        改为：rank_normalize 后加权融合，λ 随迭代退火（早期 0.6 → 晚期 0.3）。
 
         Returns
         -------
-        alpha   : (m,)  综合得分
-        ei      : (m,)  EI 分量
-        wcharge : (m,)  W_charge 分量
+        alpha   : (m,)  综合得分（rank-based 融合）
+        ei      : (m,)  EI 分量（原始值）
+        wcharge : (m,)  W_charge 分量（原始值）
         mean    : (m,)  GP 后验均值
         std     : (m,)  GP 后验标准差
         """
         ei, mean, std = self._ei_calc.compute(X_candidates, f_min)
         wcharge       = self._wcharge_calc.compute(X_candidates, mu, sigma)
 
-        if self.log_mode:
-            # log-space 加法（避免 EI≈0 导致 α≈0 丢失相对信息）
-            log_ei = np.log(np.maximum(ei, 1e-300))
-            log_wc = np.log(np.maximum(wcharge, 1e-300))
-            log_alpha = log_ei + log_wc
-            # 归一化到 [0,1] 便于解释（减去 max 再 exp）
-            alpha = np.exp(log_alpha - log_alpha.max())
+        # EI 退化保护：若 GP 尚未收敛（EI 全部接近 0），fallback 到 GP-UCB
+        if ei.max() < 1e-10:
+            alpha = mean + 2.0 * std   # GP-UCB, kappa=2
+            logger.debug("AcquisitionScorer: EI 退化，fallback 到 GP-UCB")
         else:
-            alpha = ei * wcharge   # Eq.14
+            # Fix 2: rank-normalize 两者到 [0,1] 均匀分布
+            ei_rank = self._rank_normalize(ei)
+            wc_rank = self._rank_normalize(wcharge)
+
+            # 退火：t=0 时 λ=0.6（W_charge 权重适中），t=T 时 λ=0.3（更重视 EI）
+            lambda_t = 0.3 * np.exp(-3.0 * t / max(T, 1)) + 0.3
+            alpha = (1.0 - lambda_t) * ei_rank + lambda_t * wc_rank
 
         logger.debug(
             "AcquisitionScorer: m=%d  α in [%.3e, %.3e]  "
-            "EI in [%.3e, %.3e]  W in [%.3e, %.3e]",
+            "EI in [%.3e, %.3e]  W in [%.3e, %.3e]  t=%d  T=%d",
             X_candidates.shape[0],
             alpha.min(), alpha.max(),
             ei.min(), ei.max(),
             wcharge.min(), wcharge.max(),
+            t, T,
         )
         return alpha, ei, wcharge, mean, std
+
+    @staticmethod
+    def _rank_normalize(x: np.ndarray) -> np.ndarray:
+        """将数组映射到 [0,1] 均匀分布（基于排名），消除量纲差异。"""
+        ranks = np.argsort(np.argsort(x))   # 双重 argsort 得到 0-based 排名
+        return ranks / (len(ranks) - 1 + 1e-12)
 
     # ── top-k 选择（§5.4） ────────────────────────────────────────────────
     def select_top_k(
@@ -897,6 +912,8 @@ class AcquisitionFunction:
         xi:            float = 0.0,
         # 评分参数
         log_mode:      bool  = False,
+        # Fix 2: 总迭代数，供退火公式使用
+        max_iterations: int  = 20,
     ):
         """
         Parameters
@@ -914,6 +931,7 @@ class AcquisitionFunction:
         self._psi_fn  = psi_fn
         self._bounds  = param_bounds
         self._n_select = n_select
+        self._max_iterations = max_iterations  # Fix 2
 
         # 子组件实例化
         self._mu_tracker    = SearchMuTracker(
@@ -1042,7 +1060,8 @@ class AcquisitionFunction:
         mu_norm    = (mu    - self._lo) / _range   # [0,1]³
         sigma_norm = sigma / _range                # 无量纲
         alpha, ei, wcharge, mean, std = self._scorer.score(
-            X_candidates, f_min, mu_norm, sigma_norm
+            X_candidates, f_min, mu_norm, sigma_norm,
+            t=t, T=self._max_iterations,  # Fix 2: 传入迭代信息供退火
         )
 
         # ── 步骤 28：选 top-N_select ─────────────────────────────────────
@@ -1177,6 +1196,7 @@ def build_acquisition_function(
     rho:          float = 0.1,
     xi:           float = 0.0,
     log_mode:     bool  = False,
+    max_iterations: int = 20,   # Fix 2: 透传给 AcquisitionFunction
 ) -> AcquisitionFunction:
     """
     工厂函数：一步构建 AcquisitionFunction。
@@ -1220,6 +1240,7 @@ def build_acquisition_function(
         rho=rho,
         xi=xi,
         log_mode=log_mode,
+        max_iterations=max_iterations,  # Fix 2
     )
 
 

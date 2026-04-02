@@ -350,7 +350,8 @@ class ParEGOOptimizer:
             self.cfg["riesz_n_iter"],
             self.cfg["riesz_seed"],
         )
-        self._weight_set: np.ndarray = generate_riesz_weight_set(
+        from llmbo.riesz_cache import load_or_generate_riesz
+        self._weight_set: np.ndarray = load_or_generate_riesz(
             n_obj   = 3,
             n_div   = self.cfg["riesz_n_div"],
             s       = self.cfg["riesz_s"],

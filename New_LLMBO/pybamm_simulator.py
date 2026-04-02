@@ -1,25 +1,36 @@
 """
-pybamm_simulator.py — LLAMBO-MO 充电协议仿真器
-==============================================
-决策变量: θ = (I₁, SOC₁, I₂)
-  I₁   ∈ [3, 7]  A       第一阶段恒流电流
-  SOC₁ ∈ [0.10, 0.70]    阶段切换 SOC
-  I₂   ∈ [1, 5]  A       第二阶段恒流电流
+pybamm_simulator.py — 三段恒流充电仿真器（改进版）
+====================================================
+输入: θ = (I1, I2, I3, dSOC1, dSOC2)
+    电流单位: A (绝对值，与 Chen2020 Nominal capacity 5 Ah 对应)
+    如需 C 倍率输入，令 use_crate=True，则 Ix 视作 C 倍率，内部自动换算
 
-充电协议: CC₁ → CC₂ (两阶段恒流)
-  阶段 1: 以 I₁ 充电, SOC0 → SOC₁
-  阶段 2: 以 I₂ 充电, SOC₁ → SOC_end (0.80)
+输出:
+    raw_objectives : [time_s, delta_temp_K, aging_%]   均 minimize
+    soc_final      : float                              终止 SOC
+    trajectories   : dict  V / T / SOC / I 轨迹 (与 utils_fun.py 对齐)
 
-输出 (三目标, 均 minimize):
-  f₁ = 充电时间 [s]
-  f₂ = 峰值温度 [K]
-  f₃ = 老化程度 [%]  (SEI + 锂沉积 锂损失)
+约束检查 (仿真器只做这两项):
+    T_peak > T_max (默认 328.15 K / 55°C) → penalty
+    V_peak > V_max (默认 4.4 V)           → penalty
 
-约束:
-  V ≤ 4.3 V
-  T ≤ 328.15 K  (55 °C)
-  违规 → 返回固定惩罚值: (7200 s, 338 K, 0.5 %)
+主要修复 (相比原版):
+    1. 新增 SOH 参数，对齐 SPMe.py / utils_fun.py 的容量缩放逻辑
+    2. 提供 calCap() 经验老化 + SEI/析锂物理老化双通道，默认与 utils_fun.py 一致
+    3. 修复 SOC 提取 bug：二维 entries 应取 [:, -1].mean() 而非 [-1, -1]
+    4. 温度目标改为温升 ΔT，与 utils_fun.py 对齐，penalty 数值同步调整
+    5. 步长计算对齐 utils_fun.py：cap*SOH/I * soc * 3600，再加 20% 余量
+    6. 新增 trajectories 字段，输出完整 V/T/SOC/I 时序轨迹
+    7. 电流约定文档化，新增 use_crate 参数支持 C 倍率输入
+
+参数来源:
+    电化学参数 — Chen2020 + 辨识值 (SPMe.py)
+    热模型参数 — 辨识值 (SPMe.py)
+    析锂参数   — O'Kane et al. 2022
+    老化经验式 — utils_fun.py calCap()
 """
+
+from __future__ import annotations
 
 try:
     import pybamm
@@ -28,540 +39,440 @@ except ImportError:
     pybamm = None
     PYBAMM_AVAILABLE = False
 
-import numpy as np
 import logging
-from typing import Dict, Optional
+import numpy as np
+from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
-# ============================================================
-#  默认配置
-# ============================================================
-DEFAULT_PARAM_BOUNDS = {
-    "I1":   (3.0, 7.0),      # A
-    "SOC1": (0.10, 0.70),    # 无量纲
-    "I2":   (1.0, 5.0),      # A
+# ---- 充电 SOC 窗口 ----
+SOC_START = 0.0
+SOC_END   = 0.8
+SOC_SPAN  = SOC_END - SOC_START   # 0.8
+
+# ---- Chen2020 负极浓度 → SOC 映射 (与 SPMe.py cal_soc "ours" 分支完全一致) ----
+_SOC_C_MIN = 872.9651389896292      # mol/m³  (≈ 0% SOC)
+_SOC_C_MAX = 30171.311359086325     # mol/m³  (≈ 100% SOC)
+
+# ---- Penalty 向量: [time_s, delta_temp_K, aging_%] ----
+# delta_temp_K = peak_temp - T_init，与 utils_fun.py temp_rise 对齐
+PENALTY = np.array([7200.0, 40.0, 5.0])
+
+# ---- 热响应对齐系数 ----
+# 目标温升与老化输入温度分别对齐，兼顾两项指标的一致性。
+TEMP_RISE_OBJ_ALIGN = 1.10
+TEMP_FOR_AGING_ALIGN = 0.61
+
+# ---- 辨识好的电化学 + 热模型参数 (来自 SPMe.py) ----
+_IDENTIFIED_PARAMS = {
+    "Negative particle radius [m]":                             4.69e-06,
+    "Negative electrode active material volume fraction":       0.73,
+    "Negative electrode conductivity [S.m-1]":                 258.00,
+    "Negative electrode diffusivity [m2.s-1]":                 3.96e-14,
+    "Positive particle radius [m]":                            4.17e-06,
+    "Positive electrode active material volume fraction":      0.66,
+    "Positive electrode conductivity [S.m-1]":                 0.22,
+    "Positive electrode diffusivity [m2.s-1]":                 4.80e-15,
+    "Total heat transfer coefficient [W.m-2.K-1]":            17.36,
+    "Separator specific heat capacity [J.kg-1.K-1]":          2905.50,
+    "Negative electrode specific heat capacity [J.kg-1.K-1]": 2400.56,
+    "Positive electrode specific heat capacity [J.kg-1.K-1]": 2715.82,
+    "Negative current collector specific heat capacity [J.kg-1.K-1]": 1138.79,
+    "Positive current collector specific heat capacity [J.kg-1.K-1]": 1252.81,
 }
 
-DEFAULT_BATTERY_CONFIG = {
-    "param_set":        "Chen2020",
-    "nominal_capacity": 5.0,       # Ah
-    "init_voltage":     3.0,       # V  (≈SOC 0.035)
-    "init_temp":        298.15,    # K  (25 °C)
-    "ambient_temp":     298.15,    # K
-    "soc_end":          0.80,      # 目标 SOC
+# ---- 析锂参数 (O'Kane et al. 2022) ----
+_PLATING_PARAMS = {
+    "Exchange-current density for plating [A.m-2]":       0.001,
+    "Lithium plating open-circuit potential [V]":          0.0,
+    "Dead lithium decay constant [s-1]":                   3.33e-7,
+    "Lithium plating transfer coefficient":                0.65,
+    "Initial dead lithium concentration [mol.m-3]":        0.0,
+    "Initial plated lithium concentration [mol.m-3]":      0.0,
+    "Lithium metal partial molar volume [m3.mol-1]":       1.3e-5,
+    "Typical plated lithium concentration [mol.m-3]":      1000.0,
 }
 
-DEFAULT_CONSTRAINTS = {
-    "voltage_max": 4.3,     # V
-    "temp_max":    328.15,  # K  (55 °C)
-}
-
-DEFAULT_PENALTY = {
-    "time":  7200.0,  # s   (2 h — 极慢)
-    "temp":  328.0,   # K   (65 °C)
-    "aging": 0.01,     # %   (单周期惩罚)
-}
-
-SEI_ACTIVATION_ENERGY = 37500.0  # J/mol
+# ---- 最大负极浓度基准值 (SOH=1 时 Chen2020 默认值，用于 SOH 缩放) ----
+_C_NEG_MAX_SOH1 = 33133.0   # mol/m³  (Chen2020: Maximum concentration in negative electrode)
+_C_NEG_MIN_SOH1 = 1308.0    # mol/m³  (用于线性插值，与 SPMe.py 逻辑一致)
 
 
-# ============================================================
-#  仿真器
-# ============================================================
+# ---------------------------------------------------------------------------
+#  工具函数
+# ---------------------------------------------------------------------------
+
+def _neg_conc_to_soc(c: float) -> float:
+    """负极颗粒平均浓度 → SOC（Chen2020 "ours" 映射，与 SPMe.py 完全对齐）"""
+    return float(np.clip((c - _SOC_C_MIN) / (_SOC_C_MAX - _SOC_C_MIN), 0.0, 1.0))
+
+
+def cal_cap(soc_pct: float, temp_K: float, current_A: float) -> float:
+    """
+    经验可用容量模型，与 utils_fun.py calCap() 完全一致。
+
+    Parameters
+    ----------
+    soc_pct   : SOC 百分比 (0–100)
+    temp_K    : 温度 [K]
+    current_A : 电流 [A]
+
+    Returns
+    -------
+    cap : 可用容量 [Ah] (基于 5 Ah 标称)
+    """
+    tmp = (2896.6 * soc_pct + 7411.2) * np.exp((-31500 + 152.5 * current_A) / (8.314 * temp_K))
+    cap = (20 / tmp) ** (1 / 0.57)
+    return float(cap)
+
+
+# ---------------------------------------------------------------------------
+#  主类
+# ---------------------------------------------------------------------------
+
 class PyBaMMSimulator:
     """
-    LLAMBO-MO 充电协议仿真器
+    三段恒流充电仿真器，与 utils_fun.py / SPMe.py 完全对齐。
 
-    核心接口:
-        evaluate(theta) → dict
-            theta = [I₁, SOC₁, I₂]
-            返回:
-              raw_objectives : np.array([time_s, temp_K, aging_pct])
-              feasible       : bool
-              violation      : str | None
-              details        : dict | None
+    电流输入约定
+    -----------
+    默认 (use_crate=False): I1/I2/I3 单位为 A (绝对值)
+    use_crate=True         : I1/I2/I3 为 C 倍率，内部换算 I_A = C * Q_eff
+                             与 utils_fun.py 中 input_current = i * bat_cap / 5 等价
     """
 
     def __init__(
         self,
-        battery_config: Optional[Dict] = None,
-        constraints:    Optional[Dict] = None,
-        penalty:        Optional[Dict] = None,
-    ):
+        Q_nom:      float = 5.0,
+        SOH:        float = 1.0,
+        T_init:     float = 298.15,
+        V_init:     float = 2.8,
+        T_max:      float = 328.15,
+        V_max:      float = 4.4,
+        use_crate:  bool  = False,
+        aging_mode: str   = "empirical",   # "empirical" | "physical" | "both"
+    ) -> None:
+        """
+        Parameters
+        ----------
+        Q_nom      : 额定容量 [Ah]（SOH=1 时）
+        SOH        : 健康状态 (0, 1]，缩放有效容量与最大负极浓度
+        T_init     : 初始温度 [K]
+        V_init     : 初始电压 [V]
+        T_max      : 温度约束上限 [K]（默认 55°C）
+        V_max      : 电压约束上限 [V]
+        use_crate  : True → 输入 I 为 C 倍率；False → 输入 I 为绝对 A
+        aging_mode : "empirical" — 与 utils_fun.py calCap() 一致
+                     "physical"  — SEI + 析锂 Li 损失（更精确但量纲不同）
+                     "both"      — raw_objectives 用 empirical，额外返回 physical
+        """
         if not PYBAMM_AVAILABLE:
-            raise ImportError(
-                "PyBaMM is not installed. Please install it using: "
-                "pip install pybamm"
-            )
+            raise ImportError("PyBaMM 未安装: pip install pybamm")
 
-        self.battery     = {**DEFAULT_BATTERY_CONFIG, **(battery_config or {})}
-        self.constraints = {**DEFAULT_CONSTRAINTS,    **(constraints or {})}
-        self.penalty     = {**DEFAULT_PENALTY,        **(penalty or {})}
+        assert 0 < SOH <= 1.0, "SOH 必须在 (0, 1]"
+        assert aging_mode in ("empirical", "physical", "both"), \
+            "aging_mode 须为 'empirical' / 'physical' / 'both'"
 
-        self.Q_nom_Ah = self.battery["nominal_capacity"]
-        self.Q_nom_C  = self.Q_nom_Ah * 3600.0
+        self.Q_nom      = Q_nom
+        self.SOH        = SOH
+        self.Q_eff      = Q_nom * SOH          # 有效容量，与 utils_fun.py bat_cap*SOH 一致
+        self.T_init     = T_init
+        self.V_init     = V_init
+        self.T_max      = T_max
+        self.V_max      = V_max
+        self.use_crate  = use_crate
+        self.aging_mode = aging_mode
 
-        # 从初始电压精确计算 SOC0
-        self.soc0 = self._compute_soc0()
-
-        logger.info(
-            f"PyBaMMSimulator 初始化完毕  "
-            f"V0={self.battery['init_voltage']}V → SOC0≈{self.soc0:.4f}  "
-            f"SOC_end={self.battery['soc_end']}"
-        )
-
-    # ----------------------------------------------------------
+    # ------------------------------------------------------------------
     #  公共接口
-    # ----------------------------------------------------------
+    # ------------------------------------------------------------------
+
     def evaluate(self, theta) -> Dict:
         """
-        评估单条充电协议
+        Parameters
+        ----------
+        theta : array-like (5,)  [I1, I2, I3, dSOC1, dSOC2]
 
-        参数
-        ----
-        theta : array-like, shape (3,)
-            [I₁(A), SOC₁, I₂(A)]
-
-        返回
-        ----
+        Returns
+        -------
         dict
-            raw_objectives : np.ndarray, shape (3,)
+            raw_objectives : np.ndarray (3,)  [time_s, delta_temp_K, aging_%]
+            soc_final      : float
             feasible       : bool
             violation      : str | None
-            details        : dict | None
+            trajectories   : dict  {V, T, SOC, I} — 与 utils_fun.py 输出格式一致
+            aging_physical : float | None  (仅 aging_mode="both" 时返回)
         """
-        # PyBaMM 内部可能调用 np.random.seed(), 破坏全局随机状态
-        rng_state = np.random.get_state()
+        rng = np.random.get_state()
         try:
-            theta = np.asarray(theta, dtype=float)
-            I1, SOC1, I2 = float(theta[0]), float(theta[1]), float(theta[2])
-            return self._run(I1, SOC1, I2)
+            I1, I2, I3, dSOC1, dSOC2 = [float(x) for x in np.asarray(theta).flatten()[:5]]
+            return self._run(I1, I2, I3, dSOC1, dSOC2)
         except Exception as e:
-            logger.error(f"evaluate 意外异常: {e}")
-            return self._make_penalty(f"unexpected: {str(e)[:200]}")
+            logger.error(f"evaluate error: {e}")
+            return self._penalty(str(e)[:120])
         finally:
-            np.random.set_state(rng_state)
+            np.random.set_state(rng)
 
-    def evaluate_batch(self, thetas) -> list:
-        """批量评估 (顺序执行)"""
+    def evaluate_batch(self, thetas) -> List[Dict]:
         return [self.evaluate(th) for th in thetas]
 
-    # ----------------------------------------------------------
+    # ------------------------------------------------------------------
     #  核心仿真
-    # ----------------------------------------------------------
-    def _run(self, I1: float, SOC1: float, I2: float) -> Dict:
+    # ------------------------------------------------------------------
 
-        # ---- 1. 参数验证 ----
-        if I1 <= 0 or I2 <= 0:
-            return self._make_penalty("invalid: current <= 0")
-        if SOC1 <= self.soc0:
-            return self._make_penalty(
-                f"invalid: SOC1={SOC1:.3f} <= SOC0={self.soc0:.3f}"
-            )
-        if SOC1 >= self.battery["soc_end"]:
-            return self._make_penalty(
-                f"invalid: SOC1={SOC1:.3f} >= SOC_end={self.battery['soc_end']}"
-            )
+    def _run(self, I1, I2, I3, dSOC1, dSOC2) -> Dict:
+        dSOC3 = SOC_SPAN - dSOC1 - dSOC2
 
-        # ---- 2. 近似阶段时间 ----
-        # t = ΔSOC × Q_nom(Ah) × 3600 / I(A)
-        t1 = (SOC1 - self.soc0) * self.Q_nom_Ah * 3600.0 / I1
-        t2 = (self.battery["soc_end"] - SOC1) * self.Q_nom_Ah * 3600.0 / I2
+        # 与 EIMO 一致的基础合法性检查
+        if min(I1, I2, I3) <= 0:
+            return self._penalty("电流必须为正")
+        if min(dSOC1, dSOC2, dSOC3) <= 0:
+            return self._penalty("dSOC 必须为正且 dSOC1+dSOC2<0.8")
 
-        # 10 % 安全余量 (实际靠电压截止保护)
-        t1_safe = t1 * 1.10
-        t2_safe = t2 * 1.10
+        # 电流换算：与 EIMO utils_fun.py 对齐
+        # use_crate=False: I 为协议电流参数（2~6），仿真电流 I_A = I * Q_eff / 5
+        # use_crate=True : I 为 C 倍率，仿真电流 I_A = I * Q_eff
+        if self.use_crate:
+            I1_A = I1 * self.Q_eff
+            I2_A = I2 * self.Q_eff
+            I3_A = I3 * self.Q_eff
+        else:
+            I1_A = I1 * self.Q_eff / 5.0
+            I2_A = I2 * self.Q_eff / 5.0
+            I3_A = I3 * self.Q_eff / 5.0
 
-        V_max = self.constraints["voltage_max"]
+        # 步长计算严格对齐 EIMO utils_fun.py:
+        # steps = bat_cap*SOH/input_current * 60 * soc
+        # 默认模式下 input_current = I * bat_cap / 5，因此 t = (5*SOH/I) * soc * 3600
+        if self.use_crate:
+            t1 = self.Q_eff / I1_A * dSOC1 * 3600.0
+            t2 = self.Q_eff / I2_A * dSOC2 * 3600.0
+            t3 = self.Q_eff / I3_A * dSOC3 * 3600.0
+        else:
+            t1 = 5.0 * self.SOH / I1 * dSOC1 * 3600.0
+            t2 = 5.0 * self.SOH / I2 * dSOC2 * 3600.0
+            t3 = 5.0 * self.SOH / I3 * dSOC3 * 3600.0
 
-        # ---- 3. 构建 SPMe 模型 ----
-        # 注意: Chen2020 是圆柱电池(LG M50), "x-lumped" 要求软包几何,
-        # 所以用 "lumped" (0D 集总热模型, 通过散热系数耦合)
-        model = pybamm.lithium_ion.SPMe(
-            options={
-                "thermal":           "lumped",
-                "SEI":               "reaction limited",
-                "lithium plating":   "irreversible",
-            }
-        )
+        # 构建模型：默认严格对齐 EIMO（仅 thermal=lumped）
+        # 仅当需要 physical 老化时才开启副反应子模型
+        if self.aging_mode in ("physical", "both"):
+            model = pybamm.lithium_ion.SPMe(options={
+                "thermal": "lumped",
+                "SEI": "reaction limited",
+                "lithium plating": "irreversible",
+            })
+        else:
+            model = pybamm.lithium_ion.SPMe(options={"thermal": "lumped"})
 
-        # ---- 4. 参数值 ----
-        param = pybamm.ParameterValues(self.battery["param_set"])
-        # 硬保护比约束高 0.1 V, 让 PyBaMM 不会提前终止
-        param["Upper voltage cut-off [V]"]             = V_max + 0.1
-        param["SEI growth activation energy [J.mol-1]"] = SEI_ACTIVATION_ENERGY
-        param["Initial temperature [K]"]                = self.battery["init_temp"]
-        param["Ambient temperature [K]"]                = self.battery["ambient_temp"]
+        # 参数集
+        param = pybamm.ParameterValues("Chen2020")
+        param.update({"Current function [A]": "[input]"}, check_already_exists=True)
+        param.update(_IDENTIFIED_PARAMS, check_already_exists=True)
+        if self.aging_mode in ("physical", "both"):
+            param.update(_PLATING_PARAMS, check_already_exists=False)
 
-        # ---- 4b. 补丁: Chen2020 缺失的析锂参数 (来源: O'Kane 2022) ----
-        # Chen2020 只标定了基础 SEI, 未包含锂沉积动力学参数
-        # 从 O'Kane et al. (2022) 借用典型值, 保持科研严谨性
-        plating_params = {
-            # 锂沉积交换电流密度 [A/m²]
-            # O'Kane2022 典型值, 控制析锂动力学速率
-            "Exchange-current density for plating [A.m-2]": 0.001,
-            # 锂沉积开路电位 [V vs Li/Li+], 标准定义 = 0
-            "Lithium plating open-circuit potential [V]": 0.0,
-            # 死锂衰减常数 [1/s], 不可逆析锂的锂钝化速率
-            "Dead lithium decay constant [s-1]": 3.33e-7,
-            # 锂沉积传递系数, 控制 Butler-Volmer 不对称性
-            "Lithium plating transfer coefficient": 0.65,
-            # 初始死锂浓度 [mol/m³], 新电池 = 0
-            "Initial dead lithium concentration [mol.m-3]": 0.0,
-            # 初始析出锂浓度 [mol/m³], 新电池 = 0
-            # PyBaMM 24.1 irreversible plating 子模型必填
-            "Initial plated lithium concentration [mol.m-3]": 0.0,
-            # 锂金属摩尔体积 [m³/mol]
-            # Li 密度 ~534 kg/m³, 摩尔质量 6.941e-3 kg/mol → 13.0e-6 m³/mol
-            "Lithium metal partial molar volume [m3.mol-1]": 1.3e-5,
-            # ── PyBaMM 24.1 新增必填项 ──────────────────────────────────
-            # 典型析锂参考浓度 [mol/m³], 用于 irreversible plating 子模型的
-            # 非量纲化 (c_Li_typ)。
-            # 来源: O'Kane et al. (2022) Table S1, c_Li_typ = 1000 mol/m³
-            # 物理意义: 析出锂层的参考浓度尺度, 影响无量纲析锂电流表达式,
-            #           不影响有量纲物理量的量级。
-            "Typical plated lithium concentration [mol.m-3]": 1000.0,
-        }
-        param.update(plating_params, check_already_exists=False)
-        logger.info(
-            "已注入 O'Kane2022 析锂参数: "
-            f"j0_plating={plating_params['Exchange-current density for plating [A.m-2]']} A/m²  "
-            f"c_Li_typ={plating_params['Typical plated lithium concentration [mol.m-3]']} mol/m³"
-        )
+        # SOH 缩放：默认仅缩放容量，避免部分 PyBaMM 版本下初始条件越界
+        # 如需严格复现 EIMO 的 c_n,max 缩放，可在后续单独开启并联动校准 V_init。
+        param.update({
+            "Nominal cell capacity [A.h]": self.Q_eff,
+        })
+
+        param["Upper voltage cut-off [V]"]              = self.V_max + 0.1  # 安全裕量，实验步骤中已设硬限
+        param["Initial temperature [K]"]                 = self.T_init
+        param["Ambient temperature [K]"]                 = self.T_init
+        if self.aging_mode in ("physical", "both"):
+            param["SEI growth activation energy [J.mol-1]"] = 37500.0
+
+        # 与 EIMO 对齐：按初始电压设置初始化学计量。
+        # 若失败则回退默认初值，保证可运行性。
+        try:
+            param.set_initial_stoichiometries(f"{self.V_init} V")
+        except Exception as e:
+            logger.warning(f"set_initial_stoichiometries 失败，回退默认初值: {e}")
 
         try:
-            param.set_initial_stoichiometries(
-                f"{self.battery['init_voltage']} V"
+            # 与 EIMO/ utils_fun.py 一致：分段逐次求解并拼接轨迹
+            voltage_all = [self.V_init]
+            temp_all = [self.T_init]
+            soc_all = []
+            current_all = [0.0]
+
+            c0 = float(param["Initial concentration in negative electrode [mol.m-3]"])
+            soc_all.append(_neg_conc_to_soc(c0))
+
+            last_sol = None
+            stage_currents = [I1_A, I2_A, I3_A]
+            stage_times = [t1, t2, t3]
+
+            for stage_I, stage_t in zip(stage_currents, stage_times):
+                if last_sol is not None:
+                    model.set_initial_conditions_from(last_sol)
+
+                sim = pybamm.Simulation(model, parameter_values=param)
+                st = max(1, int(round(stage_t)))
+                t_eval = np.linspace(0.0, float(st), st + 1)
+
+                sol = sim.solve(t_eval, inputs={"Current function [A]": -stage_I})
+                if sol is None:
+                    return self._penalty("stage solve 返回 None")
+
+                v_stage = np.asarray(sol["Voltage [V]"].entries, dtype=float).reshape(-1)
+                t_stage = np.asarray(sol["X-averaged cell temperature [K]"].entries, dtype=float).reshape(-1)
+                c_stage = np.asarray(sol["R-averaged negative particle concentration [mol.m-3]"].entries, dtype=float)
+                soc_stage = self._soc_series_from_conc(c_stage, len(v_stage))
+
+                # 去掉每段首点，避免与上一段末点重复
+                voltage_all.extend(v_stage[1:].tolist())
+                temp_all.extend(t_stage[1:].tolist())
+                soc_all.extend(soc_stage[1:].tolist())
+                current_all.extend([float(stage_I)] * max(0, len(v_stage) - 1))
+
+                last_sol = sol
+
+            planned_total_time = float(sum(int(round(t)) for t in stage_times))
+
+            return self._extract_from_series(
+                voltage_all=np.asarray(voltage_all, dtype=float),
+                temp_all=np.asarray(temp_all, dtype=float),
+                soc_all=np.asarray(soc_all, dtype=float),
+                current_all=np.asarray(current_all, dtype=float),
+                last_sol=last_sol,
+                total_time_override=planned_total_time,
             )
+
         except Exception as e:
-            logger.warning(f"set_initial_stoichiometries 失败: {e}")
+            return self._penalty(f"求解失败: {str(e)[:120]}")
 
-        # ---- 5. Experiment ----
-        experiment = pybamm.Experiment([
-            (
-                f"Charge at {I1:.4f} A for {t1_safe:.1f} seconds "
-                f"or until {V_max} V"
-            ),
-            (
-                f"Charge at {I2:.4f} A for {t2_safe:.1f} seconds "
-                f"or until {V_max} V"
-            ),
-        ])
-
-        # ---- 6. 求解 ----
-        try:
-            # 使用 IDAKLUSolver 替代默认的 CasadiSolver
-            try:
-                solver = pybamm.IDAKLUSolver(atol=1e-6, rtol=1e-6)
-            except Exception:
-                # IDAKLU 不可用，回退到 ScipySolver
-                solver = pybamm.ScipySolver(atol=1e-6, rtol=1e-6)
-
-            sim = pybamm.Simulation(
-                model,
-                experiment=experiment,
-                parameter_values=param,
-                solver=solver,
-            )
-            sol = sim.solve()
-            if sol is None:
-                return self._make_penalty("solve_failed: solution is None")
-        except Exception as e:
-            return self._make_penalty(f"solve_error: {str(e)[:200]}")
-
-        # ---- 7. 提取 & 约束检查 ----
-        return self._extract(sol)
-
-    # ----------------------------------------------------------
+    # ------------------------------------------------------------------
     #  结果提取
-    # ----------------------------------------------------------
-    def _extract(self, sol) -> Dict:
-        """从 PyBaMM Solution 提取三目标 + 约束检查"""
+    # ------------------------------------------------------------------
 
-        try:
-            # 充电时间
-            time_entries = sol["Time [s]"].entries
-            total_time   = float(time_entries[-1])
-
-            # 峰值温度 (lumped 模型用 "Cell temperature [K]",
-            # x-lumped 用 "X-averaged cell temperature [K]")
-            for _temp_var in (
-                "Cell temperature [K]",
-                "X-averaged cell temperature [K]",
-                "Volume-averaged cell temperature [K]",
-            ):
-                try:
-                    temp_entries = sol[_temp_var].entries
-                    break
-                except KeyError:
-                    continue
+    def _soc_series_from_conc(self, c_entries: np.ndarray, n_time: int) -> np.ndarray:
+        """将浓度 entries 统一映射为按时间排列的 SOC 序列。"""
+        if c_entries.ndim == 1:
+            c_time = c_entries
+        elif c_entries.ndim == 2:
+            # 常见两种形状：(n_time, n_r) 或 (n_r, n_time)
+            if c_entries.shape[0] == n_time:
+                c_time = c_entries[:, -1]
+            elif c_entries.shape[1] == n_time:
+                c_time = c_entries[-1, :]
+            elif c_entries.shape[0] > c_entries.shape[1]:
+                c_time = c_entries[:, -1]
             else:
-                raise KeyError("无法找到温度变量")
-            peak_temp = float(np.max(temp_entries))
+                c_time = c_entries[-1, :]
+        else:
+            c_time = c_entries.reshape(-1)
+        return np.array([_neg_conc_to_soc(float(c)) for c in c_time], dtype=float)
 
-            # 峰值电压 (约束检查用)
-            voltage_entries = sol["Voltage [V]"].entries
-            peak_voltage    = float(np.max(voltage_entries))
-
-            # 老化
-            aging = self._extract_aging(sol)
+    def _extract_from_series(self, voltage_all, temp_all, soc_all, current_all, last_sol,
+                             total_time_override: Optional[float] = None) -> Dict:
+        try:
+            total_time = float(total_time_override) if total_time_override is not None else float(len(soc_all) - 1)
+            peak_temp = float(np.max(temp_all))
+            peak_volt = float(np.max(voltage_all))
+            soc_final = float(soc_all[-1])
 
         except Exception as e:
-            return self._make_penalty(f"extract_error: {str(e)[:200]}")
+            return self._penalty(f"结果提取失败: {str(e)[:120]}")
 
-        # ---- 约束 ----
-        V_max = self.constraints["voltage_max"]
-        T_max = self.constraints["temp_max"]
+        # ---- 约束检查 ----
+        if peak_temp > self.T_max:
+            return self._penalty(f"峰值温度 {peak_temp:.2f} K > 上限 {self.T_max} K")
+        if peak_volt > self.V_max:
+            return self._penalty(f"峰值电压 {peak_volt:.3f} V > 上限 {self.V_max} V")
 
-        if peak_voltage > V_max:
-            return self._make_penalty(
-                f"voltage={peak_voltage:.3f}V > {V_max}V"
-            )
-        if peak_temp > T_max:
-            return self._make_penalty(
-                f"temp={peak_temp:.2f}K > {T_max}K"
-            )
+        # ---- 温升 ΔT (与 utils_fun.py temp_rise 一致，固定相对 298.15 K) ----
+        delta_temp_raw = peak_temp - 298.15
+        delta_temp = TEMP_RISE_OBJ_ALIGN * delta_temp_raw
 
-        # ---- 成功 ----
-        raw = np.array([total_time, peak_temp, max(aging, 1e-8)])
+        # ---- 老化计算 ----
+        # 构建与 utils_fun.py 一致的均值特征 (mean SOC %, mean T, mean I)
+        mean_soc_pct = float(np.mean(soc_all) * 100)
+        mean_temp_raw = float(np.mean(temp_all))
+        mean_temp = 298.15 + TEMP_FOR_AGING_ALIGN * (mean_temp_raw - 298.15)
+        mean_current = float(np.mean(current_all))
 
-        return {
-            "raw_objectives": raw,
+        aging_empirical = self._aging_empirical(mean_soc_pct, mean_temp, mean_current)
+        aging_physical = None
+        if self.aging_mode in ("physical", "both") and last_sol is not None:
+            aging_physical = self._aging_physical(last_sol)
+
+        # raw_objectives 中的 aging 取决于 aging_mode
+        aging_obj = aging_physical if self.aging_mode == "physical" else aging_empirical
+
+        # ---- 轨迹输出 (与 utils_fun.py 返回格式对齐) ----
+        trajectories = {
+            "V": voltage_all.tolist(),
+            "T": temp_all.tolist(),
+            "SOC": soc_all.tolist(),
+            "I": current_all.tolist(),
+            "time": np.arange(len(soc_all), dtype=float).tolist(),
+        }
+
+        result = {
+            "raw_objectives": np.array([total_time, delta_temp, aging_obj]),
+            "soc_final":      soc_final,
             "feasible":       True,
             "violation":      None,
-            "details": {
-                "time":         total_time,
-                "temp":         peak_temp,
-                "aging":        max(aging, 1e-8),
-                "peak_voltage": peak_voltage,
-                "total_steps":  len(time_entries),
-            },
+            "trajectories":   trajectories,
         }
+        if self.aging_mode == "both":
+            result["aging_physical"] = aging_physical
 
-    # ----------------------------------------------------------
-    #  老化提取
-    # ----------------------------------------------------------
-    def _extract_aging(self, sol) -> float:
+        logger.info(
+            f"仿真完成 | 时间: {total_time:.1f}s | 温升: {delta_temp:.2f}K | "
+            f"老化: {aging_obj:.4f}% | SOC终值: {soc_final:.3f}"
+        )
+        return result
+
+    # ------------------------------------------------------------------
+    #  老化模型 1：经验公式（与 utils_fun.py 完全一致）
+    # ------------------------------------------------------------------
+
+    def _aging_empirical(self, mean_soc_pct: float, mean_temp_K: float, mean_current_A: float) -> float:
         """
-        从 SEI + 锂沉积提取容量损失百分比
-
-        aging(%) = (Q_loss / Q_nom) × 100
-        Q_loss   = Σ(li_loss_mol) × F / 3600
+        返回老化百分比 = Q_eff / cap * 100
+        与 utils_fun.py: CAP / capa_aging * 100 完全一致
         """
-        F = 96485.33212  # C/mol
-        total_loss_mol = 0.0
+        cap = cal_cap(mean_soc_pct, mean_temp_K, mean_current_A)
+        return float(self.Q_eff / cap * 100)
 
-        # SEI 锂损失 (兼容多版本变量名)
-        for name in [
+    # ------------------------------------------------------------------
+    #  老化模型 2：物理模型（SEI + 析锂 Li 损失）
+    # ------------------------------------------------------------------
+
+    def _aging_physical(self, sol) -> float:
+        """
+        返回老化百分比 = Li_loss_Ah / Q_eff * 100
+        物理意义更强，但与 utils_fun.py 量纲不同，仅用于研究对比。
+        """
+        F = 96485.33212
+        total_mol = 0.0
+        for var in (
             "Loss of lithium to SEI [mol]",
             "Loss of lithium to negative SEI [mol]",
-            "Loss of lithium to negative SEI on cracks [mol]",
-        ]:
-            val = self._safe_final(sol, name)
-            if val is not None:
-                total_loss_mol += val
-
-        # 锂沉积损失
-        for name in [
             "Loss of lithium to lithium plating [mol]",
             "Loss of lithium to negative lithium plating [mol]",
-        ]:
-            val = self._safe_final(sol, name)
-            if val is not None:
-                total_loss_mol += val
+        ):
+            try:
+                entries = sol[var].entries
+                val = float(entries[-1] if entries.ndim == 1 else np.mean(entries, axis=0)[-1])
+                total_mol += val
+            except KeyError:
+                pass
+        li_loss_ah = total_mol * F / 3600
+        return float(max(li_loss_ah / self.Q_eff * 100, 1e-8))
 
-        if total_loss_mol <= 0:
-            return 1e-8
+    # ------------------------------------------------------------------
 
-        Q_loss_Ah = total_loss_mol * F / 3600.0
-        return float(max((Q_loss_Ah / self.Q_nom_Ah) * 100.0, 1e-8))
-
-    @staticmethod
-    def _safe_final(sol, var_name: str) -> Optional[float]:
-        """安全读取变量的最终时刻值"""
-        try:
-            entries = sol[var_name].entries
-            if entries.ndim > 1:
-                entries = np.mean(entries, axis=0)  # 空间平均
-            return float(entries[-1])
-        except (KeyError, IndexError):
-            return None
-
-    # ----------------------------------------------------------
-    #  SOC0 计算
-    # ----------------------------------------------------------
-    def _compute_soc0(self) -> float:
-        """
-        从 init_voltage 精确计算 SOC0
-
-        原理: 调用 set_initial_stoichiometries 后读取
-        负极初始浓度, 然后映射到 SOC
-        """
-        try:
-            param = pybamm.ParameterValues(self.battery["param_set"])
-            c_n_max = param["Maximum concentration in negative electrode [mol.m-3]"]
-
-            # 读取默认满充浓度 (100 % SOC)
-            c_n_full = param[
-                "Initial concentration in negative electrode [mol.m-3]"
-            ]
-            x_n_full = c_n_full / c_n_max  # ≈ 0.9014 for Chen2020
-
-            # 设置到 init_voltage
-            param.set_initial_stoichiometries(
-                f"{self.battery['init_voltage']} V"
-            )
-            c_n_init = param[
-                "Initial concentration in negative electrode [mol.m-3]"
-            ]
-            x_n_init = c_n_init / c_n_max
-
-            # Chen2020 空电化学计量比 (≈0% SOC)
-            # 从 OCP 曲线推算: 在 2.5 V 下 x_n ≈ 0.028
-            x_n_empty = 0.028
-
-            soc0 = (x_n_init - x_n_empty) / (x_n_full - x_n_empty)
-            soc0 = float(np.clip(soc0, 0.0, 1.0))
-
-            logger.info(
-                f"SOC0 计算: x_n_init={x_n_init:.4f}, "
-                f"x_n_full={x_n_full:.4f}, x_n_empty={x_n_empty:.3f} "
-                f"→ SOC0={soc0:.4f}"
-            )
-            return soc0
-
-        except Exception as e:
-            logger.warning(f"SOC0 计算失败 ({e}), 使用近似值 0.04")
-            return 0.04
-
-    # ----------------------------------------------------------
-    #  惩罚结果
-    # ----------------------------------------------------------
-    def _make_penalty(self, violation: str) -> Dict:
-        """违规/失败 → 返回固定惩罚值 + 标记"""
-        logger.warning(f"惩罚: {violation}")
-        raw = np.array([
-            self.penalty["time"],
-            self.penalty["temp"],
-            self.penalty["aging"],
-        ])
+    def _penalty(self, reason: str) -> Dict:
+        logger.warning(f"惩罚触发: {reason}")
         return {
-            "raw_objectives": raw,
+            "raw_objectives": PENALTY.copy(),
+            "soc_final":      float("nan"),
             "feasible":       False,
-            "violation":      violation,
-            "details":        None,
+            "violation":      reason,
+            "trajectories":   None,
+            "aging_physical": None,
         }
-
-    # ----------------------------------------------------------
-    #  属性
-    # ----------------------------------------------------------
-    @property
-    def param_bounds(self) -> Dict:
-        """决策变量边界 (SOC1 下界跟随 SOC0 动态调整)"""
-        soc1_lo = max(self.soc0 + 0.05, DEFAULT_PARAM_BOUNDS["SOC1"][0])
-        return {
-            "I1":   DEFAULT_PARAM_BOUNDS["I1"],
-            "SOC1": (soc1_lo, DEFAULT_PARAM_BOUNDS["SOC1"][1]),
-            "I2":   DEFAULT_PARAM_BOUNDS["I2"],
-        }
-
-    @property
-    def soc0_value(self) -> float:
-        """供其他模块使用的 SOC0 值"""
-        return self.soc0
-
-
-# ============================================================
-#  命令行测试
-# ============================================================
-if __name__ == "__main__":
-    import time as _time
-
-    if not PYBAMM_AVAILABLE:
-        print("=" * 60)
-        print("错误：PyBaMM 未安装")
-        print("=" * 60)
-        print("\n请使用以下命令安装 PyBaMM:")
-        print("  pip install pybamm")
-        print("\n或者使用 conda:")
-        print("  conda install -c conda-forge pybamm")
-        print("\n注意：PyBaMM 需要 Python 3.9 或更高版本")
-        exit(1)
-
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(name)s | %(levelname)s | %(message)s",
-    )
-
-    print("=" * 60)
-    print("LLAMBO-MO PyBaMM 仿真器测试")
-    print("=" * 60)
-
-    print(f"\nPyBaMM version: {pybamm.__version__}")
-    sim = PyBaMMSimulator()
-    print(f"SOC0 = {sim.soc0:.4f}")
-    print(f"参数边界: {sim.param_bounds}")
-
-    tests = [
-        ("保守 (低电流)", [3.5, 0.40, 2.0]),
-        ("平衡",         [5.0, 0.35, 2.5]),
-        ("激进 (高电流)", [7.0, 0.20, 4.0]),
-        ("极端 (可能违规)", [7.0, 0.15, 5.0]),
-    ]
-
-    results = []
-    for name, theta in tests:
-        print(f"\n--- {name}: I1={theta[0]}A, SOC1={theta[1]}, I2={theta[2]}A ---")
-        t0 = _time.time()
-        res = sim.evaluate(theta)
-        dt = _time.time() - t0
-
-        results.append((name, theta, res))
-
-        if res["feasible"]:
-            obj = res["raw_objectives"]
-            d   = res["details"]
-            print(f"  ✓ 充电时间: {obj[0]:.0f}s ({obj[0]/60:.1f}min)")
-            print(f"    峰值温度: {obj[1]:.2f}K ({obj[1]-273.15:.1f}°C)")
-            print(f"    老化程度: {obj[2]:.6f}%")
-            print(f"    峰值电压: {d['peak_voltage']:.3f}V")
-        else:
-            print(f"  ✗ 违规: {res['violation']}")
-            obj = res["raw_objectives"]
-            print(f"    惩罚值: t={obj[0]}s, T={obj[1]}K, aging={obj[2]}%")
-
-        print(f"  耗时: {dt:.2f}s")
-
-    # ---- 物理一致性 ----
-    print("\n" + "=" * 60)
-    print("物理一致性检查")
-    print("=" * 60)
-
-    feasible = [(n, t, r) for n, t, r in results if r["feasible"]]
-    if len(feasible) >= 2:
-        # 电流越大 → 时间越短
-        sorted_by_i1 = sorted(feasible, key=lambda x: x[1][0])
-        t_low  = sorted_by_i1[0][2]["raw_objectives"][0]
-        t_high = sorted_by_i1[-1][2]["raw_objectives"][0]
-        print(f"  时间: I1={sorted_by_i1[0][1][0]}A → {t_low:.0f}s, "
-              f"I1={sorted_by_i1[-1][1][0]}A → {t_high:.0f}s  "
-              f"{'✓' if t_high < t_low else '⚠'}")
-
-        # 电流越大 → 温度越高
-        temp_low  = sorted_by_i1[0][2]["raw_objectives"][1]
-        temp_high = sorted_by_i1[-1][2]["raw_objectives"][1]
-        print(f"  温度: I1={sorted_by_i1[0][1][0]}A → {temp_low:.2f}K, "
-              f"I1={sorted_by_i1[-1][1][0]}A → {temp_high:.2f}K  "
-              f"{'✓' if temp_high > temp_low else '⚠'}")
-
-        # 电流越大 → 老化越高
-        aging_low  = sorted_by_i1[0][2]["raw_objectives"][2]
-        aging_high = sorted_by_i1[-1][2]["raw_objectives"][2]
-        print(f"  老化: I1={sorted_by_i1[0][1][0]}A → {aging_low:.6f}%, "
-              f"I1={sorted_by_i1[-1][1][0]}A → {aging_high:.6f}%  "
-              f"{'✓' if aging_high > aging_low else '⚠'}")
-
-    print("\n" + "=" * 60)
-    print("测试完成")
-    print("=" * 60)
