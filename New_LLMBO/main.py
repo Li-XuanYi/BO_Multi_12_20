@@ -228,6 +228,11 @@ async def run_optimization(config: Config, args: argparse.Namespace) -> None:
             'llm_api_key': config.llm.api_key,
             'llm_n_samples': config.llm.n_samples if hasattr(config.llm, 'n_samples') else 1,
             'llm_temperature': config.llm.warmstart.temperature,
+            'battery_param_set': config.battery.param_set,
+            'warmstart_context_level': config.llm.warmstart.context_level,
+            'warmstart_max_tokens': config.llm.warmstart.max_tokens,
+            'warmstart_max_retries': config.llm.warmstart.max_retries,
+            'warmstart_temperature': config.llm.warmstart.temperature,
 
             # GP 超参数
             'gamma_max': config.bo.gamma_max,

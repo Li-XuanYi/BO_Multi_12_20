@@ -142,10 +142,10 @@ def _load_from_env() -> Dict[str, Any]:
     # LLM 通用配置
     llm_config: Dict[str, Any] = {}
 
-    if api_key := os.getenv('LLM_API_KEY'):
+    if api_key := (os.getenv('LLM_API_KEY') or os.getenv('OPENAI_API_KEY')):
         llm_config['api_key'] = api_key
 
-    if base_url := os.getenv('LLM_BASE_URL'):
+    if base_url := (os.getenv('LLM_BASE_URL') or os.getenv('OPENAI_BASE_URL')):
         llm_config['base_url'] = base_url
 
     if model := os.getenv('LLM_MODEL'):
@@ -296,7 +296,7 @@ def parse_cli_overrides(args: list[str]) -> Dict[str, Any]:
 
     支持格式:
         --bo.n_iterations=100
-        --llm.model=gpt-4o
+        --llm.model=gpt-4.1-mini
         --data.save_dir=./results
 
     Args:

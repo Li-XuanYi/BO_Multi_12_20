@@ -14,15 +14,6 @@ pybamm_simulator.py — 三段恒流充电仿真器（改进版）
     T_peak > T_max (默认 328.15 K / 55°C) → penalty
     V_peak > V_max (默认 4.4 V)           → penalty
 
-主要修复 (相比原版):
-    1. 新增 SOH 参数，对齐 SPMe.py / utils_fun.py 的容量缩放逻辑
-    2. 提供 calCap() 经验老化 + SEI/析锂物理老化双通道，默认与 utils_fun.py 一致
-    3. 修复 SOC 提取 bug：二维 entries 应取 [:, -1].mean() 而非 [-1, -1]
-    4. 温度目标改为温升 ΔT，与 utils_fun.py 对齐，penalty 数值同步调整
-    5. 步长计算对齐 utils_fun.py：cap*SOH/I * soc * 3600，再加 20% 余量
-    6. 新增 trajectories 字段，输出完整 V/T/SOC/I 时序轨迹
-    7. 电流约定文档化，新增 use_crate 参数支持 C 倍率输入
-
 参数来源:
     电化学参数 — Chen2020 + 辨识值 (SPMe.py)
     热模型参数 — 辨识值 (SPMe.py)
@@ -43,12 +34,16 @@ import logging
 import numpy as np
 from typing import Dict, List, Optional
 
+from utils.constants import DEFAULT_BOUNDS, DSOC3_MIN, DSOC_SUM_MAX, FAILURE_PENALTY
+
 logger = logging.getLogger(__name__)
 
 # ---- 充电 SOC 窗口 ----
 SOC_START = 0.0
 SOC_END   = 0.8
 SOC_SPAN  = SOC_END - SOC_START   # 0.8
+DEFAULT_BATTERY_NAME = "LG INR21700-M50"
+DEFAULT_PARAM_SET = "Chen2020"
 
 # ---- Chen2020 负极浓度 → SOC 映射 (与 SPMe.py cal_soc "ours" 分支完全一致) ----
 _SOC_C_MIN = 872.9651389896292      # mol/m³  (≈ 0% SOC)
@@ -56,7 +51,6 @@ _SOC_C_MAX = 30171.311359086325     # mol/m³  (≈ 100% SOC)
 
 # ---- Penalty 向量: [time_s, delta_temp_K, aging_%] ----
 # delta_temp_K = peak_temp - T_init，与 utils_fun.py temp_rise 对齐
-PENALTY = np.array([7200.0, 40.0, 5.0])
 
 # ---- 热响应对齐系数 ----
 # 目标温升与老化输入温度分别对齐，兼顾两项指标的一致性。
@@ -182,6 +176,14 @@ class PyBaMMSimulator:
         self.V_max      = V_max
         self.use_crate  = use_crate
         self.aging_mode = aging_mode
+        self.param_bounds = {
+            key: tuple(bounds) for key, bounds in DEFAULT_BOUNDS.items()
+        }
+        self.soc_start = SOC_START
+        self.soc_end = SOC_END
+        self.dsoc_sum_max = DSOC_SUM_MAX
+        self.battery_name = DEFAULT_BATTERY_NAME
+        self.param_set = DEFAULT_PARAM_SET
 
     # ------------------------------------------------------------------
     #  公共接口
@@ -205,7 +207,15 @@ class PyBaMMSimulator:
         """
         rng = np.random.get_state()
         try:
-            I1, I2, I3, dSOC1, dSOC2 = [float(x) for x in np.asarray(theta).flatten()[:5]]
+            theta_arr = np.asarray(theta, dtype=float).ravel()
+            if theta_arr.size < 5:
+                return self._penalty("theta 必须包含 5 个决策变量")
+
+            I1, I2, I3, dSOC1, dSOC2 = [float(x) for x in theta_arr[:5]]
+            if dSOC1 + dSOC2 >= self.dsoc_sum_max:
+                return self._penalty(
+                    f"dSOC1+dSOC2={dSOC1 + dSOC2:.4f} 触发前置拦截，需满足 dSOC3>{DSOC3_MIN:.2f}"
+                )
             return self._run(I1, I2, I3, dSOC1, dSOC2)
         except Exception as e:
             logger.error(f"evaluate error: {e}")
@@ -469,7 +479,7 @@ class PyBaMMSimulator:
     def _penalty(self, reason: str) -> Dict:
         logger.warning(f"惩罚触发: {reason}")
         return {
-            "raw_objectives": PENALTY.copy(),
+            "raw_objectives": FAILURE_PENALTY.copy(),
             "soc_final":      float("nan"),
             "feasible":       False,
             "violation":      reason,

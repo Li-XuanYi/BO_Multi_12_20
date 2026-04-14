@@ -21,6 +21,12 @@ import os
 from typing import Dict, List, Optional, Tuple, Any
 from pydantic import BaseModel, Field, field_validator, model_validator
 from pydantic.fields import FieldInfo
+from utils.constants import (
+    DEFAULT_BOUNDS as CANONICAL_DEFAULT_BOUNDS,
+    DSOC_SUM_MAX,
+    IDEAL_POINT as CANONICAL_IDEAL_POINT,
+    REF_POINT as CANONICAL_REF_POINT,
+)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -85,21 +91,31 @@ class ParamBounds(BaseModel):
     """决策变量参数边界"""
 
     I1: Tuple[float, float] = Field(
-        default=(3.0, 7.0),
+        default=CANONICAL_DEFAULT_BOUNDS['I1'],
         description="第一阶段电流 [A]"
     )
 
-    SOC1: Tuple[float, float] = Field(
-        default=(0.1, 0.7),
-        description="切换 SOC 点"
-    )
-
     I2: Tuple[float, float] = Field(
-        default=(1.0, 5.0),
+        default=CANONICAL_DEFAULT_BOUNDS['I2'],
         description="第二阶段电流 [A]"
     )
 
-    @field_validator('I1', 'SOC1', 'I2')
+    I3: Tuple[float, float] = Field(
+        default=CANONICAL_DEFAULT_BOUNDS['I3'],
+        description="第三阶段电流 [A]"
+    )
+
+    dSOC1: Tuple[float, float] = Field(
+        default=CANONICAL_DEFAULT_BOUNDS['dSOC1'],
+        description="第一阶段 SOC 区间宽度"
+    )
+
+    dSOC2: Tuple[float, float] = Field(
+        default=CANONICAL_DEFAULT_BOUNDS['dSOC2'],
+        description="第二阶段 SOC 区间宽度"
+    )
+
+    @field_validator('I1', 'I2', 'I3', 'dSOC1', 'dSOC2')
     @classmethod
     def validate_bounds(cls, v: Tuple[float, float]) -> Tuple[float, float]:
         """验证边界有效性"""
@@ -109,12 +125,23 @@ class ParamBounds(BaseModel):
             raise ValueError(f"下界 {v[0]} 必须小于上界 {v[1]}")
         return v
 
+    @model_validator(mode='after')
+    def validate_dsoc_budget(self) -> 'ParamBounds':
+        """验证 dSOC 上界不会放开到明显无物理意义的区域。"""
+        if self.dSOC1[1] + self.dSOC2[1] > DSOC_SUM_MAX:
+            raise ValueError(
+                f"dSOC1 上界 + dSOC2 上界 必须 <= {DSOC_SUM_MAX:.2f}"
+            )
+        return self
+
     def to_dict(self) -> Dict[str, Tuple[float, float]]:
         """转换为字典格式"""
         return {
             'I1': self.I1,
-            'SOC1': self.SOC1,
             'I2': self.I2,
+            'I3': self.I3,
+            'dSOC1': self.dSOC1,
+            'dSOC2': self.dSOC2,
         }
 
 
@@ -476,18 +503,18 @@ class MOBOConfig(BaseModel):
 
     reference_point: Dict[str, float] = Field(
         default_factory=lambda: {
-            'time': 7200.0,
-            'temp': 328.15,
-            'aging': 0.01,
+            'time': float(CANONICAL_REF_POINT[0]),
+            'temp': float(CANONICAL_REF_POINT[1]),
+            'aging': float(CANONICAL_REF_POINT[2]),
         },
         description="参考点（最坏情况）"
     )
 
     ideal_point: Dict[str, float] = Field(
         default_factory=lambda: {
-            'time': 2500.0,
-            'temp': 298.15,
-            'aging': 1e-4,
+            'time': float(CANONICAL_IDEAL_POINT[0]),
+            'temp': float(CANONICAL_IDEAL_POINT[1]),
+            'aging': float(CANONICAL_IDEAL_POINT[2]),
         },
         description="理想点（最好情况）"
     )
@@ -729,7 +756,7 @@ class LLMConfig(BaseModel):
     api_key: str = Field(
         default_factory=lambda: os.getenv(
             'LLM_API_KEY',
-            'sk-Sq1zyC8PLM8gafI2fpAccWpzBAzZvuNOPU6ZC9aWA6C883IK'
+            os.getenv('OPENAI_API_KEY', '')
         ),
         description="API 密钥"
     )
@@ -737,13 +764,13 @@ class LLMConfig(BaseModel):
     base_url: str = Field(
         default_factory=lambda: os.getenv(
             'LLM_BASE_URL',
-            'https://api.nuwaapi.com/v1'
+            os.getenv('OPENAI_BASE_URL', 'https://api.nuwaapi.com/v1')
         ),
         description="API 基础 URL"
     )
 
     model: str = Field(
-        default_factory=lambda: os.getenv('LLM_MODEL', 'gpt-4o'),
+        default_factory=lambda: os.getenv('LLM_MODEL', 'gpt-4.1-mini'),
         description="模型名称"
     )
 
@@ -934,12 +961,12 @@ class Config(BaseModel):
         errors = []
 
         # 检查 1: temp_max 一致性
-        temp_max_battery = self.battery.temp_max
+        temp_max_battery = self.battery.temp_max - self.battery.init_temp
         temp_max_ref = self.mobo.reference_point['temp']
         if temp_max_battery > temp_max_ref:
             errors.append(
-                f"Warning: battery temp_max ({temp_max_battery}K) > "
-                f"reference temp ({temp_max_ref}K)"
+                f"Warning: battery temp rise limit ({temp_max_battery}K) > "
+                f"reference temp rise ({temp_max_ref}K)"
             )
 
         # 检查 2: gamma 一致性

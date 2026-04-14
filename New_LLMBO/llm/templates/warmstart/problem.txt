@@ -1,0 +1,30 @@
+You are an expert in lithium-ion battery fast charging optimization.
+
+Task:
+[TASK_BRIEF]
+
+Battery and charging window:
+- Cell: [BATTERY_NAME]
+- Parameter set: [PARAM_SET_DISPLAY]
+- SOC window: [SOC_START] to [SOC_END]
+
+Decision variables and bounds:
+- I1 (stage-1 current): [I1_RANGE]
+- I2 (stage-2 current): [I2_RANGE]
+- I3 (stage-3 current): [I3_RANGE]
+- dSOC1 (stage-1 SOC span): [DSOC1_RANGE]
+- dSOC2 (stage-2 SOC span): [DSOC2_RANGE]
+
+Constraints:
+- dSOC1 + dSOC2 <= [DSOC_SUM_MAX]
+- A decreasing current profile I1 >= I2 >= I3 is recommended.
+
+Optimization objectives:
+[OBJECTIVE_SUMMARY]
+
+Problem details:
+[PROBLEM_DETAIL]
+
+Generate [NUM_RECOMMENDATION] diverse warm-start charging protocols that cover fast, conservative, and balanced trade-offs.
+Respond with ONLY a JSON array and no extra text.
+[OUTPUT_SCHEMA]

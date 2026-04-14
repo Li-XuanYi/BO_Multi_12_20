@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python -m llmbo.optimizer:*)"
+      "Bash(python -m llmbo.optimizer:*)",
+      "Bash(rm -rf __pycache__)",
+      "Bash(find . -name \"__pycache__\" -type d -exec rm -rf {} +)",
+      "Bash(rm -rf .pytest_cache)",
+      "Bash(rm -rf .riesz_cache)",
+      "Bash(rm -rf pilot_results)",
+      "Bash(rm -rf _pilot_ckpts)"
     ],
     "deny": [],
     "ask": []
