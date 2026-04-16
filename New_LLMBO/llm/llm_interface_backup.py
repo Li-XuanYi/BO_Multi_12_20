@@ -591,7 +591,6 @@ def _build_iteration_prompt(
     state_dict: Dict,
     param_bounds: Dict,
     pareto_context: str,
-    include_fewshot: bool = True,
 ) -> str:
     b         = param_bounds
     t         = state_dict.get("iteration", 0)
@@ -622,40 +621,11 @@ def _build_iteration_prompt(
     mu_str   = f"[{mu[0]:.2f}, {mu[1]:.2f}, {mu[2]:.2f}, {mu[3]:.3f}, {mu[4]:.3f}]"
     sig_str  = f"[{sigma[0]:.2f}, {sigma[1]:.2f}, {sigma[2]:.2f}, {sigma[3]:.3f}, {sigma[4]:.3f}]"
 
-    # ──────────────────────────────────────────────────────
-    # Few-Shot 历史示例
-    # ──────────────────────────────────────────────────────
-    fewshot_block = ""
-    if include_fewshot:
-        database = state_dict.get("database")
-        if database is not None:
-            try:
-                feasible = database.get_feasible()
-                if len(feasible) >= 5:
-                    scored = [(obs.scalarized, obs) for obs in feasible]
-                    scored.sort(key=lambda x: x[0])
-
-                    top_3 = scored[:3]
-                    worst_2 = scored[-2:]
-
-                    examples = []
-                    for score, obs in top_3:
-                        examples.append(f"Protocol: I1={obs.theta[0]:.2f}, I2={obs.theta[1]:.2f}, I3={obs.theta[2]:.2f}, dSOC1={obs.theta[3]:.3f}, dSOC2={obs.theta[4]:.3f} -> Score: {score:.6f} * (excellent)")
-                    for score, obs in worst_2:
-                        examples.append(f"Protocol: I1={obs.theta[0]:.2f}, I2={obs.theta[1]:.2f}, I3={obs.theta[2]:.2f}, dSOC1={obs.theta[3]:.3f}, dSOC2={obs.theta[4]:.3f} -> Score: {score:.6f} X (poor)")
-
-                    fewshot_block = "\n".join(examples)
-            except Exception:
-                fewshot_block = ""
-
     return f"""You are an expert in battery fast charging optimization assisting a Bayesian Optimization loop.
 
 Battery: LG INR21700-M50, 5Ah, 3-stage CC protocol (SOC 0%→80%).
 Parameter bounds: I1∈[{b['I1'][0]},{b['I1'][1]}]A, I2∈[{b['I2'][0]},{b['I2'][1]}]A, I3∈[{b['I3'][0]},{b['I3'][1]}]A, dSOC1∈[{b['dSOC1'][0]},{b['dSOC1'][1]}], dSOC2∈[{b['dSOC2'][0]},{b['dSOC2'][1]}]
 Constraint: dSOC1 + dSOC2 <= 0.70, and I1 >= I2 >= I3 recommended.
-
-=== Historical Performance Examples ===
-{fewshot_block}
 
 === Optimization State (iteration {t}/{T}) ===
 Current weight vector: time={w[0]:.2f}, temp={w[1]:.2f}, aging={w[2]:.2f}
@@ -774,7 +744,6 @@ class LLMInterface:
         battery_model: Optional[str] = None,
         battery_param_set: str = "Chen2020",
         warmstart_context_level: str = "full",
-        enable_iteration_fewshot: bool = True,
         warmstart_max_tokens: int = 2500,
         warmstart_max_retries: int = 3,
         warmstart_temperature: Optional[float] = None,
@@ -787,7 +756,6 @@ class LLMInterface:
         self._battery  = battery_model
         self._battery_param_set = battery_param_set
         self._warmstart_context_level = warmstart_context_level
-        self._enable_iteration_fewshot = enable_iteration_fewshot
         self._warmstart_max_tokens = int(warmstart_max_tokens)
         self._warmstart_max_retries = int(warmstart_max_retries)
         self._warmstart_temperature = (
@@ -1032,10 +1000,7 @@ class LLMInterface:
         else:
             pareto_context = state_dict.get("data_summary", "")
 
-        prompt = _build_iteration_prompt(
-            n, state_dict, self._bounds, pareto_context,
-            include_fewshot=self._enable_iteration_fewshot
-        )
+        prompt = _build_iteration_prompt(n, state_dict, self._bounds, pareto_context)
         responses = self._caller.call(prompt)
         candidates = self._parser.parse_candidates(responses)
 
@@ -1108,7 +1073,6 @@ def build_llm_interface(
     battery_model: Optional[str] = None,
     battery_param_set: str = "Chen2020",
     warmstart_context_level: str = "full",
-    enable_iteration_fewshot: bool = True,
     warmstart_max_tokens: int = 2500,
     warmstart_max_retries: int = 3,
     warmstart_temperature: Optional[float] = None,
@@ -1155,7 +1119,6 @@ def build_llm_interface(
         battery_model=battery_model,
         battery_param_set=battery_param_set,
         warmstart_context_level=warmstart_context_level,
-        enable_iteration_fewshot=enable_iteration_fewshot,
         warmstart_max_tokens=warmstart_max_tokens,
         warmstart_max_retries=warmstart_max_retries,
         warmstart_temperature=warmstart_temperature,
