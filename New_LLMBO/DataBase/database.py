@@ -20,12 +20,22 @@ from typing import Dict, List, Optional, Tuple, Any
 import numpy as np
 from utils.constants import (
     DEFAULT_BOUNDS as CANONICAL_DEFAULT_BOUNDS,
+    DSOC_SUM_MAX as CANONICAL_DSOC_SUM_MAX,
     IDEAL_POINT as CANONICAL_IDEAL_POINT,
+    LLM_SAFE_DSOC_SUM_MAX,
     PARAM_NAMES as CANONICAL_PARAM_NAMES,
     REF_POINT as CANONICAL_REF_POINT,
 )
 
 logger = logging.getLogger(__name__)
+
+# Try to use pymoo for robust HV calculation.
+try:
+    from pymoo.indicators.hv import Hypervolume as PymooHV
+    HAS_PYMOO = True
+except ImportError:
+    HAS_PYMOO = False
+    PymooHV = None
 
 # ================================================================
 #  常量
@@ -47,6 +57,10 @@ DEFAULT_HV_MAX = (
     (DEFAULT_REF_POINT[1] - DEFAULT_IDEAL_POINT[1]) *
     (np.log10(DEFAULT_REF_POINT[2]) - np.log10(DEFAULT_IDEAL_POINT[2]))
 )
+PARETO_DUPLICATE_ATOL = 1e-9
+HV_DUPLICATE_DECIMALS = 12
+DSOC_SUM_MAX = CANONICAL_DSOC_SUM_MAX
+HV_DISPLAY_DIVISOR = 0.4
 
 # 决策变量边界（与 pybamm_simulator._run() 的换算逻辑对齐）
 # I1/I2/I3: 协议电流参数（仿真器内部换算 I_A = I * Q_eff / 5）
@@ -397,11 +411,43 @@ class ObservationDB:
         # 增量更新
         new_obj = np.asarray(new_obj, dtype=float)
         new_idx = len(self._observations) - 1
+        new_theta = np.asarray(self._observations[new_idx].theta, dtype=float)
 
         if not self._pareto_indices:
             self._pareto_indices    = [new_idx]
             self._pareto_objectives = new_obj[np.newaxis, :]
             return
+
+        # Skip exact/near-exact duplicates to keep the Pareto front stable.
+        if np.any(np.all(np.isclose(self._pareto_objectives, new_obj, atol=PARETO_DUPLICATE_ATOL), axis=1)):
+            logger.debug(
+                "Duplicate Pareto objective detected: %s. Skipping.",
+                np.round(new_obj, 10),
+            )
+            return
+
+        pf_thetas = np.array([self._observations[i].theta for i in self._pareto_indices], dtype=float)
+        duplicate_theta_mask = np.all(np.isclose(pf_thetas, new_theta, atol=PARETO_DUPLICATE_ATOL), axis=1)
+        if np.any(duplicate_theta_mask):
+            duplicate_idx = int(np.flatnonzero(duplicate_theta_mask)[0])
+            existing_obj = self._pareto_objectives[duplicate_idx]
+            if np.all(new_obj <= existing_obj) and np.any(new_obj < existing_obj):
+                self._pareto_indices.pop(duplicate_idx)
+                self._pareto_objectives = np.delete(self._pareto_objectives, duplicate_idx, axis=0)
+                logger.debug(
+                    "Replacing duplicate Pareto theta with dominating objective: theta=%s",
+                    np.round(new_theta, 6),
+                )
+                if not self._pareto_indices:
+                    self._pareto_indices = [new_idx]
+                    self._pareto_objectives = new_obj[np.newaxis, :]
+                    return
+            else:
+                logger.debug(
+                    "Duplicate Pareto theta detected: theta=%s. Skipping.",
+                    np.round(new_theta, 6),
+                )
+                return
 
         # 检查新点是否被支配
         for pf_obj in self._pareto_objectives:
@@ -438,30 +484,16 @@ class ObservationDB:
     # ============================================================
     def compute_hypervolume(self, ref_point: Optional[np.ndarray] = None) -> float:
         """归一化超体积 HV ∈ [0, 1]，time 和 aging 取 log₁₀。"""
-        ref = ref_point if ref_point is not None else self.ref_point
-        _, Y_pf = self.get_pareto_XY()
-        if len(Y_pf) == 0:
-            return 0.0
-
-        Y_hv = Y_pf.copy()
-        Y_hv[:, 0] = np.log10(np.maximum(Y_pf[:, 0], 1.0))
-        Y_hv[:, 2] = np.log10(np.maximum(Y_pf[:, 2], 1e-12))
-
-        ref_hv = ref.copy()
-        ref_hv[0] = np.log10(ref[0])
-        ref_hv[2] = np.log10(ref[2])
-
-        mask = np.all(Y_hv < ref_hv, axis=1)
-        Y_hv = Y_hv[mask]
-        if len(Y_hv) == 0:
-            return 0.0
-
-        hv_raw = self._hv_3d(Y_hv, ref_hv)
-        return hv_raw / self.hv_max
+        hv_raw = self._compute_hypervolume_value(ref_point=ref_point)
+        hv_max = self.hv_max if self.hv_max > 1e-12 else 1.0
+        return (hv_raw / hv_max) / HV_DISPLAY_DIVISOR
 
     def compute_hypervolume_raw(self, ref_point: Optional[np.ndarray] = None) -> float:
         """未归一化超体积（供调试）。"""
-        ref = ref_point if ref_point is not None else self.ref_point
+        return self._compute_hypervolume_value(ref_point=ref_point)
+
+    def _compute_hypervolume_value(self, ref_point: Optional[np.ndarray] = None) -> float:
+        ref = np.asarray(ref_point if ref_point is not None else self.ref_point, dtype=float).copy()
         _, Y_pf = self.get_pareto_XY()
         if len(Y_pf) == 0:
             return 0.0
@@ -471,35 +503,59 @@ class ObservationDB:
         Y_hv[:, 2] = np.log10(np.maximum(Y_pf[:, 2], 1e-12))
 
         ref_hv = ref.copy()
-        ref_hv[0] = np.log10(ref[0])
-        ref_hv[2] = np.log10(ref[2])
+        ref_hv[0] = np.log10(np.maximum(ref[0], 1.0))
+        ref_hv[2] = np.log10(np.maximum(ref[2], 1e-12))
 
         mask = np.all(Y_hv < ref_hv, axis=1)
         Y_hv = Y_hv[mask]
         if len(Y_hv) == 0:
             return 0.0
+
+        Y_hv = self._deduplicate_hv_points(Y_hv)
+        if len(Y_hv) == 0:
+            return 0.0
+
+        if HAS_PYMOO:
+            hv_calculator = PymooHV(ref_point=ref_hv)
+            return float(hv_calculator.do(Y_hv))
         return self._hv_3d(Y_hv, ref_hv)
 
     @staticmethod
+    def _deduplicate_hv_points(points: np.ndarray) -> np.ndarray:
+        pts = np.atleast_2d(np.asarray(points, dtype=float))
+        if len(pts) <= 1:
+            return pts
+        rounded = np.round(pts, decimals=HV_DUPLICATE_DECIMALS)
+        _, unique_idx = np.unique(rounded, axis=0, return_index=True)
+        return pts[np.sort(unique_idx)]
+
+    @staticmethod
     def _hv_3d(points: np.ndarray, ref: np.ndarray) -> float:
-        n = len(points)
-        if n == 0:
+        pts = ObservationDB._deduplicate_hv_points(points)
+        if len(pts) == 0:
             return 0.0
-        if n == 1:
-            return float(np.prod(ref - points[0]))
+        if len(pts) == 1:
+            return float(np.prod(np.maximum(ref - pts[0], 0.0)))
 
-        sorted_idx = np.argsort(points[:, 0])
-        pts = points[sorted_idx]
+        x_coords = np.unique(np.concatenate([pts[:, 0], ref[0:1]]))
+        y_coords = np.unique(np.concatenate([pts[:, 1], ref[1:2]]))
+        z_coords = np.unique(np.concatenate([pts[:, 2], ref[2:3]]))
         hv = 0.0
-        front_2d = []
-
-        for i in range(n):
-            new_pt = (pts[i, 1], pts[i, 2])
-            front_2d = _insert_2d_front(front_2d, new_pt)
-            x_width = pts[i + 1, 0] - pts[i, 0] if i < n - 1 else ref[0] - pts[i, 0]
-            hv_2d = _compute_2d_hv(front_2d, ref[1], ref[2])
-            hv += x_width * hv_2d
-
+        for i in range(len(x_coords) - 1):
+            x0, x1 = x_coords[i], x_coords[i + 1]
+            if x1 <= x0:
+                continue
+            for j in range(len(y_coords) - 1):
+                y0, y1 = y_coords[j], y_coords[j + 1]
+                if y1 <= y0:
+                    continue
+                for k in range(len(z_coords) - 1):
+                    z0, z1 = z_coords[k], z_coords[k + 1]
+                    if z1 <= z0:
+                        continue
+                    corner = np.array([x0, y0, z0], dtype=float)
+                    if np.any(np.all(pts <= corner + 1e-12, axis=1)):
+                        hv += (x1 - x0) * (y1 - y0) * (z1 - z0)
         return float(hv)
 
     # ============================================================
@@ -536,6 +592,154 @@ class ObservationDB:
 
     def get_hv_trace(self) -> np.ndarray:
         return np.array([s["hypervolume"] for s in self._iteration_stats])
+
+    def get_hv_feedback_summary(self, window: int = 3) -> Dict[str, Any]:
+        current_hv = float(self.compute_hypervolume())
+        stats = self.get_iteration_stats()
+        window = max(int(window), 1)
+        if not stats:
+            return {
+                "current_hv": current_hv,
+                "hv_delta_last_k": 0.0,
+                "pareto_delta_last_k": 0,
+                "window": window,
+                "summary": "HV history unavailable in this iteration.",
+            }
+
+        recent = stats[-window:]
+        start_hv = float(recent[0].get("hypervolume", current_hv))
+        delta = current_hv - start_hv
+        pareto_delta = int(self.pareto_size) - int(recent[0].get("pareto_size", self.pareto_size))
+        return {
+            "current_hv": current_hv,
+            "hv_delta_last_k": float(delta),
+            "pareto_delta_last_k": int(pareto_delta),
+            "window": window,
+            "summary": (
+                f"current_hv={current_hv:.6f}, hv_delta_last_{window}={delta:.6f}, "
+                f"pareto_size={self.pareto_size}, pareto_delta_last_{window}={pareto_delta}"
+            ),
+        }
+
+    def get_similar_weight_guidance_stats(
+        self,
+        w_vec: np.ndarray,
+        *,
+        similarity_threshold: float = 0.85,
+        fallback_score: float = 0.75,
+        hv_gain_threshold: float = 1e-3,
+    ) -> Dict[str, Any]:
+        stats = self.get_iteration_stats()
+        if len(stats) < 2:
+            return {
+                "similar_count": 0,
+                "success_rate": float(fallback_score),
+                "threshold": float(similarity_threshold),
+                "summary": (
+                    f"similar_weight_guidance: matches=0, score={float(fallback_score):.2f} "
+                    "(fallback)"
+                ),
+            }
+
+        w_now = np.asarray(w_vec, dtype=float).ravel()
+        denom_now = max(float(np.linalg.norm(w_now)), 1e-12)
+        weighted_success = 0.0
+        total_weight = 0.0
+        matches = 0
+
+        for idx, stat in enumerate(stats[:-1]):
+            hist_w = stat.get("w_vec")
+            if hist_w is None or stat.get("llm_guidance") is None:
+                continue
+            hist_w_arr = np.asarray(hist_w, dtype=float).ravel()
+            if hist_w_arr.size != w_now.size:
+                continue
+
+            denom_hist = max(float(np.linalg.norm(hist_w_arr)), 1e-12)
+            similarity = float(np.dot(w_now, hist_w_arr) / (denom_now * denom_hist))
+            if similarity < float(similarity_threshold):
+                continue
+
+            next_stat = stats[idx + 1]
+            hv_gain = float(next_stat.get("hypervolume", 0.0)) - float(stat.get("hypervolume", 0.0))
+            pf_gain = int(next_stat.get("pareto_size", 0)) - int(stat.get("pareto_size", 0))
+            success = 1.0 if (hv_gain > float(hv_gain_threshold) or pf_gain > 0) else 0.0
+            weighted_success += similarity * success
+            total_weight += similarity
+            matches += 1
+
+        if total_weight <= 1e-12:
+            return {
+                "similar_count": 0,
+                "success_rate": float(fallback_score),
+                "threshold": float(similarity_threshold),
+                "summary": (
+                    f"similar_weight_guidance: matches=0, score={float(fallback_score):.2f} "
+                    "(fallback)"
+                ),
+            }
+
+        success_rate = float(np.clip(weighted_success / total_weight, 0.0, 1.0))
+        return {
+            "similar_count": int(matches),
+            "success_rate": success_rate,
+            "threshold": float(similarity_threshold),
+            "summary": (
+                f"similar_weight_guidance: matches={matches}, weighted_success={success_rate:.2f}"
+            ),
+        }
+
+    def get_boundary_failure_stats(
+        self,
+        *,
+        safe_dsoc_sum_max: float = LLM_SAFE_DSOC_SUM_MAX,
+        hard_dsoc_sum_max: float = DSOC_SUM_MAX,
+        recent_window: int = 10,
+        near_hard_margin: float = 0.02,
+    ) -> Dict[str, Any]:
+        all_obs = self.get_all()
+        feasible = self.get_feasible()
+        recent_window = max(int(recent_window), 1)
+        if not all_obs:
+            return {
+                "recent_failures": 0,
+                "recent_monotone": 0,
+                "near_safe": 0,
+                "near_hard": 0,
+                "n_feasible": 0,
+                "recent_window": recent_window,
+                "summary": "none",
+            }
+
+        feasible_sums = (
+            np.array([obs.theta[3] + obs.theta[4] for obs in feasible], dtype=float)
+            if feasible else np.empty((0,), dtype=float)
+        )
+        recent = all_obs[-recent_window:]
+        recent_failures = sum(1 for obs in recent if not obs.feasible)
+        recent_monotone = sum(
+            1
+            for obs in recent
+            if (obs.theta[1] > obs.theta[0] + 1e-9) or (obs.theta[2] > obs.theta[1] + 1e-9)
+        )
+        near_safe = int(np.sum(feasible_sums >= float(safe_dsoc_sum_max) - 1e-9)) if feasible_sums.size else 0
+        near_hard = int(
+            np.sum(feasible_sums >= float(hard_dsoc_sum_max) - float(near_hard_margin))
+        ) if feasible_sums.size else 0
+        n_feasible = int(len(feasible_sums))
+        return {
+            "recent_failures": int(recent_failures),
+            "recent_monotone": int(recent_monotone),
+            "near_safe": int(near_safe),
+            "near_hard": int(near_hard),
+            "n_feasible": n_feasible,
+            "recent_window": recent_window,
+            "summary": (
+                f"recent_failures={recent_failures}/{recent_window}, "
+                f"recent_monotone={recent_monotone}/{recent_window}, "
+                f"near_safe={near_safe}/{n_feasible}, near_hard={near_hard}/{n_feasible}"
+            ),
+        }
 
     # ============================================================
     #  LLM 上下文生成（供 Touchpoint 2 Prompt 使用）

@@ -12,15 +12,29 @@ from scipy.stats import qmc
 
 from DataBase.database import DEFAULT_BOUNDS, ObservationDB
 from llm.llm_interface import IterationGuidance, build_llm_interface
-from llmbo.acquisition import build_acquisition_function
+from llmbo.acquisition import AcquisitionPrior, build_acquisition_function
 from llmbo.gp_model import build_gp_stack
+from llmbo.proposal import ProposalTrainingRecord, build_proposal_sampler
 from pybamm_simulator import PyBaMMSimulator
-from utils.constants import DSOC_SUM_MAX as CANONICAL_DSOC_SUM_MAX, IDEAL_POINT, REF_POINT
+from utils.constants import (
+    DSOC_SUM_MAX as CANONICAL_DSOC_SUM_MAX,
+    IDEAL_POINT,
+    LLM_SAFE_DSOC_SUM_MAX,
+    REF_POINT,
+    dsoc_sum_violates_limit,
+    project_dsoc_pair,
+)
 
 logger = logging.getLogger(__name__)
 
 PARAM_KEYS = ["I1", "I2", "I3", "dSOC1", "dSOC2"]
 DSOC_SUM_MAX = CANONICAL_DSOC_SUM_MAX
+
+
+def _stable_sigmoid(x: np.ndarray) -> np.ndarray:
+    z = np.asarray(x, dtype=float)
+    z = np.clip(z, -60.0, 60.0)
+    return 1.0 / (1.0 + np.exp(-z))
 
 
 DEFAULT_CONFIG = {
@@ -58,12 +72,39 @@ DEFAULT_CONFIG = {
     "init_seed": 2026,
     "eta": 0.05,
     "enable_iterative_guidance": True,
-    "enable_gp_llm_coupling": True,
+    "enable_gp_llm_coupling": False,
+    "enable_acq_prior_coupling": True,
     "guidance_grid_size": 64,
     "guidance_point_grid_size": 25,
     "guidance_point_local_scale": 0.75,
     "guidance_probe_size": 128,
     "guidance_hotspots": 5,
+    "guidance_top_scalar_k": 3,
+    "lambda_max": 1.0,
+    "lambda_min": 0.0,
+    "lambda_decay_rate": 0.75,
+    "coupling_history_similarity_threshold": 0.85,
+    "coupling_history_fallback_score": 0.75,
+    "llm_safe_dsoc_sum_max": LLM_SAFE_DSOC_SUM_MAX,
+    "enable_proposal_sampler": False,
+    "proposal_type": "weighted_gmm",
+    "proposal_min_train_size": 8,
+    "proposal_n_components": 3,
+    "proposal_n_samples": 24,
+    "proposal_local_mix": 0.30,
+    "proposal_cov_floor": 1e-3,
+    "proposal_elite_fraction": 0.35,
+    "proposal_weight_epsilon": 1e-3,
+    "proposal_near_constraint_lambda": 8.0,
+    "proposal_monotone_penalty_lambda": 4.0,
+    "proposal_safe_dsoc_sum_max": LLM_SAFE_DSOC_SUM_MAX,
+    "proposal_enforce_monotone_profile": False,
+    "guidance_prior_alpha": 0.30,
+    "proposal_prior_alpha": 0.20,
+    "proposal_prior_warmup_span": 8,
+    "acq_risk_safe_weight": 0.20,
+    "acq_risk_hard_weight": 3.00,
+    "acq_risk_monotone_weight": 0.40,
     "checkpoint_dir": "checkpoints",
     "checkpoint_every": 5,
     "battery_model": "LG INR21700-M50 (Chen2020)",
@@ -211,6 +252,7 @@ class BayesOptimizer:
         self.psi_fn: Any = None
         self.gp: Any = None
         self.af: Any = None
+        self.proposal: Any = None
         self._weight_set: Optional[np.ndarray] = None
         self._warmstart_hv_trace: List[Dict[str, Any]] = []
         self._hv_eval_trace: List[Dict[str, Any]] = []
@@ -218,6 +260,9 @@ class BayesOptimizer:
         self._y_tilde_max = np.ones(3, dtype=float)
         self._previous_guidance: Optional[Dict[str, Any]] = None
         self._last_coupling_summary: Optional[Dict[str, Any]] = None
+        self._last_proposal_summary: Optional[Dict[str, Any]] = None
+        self._last_acq_prior_summary: Optional[Dict[str, Any]] = None
+        self._last_candidate_source_counts: Dict[str, int] = {}
 
         Path(self.cfg["checkpoint_dir"]).mkdir(parents=True, exist_ok=True)
 
@@ -254,6 +299,7 @@ class BayesOptimizer:
             n_samples=self.cfg["llm_n_samples"],
             temperature=self.cfg["llm_temperature"],
             battery_model=self.cfg["battery_model"],
+            safe_dsoc_sum_max=float(self.cfg.get("llm_safe_dsoc_sum_max", LLM_SAFE_DSOC_SUM_MAX)),
         )
 
         self.psi_fn, _, _, self.gp = build_gp_stack(
@@ -274,6 +320,16 @@ class BayesOptimizer:
             n_random_candidates=self.cfg["ei_n_random_samples"],
             random_seed=self.cfg.get("w_sample_seed"),
         )
+
+        if bool(self.cfg.get("enable_proposal_sampler", False)):
+            self.proposal = build_proposal_sampler(
+                param_bounds=self.param_bounds,
+                config=self.cfg,
+                random_state=self.cfg.get("w_sample_seed"),
+            )
+            logger.info("Proposal sampler initialized: type=%s", self.cfg.get("proposal_type", "weighted_gmm"))
+        else:
+            self.proposal = None
 
         from llmbo.riesz_cache import load_or_generate_riesz
 
@@ -450,33 +506,51 @@ class BayesOptimizer:
 
             guidance = None
             coupling = None
+            acq_prior = None
             X_candidates = None
+            proposal_candidates = np.empty((0, len(PARAM_KEYS)), dtype=float)
             uncertainty_hotspots: List[Dict[str, Any]] = []
             self._previous_guidance = None
             self._last_coupling_summary = None
+            self._last_acq_prior_summary = None
+            self._last_candidate_source_counts = {}
+            guidance_candidates = None
+
+            proposal_records = self._build_proposal_training_records(scalar_y=scalar_y)
+            self._last_proposal_summary = None
+            if self.proposal is not None:
+                self._last_proposal_summary = self.proposal.fit(proposal_records)
+                proposal_candidates = self._sample_proposal_candidates(theta_best=self.database.get_theta_best())
 
             if bool(self.cfg.get("enable_iterative_guidance", True)):
                 uncertainty_hotspots = self._compute_uncertainty_hotspots(t)
                 guidance_state = self._build_guidance_state(
                     t=t,
                     w_vec=w_vec,
+                    scalar_y=scalar_y,
                     ideal_point_raw=ideal_point_raw,
+                    proposal_summary=self._last_proposal_summary,
                     uncertainty_hotspots=uncertainty_hotspots,
                 )
                 guidance = self.llm.query_iteration_guidance(guidance_state)
 
-                guidance_candidates = None
                 if guidance is not None:
                     self._previous_guidance = guidance.to_dict()
-                    guidance_payload_candidates = self._build_gp_llm_coupling_from_guidance(guidance, t)
+                    guidance_payload_candidates = self._build_gp_llm_coupling_from_guidance(
+                        guidance,
+                        t,
+                        w_vec=w_vec,
+                    )
                     if bool(self.cfg.get("enable_gp_llm_coupling", True)):
                         coupling, guidance_candidates = guidance_payload_candidates
                         self._last_coupling_summary = coupling.to_dict()
                         logger.info(
-                            "  Guidance mode=%s confidence=%.3f coupling_lambda=%.6f",
+                            "  Guidance mode=%s confidence=%.3f coupling_lambda=%.6f gate=%.3f effective=%.6f",
                             guidance.mode,
                             guidance.confidence,
                             float(coupling.lambda_value),
+                            float(coupling.gate),
+                            float(coupling.strength),
                         )
                     else:
                         _, guidance_candidates = guidance_payload_candidates
@@ -491,12 +565,31 @@ class BayesOptimizer:
                     dtype=float,
                 ) if uncertainty_hotspots else np.empty((0, len(PARAM_KEYS)))
 
+                tagged_candidates: List[Tuple[str, np.ndarray]] = []
+                if proposal_candidates.size:
+                    tagged_candidates.extend(("proposal", row) for row in proposal_candidates)
                 if guidance_candidates is not None:
-                    X_candidates = guidance_candidates
-                    if hotspot_candidates.size:
-                        X_candidates = np.vstack([guidance_candidates, hotspot_candidates])
-                elif hotspot_candidates.size:
-                    X_candidates = hotspot_candidates
+                    tagged_candidates.extend(("guidance", row) for row in guidance_candidates)
+                if hotspot_candidates.size:
+                    tagged_candidates.extend(("hotspot", row) for row in hotspot_candidates)
+                if tagged_candidates:
+                    tagged_candidates = self._deduplicate_tagged_points(tagged_candidates)
+                    self._last_candidate_source_counts = self._summarize_tagged_points(tagged_candidates)
+                    X_candidates = np.vstack([theta for _, theta in tagged_candidates])
+            elif proposal_candidates.size:
+                tagged_candidates = [("proposal", row) for row in proposal_candidates]
+                tagged_candidates = self._deduplicate_tagged_points(tagged_candidates)
+                self._last_candidate_source_counts = self._summarize_tagged_points(tagged_candidates)
+                X_candidates = np.vstack([theta for _, theta in tagged_candidates])
+
+            if bool(self.cfg.get("enable_acq_prior_coupling", True)):
+                acq_prior = self._build_acquisition_prior(
+                    t=t,
+                    guidance=guidance,
+                    guidance_candidates=guidance_candidates,
+                    proposal_candidates=proposal_candidates,
+                )
+                self._last_acq_prior_summary = None if acq_prior is None else acq_prior.to_dict()
 
             acq_result = self.af.step(
                 X_candidates=X_candidates,
@@ -504,6 +597,7 @@ class BayesOptimizer:
                 t=t,
                 w_vec=w_vec,
                 lift=coupling,
+                prior=acq_prior,
             )
 
             n_new = 0
@@ -522,13 +616,25 @@ class BayesOptimizer:
                     source="bo",
                     iteration=t + 1,
                     acq_value=float(acq_result.selected_scores[rank]),
-                    acq_type="EI_gp_llm_coupled" if coupling is not None else "EI",
+                    acq_type=(
+                        "EI_gp_llm_coupled"
+                        if coupling is not None
+                        else ("EI_prior" if acq_prior is not None and acq_prior.is_active() else "EI")
+                    ),
                     gp_pred={
                         "mean_coupled": float(acq_result.all_mean[acq_result.selected_indices[rank]]),
                         "mean_base": float(acq_result.all_mean_base[acq_result.selected_indices[rank]]),
                         "std": float(acq_result.all_std[acq_result.selected_indices[rank]]),
                         "coupling_lambda": float(coupling.lambda_value) if coupling is not None else 0.0,
                         "coupling_mode": guidance.mode if guidance is not None else None,
+                        "prior_bonus": (
+                            float(acq_result.all_prior_bonus[acq_result.selected_indices[rank]])
+                            if acq_result.all_prior_bonus is not None else 0.0
+                        ),
+                        "risk_penalty": (
+                            float(acq_result.all_risk_penalty[acq_result.selected_indices[rank]])
+                            if acq_result.all_risk_penalty is not None else 0.0
+                        ),
                     },
                     llm_rationale=guidance_payload,
                 )
@@ -559,6 +665,9 @@ class BayesOptimizer:
                     "iter_time_s": round(iter_elapsed, 2),
                     "llm_guidance": self._previous_guidance,
                     "gp_llm_coupling": self._last_coupling_summary,
+                    "acq_prior": self._last_acq_prior_summary,
+                    "proposal_summary": self._last_proposal_summary,
+                    "candidate_source_counts": self._last_candidate_source_counts,
                 }
             )
             logger.info(
@@ -610,6 +719,9 @@ class BayesOptimizer:
             "hv_trace": self._hv_eval_trace,
             "last_guidance": self._previous_guidance,
             "last_gp_llm_coupling": self._last_coupling_summary,
+            "last_proposal_summary": self._last_proposal_summary,
+            "last_acq_prior_summary": self._last_acq_prior_summary,
+            "last_candidate_source_counts": self._last_candidate_source_counts,
             "config": self._jsonable_config(),
         }
         with open(output / "summary.json", "w", encoding="utf-8") as f:
@@ -633,6 +745,9 @@ class BayesOptimizer:
                     "hypervolume": self.database.compute_hypervolume(),
                     "last_guidance": self._previous_guidance,
                     "last_gp_llm_coupling": self._last_coupling_summary,
+                    "last_proposal_summary": self._last_proposal_summary,
+                    "last_acq_prior_summary": self._last_acq_prior_summary,
+                    "last_candidate_source_counts": self._last_candidate_source_counts,
                     "config": self._jsonable_config(),
                 },
                 f,
@@ -732,65 +847,446 @@ class BayesOptimizer:
         *,
         t: int,
         w_vec: np.ndarray,
+        scalar_y: np.ndarray,
         ideal_point_raw: np.ndarray,
+        proposal_summary: Optional[Dict[str, Any]],
         uncertainty_hotspots: List[Dict[str, Any]],
     ) -> Dict[str, Any]:
+        selective_history_summary = self._build_selective_history_summary(
+            w_vec=w_vec,
+            scalar_y=scalar_y,
+            proposal_summary=proposal_summary,
+        )
+        top_scalar_protocols = self._build_top_scalar_protocols_summary(
+            scalar_y=scalar_y,
+            top_k=int(self.cfg.get("guidance_top_scalar_k", 3)),
+        )
+        hv_feedback = self.database.get_hv_feedback_summary(window=3)
+        similar_weight_guidance = self.database.get_similar_weight_guidance_stats(
+            w_vec=w_vec,
+            similarity_threshold=float(self.cfg.get("coupling_history_similarity_threshold", 0.85)),
+            fallback_score=float(self.cfg.get("coupling_history_fallback_score", 0.75)),
+        )
+        boundary_failure_stats = self.database.get_boundary_failure_stats(
+            safe_dsoc_sum_max=float(self.cfg.get("llm_safe_dsoc_sum_max", LLM_SAFE_DSOC_SUM_MAX)),
+            hard_dsoc_sum_max=float(DSOC_SUM_MAX),
+            recent_window=10,
+        )
         return {
             "iteration": t + 1,
             "max_iterations": int(self.cfg["max_iterations"]),
             "w_vec": np.asarray(w_vec, dtype=float).tolist(),
             "theta_best": self.database.get_theta_best().tolist(),
             "f_min": float(self.database.get_f_min()),
+            "eta": float(self.cfg.get("eta", 0.05)),
             "mu": self.database.get_theta_best().tolist(),
             "sigma": self._estimate_search_sigma().tolist(),
+            "y_min": np.asarray(self._y_tilde_min, dtype=float).tolist(),
+            "y_max": np.asarray(self._y_tilde_max, dtype=float).tolist(),
             "stagnation_count": int(self.database.get_stagnation_count()),
             "database": self.database,
             "uncertainty_hotspots": uncertainty_hotspots,
             "previous_guidance": self._previous_guidance,
             "ideal_point": np.asarray(ideal_point_raw, dtype=float).tolist(),
+            "current_hv": float(hv_feedback["current_hv"]),
+            "hv_delta_last_3": float(hv_feedback["hv_delta_last_k"]),
+            "hv_feedback_summary": str(hv_feedback["summary"]),
+            "pareto_size": int(self.database.pareto_size),
+            "scalarization_formula": self._build_scalarization_formula_text(),
+            "top_scalar_protocols": top_scalar_protocols,
+            "similar_weight_guidance_success": str(similar_weight_guidance["summary"]),
+            "boundary_failure_stats": str(boundary_failure_stats["summary"]),
+            "proposal_summary": proposal_summary or {},
+            "selective_history_summary": selective_history_summary,
+            "safe_dsoc_sum_max": float(self.cfg.get("llm_safe_dsoc_sum_max", LLM_SAFE_DSOC_SUM_MAX)),
+            "hard_dsoc_sum_max": float(DSOC_SUM_MAX),
         }
 
     def _build_gp_llm_coupling_from_guidance(
         self,
         guidance: IterationGuidance,
         t: int,
+        *,
+        w_vec: np.ndarray,
     ) -> Tuple[Any, np.ndarray]:
+        local_center = None
+        local_lb = None
+        local_ub = None
+        local_sigma = None
         if guidance.mode == "region":
+            local_lb = self._repair_theta(np.asarray(guidance.lb, dtype=float))
+            local_ub = self._repair_theta(np.asarray(guidance.ub, dtype=float))
             grid = self._sobol_grid(
-                np.asarray(guidance.lb, dtype=float),
-                np.asarray(guidance.ub, dtype=float),
+                local_lb,
+                local_ub,
                 n_points=int(self.cfg.get("guidance_grid_size", 64)),
                 seed=int(self.cfg.get("w_sample_seed", 0) or 0) + 2000 + t,
             )
             weights = np.full(grid.shape[0], 1.0 / max(grid.shape[0], 1), dtype=float)
         else:
-            center = self._repair_theta(guidance.representative_point())
-            sigma = np.maximum(
-                self._estimate_search_sigma() * float(self.cfg.get("guidance_point_local_scale", 0.75)),
-                np.array([0.08, 0.08, 0.04, 0.015, 0.015], dtype=float),
-            )
+            local_center = self._repair_theta(guidance.representative_point())
+            local_sigma = self._guidance_local_sigma()
             lo = np.array([self.param_bounds[k][0] for k in PARAM_KEYS], dtype=float)
             hi = np.array([self.param_bounds[k][1] for k in PARAM_KEYS], dtype=float)
-            lb = np.maximum(lo, center - 2.0 * sigma)
-            ub = np.minimum(hi, center + 2.0 * sigma)
+            local_lb = np.maximum(lo, local_center - 2.0 * local_sigma)
+            local_ub = np.minimum(hi, local_center + 2.0 * local_sigma)
             grid = self._sobol_grid(
-                lb,
-                ub,
+                local_lb,
+                local_ub,
                 n_points=int(self.cfg.get("guidance_point_grid_size", 25)),
                 seed=int(self.cfg.get("w_sample_seed", 0) or 0) + 3000 + t,
             )
-            grid = np.vstack([center[None, :], grid])
+            grid = np.vstack([local_center[None, :], grid])
             grid = np.vstack(self._deduplicate_points([self._repair_theta(row) for row in grid]))
-            diff = (grid - center[np.newaxis, :]) / sigma[np.newaxis, :]
+            diff = (grid - local_center[np.newaxis, :]) / local_sigma[np.newaxis, :]
             weights = np.exp(-0.5 * np.sum(diff ** 2, axis=1))
+
+        gate_info = self._compute_coupling_gate(
+            t=t,
+            w_vec=w_vec,
+            guidance=guidance,
+            guidance_candidates=grid,
+        )
 
         coupling = self.gp.build_preference_coupling(
             grid=grid,
             weights=weights,
             confidence=float(guidance.confidence),
             mode=guidance.mode,
+            t=t,
+            lambda_max=float(self.cfg.get("lambda_max", 1.0)),
+            lambda_min=float(self.cfg.get("lambda_min", 0.0)),
+            decay_rate=float(self.cfg.get("lambda_decay_rate", 0.75)),
+            gate=float(gate_info["gate"]),
+            align_score=float(gate_info["align_score"]),
+            history_score=float(gate_info["history_score"]),
+            hv_score=float(gate_info["hv_score"]),
+            stage_score=float(gate_info["stage_score"]),
+            local_center=local_center,
+            local_lb=local_lb,
+            local_ub=local_ub,
+            local_sigma=local_sigma,
         )
         return coupling, grid
+
+    def _build_acquisition_prior(
+        self,
+        *,
+        t: int,
+        guidance: Optional[IterationGuidance],
+        guidance_candidates: Optional[np.ndarray],
+        proposal_candidates: np.ndarray,
+    ) -> Optional[AcquisitionPrior]:
+        proposal_alpha = 0.0
+        proposal_anchor = 0.0
+        proposal_scale = 1.0
+        proposal_scorer = None
+        agreement = 1.0
+        max_iterations = max(int(self.cfg.get("max_iterations", 1)), 1)
+        feasible_count = len(self.database.get_feasible())
+
+        if self.proposal is not None and self.proposal.is_ready():
+            proposal_scorer = self.proposal.score
+            warmup_span = max(int(self.cfg.get("proposal_prior_warmup_span", 8)), 1)
+            min_train = max(int(self.cfg.get("proposal_min_train_size", 8)), 0)
+            data_factor = np.clip((feasible_count - min_train + 1) / warmup_span, 0.0, 1.0)
+            iter_factor = 0.35 + 0.65 * ((t + 1) / max_iterations)
+            proposal_alpha = float(self.cfg.get("proposal_prior_alpha", 0.20)) * float(data_factor) * float(iter_factor)
+            proposal_probe = proposal_candidates if proposal_candidates.size else self._repair_theta(self.database.get_theta_best())[None, :]
+            proposal_scores = np.asarray(self.proposal.score(proposal_probe), dtype=float).ravel()
+            proposal_anchor = float(np.median(proposal_scores)) if len(proposal_scores) else 0.0
+            proposal_scale = float(np.std(proposal_scores)) if len(proposal_scores) > 1 else 1.0
+            proposal_scale = max(proposal_scale, 1e-3)
+
+        guidance_alpha = 0.0
+        guidance_mode = None
+        guidance_center = None
+        guidance_lb = None
+        guidance_ub = None
+        guidance_sigma = None
+        if guidance is not None:
+            stage_factor = max(0.0, 1.0 - (t / max_iterations))
+            if proposal_scorer is not None:
+                if guidance_candidates is not None and len(guidance_candidates):
+                    probe = np.atleast_2d(np.asarray(guidance_candidates, dtype=float))
+                else:
+                    probe = self._repair_theta(guidance.representative_point())[None, :]
+                guide_scores = np.asarray(self.proposal.score(probe), dtype=float).ravel()
+                centered = (guide_scores - proposal_anchor) / max(proposal_scale, 1e-6)
+                agreement = float(np.mean(_stable_sigmoid(centered))) if len(centered) else 1.0
+            guidance_alpha = (
+                float(self.cfg.get("guidance_prior_alpha", 0.30))
+                * float(np.clip(guidance.confidence, 0.0, 1.0))
+                * float(stage_factor)
+                * float(agreement)
+            )
+            guidance_mode = guidance.mode
+            if guidance.mode == "region":
+                guidance_lb = self._repair_theta(np.asarray(guidance.lb, dtype=float))
+                guidance_ub = self._repair_theta(np.asarray(guidance.ub, dtype=float))
+            else:
+                guidance_center = self._repair_theta(guidance.representative_point())
+                guidance_sigma = self._guidance_local_sigma()
+
+        prior = AcquisitionPrior(
+            proposal_scorer=proposal_scorer,
+            proposal_alpha=float(proposal_alpha),
+            proposal_anchor=float(proposal_anchor),
+            proposal_scale=float(proposal_scale),
+            guidance_alpha=float(guidance_alpha),
+            guidance_mode=guidance_mode,
+            guidance_center=guidance_center,
+            guidance_lb=guidance_lb,
+            guidance_ub=guidance_ub,
+            guidance_sigma=guidance_sigma,
+            safe_dsoc_sum_max=float(self.cfg.get("llm_safe_dsoc_sum_max", LLM_SAFE_DSOC_SUM_MAX)),
+            hard_dsoc_sum_max=float(DSOC_SUM_MAX),
+            safe_risk_weight=float(self.cfg.get("acq_risk_safe_weight", 0.20)),
+            hard_risk_weight=float(self.cfg.get("acq_risk_hard_weight", 3.00)),
+            monotone_risk_weight=float(self.cfg.get("acq_risk_monotone_weight", 0.40)),
+            agreement=float(agreement),
+        )
+        return prior if prior.is_active() else None
+
+    def _guidance_local_sigma(self) -> np.ndarray:
+        return np.maximum(
+            self._estimate_search_sigma() * float(self.cfg.get("guidance_point_local_scale", 0.75)),
+            np.array([0.08, 0.08, 0.04, 0.015, 0.015], dtype=float),
+        )
+
+    def _build_proposal_training_records(
+        self,
+        *,
+        scalar_y: np.ndarray,
+    ) -> List[ProposalTrainingRecord]:
+        feasible = self.database.get_feasible()
+        scalar = np.asarray(scalar_y, dtype=float).ravel()
+        if len(feasible) != len(scalar):
+            logger.warning(
+                "Proposal record build skipped due to feasible/scalar mismatch: %d vs %d",
+                len(feasible),
+                len(scalar),
+            )
+            return []
+        if len(feasible) == 0:
+            return []
+
+        elite_fraction = float(np.clip(self.cfg.get("proposal_elite_fraction", 0.35), 0.05, 0.95))
+        scalar_threshold = float(np.quantile(scalar, elite_fraction))
+        weight_eps = max(float(self.cfg.get("proposal_weight_epsilon", 1e-3)), 0.0)
+        near_lambda = max(float(self.cfg.get("proposal_near_constraint_lambda", 8.0)), 0.0)
+        monotone_lambda = max(float(self.cfg.get("proposal_monotone_penalty_lambda", 4.0)), 0.0)
+        safe_limit = float(
+            self.cfg.get(
+                "proposal_safe_dsoc_sum_max",
+                self.cfg.get("llm_safe_dsoc_sum_max", LLM_SAFE_DSOC_SUM_MAX),
+            )
+        )
+
+        records: List[ProposalTrainingRecord] = []
+        for obs, scalar_value in zip(feasible, scalar):
+            theta = np.asarray(obs.theta, dtype=float).ravel()
+            dsoc_sum = float(theta[3] + theta[4])
+            near_penalty = max(0.0, dsoc_sum - safe_limit)
+            monotone_penalty = max(0.0, float(theta[1] - theta[0])) + max(0.0, float(theta[2] - theta[1]))
+            improvement = max(scalar_threshold - float(scalar_value), 0.0)
+            weight = (weight_eps + improvement) * np.exp(
+                -near_lambda * near_penalty - monotone_lambda * monotone_penalty
+            )
+            records.append(
+                ProposalTrainingRecord(
+                    theta=theta.copy(),
+                    scalar_y=float(scalar_value),
+                    improvement=float(improvement),
+                    feasible=bool(obs.feasible),
+                    near_constraint_penalty=float(near_penalty),
+                    monotone_penalty=float(monotone_penalty),
+                    source=str(obs.source),
+                    iteration=int(obs.iteration),
+                    weight=float(weight),
+                )
+            )
+        return records
+
+    def _sample_proposal_candidates(self, *, theta_best: np.ndarray) -> np.ndarray:
+        if self.proposal is None or not self.proposal.is_ready():
+            return np.empty((0, len(PARAM_KEYS)), dtype=float)
+        n_samples = max(int(self.cfg.get("proposal_n_samples", 24)), 0)
+        if n_samples <= 0:
+            return np.empty((0, len(PARAM_KEYS)), dtype=float)
+        samples = self.proposal.sample(
+            n=n_samples,
+            rng=self._rng,
+            center=self._repair_theta(theta_best),
+        )
+        if samples.size == 0:
+            return np.empty((0, len(PARAM_KEYS)), dtype=float)
+        return np.vstack(self._deduplicate_points([self._repair_theta(row) for row in samples]))
+
+    def _build_selective_history_summary(
+        self,
+        *,
+        w_vec: np.ndarray,
+        scalar_y: np.ndarray,
+        proposal_summary: Optional[Dict[str, Any]],
+    ) -> str:
+        feasible = self.database.get_feasible()
+        if not feasible:
+            return "none"
+
+        scalar = np.asarray(scalar_y, dtype=float).ravel()
+        top_k = min(3, len(feasible))
+        top_idx = np.argsort(scalar)[:top_k]
+        safe_limit = float(
+            self.cfg.get(
+                "proposal_safe_dsoc_sum_max",
+                self.cfg.get("llm_safe_dsoc_sum_max", LLM_SAFE_DSOC_SUM_MAX),
+            )
+        )
+        hard_limit = float(DSOC_SUM_MAX)
+        pf = self.database.get_pareto_front()
+        guided_obs = [obs for obs in self.database.get_all() if obs.llm_rationale]
+        recent_guided = guided_obs[-5:]
+        guided_on_pf = 0
+        for obs in recent_guided:
+            if any(np.allclose(obs.theta, pf_obs.theta, atol=1e-6) for pf_obs in pf):
+                guided_on_pf += 1
+
+        all_obs = self.database.get_all()
+        risky_recent = [
+            obs for obs in reversed(all_obs)
+            if (
+                (not obs.feasible)
+                or (obs.theta[3] + obs.theta[4] >= safe_limit - 1e-9)
+                or (obs.theta[1] > obs.theta[0] + 1e-9)
+                or (obs.theta[2] > obs.theta[1] + 1e-9)
+            )
+        ][:3]
+
+        feasible_sums = np.array([obs.theta[3] + obs.theta[4] for obs in feasible], dtype=float)
+        lines = [
+            f"weight={np.round(np.asarray(w_vec, dtype=float), 4).tolist()}",
+            "top_scalar_protocols:",
+        ]
+        for idx in top_idx:
+            obs = feasible[idx]
+            lines.append(
+                "  "
+                f"iter={obs.iteration} src={obs.source} "
+                f"theta={np.round(obs.theta, 4).tolist()} "
+                f"scalar={float(scalar[idx]):.6f}"
+            )
+        lines.append(
+            "boundary_stats: "
+            f"near_safe={int(np.sum(feasible_sums >= safe_limit - 1e-9))}/{len(feasible_sums)}, "
+            f"near_hard={int(np.sum(feasible_sums >= hard_limit - 0.02))}/{len(feasible_sums)}"
+        )
+        lines.append(
+            "guidance_effectiveness: "
+            f"recent_guided={len(recent_guided)}, on_pareto={guided_on_pf}"
+        )
+        if proposal_summary:
+            lines.append(
+                "proposal_summary: "
+                f"ready={proposal_summary.get('ready')} "
+                f"components={proposal_summary.get('n_components', 0)} "
+                f"elite={proposal_summary.get('elite_count', 0)}"
+            )
+        if risky_recent:
+            lines.append("recent_risky_or_failed:")
+            for obs in risky_recent:
+                lines.append(
+                    "  "
+                    f"iter={obs.iteration} src={obs.source} feasible={obs.feasible} "
+                    f"theta={np.round(obs.theta, 4).tolist()}"
+                )
+        return "\n".join(lines)
+
+    def _build_scalarization_formula_text(self) -> str:
+        eta = float(self.cfg.get("eta", 0.05))
+        return (
+            "Transform objectives with log10(time) and log10(aging), then compute normalized "
+            "gaps to the current ideal point, and minimize "
+            f"f_w = max_i(w_i * gap_i) + {eta:.3f} * sum_i(w_i * gap_i). "
+            "Lower f_w is better under the current weight and normalization context."
+        )
+
+    def _build_top_scalar_protocols_summary(
+        self,
+        *,
+        scalar_y: np.ndarray,
+        top_k: int,
+    ) -> str:
+        feasible = self.database.get_feasible()
+        scalar = np.asarray(scalar_y, dtype=float).ravel()
+        if not feasible or len(feasible) != len(scalar):
+            return "none"
+
+        k = max(min(int(top_k), len(feasible)), 0)
+        if k <= 0:
+            return "none"
+
+        idxs = np.argsort(scalar)[:k]
+        lines: List[str] = []
+        for idx in idxs:
+            obs = feasible[int(idx)]
+            lines.append(
+                f"iter={obs.iteration} src={obs.source} "
+                f"theta={np.round(obs.theta, 4).tolist()} "
+                f"scalar={float(scalar[idx]):.6f}"
+            )
+        return "\n".join(lines) if lines else "none"
+
+    def _compute_coupling_gate(
+        self,
+        *,
+        t: int,
+        w_vec: np.ndarray,
+        guidance: IterationGuidance,
+        guidance_candidates: np.ndarray,
+    ) -> Dict[str, float]:
+        max_iterations = max(int(self.cfg.get("max_iterations", 1)), 1)
+        probe = np.atleast_2d(np.asarray(guidance_candidates, dtype=float))
+        if probe.shape[0] > 8:
+            probe = probe[:8]
+
+        f_min = float(self.database.get_f_min())
+        mean_probe, std_probe = self.gp.predict(probe)
+        z = (f_min - mean_probe) / np.maximum(std_probe, 1e-6)
+        align_score = float(np.mean(_stable_sigmoid(z))) if len(z) else 0.5
+
+        history_info = self.database.get_similar_weight_guidance_stats(
+            w_vec=w_vec,
+            similarity_threshold=float(self.cfg.get("coupling_history_similarity_threshold", 0.85)),
+            fallback_score=float(self.cfg.get("coupling_history_fallback_score", 0.75)),
+        )
+        history_score = float(np.clip(history_info["success_rate"], 0.0, 1.0))
+
+        hv_info = self.database.get_hv_feedback_summary(window=3)
+        hv_delta = float(hv_info["hv_delta_last_k"])
+        stagnation = int(self.database.get_stagnation_count())
+        stalled = 1.0 if (stagnation > 0 or hv_delta <= 1e-3) else 0.0
+        hv_score = float(np.clip(0.55 + 0.40 * stalled, 0.0, 1.0))
+
+        stage_ratio = max(0.0, 1.0 - (float(t) / float(max_iterations)))
+        stage_score = float(np.clip(0.35 + 0.65 * stage_ratio, 0.0, 1.0))
+
+        gate = float(np.clip(align_score * history_score * hv_score * stage_score, 0.0, 1.0))
+
+        return {
+            "gate": gate,
+            "align_score": align_score,
+            "history_score": history_score,
+            "hv_score": hv_score,
+            "stage_score": stage_score,
+        }
+
+    @staticmethod
+    def _summarize_tagged_points(tagged_points: List[Tuple[str, np.ndarray]]) -> Dict[str, int]:
+        counts: Dict[str, int] = {}
+        for source, _ in tagged_points:
+            counts[source] = counts.get(source, 0) + 1
+        return counts
 
     def _lhs_candidates(self, n: int, seed: int = 0) -> List[np.ndarray]:
         if n <= 0:
@@ -809,10 +1305,8 @@ class BayesOptimizer:
         candidates = []
         for row in samples:
             theta = lo + row * (hi - lo)
-            if theta[3] + theta[4] > DSOC_SUM_MAX:
-                scale = (DSOC_SUM_MAX * 0.995) / (theta[3] + theta[4])
-                theta[3] *= scale
-                theta[4] *= scale
+            if dsoc_sum_violates_limit(theta[3], theta[4], dsoc_sum_max=DSOC_SUM_MAX):
+                theta[3], theta[4] = project_dsoc_pair(theta[3], theta[4], dsoc_sum_max=DSOC_SUM_MAX)
             candidates.append(np.clip(theta, lo, hi))
         return candidates
 
@@ -847,10 +1341,8 @@ class BayesOptimizer:
         lo = np.array([self.param_bounds[k][0] for k in PARAM_KEYS], dtype=float)
         hi = np.array([self.param_bounds[k][1] for k in PARAM_KEYS], dtype=float)
         x = np.clip(x, lo, hi)
-        if x[3] + x[4] > DSOC_SUM_MAX:
-            scale = (DSOC_SUM_MAX * 0.995) / (x[3] + x[4])
-            x[3] *= scale
-            x[4] *= scale
+        if dsoc_sum_violates_limit(x[3], x[4], dsoc_sum_max=DSOC_SUM_MAX):
+            x[3], x[4] = project_dsoc_pair(x[3], x[4], dsoc_sum_max=DSOC_SUM_MAX)
             x = np.clip(x, lo, hi)
         return x
 

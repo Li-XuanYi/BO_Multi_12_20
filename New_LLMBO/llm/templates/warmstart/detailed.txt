@@ -16,7 +16,9 @@ Decision variables and bounds:
 - dSOC2 (stage-2 SOC span): [DSOC2_RANGE]
 
 Constraints:
-- dSOC1 + dSOC2 <= [DSOC_SUM_MAX]
+- Practical hard limit: keep dSOC1 + dSOC2 strictly below [DSOC_SUM_MAX] because points at exactly [DSOC_SUM_MAX] can be rejected by the simulator.
+- Safety margin: keep dSOC1 + dSOC2 <= 0.65 whenever possible.
+- Physical risk: pushing beyond the 0.65 safety margin increases lithium plating risk, internal polarization, and thermal stress in the high-SOC region.
 - A decreasing current profile I1 >= I2 >= I3 is recommended.
 
 Optimization objectives:

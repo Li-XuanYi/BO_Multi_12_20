@@ -24,6 +24,15 @@ class LLMPreferenceCoupling:
     confidence: float
     lambda_value: float
     posterior_variance: float
+    gate: float = 1.0
+    align_score: float = 1.0
+    history_score: float = 1.0
+    hv_score: float = 1.0
+    stage_score: float = 1.0
+    local_center: Optional[np.ndarray] = None
+    local_lb: Optional[np.ndarray] = None
+    local_ub: Optional[np.ndarray] = None
+    local_sigma: Optional[np.ndarray] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -33,11 +42,20 @@ class LLMPreferenceCoupling:
             "confidence": float(self.confidence),
             "lambda_value": float(self.lambda_value),
             "posterior_variance": float(self.posterior_variance),
+            "gate": float(self.gate),
+            "align_score": float(self.align_score),
+            "history_score": float(self.history_score),
+            "hv_score": float(self.hv_score),
+            "stage_score": float(self.stage_score),
+            "local_center": None if self.local_center is None else np.asarray(self.local_center, dtype=float).tolist(),
+            "local_lb": None if self.local_lb is None else np.asarray(self.local_lb, dtype=float).tolist(),
+            "local_ub": None if self.local_ub is None else np.asarray(self.local_ub, dtype=float).tolist(),
+            "local_sigma": None if self.local_sigma is None else np.asarray(self.local_sigma, dtype=float).tolist(),
         }
 
     @property
     def strength(self) -> float:
-        return float(self.lambda_value)
+        return float(self.lambda_value) * float(self.gate)
 
     @property
     def gram_value(self) -> float:
@@ -78,6 +96,19 @@ class GPProtocol(Protocol):
         weights: np.ndarray,
         confidence: float,
         mode: str = "region",
+        t: int = 0,
+        lambda_max: float = 1.0,
+        lambda_min: float = 0.0,
+        decay_rate: float = 0.75,
+        gate: float = 1.0,
+        align_score: float = 1.0,
+        history_score: float = 1.0,
+        hv_score: float = 1.0,
+        stage_score: float = 1.0,
+        local_center: Optional[np.ndarray] = None,
+        local_lb: Optional[np.ndarray] = None,
+        local_ub: Optional[np.ndarray] = None,
+        local_sigma: Optional[np.ndarray] = None,
     ) -> "LLMPreferenceCoupling":
         ...
 
@@ -247,7 +278,14 @@ class MaternGPModel:
             return mean, std
 
         sigma_xg = self.posterior_covariance(X_new, coupling.grid)
-        shift = float(coupling.lambda_value) * np.asarray(sigma_xg @ coupling.weights, dtype=float).ravel()
+        base = np.asarray(sigma_xg @ coupling.weights, dtype=float).ravel()
+        mask = self._coupling_local_mask(X_new, coupling)
+        shift = (
+            float(coupling.lambda_value)
+            * float(np.clip(coupling.gate, 0.0, 1.0))
+            * mask
+            * base
+        )
         return mean - shift, std
 
     def posterior_covariance(
@@ -283,6 +321,19 @@ class MaternGPModel:
         weights: np.ndarray,
         confidence: float,
         mode: str = "region",
+        t: int = 0,
+        lambda_max: float = 1.0,
+        lambda_min: float = 0.0,
+        decay_rate: float = 0.75,
+        gate: float = 1.0,
+        align_score: float = 1.0,
+        history_score: float = 1.0,
+        hv_score: float = 1.0,
+        stage_score: float = 1.0,
+        local_center: Optional[np.ndarray] = None,
+        local_lb: Optional[np.ndarray] = None,
+        local_ub: Optional[np.ndarray] = None,
+        local_sigma: Optional[np.ndarray] = None,
     ) -> LLMPreferenceCoupling:
         grid = np.atleast_2d(np.asarray(grid, dtype=float))
         weights = np.asarray(weights, dtype=float).ravel()
@@ -299,15 +350,41 @@ class MaternGPModel:
 
         sigma_gg = self.posterior_covariance(grid, grid)
         posterior_variance = float(weights @ sigma_gg @ weights)
-        lambda_value = float(np.clip(confidence, 0.0, 1.0) / np.sqrt(max(posterior_variance, 1e-12)))
+        confidence = float(np.clip(confidence, 0.0, 1.0))
+        t = max(int(t), 0)
+        lambda_max = max(float(lambda_max), 0.0)
+        lambda_min = min(max(float(lambda_min), 0.0), lambda_max)
+        decay_rate = float(np.clip(decay_rate, 0.0, 1.0))
+
+        base_lambda = confidence / np.sqrt(max(posterior_variance, 1e-12))
+        annealed_lambda = base_lambda * (decay_rate ** t)
+        lambda_value = float(np.clip(annealed_lambda, lambda_min, lambda_max))
+
+        logger.debug(
+            "Lambda coupling: base=%.6f annealed=%.6f clamped=%.6f variance=%.6e t=%d",
+            base_lambda,
+            annealed_lambda,
+            lambda_value,
+            posterior_variance,
+            t,
+        )
 
         return LLMPreferenceCoupling(
             mode=str(mode),
             grid=grid,
             weights=weights,
-            confidence=float(np.clip(confidence, 0.0, 1.0)),
+            confidence=confidence,
             lambda_value=lambda_value,
             posterior_variance=posterior_variance,
+            gate=float(np.clip(gate, 0.0, 1.0)),
+            align_score=float(np.clip(align_score, 0.0, 1.0)),
+            history_score=float(np.clip(history_score, 0.0, 1.0)),
+            hv_score=float(np.clip(hv_score, 0.0, 1.0)),
+            stage_score=float(np.clip(stage_score, 0.0, 1.0)),
+            local_center=None if local_center is None else np.asarray(local_center, dtype=float).ravel(),
+            local_lb=None if local_lb is None else np.asarray(local_lb, dtype=float).ravel(),
+            local_ub=None if local_ub is None else np.asarray(local_ub, dtype=float).ravel(),
+            local_sigma=None if local_sigma is None else np.asarray(local_sigma, dtype=float).ravel(),
         )
 
     def predict_lifted(
@@ -330,12 +407,38 @@ class MaternGPModel:
         weights: np.ndarray,
         confidence: float,
         mode: str = "region",
+        t: int = 0,
+        lambda_max: float = 1.0,
+        lambda_min: float = 0.0,
+        decay_rate: float = 0.75,
+        gate: float = 1.0,
+        align_score: float = 1.0,
+        history_score: float = 1.0,
+        hv_score: float = 1.0,
+        stage_score: float = 1.0,
+        local_center: Optional[np.ndarray] = None,
+        local_lb: Optional[np.ndarray] = None,
+        local_ub: Optional[np.ndarray] = None,
+        local_sigma: Optional[np.ndarray] = None,
     ) -> LLMPreferenceCoupling:
         return self.build_preference_coupling(
             grid=grid,
             weights=weights,
             confidence=confidence,
             mode=mode,
+            t=t,
+            lambda_max=lambda_max,
+            lambda_min=lambda_min,
+            decay_rate=decay_rate,
+            gate=gate,
+            align_score=align_score,
+            history_score=history_score,
+            hv_score=hv_score,
+            stage_score=stage_score,
+            local_center=local_center,
+            local_lb=local_lb,
+            local_ub=local_ub,
+            local_sigma=local_sigma,
         )
 
     def training_summary(self) -> Dict[str, Any]:
@@ -360,6 +463,41 @@ class MaternGPModel:
         if self._model is None:
             raise RuntimeError("GP model has not been fitted yet")
         return self._model
+
+    @staticmethod
+    def _coupling_local_mask(
+        X_new: np.ndarray,
+        coupling: LLMPreferenceCoupling,
+    ) -> np.ndarray:
+        X = np.atleast_2d(np.asarray(X_new, dtype=float))
+
+        if coupling.mode == "point" and coupling.local_center is not None:
+            center = np.asarray(coupling.local_center, dtype=float)[None, :]
+            sigma = np.asarray(
+                coupling.local_sigma if coupling.local_sigma is not None else np.full(X.shape[1], 0.1),
+                dtype=float,
+            )[None, :]
+            sigma = np.maximum(sigma, 1e-6)
+            diff = (X - center) / sigma
+            return np.exp(-0.5 * np.sum(diff ** 2, axis=1))
+
+        if (
+            coupling.mode == "region"
+            and coupling.local_lb is not None
+            and coupling.local_ub is not None
+        ):
+            lb = np.asarray(coupling.local_lb, dtype=float)[None, :]
+            ub = np.asarray(coupling.local_ub, dtype=float)[None, :]
+            width = np.maximum((ub - lb) / 2.0, 1e-6)
+            below = np.maximum(lb - X, 0.0)
+            above = np.maximum(X - ub, 0.0)
+            outside = (below + above) / width
+            mask = np.exp(-0.5 * np.sum(outside ** 2, axis=1))
+            inside = np.all((X >= lb - 1e-12) & (X <= ub + 1e-12), axis=1)
+            mask[inside] = 1.0
+            return mask
+
+        return np.ones(X.shape[0], dtype=float)
 
 
 def build_gp_stack(

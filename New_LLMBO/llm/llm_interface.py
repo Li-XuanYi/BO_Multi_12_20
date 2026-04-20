@@ -30,15 +30,19 @@ import dataclasses
 import json
 import logging
 import re
+import time
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 from utils.constants import (
     DEFAULT_BOUNDS as CANONICAL_DEFAULT_BOUNDS,
-    IDEAL_POINT as CANONICAL_IDEAL_POINT,
+    LLM_SAFE_DSOC_SUM_MAX,
+    dsoc_sum_violates_limit,
+    project_dsoc_pair,
 )
 
 try:
+    from llm.iteration_prompt import render_iteration_guidance_prompt
     from llm.warmstart_prompt import (
         DEFAULT_DSOC_SUM_MAX,
         PLACEHOLDER_PATTERN,
@@ -46,6 +50,7 @@ try:
         render_warmstart_prompt,
     )
 except ModuleNotFoundError:  # pragma: no cover - allows direct script execution
+    from iteration_prompt import render_iteration_guidance_prompt
     from warmstart_prompt import (
         DEFAULT_DSOC_SUM_MAX,
         PLACEHOLDER_PATTERN,
@@ -109,6 +114,8 @@ class LLMConfig:
         temperature: float = 0.7,
         n_samples:   int   = 3,
         timeout:     int   = 120,
+        request_retries: int = 2,
+        retry_backoff_s: float = 1.5,
     ):
         self.backend     = backend
         self.model       = model
@@ -117,6 +124,8 @@ class LLMConfig:
         self.temperature = temperature
         self.n_samples   = n_samples
         self.timeout     = timeout
+        self.request_retries = int(request_retries)
+        self.retry_backoff_s = float(retry_backoff_s)
 
 
 # ════════════════════════════════════════════════════════════════
@@ -181,25 +190,44 @@ class LLMCaller:
         )
         responses = []
         for i in range(n):
-            try:
-                resp = client.chat.completions.create(
-                    model=self._cfg.model,
-                    messages=[
-                        {
-                            "role": "system",
-                            "content": (
-                                "You are an expert in lithium-ion battery fast charging optimization. "
-                                "Always respond with valid JSON only, no explanations or markdown."
-                            ),
-                        },
-                        {"role": "user", "content": prompt},
-                    ],
-                    temperature=self._cfg.temperature if temperature is None else temperature,
-                    max_tokens=2000 if max_tokens is None else int(max_tokens),
-                )
-                responses.append(resp.choices[0].message.content.strip())
-            except Exception as e:
-                logger.warning("LLM 调用 %d/%d 失败: %s", i + 1, n, e)
+            success = False
+            for attempt in range(self._cfg.request_retries + 1):
+                try:
+                    resp = client.chat.completions.create(
+                        model=self._cfg.model,
+                        messages=[
+                            {
+                                "role": "system",
+                                "content": (
+                                    "You are an expert in lithium-ion battery fast charging optimization. "
+                                    "Always respond with valid JSON only, no explanations or markdown."
+                                ),
+                            },
+                            {"role": "user", "content": prompt},
+                        ],
+                        temperature=self._cfg.temperature if temperature is None else temperature,
+                        max_tokens=2000 if max_tokens is None else int(max_tokens),
+                    )
+                    content = resp.choices[0].message.content or ""
+                    responses.append(content.strip())
+                    success = True
+                    break
+                except Exception as e:
+                    if attempt >= self._cfg.request_retries:
+                        logger.warning("LLM 调用 %d/%d 失败: %s", i + 1, n, e)
+                        break
+                    delay = self._cfg.retry_backoff_s * (2 ** attempt)
+                    logger.warning(
+                        "LLM 调用 %d/%d 第 %d/%d 次失败: %s；%.1fs 后重试",
+                        i + 1,
+                        n,
+                        attempt + 1,
+                        self._cfg.request_retries + 1,
+                        e,
+                        delay,
+                    )
+                    time.sleep(delay)
+            if not success:
                 responses.append("")
         return responses
 
@@ -220,20 +248,38 @@ class LLMCaller:
         client = anthropic.Anthropic(api_key=self._cfg.api_key)
         responses = []
         for i in range(n):
-            try:
-                resp = client.messages.create(
-                    model=self._cfg.model,
-                    max_tokens=2000 if max_tokens is None else int(max_tokens),
-                    temperature=self._cfg.temperature if temperature is None else temperature,
-                    system=(
-                        "You are an expert in lithium-ion battery fast charging optimization. "
-                        "Always respond with valid JSON only, no explanations or markdown."
-                    ),
-                    messages=[{"role": "user", "content": prompt}],
-                )
-                responses.append(resp.content[0].text.strip())
-            except Exception as e:
-                logger.warning("Anthropic 调用 %d/%d 失败: %s", i + 1, n, e)
+            success = False
+            for attempt in range(self._cfg.request_retries + 1):
+                try:
+                    resp = client.messages.create(
+                        model=self._cfg.model,
+                        max_tokens=2000 if max_tokens is None else int(max_tokens),
+                        temperature=self._cfg.temperature if temperature is None else temperature,
+                        system=(
+                            "You are an expert in lithium-ion battery fast charging optimization. "
+                            "Always respond with valid JSON only, no explanations or markdown."
+                        ),
+                        messages=[{"role": "user", "content": prompt}],
+                    )
+                    responses.append(resp.content[0].text.strip())
+                    success = True
+                    break
+                except Exception as e:
+                    if attempt >= self._cfg.request_retries:
+                        logger.warning("Anthropic 调用 %d/%d 失败: %s", i + 1, n, e)
+                        break
+                    delay = self._cfg.retry_backoff_s * (2 ** attempt)
+                    logger.warning(
+                        "Anthropic 调用 %d/%d 第 %d/%d 次失败: %s；%.1fs 后重试",
+                        i + 1,
+                        n,
+                        attempt + 1,
+                        self._cfg.request_retries + 1,
+                        e,
+                        delay,
+                    )
+                    time.sleep(delay)
+            if not success:
                 responses.append("")
         return responses
 
@@ -254,9 +300,14 @@ class ResponseParser:
         self,
         param_bounds: Dict[str, Tuple[float, float]],
         dsoc_sum_max: float = _DSOC_SUM_MAX,
+        soft_dsoc_sum_max: Optional[float] = LLM_SAFE_DSOC_SUM_MAX,
     ):
         self._bounds = param_bounds
         self._dsoc_sum_max = float(dsoc_sum_max)
+        self._soft_dsoc_sum_max = (
+            min(self._dsoc_sum_max, float(soft_dsoc_sum_max))
+            if soft_dsoc_sum_max is not None else None
+        )
 
     @staticmethod
     def extract_json(text: str) -> Optional[Any]:
@@ -304,11 +355,11 @@ class ResponseParser:
 
             # 额外检查 dSOC 约束
             dSOC_sum = values[3] + values[4]  # dSOC1 + dSOC2
-            if dSOC_sum > self._dsoc_sum_max:
+            if dsoc_sum_violates_limit(values[3], values[4], dsoc_sum_max=self._dsoc_sum_max):
                 logger.debug("dSOC1+dSOC2=%.3f > %.2f，候选无效", dSOC_sum, self._dsoc_sum_max)
                 return None
 
-            return np.array(values, dtype=float)
+            return self.repair_theta(np.array(values, dtype=float))
 
         except (KeyError, TypeError, ValueError) as e:
             logger.debug("候选点验证失败: %s", e)
@@ -323,10 +374,9 @@ class ResponseParser:
             lo, hi = self._bounds[key]
             x[idx] = float(np.clip(x[idx], lo, hi))
 
-        if x[3] + x[4] > self._dsoc_sum_max:
-            scale = (self._dsoc_sum_max * 0.995) / max(x[3] + x[4], 1e-12)
-            x[3] *= scale
-            x[4] *= scale
+        repair_limit = self._soft_dsoc_sum_max or self._dsoc_sum_max
+        if dsoc_sum_violates_limit(x[3], x[4], dsoc_sum_max=repair_limit):
+            x[3], x[4] = project_dsoc_pair(x[3], x[4], dsoc_sum_max=repair_limit)
             x[3] = float(np.clip(x[3], self._bounds["dSOC1"][0], self._bounds["dSOC1"][1]))
             x[4] = float(np.clip(x[4], self._bounds["dSOC2"][0], self._bounds["dSOC2"][1]))
         return x
@@ -347,10 +397,9 @@ class ResponseParser:
         lower = np.clip(np.minimum(lb, ub), lo, hi)
         upper = np.clip(np.maximum(lb, ub), lo, hi)
 
-        if upper[3] + upper[4] > self._dsoc_sum_max:
-            scale = (self._dsoc_sum_max * 0.995) / max(upper[3] + upper[4], 1e-12)
-            upper[3] *= scale
-            upper[4] *= scale
+        repair_limit = self._soft_dsoc_sum_max or self._dsoc_sum_max
+        if dsoc_sum_violates_limit(upper[3], upper[4], dsoc_sum_max=repair_limit):
+            upper[3], upper[4] = project_dsoc_pair(upper[3], upper[4], dsoc_sum_max=repair_limit)
 
         lower = np.minimum(lower, upper)
         return lower, upper
@@ -503,10 +552,24 @@ class PhysicsHeuristicFallback:
         self,
         param_bounds: Dict[str, Tuple[float, float]],
         dsoc_sum_max: float = _DSOC_SUM_MAX,
+        soft_dsoc_sum_max: Optional[float] = LLM_SAFE_DSOC_SUM_MAX,
     ):
         self._lo = np.array([param_bounds[k][0] for k in PARAM_KEYS])
         self._hi = np.array([param_bounds[k][1] for k in PARAM_KEYS])
         self._dsoc_sum_max = float(dsoc_sum_max)
+        self._soft_dsoc_sum_max = (
+            min(self._dsoc_sum_max, float(soft_dsoc_sum_max))
+            if soft_dsoc_sum_max is not None else None
+        )
+
+    def _repair_theta(self, theta: np.ndarray) -> np.ndarray:
+        x = np.asarray(theta, dtype=float).ravel().copy()
+        x = np.clip(x, self._lo, self._hi)
+        repair_limit = self._soft_dsoc_sum_max or self._dsoc_sum_max
+        if dsoc_sum_violates_limit(x[3], x[4], dsoc_sum_max=repair_limit):
+            x[3], x[4] = project_dsoc_pair(x[3], x[4], dsoc_sum_max=repair_limit)
+            x = np.clip(x, self._lo, self._hi)
+        return x
 
     def physics_informed_warmstart(self, n: int) -> List[np.ndarray]:
         """
@@ -555,7 +618,7 @@ class PhysicsHeuristicFallback:
         all_prior = prior_points + extreme_points
 
         # 裁剪到 n 个
-        candidates = [np.clip(p, self._lo, self._hi) for p in all_prior[:min(n, len(all_prior))]]
+        candidates = [self._repair_theta(p) for p in all_prior[:min(n, len(all_prior))]]
 
         if len(candidates) < n:
             candidates.extend(self.lhs_candidates(n - len(candidates), seed=42))
@@ -576,12 +639,7 @@ class PhysicsHeuristicFallback:
         candidates = []
         for i in range(n):
             theta = self._lo + samples[i] * (self._hi - self._lo)
-            # 检查 dSOC 约束，违反则微调
-            if theta[3] + theta[4] > self._dsoc_sum_max:
-                scale = self._dsoc_sum_max / (theta[3] + theta[4]) * 0.99
-                theta[3] *= scale
-                theta[4] *= scale
-            candidates.append(np.clip(theta, self._lo, self._hi))
+            candidates.append(self._repair_theta(theta))
 
         return candidates
 
@@ -652,7 +710,9 @@ def _build_iteration_prompt(
 
 Battery: LG INR21700-M50, 5Ah, 3-stage CC protocol (SOC 0%→80%).
 Parameter bounds: I1∈[{b['I1'][0]},{b['I1'][1]}]A, I2∈[{b['I2'][0]},{b['I2'][1]}]A, I3∈[{b['I3'][0]},{b['I3'][1]}]A, dSOC1∈[{b['dSOC1'][0]},{b['dSOC1'][1]}], dSOC2∈[{b['dSOC2'][0]},{b['dSOC2'][1]}]
-Constraint: dSOC1 + dSOC2 <= 0.70, and I1 >= I2 >= I3 recommended.
+Practical hard limit: keep dSOC1 + dSOC2 strictly below 0.70 because points at exactly 0.70 can be rejected by the simulator.
+Safety margin: keep dSOC1 + dSOC2 <= 0.65 whenever possible.
+Current profile: I1 >= I2 >= I3 is recommended.
 
 === Historical Performance Examples ===
 {fewshot_block}
@@ -673,7 +733,7 @@ Generate {n} candidate protocols. Guidelines:
   1. Focus on the dominant objective as indicated above.
   2. Candidates should be diverse — do not cluster around one point.
   3. Mix exploitation (near μ ± σ) with exploration (boundary regions).
-  4. Strictly respect ALL parameter bounds and the dSOC constraint.
+  4. Strictly respect ALL parameter bounds, stay below 0.70 on dSOC1 + dSOC2, and avoid points above 0.65 unless there is a strong trade-off reason.
 
 Respond with ONLY a JSON array, no other text:
 [{{"I1": value, "I2": value, "I3": value, "dSOC1": value, "dSOC2": value}}, ...]"""
@@ -683,77 +743,16 @@ def _build_guidance_prompt(
     state_dict: Dict[str, Any],
     param_bounds: Dict[str, Tuple[float, float]],
     pareto_context: str,
+    battery_model: Optional[str] = None,
 ) -> str:
-    b = param_bounds
-    t = int(state_dict.get("iteration", 0))
-    T = int(state_dict.get("max_iterations", 50))
-    w = np.asarray(state_dict.get("w_vec", [1 / 3, 1 / 3, 1 / 3]), dtype=float)
-    best = np.asarray(state_dict.get("theta_best", [4.0, 3.5, 2.5, 0.25, 0.20]), dtype=float)
-    f_min = float(state_dict.get("f_min", 0.5))
-    stagnation = int(state_dict.get("stagnation_count", 0))
-    ideal = np.asarray(state_dict.get("ideal_point", CANONICAL_IDEAL_POINT.tolist()), dtype=float)
-    hotspots = state_dict.get("uncertainty_hotspots", [])
-    previous_guidance = state_dict.get("previous_guidance")
-
-    hotspots_lines: List[str] = []
-    for idx, hotspot in enumerate(hotspots[:5]):
-        theta = np.asarray(hotspot.get("theta", []), dtype=float).ravel()
-        if theta.size != len(PARAM_KEYS):
-            continue
-        hotspots_lines.append(
-            f"  hotspot[{idx}] std={float(hotspot.get('std', 0.0)):.4f} "
-            f"theta=[{theta[0]:.2f}, {theta[1]:.2f}, {theta[2]:.2f}, {theta[3]:.3f}, {theta[4]:.3f}]"
-        )
-    hotspots_block = "\n".join(hotspots_lines) if hotspots_lines else "  none"
-
-    prev_block = "none"
-    if isinstance(previous_guidance, dict) and previous_guidance.get("mode"):
-        prev_block = json.dumps(previous_guidance, ensure_ascii=False)
-
-    focus_idx = int(np.argmax(w))
-    focus_text = {
-        0: "Prioritize faster charging time while respecting thermal and aging constraints.",
-        1: "Prioritize lower peak temperature even if charging time becomes longer.",
-        2: "Prioritize lower aging and gentler late-stage charging.",
-    }[focus_idx]
-
-    return f"""You are guiding a battery charging Bayesian optimization loop.
-
-Battery: LG INR21700-M50, 5Ah, 3-stage CC charging from 0% to 80% SOC.
-Decision variables:
-  I1 in [{b['I1'][0]}, {b['I1'][1]}]
-  I2 in [{b['I2'][0]}, {b['I2'][1]}]
-  I3 in [{b['I3'][0]}, {b['I3'][1]}]
-  dSOC1 in [{b['dSOC1'][0]}, {b['dSOC1'][1]}]
-  dSOC2 in [{b['dSOC2'][0]}, {b['dSOC2'][1]}]
-Constraint: dSOC1 + dSOC2 <= 0.70.
-Objectives to minimize: charging time [s], temperature rise [K], aging [%].
-
-Iteration {t}/{T}
-Weight vector: [time={w[0]:.3f}, temp={w[1]:.3f}, aging={w[2]:.3f}]
-Current focus: {focus_text}
-Current scalarized best value: {f_min:.6f}
-Current best protocol: [{best[0]:.2f}, {best[1]:.2f}, {best[2]:.2f}, {best[3]:.3f}, {best[4]:.3f}]
-Current ideal objective estimate: [time={ideal[0]:.2f}, temp={ideal[1]:.2f}, aging={ideal[2]:.6f}]
-Stagnation count: {stagnation}
-Previous guidance: {prev_block}
-
-High-uncertainty hotspots from the current GP:
-{hotspots_block}
-
-Observed optimization history:
-{pareto_context}
-
-Task:
-Return exactly one JSON value in one of these formats:
-["region", [[lb1, lb2, lb3, lb4, lb5], [ub1, ub2, ub3, ub4, ub5]], confidence]
-["point", [I1, I2, I3, dSOC1, dSOC2], confidence]
-
-Rules:
-1. confidence must be in [0, 1].
-2. Use "region" when broad exploration is better, and "point" when a precise promising protocol is clear.
-3. Respect all bounds and the dSOC1 + dSOC2 <= 0.70 constraint.
-4. Output JSON only, with no markdown, prose, or explanation."""
+    return render_iteration_guidance_prompt(
+        state_dict=state_dict,
+        param_bounds=param_bounds,
+        pareto_context=pareto_context,
+        battery_name=battery_model,
+        safe_dsoc_sum_max=float(state_dict.get("safe_dsoc_sum_max", LLM_SAFE_DSOC_SUM_MAX)),
+        hard_dsoc_sum_max=float(state_dict.get("hard_dsoc_sum_max", _DSOC_SUM_MAX)),
+    )
 
 
 # ════════════════════════════════════════════════════════════════
@@ -781,6 +780,7 @@ class LLMInterface:
         soc_start: float = 0.0,
         soc_end: float = 0.8,
         dsoc_sum_max: float = _DSOC_SUM_MAX,
+        safe_dsoc_sum_max: Optional[float] = LLM_SAFE_DSOC_SUM_MAX,
     ):
         self._bounds   = param_bounds or DEFAULT_BOUNDS
         self._config   = config or LLMConfig()
@@ -797,10 +797,22 @@ class LLMInterface:
         self._soc_start = float(soc_start)
         self._soc_end = float(soc_end)
         self._dsoc_sum_max = float(dsoc_sum_max)
+        self._safe_dsoc_sum_max = (
+            min(self._dsoc_sum_max, float(safe_dsoc_sum_max))
+            if safe_dsoc_sum_max is not None else None
+        )
 
         self._caller   = LLMCaller(self._config)
-        self._parser   = ResponseParser(self._bounds, dsoc_sum_max=self._dsoc_sum_max)
-        self._fallback = PhysicsHeuristicFallback(self._bounds, dsoc_sum_max=self._dsoc_sum_max)
+        self._parser   = ResponseParser(
+            self._bounds,
+            dsoc_sum_max=self._dsoc_sum_max,
+            soft_dsoc_sum_max=self._safe_dsoc_sum_max,
+        )
+        self._fallback = PhysicsHeuristicFallback(
+            self._bounds,
+            dsoc_sum_max=self._dsoc_sum_max,
+            soft_dsoc_sum_max=self._safe_dsoc_sum_max,
+        )
         self._warmstart_context_builder = WarmStartPromptContextBuilder(
             param_bounds=self._bounds,
             battery_name=self._battery,
@@ -896,7 +908,12 @@ class LLMInterface:
             include_top_k=2,
             include_recent=10,
         )
-        prompt = _build_guidance_prompt(state_dict, self._bounds, pareto_context)
+        prompt = _build_guidance_prompt(
+            state_dict,
+            self._bounds,
+            pareto_context,
+            battery_model=self._battery,
+        )
         responses = self._caller.call(
             prompt,
             n=max(1, int(self._config.n_samples)),
@@ -1055,13 +1072,7 @@ class LLMInterface:
                 if len(candidates) >= n:
                     break
                 pt = mu + sigma * rng.standard_normal(5)
-                pt = np.clip(pt, lo, hi)
-                # 处理 dSOC 约束
-                if pt[3] + pt[4] > _DSOC_SUM_MAX:
-                    scale = _DSOC_SUM_MAX / (pt[3] + pt[4]) * 0.98
-                    pt[3] *= scale
-                    pt[4] *= scale
-                candidates.append(pt)
+                candidates.append(self._parser.repair_theta(np.clip(pt, lo, hi)))
 
             # 仍不足则用 LHS 补
             if len(candidates) < n:
@@ -1115,6 +1126,7 @@ def build_llm_interface(
     soc_start: float = 0.0,
     soc_end: float = 0.8,
     dsoc_sum_max: float = _DSOC_SUM_MAX,
+    safe_dsoc_sum_max: Optional[float] = LLM_SAFE_DSOC_SUM_MAX,
 ) -> LLMInterface:
     """
     工厂函数：一步构建 LLMInterface。
@@ -1162,6 +1174,7 @@ def build_llm_interface(
         soc_start=soc_start,
         soc_end=soc_end,
         dsoc_sum_max=dsoc_sum_max,
+        safe_dsoc_sum_max=safe_dsoc_sum_max,
     )
 
 

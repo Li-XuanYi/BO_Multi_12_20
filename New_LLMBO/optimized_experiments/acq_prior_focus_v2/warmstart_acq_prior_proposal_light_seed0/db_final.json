@@ -1,0 +1,1652 @@
+{
+  "version": "2.0",
+  "param_bounds": {
+    "I1": [
+      2.0,
+      6.0
+    ],
+    "I2": [
+      2.0,
+      5.0
+    ],
+    "I3": [
+      2.0,
+      3.0
+    ],
+    "dSOC1": [
+      0.1,
+      0.4
+    ],
+    "dSOC2": [
+      0.1,
+      0.3
+    ]
+  },
+  "ref_point": [
+    7200.0,
+    40.0,
+    5.0
+  ],
+  "ideal_point": [
+    1800.0,
+    0.0,
+    0.3
+  ],
+  "normalize": true,
+  "observations": [
+    {
+      "theta": [
+        5.75,
+        4.25,
+        2.5,
+        0.38,
+        0.25
+      ],
+      "objectives": [
+        3473.0,
+        6.350149845322705,
+        1.2153290463758442
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-18T16:23:04.729751"
+    },
+    {
+      "theta": [
+        3.8,
+        3.2,
+        2.0,
+        0.3,
+        0.2
+      ],
+      "objectives": [
+        5246.0,
+        3.540297430506104,
+        0.9173438736869197
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-18T16:23:08.457960"
+    },
+    {
+      "theta": [
+        5.5,
+        4.5,
+        2.8,
+        0.2,
+        0.2
+      ],
+      "objectives": [
+        4026.0,
+        5.246953932433207,
+        1.048777160039507
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-18T16:23:11.940076"
+    },
+    {
+      "theta": [
+        2.561518480075599,
+        4.614828723536402,
+        2.0997595772927307,
+        0.11112769107675312,
+        0.296036824781744
+      ],
+      "objectives": [
+        5304.0,
+        4.597825231552481,
+        0.8740981735240575
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-18T16:23:15.603370"
+    },
+    {
+      "theta": [
+        4.925652974819155,
+        3.8863873829197733,
+        2.942936819655144,
+        0.2968156185480685,
+        0.13351415767588662
+      ],
+      "objectives": [
+        3964.0,
+        4.827327309152299,
+        1.0112744054989555
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-18T16:23:18.906272"
+    },
+    {
+      "theta": [
+        3.7056581700226445,
+        2.779204167320457,
+        2.3497586723451467,
+        0.30314262056471986,
+        0.19750677079456733
+      ],
+      "objectives": [
+        5044.0,
+        3.3269010830999948,
+        0.8658062292140565
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-18T16:23:22.628501"
+    },
+    {
+      "theta": [
+        6.0,
+        4.510649591123016,
+        3.0,
+        0.4,
+        0.24106666142945624
+      ],
+      "objectives": [
+        3116.0,
+        6.87954780076708,
+        1.2485366161800409
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 1,
+      "acq_value": 3.0148341589422127,
+      "acq_type": "EI_prior",
+      "gp_pred": {
+        "mean_coupled": -0.06759931514572237,
+        "mean_base": -0.06759931514572237,
+        "std": 0.3694232239381051,
+        "coupling_lambda": 0.0,
+        "coupling_mode": "region",
+        "prior_bonus": 0.014834158942212768,
+        "risk_penalty": 0.0
+      },
+      "llm_rationale": "{\"mode\": \"region\", \"confidence\": 0.25, \"point\": null, \"lb\": [5.6, 4.37, 2.44, 0.33799999999999997, 0.224], \"ub\": [6.0, 4.97, 2.64, 0.398, 0.264], \"note\": \"heuristic-fallback\", \"raw_text\": \"\"}",
+      "details": null,
+      "timestamp": "2026-04-18T16:23:29.652102"
+    },
+    {
+      "theta": [
+        6.0,
+        4.867974802837048,
+        3.0,
+        0.4,
+        0.25517202931812294
+      ],
+      "objectives": [
+        3013.0,
+        7.311538264208884,
+        1.2637859590111262
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 1,
+      "acq_value": 3.0148341589422127,
+      "acq_type": "EI_prior",
+      "gp_pred": {
+        "mean_coupled": -0.06759928797431514,
+        "mean_base": -0.06759928797431514,
+        "std": 0.3694233405204149,
+        "coupling_lambda": 0.0,
+        "coupling_mode": "region",
+        "prior_bonus": 0.014834158942212768,
+        "risk_penalty": 0.0
+      },
+      "llm_rationale": "{\"mode\": \"region\", \"confidence\": 0.25, \"point\": null, \"lb\": [5.6, 4.37, 2.44, 0.33799999999999997, 0.224], \"ub\": [6.0, 4.97, 2.64, 0.398, 0.264], \"note\": \"heuristic-fallback\", \"raw_text\": \"\"}",
+      "details": null,
+      "timestamp": "2026-04-18T16:23:32.865842"
+    },
+    {
+      "theta": [
+        2.176056709140539,
+        4.2992475954815745,
+        2.5750162601470947,
+        0.39035554276779294,
+        0.13705961797386407
+      ],
+      "objectives": [
+        5708.0,
+        3.15105034584023,
+        0.6344480803685623
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 2,
+      "acq_value": 1.991008189007779,
+      "acq_type": "EI_prior",
+      "gp_pred": {
+        "mean_coupled": 0.7702794967171693,
+        "mean_base": 0.7702794967171693,
+        "std": 0.5757871438175677,
+        "coupling_lambda": 0.0,
+        "coupling_mode": "point",
+        "prior_bonus": 1.886737031180041e-27,
+        "risk_penalty": 0.8492763545364141
+      },
+      "llm_rationale": "{\"mode\": \"point\", \"confidence\": 0.85, \"point\": [6.0, 4.6, 3.0, 0.4, 0.25], \"lb\": null, \"ub\": null, \"note\": \"\", \"raw_text\": \"[\\\"point\\\", [6.0, 4.6, 3.0, 0.4, 0.25], 0.85]\"}",
+      "details": null,
+      "timestamp": "2026-04-18T16:23:40.149994"
+    },
+    {
+      "theta": [
+        5.800540048449269,
+        2.0915962147506666,
+        2.0661102585732194,
+        0.10834477185918079,
+        0.23318892765247085
+      ],
+      "objectives": [
+        6337.0,
+        2.5867475944567104,
+        0.7685419699710512
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 2,
+      "acq_value": 1.9738267410465393,
+      "acq_type": "EI_prior",
+      "gp_pred": {
+        "mean_coupled": 0.930848123365061,
+        "mean_base": 0.930848123365061,
+        "std": 0.6162071211276888,
+        "coupling_lambda": 0.0,
+        "coupling_mode": "point",
+        "prior_bonus": 1.1219279414704915e-28,
+        "risk_penalty": 0.0
+      },
+      "llm_rationale": "{\"mode\": \"point\", \"confidence\": 0.85, \"point\": [6.0, 4.6, 3.0, 0.4, 0.25], \"lb\": null, \"ub\": null, \"note\": \"\", \"raw_text\": \"[\\\"point\\\", [6.0, 4.6, 3.0, 0.4, 0.25], 0.85]\"}",
+      "details": null,
+      "timestamp": "2026-04-18T16:23:43.991015"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.0001058917478822,
+        0.1,
+        0.23192218973902393
+      ],
+      "objectives": [
+        7199.0,
+        1.5286719127889854,
+        0.6400388637563269
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 3,
+      "acq_value": 2.999957643300847,
+      "acq_type": "EI_prior",
+      "gp_pred": {
+        "mean_coupled": 0.18267384472810522,
+        "mean_base": 0.18267384472810522,
+        "std": 0.6975844591446639,
+        "coupling_lambda": 0.0,
+        "coupling_mode": "point",
+        "prior_bonus": 9.990065553298657e-19,
+        "risk_penalty": 4.235669915289009e-05
+      },
+      "llm_rationale": "{\"mode\": \"point\", \"confidence\": 0.95, \"point\": [5.8, 2.1, 2.07, 0.11, 0.23], \"lb\": null, \"ub\": null, \"note\": \"\", \"raw_text\": \"[\\\"point\\\", [5.80, 2.10, 2.07, 0.11, 0.23], 0.95]\"}",
+      "details": null,
+      "timestamp": "2026-04-18T16:23:52.682491"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.017454972122731,
+        0.1,
+        0.21487942514002545
+      ],
+      "objectives": [
+        7162.0,
+        1.5526316653224799,
+        0.6389842585220222
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 3,
+      "acq_value": 2.9930180111509075,
+      "acq_type": "EI_prior",
+      "gp_pred": {
+        "mean_coupled": 0.18267356525080608,
+        "mean_base": 0.18267356525080608,
+        "std": 0.6975844854639737,
+        "coupling_lambda": 0.0,
+        "coupling_mode": "point",
+        "prior_bonus": 8.700238588512175e-19,
+        "risk_penalty": 0.006981988849092425
+      },
+      "llm_rationale": "{\"mode\": \"point\", \"confidence\": 0.95, \"point\": [5.8, 2.1, 2.07, 0.11, 0.23], \"lb\": null, \"ub\": null, \"note\": \"\", \"raw_text\": \"[\\\"point\\\", [5.80, 2.10, 2.07, 0.11, 0.23], 0.95]\"}",
+      "details": null,
+      "timestamp": "2026-04-18T16:23:56.625906"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.0,
+        0.4,
+        0.29666573731463214
+      ],
+      "objectives": [
+        7200.0,
+        1.5285863090785996,
+        0.6401399216070771
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 4,
+      "acq_value": 2.933370508099762,
+      "acq_type": "EI_prior",
+      "gp_pred": {
+        "mean_coupled": 0.18966134174541488,
+        "mean_base": 0.18966134174541488,
+        "std": 0.41697100236634804,
+        "coupling_lambda": 0.0,
+        "coupling_mode": "region",
+        "prior_bonus": 6.850482360656422e-10,
+        "risk_penalty": 0.06662949258528611
+      },
+      "llm_rationale": "{\"mode\": \"region\", \"confidence\": 0.25, \"point\": null, \"lb\": [2.0, 2.0, 2.0, 0.1, 0.21792218973902394], \"ub\": [2.4, 2.3, 2.1, 0.14800000000000002, 0.2579221897390239], \"note\": \"heuristic-fallback\", \"raw_text\": \"\"}",
+      "details": null,
+      "timestamp": "2026-04-18T16:24:05.744383"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.0,
+        0.4,
+        0.2999928180271523
+      ],
+      "objectives": [
+        7200.0,
+        1.5285446907744984,
+        0.6401399607760253
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 4,
+      "acq_value": 2.800287279543746,
+      "acq_type": "EI_prior",
+      "gp_pred": {
+        "mean_coupled": 0.18966121672094816,
+        "mean_base": 0.18966121672094816,
+        "std": 0.41697108618458434,
+        "coupling_lambda": 0.0,
+        "coupling_mode": "region",
+        "prior_bonus": 6.298399418682086e-10,
+        "risk_penalty": 0.19971272108609367
+      },
+      "llm_rationale": "{\"mode\": \"region\", \"confidence\": 0.25, \"point\": null, \"lb\": [2.0, 2.0, 2.0, 0.1, 0.21792218973902394], \"ub\": [2.4, 2.3, 2.1, 0.14800000000000002, 0.2579221897390239], \"note\": \"heuristic-fallback\", \"raw_text\": \"\"}",
+      "details": null,
+      "timestamp": "2026-04-18T16:24:09.805250"
+    },
+    {
+      "theta": [
+        6.0,
+        5.0,
+        3.0,
+        0.4,
+        0.20828414029223372
+      ],
+      "objectives": [
+        3100.0,
+        7.397135393596864,
+        1.2666983283625814
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 5,
+      "acq_value": 3.000487122803752,
+      "acq_type": "EI_prior",
+      "gp_pred": {
+        "mean_coupled": 5.136920591852778e-05,
+        "mean_base": 5.136920591852778e-05,
+        "std": 0.0023944491163603084,
+        "coupling_lambda": 0.0,
+        "coupling_mode": "point",
+        "prior_bonus": 0.0004871228037520391,
+        "risk_penalty": 0.0
+      },
+      "llm_rationale": "{\"mode\": \"point\", \"confidence\": 0.95, \"point\": [6.0, 4.7, 3.0, 0.4, 0.25], \"lb\": null, \"ub\": null, \"note\": \"\", \"raw_text\": \"[\\\"point\\\", [6.0, 4.7, 3.0, 0.4, 0.25], 0.95]\"}",
+      "details": null,
+      "timestamp": "2026-04-18T16:24:17.297807"
+    },
+    {
+      "theta": [
+        6.0,
+        5.0,
+        3.0,
+        0.4,
+        0.29999945541314615
+      ],
+      "objectives": [
+        2880.0,
+        7.566964191322911,
+        1.2606511928531257
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 5,
+      "acq_value": 2.8023543506393356,
+      "acq_type": "EI_prior",
+      "gp_pred": {
+        "mean_coupled": 4.9178047955900084e-05,
+        "mean_base": 4.9178047955900084e-05,
+        "std": 0.00234046509264584,
+        "coupling_lambda": 0.0,
+        "coupling_mode": "point",
+        "prior_bonus": 0.002469191109031737,
+        "risk_penalty": 0.20011484046969627
+      },
+      "llm_rationale": "{\"mode\": \"point\", \"confidence\": 0.95, \"point\": [6.0, 4.7, 3.0, 0.4, 0.25], \"lb\": null, \"ub\": null, \"note\": \"\", \"raw_text\": \"[\\\"point\\\", [6.0, 4.7, 3.0, 0.4, 0.25], 0.95]\"}",
+      "details": null,
+      "timestamp": "2026-04-18T16:24:20.690808"
+    },
+    {
+      "theta": [
+        5.301081826817256,
+        4.805872786394256,
+        3.0,
+        0.4,
+        0.2692867572917225
+      ],
+      "objectives": [
+        3151.0,
+        6.768560917651872,
+        1.1446151265484725
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 6,
+      "acq_value": 3.0003819651738914,
+      "acq_type": "EI_prior",
+      "gp_pred": {
+        "mean_coupled": 0.07639884767842453,
+        "mean_base": 0.07639884767842453,
+        "std": 0.07981089238082728,
+        "coupling_lambda": 0.0,
+        "coupling_mode": "point",
+        "prior_bonus": 0.0003819651738912792,
+        "risk_penalty": 0.0
+      },
+      "llm_rationale": "{\"mode\": \"point\", \"confidence\": 0.85, \"point\": [6.0, 4.9, 3.0, 0.4, 0.25], \"lb\": null, \"ub\": null, \"note\": \"\", \"raw_text\": \"[\\\"point\\\", [6.0, 4.9, 3.0, 0.4, 0.25], 0.85]\"}",
+      "details": null,
+      "timestamp": "2026-04-18T16:24:28.966231"
+    },
+    {
+      "theta": [
+        5.099672035109544,
+        4.938961280664135,
+        2.9374071230608823,
+        0.3980000000000001,
+        0.29850000000000004
+      ],
+      "objectives": [
+        3127.0,
+        6.88969396763722,
+        1.1096106447836076
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 6,
+      "acq_value": 2.940021539325626,
+      "acq_type": "EI_prior",
+      "gp_pred": {
+        "mean_coupled": 0.07599403517301401,
+        "mean_base": 0.07599403517301401,
+        "std": 0.09988190223652142,
+        "coupling_lambda": 0.0,
+        "coupling_mode": "point",
+        "prior_bonus": 2.15393256327541e-05,
+        "risk_penalty": 0.06000000000000666
+      },
+      "llm_rationale": "{\"mode\": \"point\", \"confidence\": 0.85, \"point\": [6.0, 4.9, 3.0, 0.4, 0.25], \"lb\": null, \"ub\": null, \"note\": \"\", \"raw_text\": \"[\\\"point\\\", [6.0, 4.9, 3.0, 0.4, 0.25], 0.85]\"}",
+      "details": null,
+      "timestamp": "2026-04-18T16:24:32.135013"
+    },
+    {
+      "theta": [
+        6.0,
+        5.0,
+        3.0,
+        0.3459539583485411,
+        0.3
+      ],
+      "objectives": [
+        3042.0,
+        7.299468155728187,
+        1.2531794318396174
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 7,
+      "acq_value": 3.005169164725582,
+      "acq_type": "EI_prior",
+      "gp_pred": {
+        "mean_coupled": 0.04920287533972306,
+        "mean_base": 0.04920287533972306,
+        "std": 0.050808952565544026,
+        "coupling_lambda": 0.0,
+        "coupling_mode": "point",
+        "prior_bonus": 0.00516916472558217,
+        "risk_penalty": 0.0
+      },
+      "llm_rationale": "{\"mode\": \"point\", \"confidence\": 0.9, \"point\": [6.0, 4.87, 3.0, 0.4, 0.25], \"lb\": null, \"ub\": null, \"note\": \"\", \"raw_text\": \"[\\\"point\\\", [6.0, 4.87, 3.0, 0.4, 0.25], 0.9]\"}",
+      "details": null,
+      "timestamp": "2026-04-18T16:24:39.492510"
+    },
+    {
+      "theta": [
+        6.0,
+        4.953895745725695,
+        3.0,
+        0.3213813160584422,
+        0.3
+      ],
+      "objectives": [
+        3126.0,
+        7.104112889614806,
+        1.2414117924109718
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 7,
+      "acq_value": 3.0000498801467326,
+      "acq_type": "EI_prior",
+      "gp_pred": {
+        "mean_coupled": 0.07718738660979674,
+        "mean_base": 0.07718738660979674,
+        "std": 0.0650215926994171,
+        "coupling_lambda": 0.0,
+        "coupling_mode": "point",
+        "prior_bonus": 4.98801467325189e-05,
+        "risk_penalty": 0.0
+      },
+      "llm_rationale": "{\"mode\": \"point\", \"confidence\": 0.9, \"point\": [6.0, 4.87, 3.0, 0.4, 0.25], \"lb\": null, \"ub\": null, \"note\": \"\", \"raw_text\": \"[\\\"point\\\", [6.0, 4.87, 3.0, 0.4, 0.25], 0.9]\"}",
+      "details": null,
+      "timestamp": "2026-04-18T16:24:42.800778"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        3.0,
+        0.24378377660169173,
+        0.1
+      ],
+      "objectives": [
+        5831.0,
+        2.98206585097546,
+        0.5779911800100883
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 8,
+      "acq_value": 2.649334952335334,
+      "acq_type": "EI_prior",
+      "gp_pred": {
+        "mean_coupled": -0.07481890222059329,
+        "mean_base": -0.07481890222059329,
+        "std": 0.17772863433463917,
+        "coupling_lambda": 0.0,
+        "coupling_mode": "point",
+        "prior_bonus": 0.04933495233533364,
+        "risk_penalty": 0.4
+      },
+      "llm_rationale": "{\"mode\": \"point\", \"confidence\": 0.95, \"point\": [2.18, 4.3, 2.58, 0.39, 0.137], \"lb\": null, \"ub\": null, \"note\": \"\", \"raw_text\": \"[\\\"point\\\", [2.18, 4.30, 2.58, 0.39, 0.137], 0.95]\"}",
+      "details": null,
+      "timestamp": "2026-04-18T16:24:53.154858"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        3.0,
+        0.24378252824027638,
+        0.1
+      ],
+      "objectives": [
+        5831.0,
+        2.98206585097546,
+        0.5779911800100883
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 8,
+      "acq_value": 2.649334926639138,
+      "acq_type": "EI_prior",
+      "gp_pred": {
+        "mean_coupled": -0.07481899174436268,
+        "mean_base": -0.07481899174436268,
+        "std": 0.17772846457026845,
+        "coupling_lambda": 0.0,
+        "coupling_mode": "point",
+        "prior_bonus": 0.04933492663913796,
+        "risk_penalty": 0.4
+      },
+      "llm_rationale": "{\"mode\": \"point\", \"confidence\": 0.95, \"point\": [2.18, 4.3, 2.58, 0.39, 0.137], \"lb\": null, \"ub\": null, \"note\": \"\", \"raw_text\": \"[\\\"point\\\", [2.18, 4.30, 2.58, 0.39, 0.137], 0.95]\"}",
+      "details": null,
+      "timestamp": "2026-04-18T16:24:57.065028"
+    }
+  ],
+  "pareto_indices": [
+    0,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "iteration_stats": [
+    {
+      "iteration": 1,
+      "n_total": 8,
+      "n_feasible": 8,
+      "pareto_size": 5,
+      "hypervolume": 0.3154939782738212,
+      "hypervolume_raw": 9.283426055094772,
+      "best_time_s": 3013.0,
+      "best_temp_K": 3.3269010830999948,
+      "best_aging_pct": 0.8658062292140565,
+      "source_counts": {
+        "bo": 2
+      },
+      "t": 0,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 2,
+      "iter_time_s": 10.23,
+      "llm_guidance": {
+        "mode": "region",
+        "confidence": 0.25,
+        "point": null,
+        "lb": [
+          5.6,
+          4.37,
+          2.44,
+          0.33799999999999997,
+          0.224
+        ],
+        "ub": [
+          6.0,
+          4.97,
+          2.64,
+          0.398,
+          0.264
+        ],
+        "note": "heuristic-fallback",
+        "raw_text": ""
+      },
+      "gp_llm_coupling": null,
+      "acq_prior": {
+        "active": true,
+        "proposal_alpha": 0.0,
+        "proposal_anchor": 0.0,
+        "proposal_scale": 1.0,
+        "guidance_alpha": 0.075,
+        "guidance_mode": "region",
+        "guidance_center": null,
+        "guidance_lb": [
+          5.6,
+          4.37,
+          2.44,
+          0.33799999999999997,
+          0.224
+        ],
+        "guidance_ub": [
+          6.0,
+          4.97,
+          2.64,
+          0.398,
+          0.264
+        ],
+        "guidance_sigma": null,
+        "safe_dsoc_sum_max": 0.695,
+        "hard_dsoc_sum_max": 0.7,
+        "safe_risk_weight": 0.2,
+        "hard_risk_weight": 3.0,
+        "monotone_risk_weight": 0.4,
+        "agreement": 1.0,
+        "has_proposal_scorer": false
+      },
+      "proposal_summary": {
+        "ready": false,
+        "reason": "insufficient_records",
+        "n_records": 6
+      },
+      "candidate_source_counts": {
+        "guidance": 64,
+        "hotspot": 5
+      }
+    },
+    {
+      "iteration": 2,
+      "n_total": 10,
+      "n_feasible": 10,
+      "pareto_size": 7,
+      "hypervolume": 0.33387039946026476,
+      "hypervolume_raw": 9.824153165561404,
+      "best_time_s": 3013.0,
+      "best_temp_K": 2.5867475944567104,
+      "best_aging_pct": 0.6344480803685623,
+      "source_counts": {
+        "bo": 2
+      },
+      "t": 1,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 2,
+      "iter_time_s": 11.12,
+      "llm_guidance": {
+        "mode": "point",
+        "confidence": 0.85,
+        "point": [
+          6.0,
+          4.6,
+          3.0,
+          0.4,
+          0.25
+        ],
+        "lb": null,
+        "ub": null,
+        "note": "",
+        "raw_text": "[\"point\", [6.0, 4.6, 3.0, 0.4, 0.25], 0.85]"
+      },
+      "gp_llm_coupling": null,
+      "acq_prior": {
+        "active": true,
+        "proposal_alpha": 0.0128125,
+        "proposal_anchor": 8.327448715329645,
+        "proposal_scale": 36.05225424349429,
+        "guidance_alpha": 0.00489263243285517,
+        "guidance_mode": "point",
+        "guidance_center": [
+          6.0,
+          4.6,
+          3.0,
+          0.4,
+          0.25
+        ],
+        "guidance_lb": null,
+        "guidance_ub": null,
+        "guidance_sigma": [
+          0.44999999999999996,
+          0.33749999999999997,
+          0.11249999999999999,
+          0.03375,
+          0.022499999999999996
+        ],
+        "safe_dsoc_sum_max": 0.695,
+        "hard_dsoc_sum_max": 0.7,
+        "safe_risk_weight": 0.2,
+        "hard_risk_weight": 3.0,
+        "monotone_risk_weight": 0.4,
+        "agreement": 0.021927764404953143,
+        "has_proposal_scorer": true
+      },
+      "proposal_summary": {
+        "ready": true,
+        "n_records": 8,
+        "elite_count": 3,
+        "n_components": 1,
+        "mixture_weights": [
+          1.0
+        ],
+        "means": [
+          [
+            5.96405,
+            4.634806,
+            2.9281,
+            0.397124,
+            0.248732
+          ]
+        ],
+        "diag_std": [
+          [
+            0.087813,
+            0.2283,
+            0.175446,
+            0.007089,
+            0.006612
+          ]
+        ]
+      },
+      "candidate_source_counts": {
+        "proposal": 8,
+        "guidance": 26,
+        "hotspot": 5
+      }
+    },
+    {
+      "iteration": 3,
+      "n_total": 12,
+      "n_feasible": 12,
+      "pareto_size": 9,
+      "hypervolume": 0.3339461410525157,
+      "hypervolume_raw": 9.82638186569319,
+      "best_time_s": 3013.0,
+      "best_temp_K": 1.5286719127889854,
+      "best_aging_pct": 0.6344480803685623,
+      "source_counts": {
+        "bo": 2
+      },
+      "t": 2,
+      "w_vec": [
+        0.00980392156862745,
+        0.9803921568627451,
+        0.00980392156862745
+      ],
+      "n_new_evals": 2,
+      "iter_time_s": 12.63,
+      "llm_guidance": {
+        "mode": "point",
+        "confidence": 0.95,
+        "point": [
+          5.8,
+          2.1,
+          2.07,
+          0.11,
+          0.23
+        ],
+        "lb": null,
+        "ub": null,
+        "note": "",
+        "raw_text": "[\"point\", [5.80, 2.10, 2.07, 0.11, 0.23], 0.95]"
+      },
+      "gp_llm_coupling": null,
+      "acq_prior": {
+        "active": true,
+        "proposal_alpha": 0.04453125000000001,
+        "proposal_anchor": 19.755969524491427,
+        "proposal_scale": 76.5354313022886,
+        "guidance_alpha": 0.004051091554860152,
+        "guidance_mode": "point",
+        "guidance_center": [
+          5.8,
+          2.1,
+          2.07,
+          0.11,
+          0.23
+        ],
+        "guidance_lb": null,
+        "guidance_ub": null,
+        "guidance_sigma": [
+          0.44999999999999996,
+          0.33749999999999997,
+          0.11249999999999999,
+          0.03375,
+          0.022499999999999996
+        ],
+        "safe_dsoc_sum_max": 0.695,
+        "hard_dsoc_sum_max": 0.7,
+        "safe_risk_weight": 0.2,
+        "hard_risk_weight": 3.0,
+        "monotone_risk_weight": 0.4,
+        "agreement": 0.018952475110456855,
+        "has_proposal_scorer": true
+      },
+      "proposal_summary": {
+        "ready": true,
+        "n_records": 10,
+        "elite_count": 4,
+        "n_components": 2,
+        "mixture_weights": [
+          0.66587,
+          0.33413
+        ],
+        "means": [
+          [
+            5.801391,
+            2.101912,
+            2.070093,
+            0.109588,
+            0.233223
+          ],
+          [
+            3.734165,
+            2.906354,
+            2.244074,
+            0.302193,
+            0.19826
+          ]
+        ],
+        "diag_std": [
+          [
+            0.013599,
+            0.157658,
+            0.060862,
+            0.019031,
+            0.001124
+          ],
+          [
+            0.043506,
+            0.193251,
+            0.160611,
+            0.001756,
+            0.00152
+          ]
+        ]
+      },
+      "candidate_source_counts": {
+        "proposal": 8,
+        "guidance": 26,
+        "hotspot": 5
+      }
+    },
+    {
+      "iteration": 4,
+      "n_total": 14,
+      "n_feasible": 14,
+      "pareto_size": 11,
+      "hypervolume": 0.3339461410525157,
+      "hypervolume_raw": 9.82638186569319,
+      "best_time_s": 3013.0,
+      "best_temp_K": 1.5285446907744984,
+      "best_aging_pct": 0.6344480803685623,
+      "source_counts": {
+        "bo": 2
+      },
+      "t": 3,
+      "w_vec": [
+        0.00980392156862745,
+        0.9803921568627451,
+        0.00980392156862745
+      ],
+      "n_new_evals": 2,
+      "iter_time_s": 13.18,
+      "llm_guidance": {
+        "mode": "region",
+        "confidence": 0.25,
+        "point": null,
+        "lb": [
+          2.0,
+          2.0,
+          2.0,
+          0.1,
+          0.21792218973902394
+        ],
+        "ub": [
+          2.4,
+          2.3,
+          2.1,
+          0.14800000000000002,
+          0.2579221897390239
+        ],
+        "note": "heuristic-fallback",
+        "raw_text": ""
+      },
+      "gp_llm_coupling": null,
+      "acq_prior": {
+        "active": true,
+        "proposal_alpha": 0.084375,
+        "proposal_anchor": 18.664618253140123,
+        "proposal_scale": 76.85186436830534,
+        "guidance_alpha": 0.0010581852800854628,
+        "guidance_mode": "region",
+        "guidance_center": null,
+        "guidance_lb": [
+          2.0,
+          2.0,
+          2.0,
+          0.1,
+          0.21792218973902394
+        ],
+        "guidance_ub": [
+          2.4,
+          2.3,
+          2.1,
+          0.14800000000000002,
+          0.2579221897390239
+        ],
+        "guidance_sigma": null,
+        "safe_dsoc_sum_max": 0.695,
+        "hard_dsoc_sum_max": 0.7,
+        "safe_risk_weight": 0.2,
+        "hard_risk_weight": 3.0,
+        "monotone_risk_weight": 0.4,
+        "agreement": 0.022574619308489873,
+        "has_proposal_scorer": true
+      },
+      "proposal_summary": {
+        "ready": true,
+        "n_records": 12,
+        "elite_count": 5,
+        "n_components": 2,
+        "mixture_weights": [
+          0.8214,
+          0.1786
+        ],
+        "means": [
+          [
+            2.002875,
+            2.001313,
+            2.009053,
+            0.100342,
+            0.223654
+          ],
+          [
+            5.802086,
+            2.11035,
+            2.07335,
+            0.110606,
+            0.23325
+          ]
+        ],
+        "diag_std": [
+          [
+            0.070083,
+            0.032105,
+            0.016493,
+            0.008393,
+            0.008635
+          ],
+          [
+            0.017945,
+            0.212185,
+            0.081913,
+            0.025599,
+            0.001215
+          ]
+        ]
+      },
+      "candidate_source_counts": {
+        "proposal": 8,
+        "guidance": 64,
+        "hotspot": 5
+      }
+    },
+    {
+      "iteration": 5,
+      "n_total": 16,
+      "n_feasible": 16,
+      "pareto_size": 12,
+      "hypervolume": 0.3468949437549527,
+      "hypervolume_raw": 10.20740103140847,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5285446907744984,
+      "best_aging_pct": 0.6344480803685623,
+      "source_counts": {
+        "bo": 2
+      },
+      "t": 4,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 2,
+      "iter_time_s": 10.88,
+      "llm_guidance": {
+        "mode": "point",
+        "confidence": 0.95,
+        "point": [
+          6.0,
+          4.7,
+          3.0,
+          0.4,
+          0.25
+        ],
+        "lb": null,
+        "ub": null,
+        "note": "",
+        "raw_text": "[\"point\", [6.0, 4.7, 3.0, 0.4, 0.25], 0.95]"
+      },
+      "gp_llm_coupling": null,
+      "acq_prior": {
+        "active": true,
+        "proposal_alpha": 0.13234375,
+        "proposal_anchor": 6.4188097696705855,
+        "proposal_scale": 187.99607039709917,
+        "guidance_alpha": 0.003073088920165105,
+        "guidance_mode": "point",
+        "guidance_center": [
+          6.0,
+          4.7,
+          3.0,
+          0.4,
+          0.25
+        ],
+        "guidance_lb": null,
+        "guidance_ub": null,
+        "guidance_sigma": [
+          0.44999999999999996,
+          0.33749999999999997,
+          0.11249999999999999,
+          0.03375,
+          0.022499999999999996
+        ],
+        "safe_dsoc_sum_max": 0.695,
+        "hard_dsoc_sum_max": 0.7,
+        "safe_risk_weight": 0.2,
+        "hard_risk_weight": 3.0,
+        "monotone_risk_weight": 0.4,
+        "agreement": 0.02156553628186039,
+        "has_proposal_scorer": true
+      },
+      "proposal_summary": {
+        "ready": true,
+        "n_records": 14,
+        "elite_count": 5,
+        "n_components": 2,
+        "mixture_weights": [
+          0.589096,
+          0.410904
+        ],
+        "means": [
+          [
+            6.0,
+            4.691359,
+            3.0,
+            0.4,
+            0.2482
+          ],
+          [
+            5.476751,
+            4.213091,
+            2.685274,
+            0.316504,
+            0.207982
+          ]
+        ],
+        "diag_std": [
+          [
+            0.004,
+            0.178676,
+            0.001,
+            0.001,
+            0.007123
+          ],
+          [
+            0.342457,
+            0.218339,
+            0.194388,
+            0.072773,
+            0.048563
+          ]
+        ]
+      },
+      "candidate_source_counts": {
+        "proposal": 8,
+        "guidance": 26,
+        "hotspot": 5
+      }
+    },
+    {
+      "iteration": 6,
+      "n_total": 18,
+      "n_feasible": 18,
+      "pareto_size": 14,
+      "hypervolume": 0.3521851194524066,
+      "hypervolume_raw": 10.363064715306576,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5285446907744984,
+      "best_aging_pct": 0.6344480803685623,
+      "source_counts": {
+        "bo": 2
+      },
+      "t": 5,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 2,
+      "iter_time_s": 11.44,
+      "llm_guidance": {
+        "mode": "point",
+        "confidence": 0.85,
+        "point": [
+          6.0,
+          4.9,
+          3.0,
+          0.4,
+          0.25
+        ],
+        "lb": null,
+        "ub": null,
+        "note": "",
+        "raw_text": "[\"point\", [6.0, 4.9, 3.0, 0.4, 0.25], 0.85]"
+      },
+      "gp_llm_coupling": null,
+      "acq_prior": {
+        "active": true,
+        "proposal_alpha": 0.1675,
+        "proposal_anchor": 10.500311755649825,
+        "proposal_scale": 199.43547833161904,
+        "guidance_alpha": 0.0019155254111565888,
+        "guidance_mode": "point",
+        "guidance_center": [
+          6.0,
+          4.9,
+          3.0,
+          0.4,
+          0.25
+        ],
+        "guidance_lb": null,
+        "guidance_ub": null,
+        "guidance_sigma": [
+          0.44999999999999996,
+          0.33749999999999997,
+          0.11249999999999999,
+          0.03375,
+          0.022499999999999996
+        ],
+        "safe_dsoc_sum_max": 0.695,
+        "hard_dsoc_sum_max": 0.7,
+        "safe_risk_weight": 0.2,
+        "hard_risk_weight": 3.0,
+        "monotone_risk_weight": 0.4,
+        "agreement": 0.02003163828660485,
+        "has_proposal_scorer": true
+      },
+      "proposal_summary": {
+        "ready": true,
+        "n_records": 16,
+        "elite_count": 6,
+        "n_components": 3,
+        "mixture_weights": [
+          0.219749,
+          0.653373,
+          0.126878
+        ],
+        "means": [
+          [
+            6.0,
+            4.51065,
+            3.0,
+            0.4,
+            0.241067
+          ],
+          [
+            6.0,
+            4.951562,
+            3.0,
+            0.4,
+            0.252065
+          ],
+          [
+            5.722148,
+            4.237715,
+            2.514965,
+            0.377189,
+            0.246064
+          ]
+        ],
+        "diag_std": [
+          [
+            0.004,
+            0.003,
+            0.001,
+            0.001,
+            0.001
+          ],
+          [
+            0.004,
+            0.063701,
+            0.001,
+            0.001,
+            0.036448
+          ],
+          [
+            0.148996,
+            0.065766,
+            0.080036,
+            0.015063,
+            0.02107
+          ]
+        ]
+      },
+      "candidate_source_counts": {
+        "proposal": 8,
+        "guidance": 26,
+        "hotspot": 5
+      }
+    },
+    {
+      "iteration": 7,
+      "n_total": 20,
+      "n_feasible": 20,
+      "pareto_size": 16,
+      "hypervolume": 0.35221811321210234,
+      "hypervolume_raw": 10.36403555833214,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5285446907744984,
+      "best_aging_pct": 0.6344480803685623,
+      "source_counts": {
+        "bo": 2
+      },
+      "t": 6,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 2,
+      "iter_time_s": 10.66,
+      "llm_guidance": {
+        "mode": "point",
+        "confidence": 0.9,
+        "point": [
+          6.0,
+          4.87,
+          3.0,
+          0.4,
+          0.25
+        ],
+        "lb": null,
+        "ub": null,
+        "note": "",
+        "raw_text": "[\"point\", [6.0, 4.87, 3.0, 0.4, 0.25], 0.9]"
+      },
+      "gp_llm_coupling": null,
+      "acq_prior": {
+        "active": true,
+        "proposal_alpha": 0.18375,
+        "proposal_anchor": -335.07044549930094,
+        "proposal_scale": 310.69915877337286,
+        "guidance_alpha": 0.00410308505422201,
+        "guidance_mode": "point",
+        "guidance_center": [
+          6.0,
+          4.87,
+          3.0,
+          0.4,
+          0.25
+        ],
+        "guidance_lb": null,
+        "guidance_ub": null,
+        "guidance_sigma": [
+          0.44999999999999996,
+          0.33749999999999997,
+          0.11249999999999999,
+          0.03375,
+          0.022499999999999996
+        ],
+        "safe_dsoc_sum_max": 0.695,
+        "hard_dsoc_sum_max": 0.7,
+        "safe_risk_weight": 0.2,
+        "hard_risk_weight": 3.0,
+        "monotone_risk_weight": 0.4,
+        "agreement": 0.06078644524773348,
+        "has_proposal_scorer": true
+      },
+      "proposal_summary": {
+        "ready": true,
+        "n_records": 18,
+        "elite_count": 7,
+        "n_components": 3,
+        "mixture_weights": [
+          0.58467,
+          0.245181,
+          0.170149
+        ],
+        "means": [
+          [
+            6.0,
+            4.951285,
+            3.0,
+            0.4,
+            0.255464
+          ],
+          [
+            5.199034,
+            4.85794,
+            2.965131,
+            0.398483,
+            0.282391
+          ],
+          [
+            6.0,
+            4.51065,
+            3.0,
+            0.4,
+            0.241067
+          ]
+        ],
+        "diag_std": [
+          [
+            0.004,
+            0.063777,
+            0.001,
+            0.001,
+            0.036423
+          ],
+          [
+            0.147291,
+            0.144029,
+            0.080698,
+            0.007726,
+            0.015889
+          ],
+          [
+            0.004,
+            0.003,
+            0.001,
+            0.001,
+            0.001
+          ]
+        ]
+      },
+      "candidate_source_counts": {
+        "proposal": 8,
+        "guidance": 26,
+        "hotspot": 5
+      }
+    },
+    {
+      "iteration": 8,
+      "n_total": 22,
+      "n_feasible": 22,
+      "pareto_size": 17,
+      "hypervolume": 0.35709330715159954,
+      "hypervolume_raw": 10.507488383293156,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5285446907744984,
+      "best_aging_pct": 0.5779911800100883,
+      "source_counts": {
+        "bo": 2
+      },
+      "t": 7,
+      "w_vec": [
+        0.00980392156862745,
+        0.00980392156862745,
+        0.9803921568627451
+      ],
+      "n_new_evals": 2,
+      "iter_time_s": 14.26,
+      "llm_guidance": {
+        "mode": "point",
+        "confidence": 0.95,
+        "point": [
+          2.18,
+          4.3,
+          2.58,
+          0.39,
+          0.137
+        ],
+        "lb": null,
+        "ub": null,
+        "note": "",
+        "raw_text": "[\"point\", [2.18, 4.30, 2.58, 0.39, 0.137], 0.95]"
+      },
+      "gp_llm_coupling": null,
+      "acq_prior": {
+        "active": true,
+        "proposal_alpha": 0.2,
+        "proposal_anchor": 15.302420284770655,
+        "proposal_scale": 100629.47667533037,
+        "guidance_alpha": 0.004337233591940808,
+        "guidance_mode": "point",
+        "guidance_center": [
+          2.18,
+          4.3,
+          2.58,
+          0.39,
+          0.137
+        ],
+        "guidance_lb": null,
+        "guidance_ub": null,
+        "guidance_sigma": [
+          0.44999999999999996,
+          0.33749999999999997,
+          0.11249999999999999,
+          0.03375,
+          0.022499999999999996
+        ],
+        "safe_dsoc_sum_max": 0.695,
+        "hard_dsoc_sum_max": 0.7,
+        "safe_risk_weight": 0.2,
+        "hard_risk_weight": 3.0,
+        "monotone_risk_weight": 0.4,
+        "agreement": 0.12174690784395252,
+        "has_proposal_scorer": true
+      },
+      "proposal_summary": {
+        "ready": true,
+        "n_records": 20,
+        "elite_count": 7,
+        "n_components": 3,
+        "mixture_weights": [
+          0.883985,
+          0.110004,
+          0.006011
+        ],
+        "means": [
+          [
+            2.0,
+            2.0,
+            2.004998,
+            0.223643,
+            0.254433
+          ],
+          [
+            5.801597,
+            2.104418,
+            2.07106,
+            0.109891,
+            0.233231
+          ],
+          [
+            3.705658,
+            2.779204,
+            2.349759,
+            0.303143,
+            0.197507
+          ]
+        ],
+        "diag_std": [
+          [
+            0.004,
+            0.003,
+            0.007919,
+            0.14767,
+            0.037341
+          ],
+          [
+            0.015025,
+            0.175674,
+            0.067817,
+            0.021201,
+            0.001152
+          ],
+          [
+            0.004,
+            0.003,
+            0.001,
+            0.001,
+            0.001
+          ]
+        ]
+      },
+      "candidate_source_counts": {
+        "proposal": 8,
+        "guidance": 26,
+        "hotspot": 5
+      }
+    }
+  ],
+  "improvement_window": [
+    true,
+    true
+  ],
+  "saved_at": "2026-04-18T16:24:57.116549"
+}
