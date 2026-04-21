@@ -34,6 +34,7 @@ sys.path.insert(0, str(project_root))
 from config.schema import Config, create_minimal_config, get_default_config
 from config.load import load_config, parse_cli_overrides
 from llmbo.optimizer import BayesOptimizer
+from utils.constants import DSOC_SUM_MAX
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -233,6 +234,9 @@ async def run_optimization(config: Config, args: argparse.Namespace) -> None:
             'warmstart_max_tokens': config.llm.warmstart.max_tokens,
             'warmstart_max_retries': config.llm.warmstart.max_retries,
             'warmstart_temperature': config.llm.warmstart.temperature,
+            'soc_start': config.charging_range.soc0,
+            'soc_end': config.charging_range.soc_end,
+            'dsoc_sum_max': DSOC_SUM_MAX,
 
             # GP 超参数
             'gamma_max': config.bo.gamma_max,

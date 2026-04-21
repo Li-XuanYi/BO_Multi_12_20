@@ -63,6 +63,11 @@ DEFAULT_CONFIG = {
     "llm_api_key": os.getenv("LLM_API_KEY") or os.getenv("OPENAI_API_KEY", ""),
     "llm_n_samples": 3,
     "llm_temperature": 0.7,
+    "battery_param_set": "Chen2020",
+    "warmstart_context_level": "full",
+    "warmstart_max_tokens": 2500,
+    "warmstart_max_retries": 3,
+    "warmstart_temperature": None,
     "kernel_nu": 2.5,
     "gp_alpha": 1e-6,
     "gp_normalize_y": True,
@@ -128,6 +133,9 @@ DEFAULT_CONFIG = {
     "checkpoint_dir": "checkpoints",
     "checkpoint_every": 5,
     "battery_model": "LG INR21700-M50 (Chen2020)",
+    "soc_start": 0.0,
+    "soc_end": 0.8,
+    "dsoc_sum_max": DSOC_SUM_MAX,
 }
 
 
@@ -320,7 +328,17 @@ class BayesOptimizer:
             api_key=api_key,
             n_samples=self.cfg["llm_n_samples"],
             temperature=self.cfg["llm_temperature"],
-            battery_model=self.cfg["battery_model"],
+            battery_model=getattr(self.simulator, "battery_name", self.cfg["battery_model"]),
+            battery_param_set=str(
+                self.cfg.get("battery_param_set", getattr(self.simulator, "param_set", "Chen2020"))
+            ),
+            warmstart_context_level=str(self.cfg.get("warmstart_context_level", "full")),
+            warmstart_max_tokens=int(self.cfg.get("warmstart_max_tokens", 2500)),
+            warmstart_max_retries=int(self.cfg.get("warmstart_max_retries", 3)),
+            warmstart_temperature=self.cfg.get("warmstart_temperature"),
+            soc_start=float(self.cfg.get("soc_start", getattr(self.simulator, "soc_start", 0.0))),
+            soc_end=float(self.cfg.get("soc_end", getattr(self.simulator, "soc_end", 0.8))),
+            dsoc_sum_max=float(self.cfg.get("dsoc_sum_max", getattr(self.simulator, "dsoc_sum_max", DSOC_SUM_MAX))),
             safe_dsoc_sum_max=float(self.cfg.get("llm_safe_dsoc_sum_max", LLM_SAFE_DSOC_SUM_MAX)),
         )
 

@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "iterations": 10,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "output_root": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\optimized_experiments\\warmstart_prompt_v2_10iter",
+    "model": "gpt-4.1-mini",
+    "api_base": "https://api.nuwaapi.com/v1",
+    "warmstart_backend": "openai"
+  },
+  "baseline_strict": {
+    "mean_hv": 0.8507944469622316,
+    "std_hv": 0.04470934257326629,
+    "min_hv": 0.8040607629642018,
+    "max_hv": 0.9110443481480838,
+    "mean_init_hv": 0.6222172112798906,
+    "runs": [
+      {
+        "seed": 0,
+        "hypervolume": 0.9110443481480838,
+        "warmstart_hv_last": 0.6423830375352524,
+        "n_feasible": 26,
+        "hv_violations": 0,
+        "candidate_source_counts": {}
+      },
+      {
+        "seed": 1,
+        "hypervolume": 0.8040607629642018,
+        "warmstart_hv_last": 0.6069166158468122,
+        "n_feasible": 26,
+        "hv_violations": 0,
+        "candidate_source_counts": {}
+      },
+      {
+        "seed": 2,
+        "hypervolume": 0.8372782297744091,
+        "warmstart_hv_last": 0.6173519804576071,
+        "n_feasible": 26,
+        "hv_violations": 0,
+        "candidate_source_counts": {}
+      }
+    ]
+  },
+  "warmstart_prompt_v2": {
+    "mean_hv": 0.8061547289280929,
+    "std_hv": 0.12719317871198854,
+    "min_hv": 0.627589922548797,
+    "max_hv": 0.914228473430515,
+    "mean_init_hv": 0.6039892709423623,
+    "runs": [
+      {
+        "seed": 0,
+        "hypervolume": 0.914228473430515,
+        "warmstart_hv_last": 0.6991717182377312,
+        "n_feasible": 26,
+        "hv_violations": 0,
+        "candidate_source_counts": {}
+      },
+      {
+        "seed": 1,
+        "hypervolume": 0.8766457908049671,
+        "warmstart_hv_last": 0.5493230912610106,
+        "n_feasible": 26,
+        "hv_violations": 0,
+        "candidate_source_counts": {}
+      },
+      {
+        "seed": 2,
+        "hypervolume": 0.627589922548797,
+        "warmstart_hv_last": 0.5634730033283453,
+        "n_feasible": 26,
+        "hv_violations": 0,
+        "candidate_source_counts": {}
+      }
+    ]
+  },
+  "comparison_vs_baseline_warmstart_prompt_v2": {
+    "mean_delta": -0.04463971803413854,
+    "mean_pct": -5.222410806726383,
+    "wins": 2,
+    "total": 3
+  }
+}

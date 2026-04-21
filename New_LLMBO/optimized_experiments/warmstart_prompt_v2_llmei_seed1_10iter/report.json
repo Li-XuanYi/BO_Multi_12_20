@@ -1,0 +1,33 @@
+{
+  "meta": {
+    "seed": 1,
+    "max_iterations": 10,
+    "base_plain_summary": "optimized_experiments\\warmstart_prompt_v2_10iter\\warmstart_prompt_v2_seed1\\summary.json",
+    "llm_model": "gpt-4.1-mini",
+    "api_base": "https://api.nuwaapi.com/v1"
+  },
+  "warmstart_plain": {
+    "hypervolume": 0.8766457908049671,
+    "hypervolume_raw": 10.318138457000508,
+    "init_hv": 0.5493230912610106,
+    "pareto_size": 13
+  },
+  "warmstart_llmei_const": {
+    "hypervolume": 0.8855346355088928,
+    "hypervolume_raw": 10.422760336601005,
+    "init_hv": 0.5493230912610106,
+    "pareto_size": 13,
+    "rerank_telemetry_count": 20
+  },
+  "warmstart_llmei_online": {
+    "hypervolume": 0.6854854816166731,
+    "hypervolume_raw": 8.068177801994455,
+    "init_hv": 0.5493230912610106,
+    "pareto_size": 13,
+    "rerank_telemetry_count": 20
+  },
+  "comparison_vs_plain": {
+    "llmei_const_abs_diff": 0.008888844703925702,
+    "llmei_online_abs_diff": -0.19116030918829396
+  }
+}

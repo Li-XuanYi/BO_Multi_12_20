@@ -1,0 +1,2317 @@
+{
+  "version": "2.0",
+  "param_bounds": {
+    "I1": [
+      2.0,
+      6.0
+    ],
+    "I2": [
+      2.0,
+      5.0
+    ],
+    "I3": [
+      2.0,
+      3.0
+    ],
+    "dSOC1": [
+      0.1,
+      0.4
+    ],
+    "dSOC2": [
+      0.1,
+      0.3
+    ]
+  },
+  "ref_point": [
+    7200.0,
+    40.0,
+    5.0
+  ],
+  "ideal_point": [
+    1800.0,
+    0.0,
+    0.3
+  ],
+  "normalize": true,
+  "observations": [
+    {
+      "theta": [
+        5.65,
+        4.15,
+        2.55,
+        0.185,
+        0.195
+      ],
+      "objectives": [
+        4400.0,
+        4.826128491829991,
+        1.0174964415806929
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:13:05.652156"
+    },
+    {
+      "theta": [
+        3.75,
+        3.25,
+        2.1,
+        0.295,
+        0.195
+      ],
+      "objectives": [
+        5153.0,
+        3.5542298337160734,
+        0.9050921690693949
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:13:09.773759"
+    },
+    {
+      "theta": [
+        3.35,
+        2.85,
+        2.0,
+        0.235,
+        0.215
+      ],
+      "objectives": [
+        5771.0,
+        2.825814964248605,
+        0.8356060926501896
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:13:14.004751"
+    },
+    {
+      "theta": [
+        3.847843401180113,
+        4.297788487200495,
+        2.6696468946938436,
+        0.274520565613055,
+        0.21442384426254246
+      ],
+      "objectives": [
+        4279.0,
+        4.675402027116888,
+        0.9257740704729435
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:13:17.870031"
+    },
+    {
+      "theta": [
+        4.776694154144849,
+        2.6212646905621995,
+        2.4607601578303955,
+        0.17235537207147833,
+        0.2939385381816707
+      ],
+      "objectives": [
+        5108.0,
+        3.1267129218264476,
+        0.8552362152438557
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:13:22.071171"
+    },
+    {
+      "theta": [
+        2.663868781017016,
+        3.5609023430164477,
+        2.2989864412014764,
+        0.3183709140758987,
+        0.1027455529597962
+      ],
+      "objectives": [
+        5636.0,
+        2.8605759204497874,
+        0.7454733377328846
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:13:26.189831"
+    },
+    {
+      "theta": [
+        3.8648968001615525,
+        4.983522516728204,
+        2.559178716396289,
+        0.2671895832417997,
+        0.19461400495266076
+      ],
+      "objectives": [
+        4326.0,
+        5.187523925432135,
+        0.9508267899443945
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 1,
+      "acq_value": -1.7124743328579761,
+      "acq_type": "EI_llm_rerank",
+      "gp_pred": {
+        "mean_coupled": 0.3086990064469598,
+        "mean_base": 0.3086990064469598,
+        "std": 0.8648498750803096,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": 0.2,
+        "rerank_gate": 0.3
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:13:43.290608"
+    },
+    {
+      "theta": [
+        4.055196940708741,
+        4.983523229222278,
+        2.7192107824453022,
+        0.21585791771876067,
+        0.1946139838022578
+      ],
+      "objectives": [
+        4240.0,
+        5.089516350213017,
+        0.9600438500890587
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 1,
+      "acq_value": -1.7244743263145559,
+      "acq_type": "EI_llm_rerank",
+      "gp_pred": {
+        "mean_coupled": 0.30869934944031974,
+        "mean_base": 0.30869934944031974,
+        "std": 0.8648502118150925,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": 0.18,
+        "rerank_gate": 0.3
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:13:47.037929"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.0,
+        0.4,
+        0.299999847658675
+      ],
+      "objectives": [
+        7200.0,
+        1.5285446907744984,
+        0.6401399607760253
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 2,
+      "acq_value": 0.5926182228858767,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": -0.2001908190554128,
+        "mean_base": -0.2001908190554128,
+        "std": 1.2044421491990893,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.2022652634036469
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:14:05.720901"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.0274012872148663,
+        0.2622925535942957,
+        0.3
+      ],
+      "objectives": [
+        7171.0,
+        1.558253238421611,
+        0.6379084867297191
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 2,
+      "acq_value": 0.5926181068624765,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": -0.20019112380031312,
+        "mean_base": -0.20019112380031312,
+        "std": 1.2044414125582337,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.2022652634036469
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:14:10.036759"
+    },
+    {
+      "theta": [
+        2.5705877854790207,
+        2.0,
+        2.0,
+        0.4,
+        0.2810349018940195
+      ],
+      "objectives": [
+        6401.0,
+        2.1960869149910653,
+        0.7356525448448398
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 3,
+      "acq_value": -2.8065647353659005,
+      "acq_type": "EI_llm_rerank",
+      "gp_pred": {
+        "mean_coupled": 0.025533961739984234,
+        "mean_base": 0.025533961739984234,
+        "std": 0.18423685206709253,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": 0.15,
+        "rerank_gate": 0.1292527633313178
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:14:24.617551"
+    },
+    {
+      "theta": [
+        2.569242447882264,
+        2.0,
+        2.028510719604373,
+        0.3980000000000001,
+        0.29850000000000004
+      ],
+      "objectives": [
+        6393.0,
+        2.1920761549675776,
+        0.7337205768035019
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 3,
+      "acq_value": -2.8091638434739905,
+      "acq_type": "EI_llm_rerank",
+      "gp_pred": {
+        "mean_coupled": 0.025408759348645504,
+        "mean_base": 0.025408759348645504,
+        "std": 0.18408740226446704,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": 0.14,
+        "rerank_gate": 0.1292527633313178
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:14:28.723900"
+    },
+    {
+      "theta": [
+        6.0,
+        5.0,
+        3.0,
+        0.1,
+        0.2676198392203028
+      ],
+      "objectives": [
+        3857.0,
+        5.455908387821734,
+        1.058123099157648
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 4,
+      "acq_value": 0.13583017562281408,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.09476769405594926,
+        "mean_base": 0.09476769405594926,
+        "std": 0.43806523917660894,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.13673099564166688
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:14:43.280156"
+    },
+    {
+      "theta": [
+        6.0,
+        5.0,
+        3.0,
+        0.1,
+        0.11902127901201608
+      ],
+      "objectives": [
+        4214.0,
+        4.137482008373474,
+        0.9503058886930899
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 4,
+      "acq_value": 0.13582999358258857,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.09476793617665669,
+        "mean_base": 0.09476793617665669,
+        "std": 0.43806503628068383,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.13673099564166688
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:14:46.797924"
+    },
+    {
+      "theta": [
+        2.0,
+        3.340305909935598,
+        2.0,
+        0.39999999949997944,
+        0.29999999949998607
+      ],
+      "objectives": [
+        6117.0,
+        3.10675144730962,
+        0.6060512439738871
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 5,
+      "acq_value": 0.14585177313178008,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.14172812725824757,
+        "mean_base": 0.14172812725824757,
+        "std": 0.5135944363143127,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.12823659700955867
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:15:02.755851"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.0,
+        0.4,
+        0.1
+      ],
+      "objectives": [
+        7200.0,
+        1.528630153847007,
+        0.6401409744252936
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 5,
+      "acq_value": 0.14367848674806175,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.12200858003729986,
+        "mean_base": 0.12200858003729986,
+        "std": 0.4874117108749254,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.12823659700955867
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:15:06.694547"
+    },
+    {
+      "theta": [
+        6.0,
+        2.0,
+        2.0765917456552185,
+        0.4,
+        0.1
+      ],
+      "objectives": [
+        4700.0,
+        6.869988837727863,
+        1.1235493525858435
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 6,
+      "acq_value": -1.9027351365974112,
+      "acq_type": "EI_llm_rerank",
+      "gp_pred": {
+        "mean_coupled": 0.4119605719680386,
+        "mean_base": 0.4119605719680386,
+        "std": 0.8116593486873381,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": 0.15,
+        "rerank_gate": 0.1166129299573861
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:15:23.148666"
+    },
+    {
+      "theta": [
+        2.0,
+        2.646880688599147,
+        2.0,
+        0.4,
+        0.1
+      ],
+      "objectives": [
+        6980.0,
+        1.8523025767381853,
+        0.6426267838850879
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 6,
+      "acq_value": -2.135247209002769,
+      "acq_type": "EI_llm_rerank",
+      "gp_pred": {
+        "mean_coupled": 0.02023336809962345,
+        "mean_base": 0.02023336809962345,
+        "std": 0.2853196542104857,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": 0.85,
+        "rerank_gate": 0.1166129299573861
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:15:27.584581"
+    },
+    {
+      "theta": [
+        3.1602279688370314,
+        2.0,
+        2.0000713948624065,
+        0.4,
+        0.1
+      ],
+      "objectives": [
+        5878.0,
+        2.993079979328144,
+        0.8215394398452983
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 7,
+      "acq_value": -2.5137444333296295,
+      "acq_type": "EI_llm_rerank",
+      "gp_pred": {
+        "mean_coupled": 0.20042831166686886,
+        "mean_base": 0.20042831166686886,
+        "std": 0.4150505856318492,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": 0.15,
+        "rerank_gate": 0.11260376808576662
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:15:45.520736"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.0,
+        0.4,
+        0.18252695441900055
+      ],
+      "objectives": [
+        7200.0,
+        1.5283764574070065,
+        0.6401396542808965
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 7,
+      "acq_value": -2.538710328576549,
+      "acq_type": "EI_llm_rerank",
+      "gp_pred": {
+        "mean_coupled": 0.006263695968746097,
+        "mean_base": 0.006263695968746097,
+        "std": 0.17778795717791288,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": 0.85,
+        "rerank_gate": 0.11260376808576662
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:15:49.698907"
+    },
+    {
+      "theta": [
+        2.0,
+        5.0,
+        2.219874652437851,
+        0.1,
+        0.3
+      ],
+      "objectives": [
+        5223.0,
+        4.910401304245113,
+        0.8334982591798431
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 8,
+      "acq_value": -2.2582523620289843,
+      "acq_type": "EI_llm_rerank",
+      "gp_pred": {
+        "mean_coupled": -0.04655239038718462,
+        "mean_base": -0.04655239038718462,
+        "std": 0.21306676217446746,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": 0.15,
+        "rerank_gate": 0.13506798494101505
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:16:12.058053"
+    },
+    {
+      "theta": [
+        2.0,
+        5.0,
+        2.1561724694809334,
+        0.1,
+        0.3
+      ],
+      "objectives": [
+        5319.0,
+        4.910401304245113,
+        0.8368188368747177
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 8,
+      "acq_value": -2.258253321588125,
+      "acq_type": "EI_llm_rerank",
+      "gp_pred": {
+        "mean_coupled": -0.046552268511568906,
+        "mean_base": -0.046552268511568906,
+        "std": 0.2130666662245752,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": 0.15,
+        "rerank_gate": 0.13506798494101505
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:16:15.756497"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.1556738838211147,
+        0.1,
+        0.1
+      ],
+      "objectives": [
+        6810.0,
+        1.752110207293538,
+        0.6362280800683315
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 9,
+      "acq_value": -1.340746268101248,
+      "acq_type": "EI_llm_rerank",
+      "gp_pred": {
+        "mean_coupled": -0.07666625304244867,
+        "mean_base": -0.07666625304244867,
+        "std": 0.4742117854037343,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": 0.85,
+        "rerank_gate": 0.14824234956623708
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:16:31.596869"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.0364797376577632,
+        0.1,
+        0.1
+      ],
+      "objectives": [
+        7103.0,
+        1.5801637947222844,
+        0.6392002216197884
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 9,
+      "acq_value": -1.3407503798769675,
+      "acq_type": "EI_llm_rerank",
+      "gp_pred": {
+        "mean_coupled": -0.07666676391268895,
+        "mean_base": -0.07666676391268895,
+        "std": 0.47420856727105964,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": 0.85,
+        "rerank_gate": 0.14824234956623708
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:16:35.969992"
+    },
+    {
+      "theta": [
+        2.0,
+        2.910113308895256,
+        3.0,
+        0.1,
+        0.3
+      ],
+      "objectives": [
+        5156.0,
+        3.129130301752531,
+        0.6592890714755021
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 10,
+      "acq_value": -1.7981948528496992,
+      "acq_type": "EI_llm_rerank",
+      "gp_pred": {
+        "mean_coupled": -0.1335918253047686,
+        "mean_base": -0.1335918253047686,
+        "std": 0.23833792498164408,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": 0.15,
+        "rerank_gate": 0.1349297810914706
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:17:12.094706"
+    },
+    {
+      "theta": [
+        2.0,
+        2.910110785143727,
+        3.0,
+        0.1,
+        0.3
+      ],
+      "objectives": [
+        5156.0,
+        3.1291293600044185,
+        0.6592884991523678
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 10,
+      "acq_value": -1.798194852850679,
+      "acq_type": "EI_llm_rerank",
+      "gp_pred": {
+        "mean_coupled": -0.13359188582687048,
+        "mean_base": -0.13359188582687048,
+        "std": 0.23833779413423725,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": 0.15,
+        "rerank_gate": 0.1349297810914706
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-21T18:17:16.134379"
+    }
+  ],
+  "pareto_indices": [
+    2,
+    3,
+    4,
+    5,
+    9,
+    11,
+    12,
+    13,
+    14,
+    19,
+    22,
+    23,
+    24
+  ],
+  "iteration_stats": [
+    {
+      "iteration": 1,
+      "n_total": 8,
+      "n_feasible": 8,
+      "pareto_size": 5,
+      "hypervolume": 0.5577758142235504,
+      "hypervolume_raw": 6.565032467491974,
+      "best_time_s": 4240.0,
+      "best_temp_K": 2.825814964248605,
+      "best_aging_pct": 0.7454733377328846,
+      "source_counts": {
+        "bo": 2
+      },
+      "t": 0,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 2,
+      "iter_time_s": 20.85,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": {
+        "active": true,
+        "applied": true,
+        "llm_called": true,
+        "tau_t": 0.09694447705246784,
+        "top_m": 12,
+        "gate": 0.3,
+        "gate_state": {
+          "g_value": 0.3,
+          "hv_gain_recent_mean": 0.0,
+          "violation_rate_recent": 0.0,
+          "llm_uncertainty_recent": 0.0,
+          "mode": "online"
+        },
+        "entropy_mean": 0.3381026355112142,
+        "score_mode": "log_ei_plus_gate",
+        "selected_indices_before": [
+          113,
+          110
+        ],
+        "selected_scores_before": [
+          0.21600054982385108,
+          0.2160005497161174
+        ],
+        "selected_indices_after": [
+          112,
+          110
+        ],
+        "selected_scores_after": [
+          -1.7124743328579761,
+          -1.7244743263145559
+        ],
+        "rows": [
+          {
+            "idx": 112,
+            "ei": 0.21600054830273502,
+            "q_good": 0.2,
+            "confidence": 0.78,
+            "entropy": 0.7219280948873623,
+            "centered_score": -0.6,
+            "rerank_score": -1.7124743328579761,
+            "rationale_short": "dSOC sum 0.4618 safe, I1<I2 violates monotone current guideline"
+          },
+          {
+            "idx": 110,
+            "ei": 0.2160005497161174,
+            "q_good": 0.18,
+            "confidence": 0.77,
+            "entropy": 0.6800770457282798,
+            "centered_score": -0.64,
+            "rerank_score": -1.7244743263145559,
+            "rationale_short": "dSOC sum 0.4105 safe, I1<I2 violates monotone current guideline"
+          },
+          {
+            "idx": 113,
+            "ei": 0.21600054982385108,
+            "q_good": 0.15,
+            "confidence": 0.75,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -1.74247432581579,
+            "rationale_short": "dSOC sum 0.4339 safe, but I1<I2 violates monotone current guideline"
+          },
+          {
+            "idx": 118,
+            "ei": 0.20964667784990543,
+            "q_good": 0.1,
+            "confidence": 0.72,
+            "entropy": 0.46899559358928117,
+            "centered_score": -0.8,
+            "rerank_score": -1.8023316516587902,
+            "rationale_short": "dSOC sum 0.5183 safe, I1<I2 violates monotone current guideline"
+          },
+          {
+            "idx": 76,
+            "ei": 0.21093598699858682,
+            "q_good": 0.05,
+            "confidence": 0.7,
+            "entropy": 0.2863969571159562,
+            "centered_score": -0.9,
+            "rerank_score": -1.8262005706837119,
+            "rationale_short": "dSOC sum 0.5214 safe, but I1<I2 and low I1 reduce monotone compliance"
+          },
+          {
+            "idx": 109,
+            "ei": 0.20964668018530833,
+            "q_good": 0.04,
+            "confidence": 0.68,
+            "entropy": 0.24229218908241482,
+            "centered_score": -0.92,
+            "rerank_score": -1.8383316405190817,
+            "rationale_short": "dSOC sum 0.5608 safe, but I1<I2 violates monotone current guideline"
+          },
+          {
+            "idx": 119,
+            "ei": 0.2096466796752373,
+            "q_good": 0.04,
+            "confidence": 0.68,
+            "entropy": 0.24229218908241482,
+            "centered_score": -0.92,
+            "rerank_score": -1.8383316429520848,
+            "rationale_short": "dSOC sum 0.5875 safe, but I1<I2 violates monotone current guideline"
+          },
+          {
+            "idx": 120,
+            "ei": 0.20964668214423543,
+            "q_good": 0.03,
+            "confidence": 0.67,
+            "entropy": 0.1943918578315762,
+            "centered_score": -0.94,
+            "rerank_score": -1.8443316311751365,
+            "rationale_short": "dSOC sum 0.5383 safe, but I1<I2 violates monotone current guideline"
+          },
+          {
+            "idx": 111,
+            "ei": 0.20964668101807202,
+            "q_good": 0.03,
+            "confidence": 0.67,
+            "entropy": 0.1943918578315762,
+            "centered_score": -0.94,
+            "rerank_score": -1.8443316365468572,
+            "rationale_short": "dSOC sum 0.5772 safe, but I1<I2 violates monotone current guideline"
+          },
+          {
+            "idx": 114,
+            "ei": 0.2096466783462585,
+            "q_good": 0.03,
+            "confidence": 0.67,
+            "entropy": 0.1943918578315762,
+            "centered_score": -0.94,
+            "rerank_score": -1.8443316492912207,
+            "rationale_short": "dSOC sum 0.6061 safe, but I1<I2 violates monotone current guideline"
+          },
+          {
+            "idx": 117,
+            "ei": 0.20964668316958374,
+            "q_good": 0.02,
+            "confidence": 0.66,
+            "entropy": 0.14144054254182067,
+            "centered_score": -0.96,
+            "rerank_score": -1.8503316262842968,
+            "rationale_short": "dSOC sum 0.5684 safe, but I1<I2 violates monotone current guideline"
+          },
+          {
+            "idx": 116,
+            "ei": 0.20964668532147224,
+            "q_good": 0.01,
+            "confidence": 0.65,
+            "entropy": 0.08079313589591118,
+            "centered_score": -0.98,
+            "rerank_score": -1.8563316160199395,
+            "rationale_short": "dSOC sum 0.6527 near hard limit, violates safety margin"
+          }
+        ]
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 2,
+      "n_total": 10,
+      "n_feasible": 10,
+      "pareto_size": 7,
+      "hypervolume": 0.5583195019531132,
+      "hypervolume_raw": 6.571431682921789,
+      "best_time_s": 4240.0,
+      "best_temp_K": 1.5285446907744984,
+      "best_aging_pct": 0.6379084867297191,
+      "source_counts": {
+        "bo": 2
+      },
+      "t": 1,
+      "w_vec": [
+        0.00980392156862745,
+        0.00980392156862745,
+        0.9803921568627451
+      ],
+      "n_new_evals": 2,
+      "iter_time_s": 22.99,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": {
+        "active": true,
+        "applied": false,
+        "llm_called": true,
+        "tau_t": 0.40887222421150166,
+        "top_m": 12,
+        "gate": 0.2022652634036469,
+        "gate_state": {
+          "g_value": 0.2022652634036469,
+          "hv_gain_recent_mean": 0.0,
+          "violation_rate_recent": 0.0,
+          "llm_uncertainty_recent": 0.3381026355112142,
+          "mode": "online"
+        },
+        "entropy_mean": 0.9553186694155044,
+        "selected_indices_before": [
+          110,
+          118
+        ],
+        "selected_indices_after": [
+          110,
+          118
+        ],
+        "fallback_reason": "high_entropy",
+        "rows": []
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 3,
+      "n_total": 12,
+      "n_feasible": 12,
+      "pareto_size": 8,
+      "hypervolume": 0.5616520986037428,
+      "hypervolume_raw": 6.610656412023559,
+      "best_time_s": 4240.0,
+      "best_temp_K": 1.5285446907744984,
+      "best_aging_pct": 0.6379084867297191,
+      "source_counts": {
+        "bo": 2
+      },
+      "t": 2,
+      "w_vec": [
+        0.00980392156862745,
+        0.9803921568627451,
+        0.00980392156862745
+      ],
+      "n_new_evals": 2,
+      "iter_time_s": 18.69,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": {
+        "active": true,
+        "applied": true,
+        "llm_called": true,
+        "tau_t": 0.2945554558020277,
+        "top_m": 12,
+        "gate": 0.1292527633313178,
+        "gate_state": {
+          "g_value": 0.1292527633313178,
+          "hv_gain_recent_mean": 0.0002174750918251138,
+          "violation_rate_recent": 0.0,
+          "llm_uncertainty_recent": 0.6467106524633593,
+          "mode": "online"
+        },
+        "entropy_mean": 0.40487183245936986,
+        "score_mode": "log_ei_plus_gate",
+        "selected_indices_before": [
+          114,
+          115
+        ],
+        "selected_scores_before": [
+          0.06613297434606581,
+          0.0661329552432976
+        ],
+        "selected_indices_after": [
+          114,
+          1
+        ],
+        "selected_scores_after": [
+          -2.8065647353659005,
+          -2.8091638434739905
+        ],
+        "rows": [
+          {
+            "idx": 114,
+            "ei": 0.06613297434606581,
+            "q_good": 0.15,
+            "confidence": 0.75,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -2.8065647353659005,
+            "rationale_short": "violates dSOC sum hard limit, non-monotone current profile"
+          },
+          {
+            "idx": 1,
+            "ei": 0.06613204499639182,
+            "q_good": 0.14,
+            "confidence": 0.75,
+            "entropy": 0.584238811642856,
+            "centered_score": -0.72,
+            "rerank_score": -2.8091638434739905,
+            "rationale_short": "near recommended dSOC sum safety margin, slight monotone violation"
+          },
+          {
+            "idx": 110,
+            "ei": 0.06613285035565397,
+            "q_good": 0.12,
+            "confidence": 0.74,
+            "entropy": 0.5293608652873644,
+            "centered_score": -0.76,
+            "rerank_score": -2.814321776032732,
+            "rationale_short": "exceeds recommended dSOC sum safety margin, slight monotone violation"
+          },
+          {
+            "idx": 115,
+            "ei": 0.0661329552432976,
+            "q_good": 0.1,
+            "confidence": 0.75,
+            "entropy": 0.46899559358928117,
+            "centered_score": -0.8,
+            "rerank_score": -2.819490300552984,
+            "rationale_short": "exceeds recommended dSOC sum safety margin, non-monotone current profile"
+          },
+          {
+            "idx": 116,
+            "ei": 0.06613272403847877,
+            "q_good": 0.1,
+            "confidence": 0.73,
+            "entropy": 0.46899559358928117,
+            "centered_score": -0.8,
+            "rerank_score": -2.81949379661969,
+            "rationale_short": "exceeds recommended dSOC sum safety margin, slight monotone violation"
+          },
+          {
+            "idx": 117,
+            "ei": 0.0661325881844238,
+            "q_good": 0.08,
+            "confidence": 0.72,
+            "entropy": 0.4021791902022729,
+            "centered_score": -0.84,
+            "rerank_score": -2.824665961418761,
+            "rationale_short": "exceeds recommended dSOC sum safety margin, slight monotone violation"
+          },
+          {
+            "idx": 119,
+            "ei": 0.06613295281719779,
+            "q_good": 0.07,
+            "confidence": 0.72,
+            "entropy": 0.36592365090022333,
+            "centered_score": -0.86,
+            "rerank_score": -2.8272455030380503,
+            "rationale_short": "exceeds recommended dSOC sum safety margin, non-monotone current profile"
+          },
+          {
+            "idx": 120,
+            "ei": 0.06613237581618471,
+            "q_good": 0.06,
+            "confidence": 0.7,
+            "entropy": 0.3274449191544763,
+            "centered_score": -0.88,
+            "rerank_score": -2.829839283206645,
+            "rationale_short": "exceeds recommended dSOC sum safety margin, slight monotone violation"
+          },
+          {
+            "idx": 111,
+            "ei": 0.06613295291622985,
+            "q_good": 0.05,
+            "confidence": 0.7,
+            "entropy": 0.2863969571159562,
+            "centered_score": -0.9,
+            "rerank_score": -2.8324156120738335,
+            "rationale_short": "exceeds dSOC sum hard limit, non-monotone current profile"
+          },
+          {
+            "idx": 109,
+            "ei": 0.06613295288667795,
+            "q_good": 0.05,
+            "confidence": 0.7,
+            "entropy": 0.2863969571159562,
+            "centered_score": -0.9,
+            "rerank_score": -2.8324156125206894,
+            "rationale_short": "exceeds dSOC sum hard limit, non-monotone current profile"
+          },
+          {
+            "idx": 112,
+            "ei": 0.06613295281323847,
+            "q_good": 0.05,
+            "confidence": 0.7,
+            "entropy": 0.2863969571159562,
+            "centered_score": -0.9,
+            "rerank_score": -2.832415613631172,
+            "rationale_short": "exceeds dSOC sum hard limit, non-monotone current profile"
+          },
+          {
+            "idx": 113,
+            "ei": 0.0661322391550901,
+            "q_good": 0.04,
+            "confidence": 0.68,
+            "entropy": 0.24229218908241482,
+            "centered_score": -0.92,
+            "rerank_score": -2.835011460219956,
+            "rationale_short": "exceeds recommended dSOC sum safety margin, monotone violation"
+          }
+        ]
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 4,
+      "n_total": 14,
+      "n_feasible": 14,
+      "pareto_size": 9,
+      "hypervolume": 0.6464384657977216,
+      "hypervolume_raw": 7.608593646365668,
+      "best_time_s": 3857.0,
+      "best_temp_K": 1.5285446907744984,
+      "best_aging_pct": 0.6379084867297191,
+      "source_counts": {
+        "bo": 2
+      },
+      "t": 3,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 2,
+      "iter_time_s": 18.07,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": {
+        "active": true,
+        "applied": false,
+        "llm_called": true,
+        "tau_t": 0.046545239153831255,
+        "top_m": 12,
+        "gate": 0.13673099564166688,
+        "gate_state": {
+          "g_value": 0.13673099564166688,
+          "hv_gain_recent_mean": 0.0007752568760384654,
+          "violation_rate_recent": 0.0,
+          "llm_uncertainty_recent": 0.6116967278521925,
+          "mode": "online"
+        },
+        "entropy_mean": 0.8048280462381375,
+        "selected_indices_before": [
+          117,
+          112
+        ],
+        "selected_indices_after": [
+          117,
+          112
+        ],
+        "fallback_reason": "high_entropy",
+        "rows": []
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 5,
+      "n_total": 16,
+      "n_feasible": 16,
+      "pareto_size": 10,
+      "hypervolume": 0.6649420092692426,
+      "hypervolume_raw": 7.826380722385242,
+      "best_time_s": 3857.0,
+      "best_temp_K": 1.5285446907744984,
+      "best_aging_pct": 0.6060512439738871,
+      "source_counts": {
+        "bo": 2
+      },
+      "t": 4,
+      "w_vec": [
+        0.00980392156862745,
+        0.9803921568627451,
+        0.00980392156862745
+      ],
+      "n_new_evals": 2,
+      "iter_time_s": 19.9,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": {
+        "active": true,
+        "applied": false,
+        "llm_called": true,
+        "tau_t": 0.17508526625261936,
+        "top_m": 12,
+        "gate": 0.12823659700955867,
+        "gate_state": {
+          "g_value": 0.12823659700955867,
+          "hv_gain_recent_mean": 0.01182168687655616,
+          "violation_rate_recent": 0.0,
+          "llm_uncertainty_recent": 0.6749436853621038,
+          "mode": "online"
+        },
+        "entropy_mean": 0.8237660858348922,
+        "selected_indices_before": [
+          109,
+          111
+        ],
+        "selected_indices_after": [
+          109,
+          111
+        ],
+        "fallback_reason": "high_entropy",
+        "rows": []
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 6,
+      "n_total": 18,
+      "n_feasible": 18,
+      "pareto_size": 11,
+      "hypervolume": 0.6652960303588552,
+      "hypervolume_raw": 7.830547557676798,
+      "best_time_s": 3857.0,
+      "best_temp_K": 1.5285446907744984,
+      "best_aging_pct": 0.6060512439738871,
+      "source_counts": {
+        "bo": 2
+      },
+      "t": 5,
+      "w_vec": [
+        0.00980392156862745,
+        0.9803921568627451,
+        0.00980392156862745
+      ],
+      "n_new_evals": 2,
+      "iter_time_s": 20.89,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": {
+        "active": true,
+        "applied": true,
+        "llm_called": true,
+        "tau_t": 0.17448498815171362,
+        "top_m": 12,
+        "gate": 0.1166129299573861,
+        "gate_state": {
+          "g_value": 0.1166129299573861,
+          "hv_gain_recent_mean": 0.010716619504569216,
+          "violation_rate_recent": 0.0,
+          "llm_uncertainty_recent": 0.7324120193210858,
+          "mode": "online"
+        },
+        "entropy_mean": 0.6483307658418985,
+        "score_mode": "log_ei_plus_gate",
+        "selected_indices_before": [
+          117,
+          46
+        ],
+        "selected_scores_before": [
+          0.16184663565520818,
+          0.11811875627951755
+        ],
+        "selected_indices_after": [
+          117,
+          110
+        ],
+        "selected_scores_after": [
+          -1.9027351365974112,
+          -2.135247209002769
+        ],
+        "rows": [
+          {
+            "idx": 117,
+            "ei": 0.16184663565520818,
+            "q_good": 0.15,
+            "confidence": 0.7,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -1.9027351365974112,
+            "rationale_short": "violates dSOC sum hard limit; non-monotone current profile; high mu_fw"
+          },
+          {
+            "idx": 110,
+            "ei": 0.10894890588703683,
+            "q_good": 0.85,
+            "confidence": 0.9,
+            "entropy": 0.6098403047164005,
+            "centered_score": 0.7,
+            "rerank_score": -2.135247209002769,
+            "rationale_short": "within dSOC safety margin; monotone current profile; low mu_fw and sigma_fw"
+          },
+          {
+            "idx": 119,
+            "ei": 0.10894890588585535,
+            "q_good": 0.85,
+            "confidence": 0.9,
+            "entropy": 0.6098403047164005,
+            "centered_score": 0.7,
+            "rerank_score": -2.135247209013613,
+            "rationale_short": "within dSOC safety margin; monotone current profile; low mu_fw and sigma_fw"
+          },
+          {
+            "idx": 109,
+            "ei": 0.10894890588581597,
+            "q_good": 0.85,
+            "confidence": 0.9,
+            "entropy": 0.6098403047164005,
+            "centered_score": 0.7,
+            "rerank_score": -2.1352472090139747,
+            "rationale_short": "within dSOC safety margin; monotone current profile; low mu_fw and sigma_fw"
+          },
+          {
+            "idx": 118,
+            "ei": 0.10894890588247097,
+            "q_good": 0.85,
+            "confidence": 0.9,
+            "entropy": 0.6098403047164005,
+            "centered_score": 0.7,
+            "rerank_score": -2.1352472090446772,
+            "rationale_short": "within dSOC safety margin; monotone current profile; low mu_fw and sigma_fw"
+          },
+          {
+            "idx": 111,
+            "ei": 0.10894890585826633,
+            "q_good": 0.85,
+            "confidence": 0.9,
+            "entropy": 0.6098403047164005,
+            "centered_score": 0.7,
+            "rerank_score": -2.135247209266842,
+            "rationale_short": "within dSOC safety margin; monotone current profile; low mu_fw and sigma_fw"
+          },
+          {
+            "idx": 112,
+            "ei": 0.10894890580559086,
+            "q_good": 0.85,
+            "confidence": 0.9,
+            "entropy": 0.6098403047164005,
+            "centered_score": 0.7,
+            "rerank_score": -2.13524720975033,
+            "rationale_short": "within dSOC safety margin; monotone current profile; low mu_fw and sigma_fw"
+          },
+          {
+            "idx": 115,
+            "ei": 0.10894881149797886,
+            "q_good": 0.84,
+            "confidence": 0.89,
+            "entropy": 0.6343095546405662,
+            "centered_score": 0.6799999999999999,
+            "rerank_score": -2.137580333963062,
+            "rationale_short": "within dSOC safety margin; monotone current profile; low mu_fw and sigma_fw"
+          },
+          {
+            "idx": 114,
+            "ei": 0.10894878571826462,
+            "q_good": 0.83,
+            "confidence": 0.89,
+            "entropy": 0.6577047787442196,
+            "centered_score": 0.6599999999999999,
+            "rerank_score": -2.1399128291844995,
+            "rationale_short": "within dSOC safety margin; monotone current profile; low mu_fw and sigma_fw"
+          },
+          {
+            "idx": 113,
+            "ei": 0.1089487705034783,
+            "q_good": 0.83,
+            "confidence": 0.89,
+            "entropy": 0.6577047787442196,
+            "centered_score": 0.6599999999999999,
+            "rerank_score": -2.1399129688353207,
+            "rationale_short": "within dSOC safety margin; monotone current profile; low mu_fw and sigma_fw"
+          },
+          {
+            "idx": 116,
+            "ei": 0.10894860294353959,
+            "q_good": 0.82,
+            "confidence": 0.88,
+            "entropy": 0.68007704572828,
+            "centered_score": 0.6399999999999999,
+            "rerank_score": -2.142246765405634,
+            "rationale_short": "within dSOC safety margin; monotone current profile; low mu_fw and sigma_fw"
+          },
+          {
+            "idx": 46,
+            "ei": 0.11811875627951755,
+            "q_good": 0.3,
+            "confidence": 0.75,
+            "entropy": 0.8812908992306927,
+            "centered_score": -0.4,
+            "rerank_score": -2.1827099234326663,
+            "rationale_short": "within dSOC safety margin; non-monotone current profile; moderate mu_fw"
+          }
+        ]
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 7,
+      "n_total": 20,
+      "n_feasible": 20,
+      "pareto_size": 11,
+      "hypervolume": 0.6652960303588552,
+      "hypervolume_raw": 7.830547557676798,
+      "best_time_s": 3857.0,
+      "best_temp_K": 1.5283764574070065,
+      "best_aging_pct": 0.6060512439738871,
+      "source_counts": {
+        "bo": 2
+      },
+      "t": 6,
+      "w_vec": [
+        0.00980392156862745,
+        0.9803921568627451,
+        0.00980392156862745
+      ],
+      "n_new_evals": 2,
+      "iter_time_s": 22.11,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": {
+        "active": true,
+        "applied": true,
+        "llm_called": true,
+        "tau_t": 0.08911470393461608,
+        "top_m": 12,
+        "gate": 0.11260376808576662,
+        "gate_state": {
+          "g_value": 0.11260376808576662,
+          "hv_gain_recent_mean": 0.008601617290824377,
+          "violation_rate_recent": 0.0,
+          "llm_uncertainty_recent": 0.7498043499183438,
+          "mode": "online"
+        },
+        "entropy_mean": 0.5277179862156223,
+        "score_mode": "log_ei_plus_gate",
+        "selected_indices_before": [
+          116,
+          109
+        ],
+        "selected_scores_before": [
+          0.08760459783808794,
+          0.07298269167782108
+        ],
+        "selected_indices_after": [
+          116,
+          109
+        ],
+        "selected_scores_after": [
+          -2.5137444333296295,
+          -2.538710328576549
+        ],
+        "rows": [
+          {
+            "idx": 116,
+            "ei": 0.08760459783808794,
+            "q_good": 0.15,
+            "confidence": 0.7,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -2.5137444333296295,
+            "rationale_short": "violates dSOC sum limit (0.5), non-monotone current I1<I2"
+          },
+          {
+            "idx": 109,
+            "ei": 0.07298269167782108,
+            "q_good": 0.85,
+            "confidence": 0.9,
+            "entropy": 0.6098403047164005,
+            "centered_score": 0.7,
+            "rerank_score": -2.538710328576549,
+            "rationale_short": "meets safety margin, monotone current, low mu_fw well below tau_t"
+          },
+          {
+            "idx": 110,
+            "ei": 0.07298096140097357,
+            "q_good": 0.83,
+            "confidence": 0.89,
+            "entropy": 0.6577047787442196,
+            "centered_score": 0.6599999999999999,
+            "rerank_score": -2.5432381876247723,
+            "rationale_short": "meets safety margin, monotone current, low mu_fw"
+          },
+          {
+            "idx": 113,
+            "ei": 0.07298253060364335,
+            "q_good": 0.8,
+            "confidence": 0.88,
+            "entropy": 0.7219280948873623,
+            "centered_score": 0.6000000000000001,
+            "rerank_score": -2.549972912406431,
+            "rationale_short": "meets safety margin, slight non-monotone I3>I2 but close, low mu_fw"
+          },
+          {
+            "idx": 112,
+            "ei": 0.07298228801676591,
+            "q_good": 0.78,
+            "confidence": 0.86,
+            "entropy": 0.7601675029619656,
+            "centered_score": 0.56,
+            "rerank_score": -2.554480387038729,
+            "rationale_short": "meets safety margin, monotone current, low mu_fw"
+          },
+          {
+            "idx": 111,
+            "ei": 0.07298244756050026,
+            "q_good": 0.75,
+            "confidence": 0.85,
+            "entropy": 0.8112781244591328,
+            "centered_score": 0.5,
+            "rerank_score": -2.561234427065253,
+            "rationale_short": "meets safety margin, non-monotone current I3>I2, low mu_fw"
+          },
+          {
+            "idx": 19,
+            "ei": 0.056743387067592035,
+            "q_good": 0.1,
+            "confidence": 0.65,
+            "entropy": 0.46899559358928117,
+            "centered_score": -0.8,
+            "rerank_score": -2.959299171304777,
+            "rationale_short": "violates safety margin (dSOC sum=0.5291), non-monotone current I1<I2<I3"
+          },
+          {
+            "idx": 59,
+            "ei": 0.04619102060224306,
+            "q_good": 0.05,
+            "confidence": 0.6,
+            "entropy": 0.2863969571159562,
+            "centered_score": -0.9,
+            "rerank_score": -3.1763132502990015,
+            "rationale_short": "violates safety margin (dSOC sum=0.2791), non-monotone current I1<I2<I3"
+          },
+          {
+            "idx": 114,
+            "ei": 0.04536153593710495,
+            "q_good": 0.02,
+            "confidence": 0.55,
+            "entropy": 0.14144054254182067,
+            "centered_score": -0.96,
+            "rerank_score": -3.2011903764289165,
+            "rationale_short": "violates hard dSOC limit (0.7), non-monotone current"
+          },
+          {
+            "idx": 115,
+            "ei": 0.04536138576830098,
+            "q_good": 0.02,
+            "confidence": 0.55,
+            "entropy": 0.14144054254182067,
+            "centered_score": -0.96,
+            "rerank_score": -3.2011936869220343,
+            "rationale_short": "violates hard dSOC limit (0.698), non-monotone current"
+          },
+          {
+            "idx": 86,
+            "ei": 0.044061867853541214,
+            "q_good": 0.04,
+            "confidence": 0.6,
+            "entropy": 0.24229218908241482,
+            "centered_score": -0.92,
+            "rerank_score": -3.225756011715071,
+            "rationale_short": "violates safety margin (dSOC sum=0.3895), non-monotone current"
+          },
+          {
+            "idx": 13,
+            "ei": 0.03692154050573014,
+            "q_good": 0.3,
+            "confidence": 0.75,
+            "entropy": 0.8812908992306927,
+            "centered_score": -0.4,
+            "rerank_score": -3.3440016519178757,
+            "rationale_short": "meets safety margin, but non-monotone current I1<I2<I3, moderate mu_fw"
+          }
+        ]
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 8,
+      "n_total": 22,
+      "n_feasible": 22,
+      "pareto_size": 12,
+      "hypervolume": 0.6663977748693329,
+      "hypervolume_raw": 7.843515112557672,
+      "best_time_s": 3857.0,
+      "best_temp_K": 1.5283764574070065,
+      "best_aging_pct": 0.6060512439738871,
+      "source_counts": {
+        "bo": 2
+      },
+      "t": 7,
+      "w_vec": [
+        0.00980392156862745,
+        0.00980392156862745,
+        0.9803921568627451
+      ],
+      "n_new_evals": 2,
+      "iter_time_s": 26.06,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": {
+        "active": true,
+        "applied": true,
+        "llm_called": true,
+        "tau_t": 0.09174987942915663,
+        "top_m": 12,
+        "gate": 0.13506798494101505,
+        "gate_state": {
+          "g_value": 0.13506798494101505,
+          "hv_gain_recent_mean": 0.008558122272459355,
+          "violation_rate_recent": 0.0,
+          "llm_uncertainty_recent": 0.6351727179899868,
+          "mode": "online"
+        },
+        "entropy_mean": 0.5828866924163635,
+        "score_mode": "log_ei_plus_gate",
+        "selected_indices_before": [
+          114,
+          113
+        ],
+        "selected_scores_before": [
+          0.11489865815375228,
+          0.11489854790174747
+        ],
+        "selected_indices_after": [
+          114,
+          113
+        ],
+        "selected_scores_after": [
+          -2.2582523620289843,
+          -2.258253321588125
+        ],
+        "rows": [
+          {
+            "idx": 114,
+            "ei": 0.11489865815375228,
+            "q_good": 0.15,
+            "confidence": 0.7,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -2.2582523620289843,
+            "rationale_short": "violates current monotonicity (I1<I2), dSOC sum at 0.4 safe margin met, moderate EI"
+          },
+          {
+            "idx": 113,
+            "ei": 0.11489854790174747,
+            "q_good": 0.15,
+            "confidence": 0.7,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -2.258253321588125,
+            "rationale_short": "same as candidate 114, slightly different I3, monotonicity violated"
+          },
+          {
+            "idx": 115,
+            "ei": 0.11489848963584484,
+            "q_good": 0.15,
+            "confidence": 0.7,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -2.2582538286956426,
+            "rationale_short": "same as candidate 114, monotonicity violated, safe dSOC sum"
+          },
+          {
+            "idx": 117,
+            "ei": 0.11489841206145007,
+            "q_good": 0.15,
+            "confidence": 0.7,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -2.2582545038517843,
+            "rationale_short": "same as candidate 114, monotonicity violated, safe dSOC sum"
+          },
+          {
+            "idx": 116,
+            "ei": 0.11489838305382238,
+            "q_good": 0.15,
+            "confidence": 0.7,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -2.2582547563150763,
+            "rationale_short": "same as candidate 114, monotonicity violated, safe dSOC sum"
+          },
+          {
+            "idx": 119,
+            "ei": 0.11489834299713099,
+            "q_good": 0.15,
+            "confidence": 0.7,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -2.258255104942249,
+            "rationale_short": "I1=I2=2.0 < I3=2.0 violates monotonicity, dSOC sum safe"
+          },
+          {
+            "idx": 118,
+            "ei": 0.11489834298589725,
+            "q_good": 0.15,
+            "confidence": 0.7,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -2.25825510504002,
+            "rationale_short": "same as candidate 119, monotonicity violated, safe dSOC sum"
+          },
+          {
+            "idx": 109,
+            "ei": 0.11489834298466053,
+            "q_good": 0.15,
+            "confidence": 0.7,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -2.2582551050507833,
+            "rationale_short": "same as candidate 119, monotonicity violated, safe dSOC sum"
+          },
+          {
+            "idx": 111,
+            "ei": 0.11489834296856746,
+            "q_good": 0.15,
+            "confidence": 0.7,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -2.258255105190847,
+            "rationale_short": "same as candidate 119, monotonicity violated, safe dSOC sum"
+          },
+          {
+            "idx": 110,
+            "ei": 0.11489834295885383,
+            "q_good": 0.15,
+            "confidence": 0.7,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -2.258255105275388,
+            "rationale_short": "same as candidate 119, monotonicity violated, safe dSOC sum"
+          },
+          {
+            "idx": 112,
+            "ei": 0.1148983429565886,
+            "q_good": 0.15,
+            "confidence": 0.7,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -2.258255105295103,
+            "rationale_short": "same as candidate 119, monotonicity violated, safe dSOC sum"
+          },
+          {
+            "idx": 77,
+            "ei": 0.04759106309033233,
+            "q_good": 0.05,
+            "confidence": 0.6,
+            "entropy": 0.2863969571159562,
+            "centered_score": -0.9,
+            "rerank_score": -3.1666714720010423,
+            "rationale_short": "dSOC sum near 0.325 safe margin but I1<I2<I3 monotonicity violated, higher mu_fw (worse), lower EI"
+          }
+        ]
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 9,
+      "n_total": 24,
+      "n_feasible": 24,
+      "pareto_size": 13,
+      "hypervolume": 0.6669567168581525,
+      "hypervolume_raw": 7.850093870923438,
+      "best_time_s": 3857.0,
+      "best_temp_K": 1.5283764574070065,
+      "best_aging_pct": 0.6060512439738871,
+      "source_counts": {
+        "bo": 2
+      },
+      "t": 8,
+      "w_vec": [
+        0.00980392156862745,
+        0.9803921568627451,
+        0.00980392156862745
+      ],
+      "n_new_evals": 2,
+      "iter_time_s": 20.21,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": {
+        "active": true,
+        "applied": true,
+        "llm_called": true,
+        "tau_t": 0.07604114787799707,
+        "top_m": 12,
+        "gate": 0.14824234956623708,
+        "gate_state": {
+          "g_value": 0.14824234956623708,
+          "hv_gain_recent_mean": 0.008379654101247214,
+          "violation_rate_recent": 0.0,
+          "llm_uncertainty_recent": 0.5739080246211741,
+          "mode": "online"
+        },
+        "entropy_mean": 0.7082539893208649,
+        "score_mode": "log_ei_plus_gate",
+        "selected_indices_before": [
+          115,
+          118
+        ],
+        "selected_scores_before": [
+          0.23586022584041194,
+          0.23585925603805596
+        ],
+        "selected_indices_after": [
+          115,
+          118
+        ],
+        "selected_scores_after": [
+          -1.340746268101248,
+          -1.3407503798769675
+        ],
+        "rows": [
+          {
+            "idx": 115,
+            "ei": 0.23586022584041194,
+            "q_good": 0.85,
+            "confidence": 0.9,
+            "entropy": 0.6098403047164005,
+            "centered_score": 0.7,
+            "rerank_score": -1.340746268101248,
+            "rationale_short": "lowest mu_fw, safe dSOC sum, monotone current profile"
+          },
+          {
+            "idx": 118,
+            "ei": 0.23585925603805596,
+            "q_good": 0.85,
+            "confidence": 0.9,
+            "entropy": 0.6098403047164005,
+            "centered_score": 0.7,
+            "rerank_score": -1.3407503798769675,
+            "rationale_short": "lowest mu_fw, safe dSOC sum, monotone current profile"
+          },
+          {
+            "idx": 116,
+            "ei": 0.23585901547992782,
+            "q_good": 0.85,
+            "confidence": 0.9,
+            "entropy": 0.6098403047164005,
+            "centered_score": 0.7,
+            "rerank_score": -1.3407513997998437,
+            "rationale_short": "lowest mu_fw, safe dSOC sum, monotone current profile"
+          },
+          {
+            "idx": 112,
+            "ei": 0.23585901536846127,
+            "q_good": 0.85,
+            "confidence": 0.9,
+            "entropy": 0.6098403047164005,
+            "centered_score": 0.7,
+            "rerank_score": -1.340751400272442,
+            "rationale_short": "lowest mu_fw, safe dSOC sum, monotone current profile"
+          },
+          {
+            "idx": 117,
+            "ei": 0.23585901535870538,
+            "q_good": 0.85,
+            "confidence": 0.9,
+            "entropy": 0.6098403047164005,
+            "centered_score": 0.7,
+            "rerank_score": -1.3407514003138052,
+            "rationale_short": "lowest mu_fw, safe dSOC sum, monotone current profile"
+          },
+          {
+            "idx": 114,
+            "ei": 0.23585901522928587,
+            "q_good": 0.85,
+            "confidence": 0.9,
+            "entropy": 0.6098403047164005,
+            "centered_score": 0.7,
+            "rerank_score": -1.3407514008625208,
+            "rationale_short": "lowest mu_fw, safe dSOC sum, monotone current profile"
+          },
+          {
+            "idx": 109,
+            "ei": 0.23585901521207933,
+            "q_good": 0.85,
+            "confidence": 0.9,
+            "entropy": 0.6098403047164005,
+            "centered_score": 0.7,
+            "rerank_score": -1.3407514009354735,
+            "rationale_short": "lowest mu_fw, safe dSOC sum, monotone current profile"
+          },
+          {
+            "idx": 88,
+            "ei": 0.12378549872243524,
+            "q_good": 0.4,
+            "confidence": 0.75,
+            "entropy": 0.9709505944546688,
+            "centered_score": -0.19999999999999996,
+            "rerank_score": -2.118853530211387,
+            "rationale_short": "positive mu_fw, dSOC sum near safety margin, current profile I1>I2>I3 violated"
+          },
+          {
+            "idx": 104,
+            "ei": 0.12511195813755538,
+            "q_good": 0.3,
+            "confidence": 0.7,
+            "entropy": 0.8812908992306927,
+            "centered_score": -0.4,
+            "rerank_score": -2.137843217266536,
+            "rationale_short": "positive mu_fw, dSOC sum near safety margin, monotone current profile"
+          },
+          {
+            "idx": 45,
+            "ei": 0.08653682203272049,
+            "q_good": 0.35,
+            "confidence": 0.7,
+            "entropy": 0.9340680553754911,
+            "centered_score": -0.30000000000000004,
+            "rerank_score": -2.491657972242609,
+            "rationale_short": "positive mu_fw, dSOC sum near safety margin, current profile I1>I2>I3 violated"
+          },
+          {
+            "idx": 16,
+            "ei": 0.04438989966927294,
+            "q_good": 0.2,
+            "confidence": 0.65,
+            "entropy": 0.7219280948873623,
+            "centered_score": -0.6,
+            "rerank_score": -3.2036887300660783,
+            "rationale_short": "higher mu_fw, dSOC sum near safety margin, current profile I1>I2>I3 violated"
+          },
+          {
+            "idx": 25,
+            "ei": 0.042939699243257884,
+            "q_good": 0.2,
+            "confidence": 0.65,
+            "entropy": 0.7219280948873623,
+            "centered_score": -0.6,
+            "rerank_score": -3.23690390038851,
+            "rationale_short": "higher mu_fw, dSOC sum near safety margin, current profile I1>I2>I3 violated"
+          }
+        ]
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 10,
+      "n_total": 26,
+      "n_feasible": 26,
+      "pareto_size": 13,
+      "hypervolume": 0.6854854816166731,
+      "hypervolume_raw": 8.068177801994455,
+      "best_time_s": 3857.0,
+      "best_temp_K": 1.5283764574070065,
+      "best_aging_pct": 0.6060512439738871,
+      "source_counts": {
+        "bo": 2
+      },
+      "t": 9,
+      "w_vec": [
+        0.00980392156862745,
+        0.00980392156862745,
+        0.9803921568627451
+      ],
+      "n_new_evals": 2,
+      "iter_time_s": 40.16,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": {
+        "active": true,
+        "applied": true,
+        "llm_called": true,
+        "tau_t": 0.0917474350458516,
+        "top_m": 12,
+        "gate": 0.1349297810914706,
+        "gate_state": {
+          "g_value": 0.1349297810914706,
+          "hv_gain_recent_mean": 0.0016414600848344712,
+          "violation_rate_recent": 0.0,
+          "llm_uncertainty_recent": 0.6219998699380158,
+          "mode": "online"
+        },
+        "entropy_mean": 0.6417514838223511,
+        "score_mode": "log_ei_plus_gate",
+        "selected_indices_before": [
+          118,
+          112
+        ],
+        "selected_scores_before": [
+          0.18200083462009403,
+          0.18200083461991567
+        ],
+        "selected_indices_after": [
+          118,
+          112
+        ],
+        "selected_scores_after": [
+          -1.7981948528496992,
+          -1.798194852850679
+        ],
+        "rows": [
+          {
+            "idx": 118,
+            "ei": 0.18200083462009403,
+            "q_good": 0.15,
+            "confidence": 0.75,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -1.7981948528496992,
+            "rationale_short": "violates monotone current guideline, dSOC sum at 0.4 below safety margin but low I1"
+          },
+          {
+            "idx": 112,
+            "ei": 0.18200083461991567,
+            "q_good": 0.15,
+            "confidence": 0.75,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -1.798194852850679,
+            "rationale_short": "same as candidate 118, identical parameters"
+          },
+          {
+            "idx": 116,
+            "ei": 0.18200083461826955,
+            "q_good": 0.15,
+            "confidence": 0.75,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -1.7981948528597236,
+            "rationale_short": "same as candidate 118, identical parameters"
+          },
+          {
+            "idx": 111,
+            "ei": 0.18200083461327304,
+            "q_good": 0.15,
+            "confidence": 0.75,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -1.7981948528871767,
+            "rationale_short": "same as candidate 118, identical parameters"
+          },
+          {
+            "idx": 117,
+            "ei": 0.1820008346116856,
+            "q_good": 0.15,
+            "confidence": 0.75,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -1.798194852895899,
+            "rationale_short": "same as candidate 118, identical parameters"
+          },
+          {
+            "idx": 114,
+            "ei": 0.18200083457955657,
+            "q_good": 0.15,
+            "confidence": 0.75,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -1.7981948530724314,
+            "rationale_short": "same as candidate 118, identical parameters"
+          },
+          {
+            "idx": 113,
+            "ei": 0.18200083457723748,
+            "q_good": 0.15,
+            "confidence": 0.75,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -1.7981948530851735,
+            "rationale_short": "same as candidate 118, identical parameters"
+          },
+          {
+            "idx": 119,
+            "ei": 0.18200083456408406,
+            "q_good": 0.15,
+            "confidence": 0.75,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -1.7981948531574448,
+            "rationale_short": "same as candidate 118, identical parameters"
+          },
+          {
+            "idx": 110,
+            "ei": 0.1820008345381947,
+            "q_good": 0.15,
+            "confidence": 0.75,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -1.7981948532996932,
+            "rationale_short": "same as candidate 118, identical parameters"
+          },
+          {
+            "idx": 109,
+            "ei": 0.182000834408131,
+            "q_good": 0.15,
+            "confidence": 0.75,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -1.7981948540143258,
+            "rationale_short": "same as candidate 118, identical parameters"
+          },
+          {
+            "idx": 115,
+            "ei": 0.18200083436961068,
+            "q_good": 0.15,
+            "confidence": 0.75,
+            "entropy": 0.6098403047164005,
+            "centered_score": -0.7,
+            "rerank_score": -1.798194854225975,
+            "rationale_short": "same as candidate 118, identical parameters"
+          },
+          {
+            "idx": 93,
+            "ei": 0.09243732129478556,
+            "q_good": 0.45,
+            "confidence": 0.8,
+            "entropy": 0.9927744539878083,
+            "centered_score": -0.09999999999999998,
+            "rerank_score": -2.394717449865833,
+            "rationale_short": "better monotone current profile, dSOC sum near 0.5471 well below safety margin, moderate EI and mu_fw"
+          }
+        ]
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    }
+  ],
+  "improvement_window": [
+    true,
+    true
+  ],
+  "saved_at": "2026-04-21T18:17:16.143753"
+}

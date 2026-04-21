@@ -823,6 +823,7 @@ class LLMInterface:
             soc_start=self._soc_start,
             soc_end=self._soc_end,
             dsoc_sum_max=self._dsoc_sum_max,
+            safe_dsoc_sum_max=self._safe_dsoc_sum_max,
             few_shot_examples=None,
         )
 

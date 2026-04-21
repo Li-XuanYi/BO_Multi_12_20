@@ -39,6 +39,15 @@ class BatteryPromptMetadata:
     expert_knowledge: Tuple[str, ...]
 
 
+@dataclass(frozen=True)
+class PromptProtocolExample:
+    label: str
+    bucket: str
+    theta: Tuple[float, float, float, float, float]
+    note: str
+    objectives: Optional[Tuple[float, float, float]] = None
+
+
 BATTERY_METADATA_REGISTRY: Dict[str, BatteryPromptMetadata] = {
     "Chen2020": BatteryPromptMetadata(
         param_set="Chen2020",
@@ -51,6 +60,69 @@ BATTERY_METADATA_REGISTRY: Dict[str, BatteryPromptMetadata] = {
             "A larger dSOC1 keeps the cell at high current for longer, which is usually fast but thermally aggressive.",
             "Lower I3 and a meaningful final-stage SOC window help protect the cell in the high-SOC region.",
             "Balanced protocols usually combine a strong first stage with progressively safer later stages instead of using uniformly high current.",
+        ),
+    ),
+}
+
+DEFAULT_TRADEOFF_BUCKETS: Tuple[Tuple[str, str], ...] = (
+    ("fast_charge", "time-first; use stronger early current while keeping the late stage controlled"),
+    ("thermal_safe", "temperature-first; prefer cooler interior points and lower late-stage stress"),
+    ("aging_safe", "aging-first; taper meaningfully into the high-SOC region"),
+    ("balanced", "balanced trade-off; avoid extreme current or SOC-span choices"),
+    ("front_loaded_fast", "aggressive early acceleration followed by a clearly safer tail"),
+    ("high_margin_safe", "leave obvious dSOC safety margin and stay well inside the feasible region"),
+)
+
+DEFAULT_ANTI_COLLAPSE_RULES: Tuple[str, ...] = (
+    "Cover as many distinct trade-off buckets as possible before giving a second protocol to any single bucket.",
+    "Do not place multiple candidates on the same edge or corner of the search space.",
+    "Avoid returning near-identical protocols that differ only in the 3rd or 4th decimal place.",
+    "Prefer interior points unless a bucket explicitly calls for edge-seeking behavior.",
+)
+
+DEFAULT_ANTI_PATTERNS: Tuple[str, ...] = (
+    "Do not make every protocol uniformly aggressive with both large currents and large dSOC spans.",
+    "Do not keep high current deep into the high-SOC region for more than one deliberately aggressive prototype.",
+    "Do not collapse the whole set into nearly flat current profiles unless a bucket explicitly calls for conservative behavior.",
+    "Do not maximize dSOC1 + dSOC2 for most of the set; reserve near-margin behavior for a small minority of candidates.",
+)
+
+DEFAULT_FEW_SHOT_EXAMPLES: Dict[str, Tuple[PromptProtocolExample, ...]] = {
+    "Chen2020": (
+        PromptProtocolExample(
+            label="Balanced interior starter",
+            bucket="balanced",
+            theta=(3.80, 3.20, 2.10, 0.30, 0.20),
+            note="Good center-of-mass anchor with room to explore both faster and safer directions.",
+        ),
+        PromptProtocolExample(
+            label="Front-loaded fast prototype",
+            bucket="front_loaded_fast",
+            theta=(5.70, 4.20, 2.50, 0.18, 0.20),
+            note="Aggressive first two stages, but the final stage is clearly softer to reduce high-SOC stress.",
+        ),
+        PromptProtocolExample(
+            label="Aging-aware taper",
+            bucket="aging_safe",
+            theta=(3.40, 2.90, 2.00, 0.24, 0.22),
+            note="Moderate early current and a safer tail for the high-SOC region.",
+        ),
+    ),
+}
+
+DEFAULT_NEGATIVE_EXAMPLES: Dict[str, Tuple[PromptProtocolExample, ...]] = {
+    "Chen2020": (
+        PromptProtocolExample(
+            label="Edge-hugging aggressive corner",
+            bucket="avoid",
+            theta=(6.00, 5.00, 3.00, 0.40, 0.29),
+            note="Too many decisions are pushed to the edge at once, which risks poor feasibility margin and set collapse.",
+        ),
+        PromptProtocolExample(
+            label="Mid-cluster duplicate pattern",
+            bucket="avoid",
+            theta=(4.20, 3.60, 2.40, 0.26, 0.22),
+            note="Reasonable by itself, but returning many slight variants of this interior point weakens Pareto coverage.",
         ),
     ),
 }
@@ -117,19 +189,47 @@ class WarmStartTemplateRenderer:
         return rendered
 
 
-def format_few_shot_examples(
-    examples: Optional[Sequence[Mapping[str, object]]],
+def format_protocol_examples(
+    examples: Optional[Sequence[Mapping[str, object] | PromptProtocolExample]],
+    *,
+    title: str,
 ) -> str:
     if not examples:
         return ""
 
-    lines = ["Few-shot examples from D_S:"]
+    lines = [title]
     for idx, item in enumerate(examples, start=1):
-        theta = item.get("theta")
-        f_theta = item.get("f_theta", item.get("objectives"))
-        if theta is None or f_theta is None:
+        if isinstance(item, PromptProtocolExample):
+            theta = item.theta
+            bucket = item.bucket
+            label = item.label
+            note = item.note
+            objectives = item.objectives
+        else:
+            theta = item.get("theta")
+            bucket = str(item.get("bucket", "unspecified"))
+            label = str(item.get("label", f"Example {idx}"))
+            note = str(item.get("note", item.get("why", "")))
+            objectives = item.get("f_theta", item.get("objectives"))
+
+        if theta is None:
             continue
-        lines.append(f"Example {idx}: theta={theta}, f(theta)={f_theta}")
+
+        theta_text = "[" + ", ".join(
+            [
+                f"{float(theta[0]):.2f}",
+                f"{float(theta[1]):.2f}",
+                f"{float(theta[2]):.2f}",
+                f"{float(theta[3]):.3f}",
+                f"{float(theta[4]):.3f}",
+            ]
+        ) + "]"
+        line = f"- {label} [{bucket}]: theta={theta_text}"
+        if objectives is not None:
+            line += f", f(theta)={objectives}"
+        if note:
+            line += f", note={note}"
+        lines.append(line)
     if len(lines) == 1:
         return ""
     return "\n".join(lines)
@@ -146,13 +246,19 @@ class WarmStartPromptContextBuilder:
         soc_start: float,
         soc_end: float,
         dsoc_sum_max: float = DEFAULT_DSOC_SUM_MAX,
+        safe_dsoc_sum_max: Optional[float] = None,
         few_shot_examples: Optional[Sequence[Mapping[str, object]]] = None,
     ):
         self._bounds = param_bounds
         self._meta = resolve_battery_metadata(param_set, battery_name=battery_name)
+        self._param_set = param_set
         self._soc_start = float(soc_start)
         self._soc_end = float(soc_end)
         self._dsoc_sum_max = float(dsoc_sum_max)
+        self._safe_dsoc_sum_max = (
+            min(float(safe_dsoc_sum_max), self._dsoc_sum_max)
+            if safe_dsoc_sum_max is not None else min(0.65, self._dsoc_sum_max)
+        )
         self._few_shot_examples = few_shot_examples
 
     def build(self, num_recommendation: int) -> Dict[str, str]:
@@ -177,6 +283,16 @@ class WarmStartPromptContextBuilder:
             f"{self._meta.nominal_capacity_ah:.1f} Ah) using the {param_set_display}."
         )
         expert_knowledge = "\n".join(f"- {line}" for line in self._meta.expert_knowledge)
+        tradeoff_buckets = "\n".join(
+            f"- {name}: {desc}"
+            for name, desc in DEFAULT_TRADEOFF_BUCKETS
+        )
+        anti_collapse_rules = "\n".join(
+            f"- {line}" for line in self._anti_collapse_rules(num_recommendation=num_recommendation)
+        )
+        anti_patterns = "\n".join(f"- {line}" for line in DEFAULT_ANTI_PATTERNS)
+        few_shot_examples = self._few_shot_examples or DEFAULT_FEW_SHOT_EXAMPLES.get(self._param_set, ())
+        negative_examples = DEFAULT_NEGATIVE_EXAMPLES.get(self._param_set, ())
 
         return {
             "NUM_RECOMMENDATION": str(int(num_recommendation)),
@@ -190,11 +306,31 @@ class WarmStartPromptContextBuilder:
             "DSOC1_RANGE": self._format_range("dSOC1"),
             "DSOC2_RANGE": self._format_range("dSOC2"),
             "DSOC_SUM_MAX": f"{self._dsoc_sum_max:.2f}",
+            "SAFE_DSOC_SUM_MAX": f"{self._safe_dsoc_sum_max:.2f}",
             "TASK_BRIEF": task_brief,
             "OBJECTIVE_SUMMARY": objective_summary,
+            "COLLECTION_OBJECTIVE": (
+                "Maximize initial Pareto coverage and early feasible hypervolume by spreading the set across "
+                "multiple trade-off directions instead of clustering near one solution family."
+            ),
             "PROBLEM_DETAIL": problem_detail,
             "EXPERT_KNOWLEDGE": expert_knowledge,
-            "FEW_SHOT_BLOCK": format_few_shot_examples(self._few_shot_examples),
+            "SAFE_MARGIN_RISK_TEXT": (
+                f"Pushing beyond the {self._safe_dsoc_sum_max:.2f} safety margin increases lithium plating risk, "
+                "internal polarization, and thermal stress in the high-SOC region."
+            ),
+            "TRADEOFF_BUCKETS": tradeoff_buckets,
+            "PER_BUCKET_MIN_COUNT": "1",
+            "ANTI_COLLAPSE_RULES": anti_collapse_rules,
+            "ANTI_PATTERNS": anti_patterns,
+            "FEW_SHOT_BLOCK": format_protocol_examples(
+                few_shot_examples,
+                title="Curated pattern examples (treat as directional anchors, not hard constraints):",
+            ),
+            "NEGATIVE_EXAMPLE_BLOCK": format_protocol_examples(
+                negative_examples,
+                title="Patterns to avoid repeating across the warm-start set:",
+            ),
             "OUTPUT_SCHEMA": (
                 '[{"I1": value, "I2": value, "I3": value, '
                 '"dSOC1": value, "dSOC2": value}, ...]'
@@ -209,6 +345,20 @@ class WarmStartPromptContextBuilder:
     @staticmethod
     def _format_soc(value: float) -> str:
         return f"{value * 100:.0f}%"
+
+    @staticmethod
+    def _anti_collapse_rules(num_recommendation: int) -> List[str]:
+        n_req = max(int(num_recommendation), 1)
+        n_buckets = len(DEFAULT_TRADEOFF_BUCKETS)
+        if n_req >= n_buckets:
+            coverage_rule = (
+                "Assign at least 1 protocol to each trade-off bucket before giving any bucket a second protocol."
+            )
+        else:
+            coverage_rule = (
+                "Cover as many distinct trade-off buckets as possible; do not let a single bucket dominate the set."
+            )
+        return [coverage_rule, *DEFAULT_ANTI_COLLAPSE_RULES]
 
 
 def render_warmstart_prompt(
@@ -240,6 +390,7 @@ if __name__ == "__main__":
         soc_start=0.0,
         soc_end=0.8,
         dsoc_sum_max=DEFAULT_DSOC_SUM_MAX,
+        safe_dsoc_sum_max=min(0.65, DEFAULT_DSOC_SUM_MAX),
     )
     ctx = builder.build(num_recommendation=6)
     for level_name in ("none", "partial", "full"):

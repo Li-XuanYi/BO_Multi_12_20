@@ -17,8 +17,8 @@ Decision variables and bounds:
 
 Constraints:
 - Practical hard limit: keep dSOC1 + dSOC2 strictly below [DSOC_SUM_MAX] because points at exactly [DSOC_SUM_MAX] can be rejected by the simulator.
-- Safety margin: keep dSOC1 + dSOC2 <= 0.65 whenever possible.
-- Physical risk: pushing beyond the 0.65 safety margin increases lithium plating risk, internal polarization, and thermal stress in the high-SOC region.
+- Safety margin: keep dSOC1 + dSOC2 <= [SAFE_DSOC_SUM_MAX] whenever possible.
+- Physical risk: [SAFE_MARGIN_RISK_TEXT]
 - A decreasing current profile I1 >= I2 >= I3 is recommended.
 
 Optimization objectives:
@@ -26,6 +26,15 @@ Optimization objectives:
 
 Problem details:
 [PROBLEM_DETAIL]
+
+Warm-start set objective:
+- [COLLECTION_OBJECTIVE]
+
+Trade-off buckets to cover:
+[TRADEOFF_BUCKETS]
+
+Coverage rules:
+[ANTI_COLLAPSE_RULES]
 
 Generate [NUM_RECOMMENDATION] diverse warm-start charging protocols that cover fast, conservative, and balanced trade-offs.
 Respond with ONLY a JSON array and no extra text.
