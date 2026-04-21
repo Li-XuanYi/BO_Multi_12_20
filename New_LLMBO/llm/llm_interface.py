@@ -34,6 +34,7 @@ import time
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
+from llmbo.rerank import CandidateInfo, RerankOutput, RerankState
 from utils.constants import (
     DEFAULT_BOUNDS as CANONICAL_DEFAULT_BOUNDS,
     LLM_SAFE_DSOC_SUM_MAX,
@@ -43,6 +44,7 @@ from utils.constants import (
 
 try:
     from llm.iteration_prompt import render_iteration_guidance_prompt
+    from llm.rerank_prompt import render_candidate_rerank_prompt
     from llm.warmstart_prompt import (
         DEFAULT_DSOC_SUM_MAX,
         PLACEHOLDER_PATTERN,
@@ -51,6 +53,7 @@ try:
     )
 except ModuleNotFoundError:  # pragma: no cover - allows direct script execution
     from iteration_prompt import render_iteration_guidance_prompt
+    from rerank_prompt import render_candidate_rerank_prompt
     from warmstart_prompt import (
         DEFAULT_DSOC_SUM_MAX,
         PLACEHOLDER_PATTERN,
@@ -935,6 +938,119 @@ class LLMInterface:
     # ──────────────────────────────────────────────────────────────
     # Touchpoint 1b: Warm-Start 候选点生成
     # ──────────────────────────────────────────────────────────────
+    def _fallback_candidate_goodness(
+        self,
+        state: RerankState,
+        candidates: List[CandidateInfo],
+    ) -> List[RerankOutput]:
+        outputs: List[RerankOutput] = []
+        for candidate in candidates:
+            scale = max(float(candidate.sigma_fw), 1e-6)
+            z = float(np.clip((float(state.tau_t) - float(candidate.mu_fw)) / scale, -8.0, 8.0))
+            q_good = float(1.0 / (1.0 + np.exp(-z)))
+            confidence = float(np.clip(0.35 + 0.15 * min(abs(z), 3.0), 0.35, 0.9))
+            rationale = (
+                "gp fallback: likely below threshold"
+                if q_good >= 0.5 else
+                "gp fallback: likely above threshold"
+            )
+            outputs.append(
+                RerankOutput(
+                    idx=int(candidate.idx),
+                    q_good=q_good,
+                    confidence=confidence,
+                    rationale_short=rationale,
+                )
+            )
+        return outputs
+
+    def score_candidate_goodness(
+        self,
+        state: RerankState,
+        candidates: List[CandidateInfo],
+    ) -> List[RerankOutput]:
+        if not candidates:
+            return []
+
+        prompt = render_candidate_rerank_prompt(
+            state=state,
+            candidates=candidates,
+            param_bounds=self._bounds,
+            scalarization_formula=(
+                "Lower scalarized objective is better under the current weight vector."
+            ),
+            safe_dsoc_sum_max=float(self._safe_dsoc_sum_max or self._dsoc_sum_max),
+            hard_dsoc_sum_max=float(self._dsoc_sum_max),
+        )
+
+        responses = self._caller.call(
+            prompt,
+            n=max(1, int(self._config.n_samples)),
+            temperature=min(float(self._config.temperature), 0.2),
+            max_tokens=1200,
+        )
+
+        candidate_ids = {int(candidate.idx) for candidate in candidates}
+        aggregated: Dict[int, List[Dict[str, Any]]] = {}
+
+        for text in responses:
+            payload = ResponseParser.extract_json(text)
+            if not isinstance(payload, dict):
+                continue
+            rows = payload.get("candidates")
+            if not isinstance(rows, list):
+                continue
+            for row in rows:
+                if not isinstance(row, dict):
+                    continue
+                try:
+                    idx = int(row.get("idx"))
+                except Exception:
+                    continue
+                if idx not in candidate_ids:
+                    continue
+                try:
+                    q_good = float(np.clip(float(row.get("q_good", 0.5)), 0.0, 1.0))
+                except Exception:
+                    q_good = 0.5
+                try:
+                    confidence = float(np.clip(float(row.get("confidence", 0.5)), 0.0, 1.0))
+                except Exception:
+                    confidence = 0.5
+                aggregated.setdefault(idx, []).append(
+                    {
+                        "q_good": q_good,
+                        "confidence": confidence,
+                        "rationale_short": str(row.get("rationale_short", ""))[:120],
+                    }
+                )
+
+        if not aggregated:
+            return self._fallback_candidate_goodness(state, candidates)
+
+        fallback_map = {
+            int(item.idx): item
+            for item in self._fallback_candidate_goodness(state, candidates)
+        }
+        outputs: List[RerankOutput] = []
+        for candidate in candidates:
+            rows = aggregated.get(int(candidate.idx))
+            if not rows:
+                outputs.append(fallback_map[int(candidate.idx)])
+                continue
+            q_good = float(np.mean([float(row["q_good"]) for row in rows]))
+            confidence = float(np.mean([float(row["confidence"]) for row in rows]))
+            best_row = max(rows, key=lambda row: float(row["confidence"]))
+            outputs.append(
+                RerankOutput(
+                    idx=int(candidate.idx),
+                    q_good=float(np.clip(q_good, 0.0, 1.0)),
+                    confidence=float(np.clip(confidence, 0.0, 1.0)),
+                    rationale_short=str(best_row.get("rationale_short", "")),
+                )
+            )
+        return outputs
+
     def generate_warmstart_candidates(
         self,
         n:            int = 15,

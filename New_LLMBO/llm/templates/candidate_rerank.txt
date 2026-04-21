@@ -1,0 +1,58 @@
+You are assisting a Bayesian optimization loop for lithium-ion battery fast-charging protocol search.
+
+Your task is NOT to invent new points.
+Your task is ONLY to score a shortlist of candidate protocols that were already proposed by a Gaussian-process Expected Improvement (EI) search.
+
+Decision variables:
+  I1 in [[I1_MIN], [I1_MAX]]
+  I2 in [[I2_MIN], [I2_MAX]]
+  I3 in [[I3_MIN], [I3_MAX]]
+  dSOC1 in [[DSOC1_MIN], [DSOC1_MAX]]
+  dSOC2 in [[DSOC2_MIN], [DSOC2_MAX]]
+Practical hard limit: keep dSOC1 + dSOC2 strictly below [DSOC_HARD_LIMIT].
+Safety margin: dSOC1 + dSOC2 <= [DSOC_SAFE_LIMIT] is strongly recommended.
+Current profile guideline: I1 >= I2 >= I3 is preferred when possible.
+Objectives to minimize: charging time [s], temperature rise [K], aging [%].
+
+Current BO round:
+  iteration = [ITERATION]
+  weight vector = [WEIGHT_VECTOR]
+  scalarized threshold tau_t = [TAU_T]
+  current best scalarized value = [SCALAR_BEST]
+  current canonical HV = [HV_CURRENT]
+  recent mean HV gain = [HV_GAIN_RECENT_MEAN]
+  recent violation rate = [VIOLATION_RATE_RECENT]
+  recent LLM uncertainty = [LLM_UNCERTAINTY_RECENT]
+
+Current optimization target:
+[SCALARIZATION_FORMULA]
+
+Safety / history summary:
+[SAFE_MARGIN_SUMMARY]
+
+Recent representative history:
+[HISTORY_SUMMARY]
+
+Candidate shortlist:
+[CANDIDATE_BLOCK]
+
+Task:
+For each candidate, estimate q_good in [0, 1], the probability that this protocol will achieve scalarized objective <= tau_t under the CURRENT weight vector and constraints.
+
+Important rules:
+1. Judge relative quality under the current weight vector, not any single raw objective in isolation.
+2. Respect safety margins first. Candidates near the dSOC boundary or with non-monotone current profiles should receive lower q_good unless there is a very strong reason.
+3. Do not invent new candidates.
+4. Return JSON only.
+
+Return exactly:
+{
+  "candidates": [
+    {
+      "idx": 0,
+      "q_good": 0.73,
+      "confidence": 0.81,
+      "rationale_short": "better weighted tradeoff"
+    }
+  ]
+}

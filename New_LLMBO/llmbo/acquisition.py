@@ -9,6 +9,7 @@ from scipy.optimize import minimize
 from scipy.stats import norm as scipy_norm
 
 from llmbo.gp_model import GPProtocol
+from llmbo.rerank import CandidateInfo
 from utils.constants import (
     DSOC_SUM_MAX as CANONICAL_DSOC_SUM_MAX,
     dsoc_sum_violates_limit,
@@ -88,6 +89,7 @@ class AcquisitionResult:
     lift_summary: Optional[Dict[str, Any]] = None
     all_prior_bonus: Optional[np.ndarray] = None
     all_risk_penalty: Optional[np.ndarray] = None
+    candidate_pool: Optional[np.ndarray] = None
 
 
 @dataclasses.dataclass
@@ -331,6 +333,7 @@ class AcquisitionFunction:
             lift_summary=lift.to_dict() if lift is not None else None,
             all_prior_bonus=prior_bonus,
             all_risk_penalty=risk_penalty,
+            candidate_pool=candidate_pool.copy(),
         )
 
     def get_state(self) -> AcquisitionState:
@@ -480,6 +483,67 @@ def expected_improvement(mean: np.ndarray, std: np.ndarray, f_min: float) -> np.
     ei = improvement * scipy_norm.cdf(z) + std * scipy_norm.pdf(z)
     ei[std <= 1e-12] = 0.0
     return np.maximum(ei, 0.0)
+
+
+def build_ei_candidate_pool(
+    X_pool: np.ndarray,
+    mu: np.ndarray,
+    sigma: np.ndarray,
+    ei: np.ndarray,
+    *,
+    theta_best: Optional[np.ndarray] = None,
+    pareto_points: Optional[np.ndarray] = None,
+) -> List[CandidateInfo]:
+    X = np.atleast_2d(np.asarray(X_pool, dtype=float))
+    mu_arr = np.asarray(mu, dtype=float).ravel()
+    sigma_arr = np.asarray(sigma, dtype=float).ravel()
+    ei_arr = np.asarray(ei, dtype=float).ravel()
+    if len(X) != len(mu_arr) or len(X) != len(sigma_arr) or len(X) != len(ei_arr):
+        raise ValueError("X_pool, mu, sigma, and ei must have matching lengths")
+
+    rank_by_ei = np.empty(len(ei_arr), dtype=int)
+    rank_by_ei[np.argsort(ei_arr)[::-1]] = np.arange(1, len(ei_arr) + 1)
+    theta_best_arr = None if theta_best is None else np.asarray(theta_best, dtype=float).ravel()
+    pareto = None if pareto_points is None else np.atleast_2d(np.asarray(pareto_points, dtype=float))
+
+    candidates: List[CandidateInfo] = []
+    for idx, row in enumerate(X):
+        dist_to_best = None
+        if theta_best_arr is not None and theta_best_arr.size == row.size:
+            dist_to_best = float(np.linalg.norm(row - theta_best_arr))
+
+        dist_to_pareto = None
+        if pareto is not None and len(pareto):
+            dist_to_pareto = float(np.min(np.linalg.norm(pareto - row[None, :], axis=1)))
+
+        candidates.append(
+            CandidateInfo(
+                idx=int(idx),
+                x=np.asarray(row, dtype=float).ravel().tolist(),
+                mu_fw=float(mu_arr[idx]),
+                sigma_fw=float(sigma_arr[idx]),
+                ei=float(ei_arr[idx]),
+                rank_by_ei=int(rank_by_ei[idx]),
+                dist_to_best=dist_to_best,
+                dist_to_pareto=dist_to_pareto,
+            )
+        )
+    return candidates
+
+
+def select_topm_for_rerank(
+    candidates: List[CandidateInfo],
+    top_m: int,
+    min_ei: float,
+) -> List[CandidateInfo]:
+    if not candidates:
+        return []
+    top_m = max(int(top_m), 1)
+    ordered = sorted(candidates, key=lambda item: float(item.ei), reverse=True)
+    filtered = [candidate for candidate in ordered if float(candidate.ei) >= float(min_ei)]
+    if not filtered:
+        filtered = ordered[:1]
+    return filtered[:top_m]
 
 
 def build_acquisition_function(

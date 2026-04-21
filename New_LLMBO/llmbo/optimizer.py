@@ -12,9 +12,15 @@ from scipy.stats import qmc
 
 from DataBase.database import DEFAULT_BOUNDS, ObservationDB
 from llm.llm_interface import IterationGuidance, build_llm_interface
-from llmbo.acquisition import AcquisitionPrior, build_acquisition_function
+from llmbo.acquisition import (
+    AcquisitionPrior,
+    build_acquisition_function,
+    build_ei_candidate_pool,
+    select_topm_for_rerank,
+)
 from llmbo.gp_model import build_gp_stack
 from llmbo.proposal import ProposalTrainingRecord, build_proposal_sampler
+from llmbo.rerank import RerankState, TrialTelemetry, compute_online_gate, rerank_topm_with_llm
 from pybamm_simulator import PyBaMMSimulator
 from utils.constants import (
     DSOC_SUM_MAX as CANONICAL_DSOC_SUM_MAX,
@@ -105,6 +111,20 @@ DEFAULT_CONFIG = {
     "acq_risk_safe_weight": 0.20,
     "acq_risk_hard_weight": 3.00,
     "acq_risk_monotone_weight": 0.40,
+    "enable_llm_rerank": False,
+    "llm_rerank_top_m": 12,
+    "llm_rerank_gamma_quantile": 0.20,
+    "llm_rerank_score_mode": "log_ei_plus_gate",
+    "llm_rerank_gate_mode": "online",
+    "llm_rerank_const_gate": 0.25,
+    "llm_rerank_lambda_max": 0.60,
+    "llm_rerank_gate_window": 5,
+    "llm_rerank_gate_a": 4.0,
+    "llm_rerank_gate_b": 3.0,
+    "llm_rerank_gate_c": 2.0,
+    "llm_rerank_min_ei": 1e-10,
+    "llm_rerank_entropy_threshold": 0.80,
+    "llm_rerank_fail_open_to_plain_ei": True,
     "checkpoint_dir": "checkpoints",
     "checkpoint_every": 5,
     "battery_model": "LG INR21700-M50 (Chen2020)",
@@ -262,7 +282,9 @@ class BayesOptimizer:
         self._last_coupling_summary: Optional[Dict[str, Any]] = None
         self._last_proposal_summary: Optional[Dict[str, Any]] = None
         self._last_acq_prior_summary: Optional[Dict[str, Any]] = None
+        self._last_rerank_summary: Optional[Dict[str, Any]] = None
         self._last_candidate_source_counts: Dict[str, int] = {}
+        self._rerank_telemetry: List[Dict[str, Any]] = []
 
         Path(self.cfg["checkpoint_dir"]).mkdir(parents=True, exist_ok=True)
 
@@ -513,6 +535,7 @@ class BayesOptimizer:
             self._previous_guidance = None
             self._last_coupling_summary = None
             self._last_acq_prior_summary = None
+            self._last_rerank_summary = None
             self._last_candidate_source_counts = {}
             guidance_candidates = None
 
@@ -599,17 +622,38 @@ class BayesOptimizer:
                 lift=coupling,
                 prior=acq_prior,
             )
+            plain_selected_indices = list(acq_result.selected_indices)
+            plain_selected_scores = np.asarray(acq_result.selected_scores, dtype=float).copy()
+            acq_result = self._maybe_apply_llm_rerank(
+                t=t,
+                w_vec=w_vec,
+                scalar_y=scalar_y,
+                acq_result=acq_result,
+                plain_selected_indices=plain_selected_indices,
+                plain_selected_scores=plain_selected_scores,
+            )
 
             n_new = 0
             guidance_payload = (
                 json.dumps(guidance.to_dict(), ensure_ascii=False)
                 if guidance is not None else None
             )
+            rerank_selected_map: Dict[int, Dict[str, Any]] = {}
+            if self._last_rerank_summary and self._last_rerank_summary.get("rows"):
+                rerank_selected_map = {
+                    int(row["idx"]): row
+                    for row in self._last_rerank_summary.get("rows", [])
+                }
             for rank, theta in enumerate(acq_result.selected_thetas):
                 logger.info("  Evaluate rank=%d theta=%s", rank, np.round(theta, 4))
+                hv_before_raw = float(self.database.compute_hypervolume_raw())
                 t_eval = time.perf_counter()
                 sim_result = self.simulator.evaluate(theta)
                 elapsed_eval = time.perf_counter() - t_eval
+                selected_idx = int(acq_result.selected_indices[rank])
+                plain_idx = int(plain_selected_indices[min(rank, len(plain_selected_indices) - 1)]) if plain_selected_indices else selected_idx
+                plain_score = float(plain_selected_scores[min(rank, len(plain_selected_scores) - 1)]) if len(plain_selected_scores) else None
+                rerank_row = rerank_selected_map.get(selected_idx, {})
                 self.database.add_from_simulator(
                     theta=theta,
                     result=sim_result,
@@ -617,9 +661,13 @@ class BayesOptimizer:
                     iteration=t + 1,
                     acq_value=float(acq_result.selected_scores[rank]),
                     acq_type=(
-                        "EI_gp_llm_coupled"
-                        if coupling is not None
-                        else ("EI_prior" if acq_prior is not None and acq_prior.is_active() else "EI")
+                        "EI_llm_rerank"
+                        if self._last_rerank_summary is not None and self._last_rerank_summary.get("applied", False)
+                        else (
+                            "EI_gp_llm_coupled"
+                            if coupling is not None
+                            else ("EI_prior" if acq_prior is not None and acq_prior.is_active() else "EI")
+                        )
                     ),
                     gp_pred={
                         "mean_coupled": float(acq_result.all_mean[acq_result.selected_indices[rank]]),
@@ -634,6 +682,11 @@ class BayesOptimizer:
                         "risk_penalty": (
                             float(acq_result.all_risk_penalty[acq_result.selected_indices[rank]])
                             if acq_result.all_risk_penalty is not None else 0.0
+                        ),
+                        "rerank_q_good": float(rerank_row.get("q_good", 0.0)) if rerank_row else None,
+                        "rerank_gate": (
+                            float(self._last_rerank_summary.get("gate", 0.0))
+                            if self._last_rerank_summary else 0.0
                         ),
                     },
                     llm_rationale=guidance_payload,
@@ -654,6 +707,28 @@ class BayesOptimizer:
                     float(acq_result.selected_scores[rank]),
                     elapsed_eval,
                 )
+                hv_after_raw = float(self.database.compute_hypervolume_raw())
+                telemetry = TrialTelemetry(
+                    iter_id=int(t),
+                    w_vec=np.asarray(w_vec, dtype=float).tolist(),
+                    tau_t=float(self._last_rerank_summary.get("tau_t", np.nan)) if self._last_rerank_summary else float("nan"),
+                    selected_idx_before_rerank=int(plain_idx),
+                    selected_idx_after_rerank=int(selected_idx),
+                    g_value=float(self._last_rerank_summary.get("gate", 0.0)) if self._last_rerank_summary else 0.0,
+                    llm_called=bool(self._last_rerank_summary and self._last_rerank_summary.get("llm_called", False)),
+                    llm_entropy_mean=(
+                        None if not self._last_rerank_summary
+                        else self._last_rerank_summary.get("entropy_mean")
+                    ),
+                    llm_q_selected=None if not rerank_row else float(rerank_row.get("q_good", 0.0)),
+                    score_plain_selected=plain_score,
+                    score_rerank_selected=float(acq_result.selected_scores[rank]),
+                    hv_before=float(hv_before_raw),
+                    hv_after=float(hv_after_raw),
+                    hv_gain=float(hv_after_raw - hv_before_raw),
+                    feasible=bool(sim_result["feasible"]),
+                )
+                self._rerank_telemetry.append(telemetry.to_dict())
                 n_new += 1
 
             iter_elapsed = time.perf_counter() - iter_start
@@ -666,6 +741,7 @@ class BayesOptimizer:
                     "llm_guidance": self._previous_guidance,
                     "gp_llm_coupling": self._last_coupling_summary,
                     "acq_prior": self._last_acq_prior_summary,
+                    "llm_rerank": self._last_rerank_summary,
                     "proposal_summary": self._last_proposal_summary,
                     "candidate_source_counts": self._last_candidate_source_counts,
                 }
@@ -721,7 +797,9 @@ class BayesOptimizer:
             "last_gp_llm_coupling": self._last_coupling_summary,
             "last_proposal_summary": self._last_proposal_summary,
             "last_acq_prior_summary": self._last_acq_prior_summary,
+            "last_llm_rerank_summary": self._last_rerank_summary,
             "last_candidate_source_counts": self._last_candidate_source_counts,
+            "rerank_telemetry": self._rerank_telemetry,
             "config": self._jsonable_config(),
         }
         with open(output / "summary.json", "w", encoding="utf-8") as f:
@@ -747,6 +825,7 @@ class BayesOptimizer:
                     "last_gp_llm_coupling": self._last_coupling_summary,
                     "last_proposal_summary": self._last_proposal_summary,
                     "last_acq_prior_summary": self._last_acq_prior_summary,
+                    "last_llm_rerank_summary": self._last_rerank_summary,
                     "last_candidate_source_counts": self._last_candidate_source_counts,
                     "config": self._jsonable_config(),
                 },
@@ -1047,6 +1126,232 @@ class BayesOptimizer:
             agreement=float(agreement),
         )
         return prior if prior.is_active() else None
+
+    def _compute_canonical_hv(self) -> float:
+        hv_max = max(float(getattr(self.database, "hv_max", 1.0)), 1e-12)
+        return float(self.database.compute_hypervolume_raw() / hv_max)
+
+    def _compute_recent_hv_gain_mean(self, window: int) -> float:
+        stats = self.database.get_iteration_stats()
+        window = max(int(window), 1)
+        if len(stats) < 2:
+            return 0.0
+
+        hv_max = max(float(getattr(self.database, "hv_max", 1.0)), 1e-12)
+        tail = stats[-(window + 1):]
+        gains: List[float] = []
+        for prev, curr in zip(tail[:-1], tail[1:]):
+            prev_raw = float(prev.get("hypervolume_raw", 0.0))
+            curr_raw = float(curr.get("hypervolume_raw", prev_raw))
+            gains.append((curr_raw - prev_raw) / hv_max)
+        return float(np.mean(gains)) if gains else 0.0
+
+    def _compute_recent_violation_rate(self, window: int) -> float:
+        all_obs = self.database.get_all()
+        n_recent = max(int(window), 1) * max(int(self.cfg.get("n_select", 1)), 1)
+        recent = all_obs[-n_recent:]
+        if not recent:
+            return 0.0
+        violations = sum(1 for obs in recent if not obs.feasible)
+        return float(violations / len(recent))
+
+    def _compute_recent_llm_uncertainty(self, window: int) -> float:
+        window = max(int(window), 1)
+        if not self._rerank_telemetry:
+            return 0.0
+        tail = self._rerank_telemetry[-window:]
+        values = [
+            float(item["llm_entropy_mean"])
+            for item in tail
+            if item.get("llm_called") and item.get("llm_entropy_mean") is not None
+        ]
+        return float(np.mean(values)) if values else 0.0
+
+    def _build_rerank_history_summary(self, window: int) -> List[Dict[str, Any]]:
+        stats = self.database.get_iteration_stats()
+        if not stats:
+            return []
+        hv_max = max(float(getattr(self.database, "hv_max", 1.0)), 1e-12)
+        tail = stats[-max(int(window), 1):]
+        summary: List[Dict[str, Any]] = []
+        for stat in tail:
+            summary.append(
+                {
+                    "iteration": int(stat.get("t", stat.get("iteration", 0))),
+                    "canonical_hv": float(stat.get("hypervolume_raw", 0.0)) / hv_max,
+                    "pareto_size": int(stat.get("pareto_size", 0)),
+                    "n_feasible": int(stat.get("n_feasible", 0)),
+                    "n_new_evals": int(stat.get("n_new_evals", 0)),
+                    "llm_rerank_applied": bool((stat.get("llm_rerank") or {}).get("applied", False)),
+                }
+            )
+        return summary
+
+    def _build_rerank_state(
+        self,
+        *,
+        t: int,
+        w_vec: np.ndarray,
+        scalar_y: np.ndarray,
+    ) -> RerankState:
+        gate_window = max(int(self.cfg.get("llm_rerank_gate_window", 5)), 1)
+        gamma = float(np.clip(self.cfg.get("llm_rerank_gamma_quantile", 0.20), 0.01, 0.99))
+        scalar = np.asarray(scalar_y, dtype=float).ravel()
+        tau_t = float(np.quantile(scalar, gamma)) if len(scalar) else float(self.database.get_f_min())
+        boundary_failure = self.database.get_boundary_failure_stats(
+            safe_dsoc_sum_max=float(self.cfg.get("llm_safe_dsoc_sum_max", LLM_SAFE_DSOC_SUM_MAX)),
+            hard_dsoc_sum_max=float(DSOC_SUM_MAX),
+            recent_window=gate_window,
+        )
+        similar_weight = self.database.get_similar_weight_guidance_stats(
+            w_vec=w_vec,
+            similarity_threshold=float(self.cfg.get("coupling_history_similarity_threshold", 0.85)),
+            fallback_score=float(self.cfg.get("coupling_history_fallback_score", 0.75)),
+        )
+        hv_feedback = self.database.get_hv_feedback_summary(window=gate_window)
+
+        return RerankState(
+            iter_id=int(t),
+            w_vec=np.asarray(w_vec, dtype=float).tolist(),
+            tau_t=float(tau_t),
+            scalar_best=float(np.min(scalar)) if len(scalar) else float(self.database.get_f_min()),
+            hv_current=float(self._compute_canonical_hv()),
+            hv_gain_recent_mean=float(self._compute_recent_hv_gain_mean(gate_window)),
+            violation_rate_recent=float(self._compute_recent_violation_rate(gate_window)),
+            llm_uncertainty_recent=float(self._compute_recent_llm_uncertainty(gate_window)),
+            safe_margin_summary={
+                "boundary_failure_stats": boundary_failure,
+                "similar_weight_guidance": similar_weight,
+                "hv_feedback": hv_feedback,
+            },
+            history_summary=self._build_rerank_history_summary(gate_window),
+        )
+
+    def _maybe_apply_llm_rerank(
+        self,
+        *,
+        t: int,
+        w_vec: np.ndarray,
+        scalar_y: np.ndarray,
+        acq_result: Any,
+        plain_selected_indices: List[int],
+        plain_selected_scores: np.ndarray,
+    ) -> Any:
+        if not bool(self.cfg.get("enable_llm_rerank", False)):
+            return acq_result
+        if acq_result.candidate_pool is None or len(acq_result.candidate_pool) == 0:
+            self._last_rerank_summary = {
+                "active": True,
+                "applied": False,
+                "fallback_reason": "empty_candidate_pool",
+            }
+            return acq_result
+
+        pareto_points = [obs.theta for obs in self.database.get_pareto_front()]
+        candidate_infos = build_ei_candidate_pool(
+            acq_result.candidate_pool,
+            acq_result.all_mean_base if acq_result.all_mean_base is not None else acq_result.all_mean,
+            acq_result.all_std,
+            acq_result.all_ei,
+            theta_best=self.database.get_theta_best(),
+            pareto_points=np.vstack(pareto_points) if pareto_points else None,
+        )
+        topm_candidates = select_topm_for_rerank(
+            candidate_infos,
+            top_m=int(self.cfg.get("llm_rerank_top_m", 12)),
+            min_ei=float(self.cfg.get("llm_rerank_min_ei", 1e-10)),
+        )
+        rerank_state = self._build_rerank_state(t=t, w_vec=w_vec, scalar_y=scalar_y)
+        gate_mode = str(self.cfg.get("llm_rerank_gate_mode", "online")).lower()
+        if gate_mode == "constant":
+            gate_value = float(np.clip(self.cfg.get("llm_rerank_const_gate", 0.25), 0.0, 1.0))
+            gate_state = {
+                "g_value": gate_value,
+                "mode": "constant",
+                "hv_gain_recent_mean": float(rerank_state.hv_gain_recent_mean),
+                "violation_rate_recent": float(rerank_state.violation_rate_recent),
+                "llm_uncertainty_recent": float(rerank_state.llm_uncertainty_recent),
+            }
+        else:
+            gate_obj = compute_online_gate(
+                hv_gain_recent_mean=float(rerank_state.hv_gain_recent_mean),
+                violation_rate_recent=float(rerank_state.violation_rate_recent),
+                llm_uncertainty_recent=float(rerank_state.llm_uncertainty_recent),
+                lambda_max=float(self.cfg.get("llm_rerank_lambda_max", 0.60)),
+                a=float(self.cfg.get("llm_rerank_gate_a", 4.0)),
+                b=float(self.cfg.get("llm_rerank_gate_b", 3.0)),
+                c=float(self.cfg.get("llm_rerank_gate_c", 2.0)),
+            )
+            gate_value = float(gate_obj.g_value)
+            gate_state = gate_obj.to_dict()
+            gate_state["mode"] = "online"
+
+        llm_outputs = self.llm.score_candidate_goodness(rerank_state, topm_candidates)
+        entropy_mean = float(np.mean([output.entropy() for output in llm_outputs])) if llm_outputs else None
+        entropy_threshold = float(self.cfg.get("llm_rerank_entropy_threshold", 0.80))
+        fail_open = bool(self.cfg.get("llm_rerank_fail_open_to_plain_ei", True))
+        if entropy_mean is not None and entropy_mean > entropy_threshold and fail_open:
+            self._last_rerank_summary = {
+                "active": True,
+                "applied": False,
+                "llm_called": True,
+                "tau_t": float(rerank_state.tau_t),
+                "top_m": int(len(topm_candidates)),
+                "gate": float(gate_value),
+                "gate_state": gate_state,
+                "entropy_mean": float(entropy_mean),
+                "selected_indices_before": list(plain_selected_indices),
+                "selected_indices_after": list(plain_selected_indices),
+                "fallback_reason": "high_entropy",
+                "rows": [],
+            }
+            return acq_result
+
+        rerank_result = rerank_topm_with_llm(
+            topm_candidates=topm_candidates,
+            llm_outputs=llm_outputs,
+            gate_value=float(gate_value),
+            score_mode=str(self.cfg.get("llm_rerank_score_mode", "log_ei_plus_gate")),
+            n_select=int(self.cfg.get("n_select", 1)),
+        )
+        if not rerank_result["selected_indices"]:
+            self._last_rerank_summary = {
+                "active": True,
+                "applied": False,
+                "llm_called": bool(llm_outputs),
+                "tau_t": float(rerank_state.tau_t),
+                "top_m": int(len(topm_candidates)),
+                "gate": float(gate_value),
+                "gate_state": gate_state,
+                "entropy_mean": entropy_mean,
+                "selected_indices_before": list(plain_selected_indices),
+                "selected_indices_after": list(plain_selected_indices),
+                "fallback_reason": "empty_rerank_result",
+                "rows": [],
+            }
+            return acq_result
+
+        selected_indices = [int(idx) for idx in rerank_result["selected_indices"]]
+        acq_result.selected_indices = selected_indices
+        acq_result.selected_thetas = [acq_result.candidate_pool[idx].copy() for idx in selected_indices]
+        acq_result.selected_scores = np.asarray(rerank_result["selected_scores"], dtype=float)
+        self._last_rerank_summary = {
+            "active": True,
+            "applied": True,
+            "llm_called": True,
+            "tau_t": float(rerank_state.tau_t),
+            "top_m": int(len(topm_candidates)),
+            "gate": float(gate_value),
+            "gate_state": gate_state,
+            "entropy_mean": rerank_result["entropy_mean"],
+            "score_mode": str(self.cfg.get("llm_rerank_score_mode", "log_ei_plus_gate")),
+            "selected_indices_before": list(plain_selected_indices),
+            "selected_scores_before": np.asarray(plain_selected_scores, dtype=float).tolist(),
+            "selected_indices_after": selected_indices,
+            "selected_scores_after": np.asarray(acq_result.selected_scores, dtype=float).tolist(),
+            "rows": rerank_result["rows"],
+        }
+        return acq_result
 
     def _guidance_local_sigma(self) -> np.ndarray:
         return np.maximum(
