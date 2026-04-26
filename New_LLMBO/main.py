@@ -91,6 +91,14 @@ def create_parser() -> argparse.ArgumentParser:
 
     # 输出控制
     parser.add_argument(
+        "--preset",
+        type=str,
+        default=None,
+        choices=["warmstart_plain_ei", "strict_baseline"],
+        help="Experiment preset. warmstart_plain_ei is the recommended mainline.",
+    )
+
+    parser.add_argument(
         "--output", "-o",
         type=str,
         default="results",
@@ -217,8 +225,10 @@ async def run_optimization(config: Config, args: argparse.Namespace) -> None:
     # 从配置构建优化器参数字典
     optimizer_kwargs = {
         'config': {
+            'experiment_preset': args.preset,
             'max_iterations': config.bo.n_iterations,
             'n_warmstart': config.bo.n_warmstart,
+            'n_random_init': getattr(config.bo, 'n_random_init', 3),
             'n_candidates': config.acquisition.n_cand,
             'n_select': config.acquisition.n_select,
 
@@ -238,24 +248,24 @@ async def run_optimization(config: Config, args: argparse.Namespace) -> None:
             'soc_end': config.charging_range.soc_end,
             'dsoc_sum_max': DSOC_SUM_MAX,
 
-            # GP 超参数
-            'gamma_max': config.bo.gamma_max,
-            'gamma_min': config.bo.gamma_min,
-            'gamma_t_decay': config.bo.t_decay_alpha,
-
-            # Acquisition 超参数
-            'alpha_max': config.bo.alpha_max,
-            'alpha_min': config.bo.alpha_min,
-            't_decay_alpha': config.bo.t_decay_alpha,
-            'kappa': config.bo.kappa,
-            'eps_sigma': config.bo.eps_sigma,
-            'rho': config.bo.rho,
-
+            # Legacy GP/AF schema keys are intentionally not forwarded here.
             # 检查点
             'checkpoint_dir': str(output_dir / 'checkpoints'),
             'checkpoint_every': config.data.save_interval,
         }
     }
+    if args.preset:
+        # Let BayesOptimizer's named preset own the mainline/research flags.
+        for key in (
+            'n_warmstart',
+            'n_random_init',
+            'enable_iterative_guidance',
+            'enable_gp_llm_coupling',
+            'enable_acq_prior_coupling',
+            'enable_proposal_sampler',
+            'enable_llm_rerank',
+        ):
+            optimizer_kwargs['config'].pop(key, None)
 
     optimizer = BayesOptimizer(**optimizer_kwargs)
 

@@ -148,9 +148,13 @@ class CandidateRerankContextBuilder:
             lines.append(
                 f"Candidate {int(candidate.idx)}:\n"
                 f"  x = [I1={x[0]:.3f}, I2={x[1]:.3f}, I3={x[2]:.3f}, dSOC1={x[3]:.4f}, dSOC2={x[4]:.4f}]\n"
+                f"  dSOC_sum = {'none' if candidate.dSOC_sum is None else f'{float(candidate.dSOC_sum):.4f}'}\n"
+                f"  margin_to_soft_limit = {'none' if candidate.margin_to_soft_limit is None else f'{float(candidate.margin_to_soft_limit):.4f}'}\n"
+                f"  monotone_flag = {'none' if candidate.monotone_flag is None else str(bool(candidate.monotone_flag)).lower()}\n"
                 f"  mu_fw = {float(candidate.mu_fw):.6f}\n"
                 f"  sigma_fw = {float(candidate.sigma_fw):.6f}\n"
                 f"  EI = {float(candidate.ei):.6e}\n"
+                f"  log_ei_gap_to_best = {'none' if candidate.log_ei_gap_to_best is None else f'{float(candidate.log_ei_gap_to_best):.6f}'}\n"
                 f"  rank_by_ei = {int(candidate.rank_by_ei)}\n"
                 f"  dist_to_best = {dist_to_best}\n"
                 f"  dist_to_pareto = {dist_to_pareto}"

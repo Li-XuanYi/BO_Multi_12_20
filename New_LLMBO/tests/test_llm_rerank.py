@@ -13,7 +13,7 @@ from llm.llm_interface import build_llm_interface
 from llm.rerank_prompt import render_candidate_rerank_prompt
 from llm.warmstart_prompt import PLACEHOLDER_PATTERN
 from llmbo.acquisition import build_ei_candidate_pool, select_topm_for_rerank
-from llmbo.rerank import CandidateInfo, RerankOutput, RerankState, compute_online_gate, rerank_topm_with_llm
+from llmbo.rerank import CandidateInfo, RerankOutput, RerankState, rerank_topm_with_llm
 from utils.constants import DEFAULT_BOUNDS
 
 
@@ -34,9 +34,48 @@ def _make_state() -> RerankState:
 
 def _make_candidates() -> list[CandidateInfo]:
     return [
-        CandidateInfo(idx=0, x=[4.9, 4.0, 2.8, 0.20, 0.16], mu_fw=0.19, sigma_fw=0.03, ei=0.12, rank_by_ei=1),
-        CandidateInfo(idx=1, x=[4.0, 3.4, 2.4, 0.26, 0.20], mu_fw=0.24, sigma_fw=0.04, ei=0.08, rank_by_ei=2),
-        CandidateInfo(idx=2, x=[3.2, 2.8, 2.1, 0.34, 0.26], mu_fw=0.33, sigma_fw=0.05, ei=0.01, rank_by_ei=3),
+        CandidateInfo(
+            idx=0,
+            x=[4.9, 4.0, 2.8, 0.20, 0.16],
+            mu_fw=0.19,
+            sigma_fw=0.03,
+            ei=0.12,
+            rank_by_ei=1,
+            log_ei=float(np.log(0.12)),
+            log_ei_gap_to_best=0.0,
+            dSOC_sum=0.36,
+            margin_to_soft_limit=0.29,
+            hard_violation_flag=False,
+            monotone_flag=True,
+        ),
+        CandidateInfo(
+            idx=1,
+            x=[4.0, 3.4, 2.4, 0.26, 0.20],
+            mu_fw=0.24,
+            sigma_fw=0.04,
+            ei=0.115,
+            rank_by_ei=2,
+            log_ei=float(np.log(0.115)),
+            log_ei_gap_to_best=float(np.log(0.12) - np.log(0.115)),
+            dSOC_sum=0.46,
+            margin_to_soft_limit=0.19,
+            hard_violation_flag=False,
+            monotone_flag=True,
+        ),
+        CandidateInfo(
+            idx=2,
+            x=[3.2, 2.8, 2.1, 0.34, 0.26],
+            mu_fw=0.33,
+            sigma_fw=0.05,
+            ei=0.01,
+            rank_by_ei=3,
+            log_ei=float(np.log(0.01)),
+            log_ei_gap_to_best=float(np.log(0.12) - np.log(0.01)),
+            dSOC_sum=0.60,
+            margin_to_soft_limit=0.05,
+            hard_violation_flag=False,
+            monotone_flag=True,
+        ),
     ]
 
 
@@ -45,12 +84,14 @@ def test_candidate_rerank_prompt_resolves_placeholders() -> None:
         state=_make_state(),
         candidates=_make_candidates()[:2],
         param_bounds=DEFAULT_BOUNDS,
-        scalarization_formula="f_w = max_i(w_i * gap_i) + 0.05 * sum_i(w_i * gap_i)",
+        scalarization_formula="Lower scalarized objective is better under the current weight vector.",
     )
 
     assert "Candidate shortlist:" in prompt
-    assert "q_good" in prompt
-    assert "weight vector" in prompt
+    assert "candidate_id" in prompt
+    assert "0.70 is hard feasibility" in prompt
+    assert "0.65 is the soft safety margin" in prompt
+    assert "log_ei_gap_to_best" in prompt
     assert not PLACEHOLDER_PATTERN.findall(prompt)
 
 
@@ -75,52 +116,93 @@ def test_build_ei_candidate_pool_and_topm() -> None:
 
     assert len(candidates) == 3
     assert candidates[0].rank_by_ei == 1
+    assert candidates[0].log_ei is not None
+    assert candidates[0].log_ei_gap_to_best == 0.0
     assert len(topm) == 2
     assert [item.idx for item in topm] == [0, 1]
 
 
-def test_compute_online_gate_penalizes_violation_and_uncertainty() -> None:
-    high_gate = compute_online_gate(
-        hv_gain_recent_mean=0.02,
-        violation_rate_recent=0.0,
-        llm_uncertainty_recent=0.1,
-        lambda_max=0.6,
-        a=4.0,
-        b=3.0,
-        c=2.0,
-    )
-    low_gate = compute_online_gate(
-        hv_gain_recent_mean=-0.01,
-        violation_rate_recent=0.4,
-        llm_uncertainty_recent=0.9,
-        lambda_max=0.6,
-        a=4.0,
-        b=3.0,
-        c=2.0,
+def test_safe_tiebreak_only_selects_from_eligible_set() -> None:
+    rerank_result = rerank_topm_with_llm(
+        topm_candidates=_make_candidates(),
+        llm_outputs=[
+            RerankOutput(idx=0, q_good=0.00, confidence=1.0, rationale_short="plain best"),
+            RerankOutput(idx=1, q_good=1.00, confidence=1.0, rationale_short="nearly tied better"),
+            RerankOutput(idx=2, q_good=1.00, confidence=0.9, rationale_short="too far in EI"),
+        ],
+        mode="ei_preserving_tiebreak",
+        gate=0.10,
+        max_log_ei_gap=0.20,
+        max_bonus=0.05,
+        q_bad_threshold=0.60,
+        min_confidence=0.50,
     )
 
-    assert 0.0 <= low_gate.g_value <= 0.6
-    assert 0.0 <= high_gate.g_value <= 0.6
-    assert high_gate.g_value > low_gate.g_value
+    assert set(rerank_result["eligible_indices"]) == {0, 1}
+    assert rerank_result["selected_indices"] == [1]
+    assert 2 not in rerank_result["selected_indices"]
 
 
-def test_rerank_prefers_high_q_good_when_gate_positive() -> None:
+def test_eligible_size_le_one_returns_no_selection() -> None:
+    rerank_result = rerank_topm_with_llm(
+        topm_candidates=_make_candidates(),
+        llm_outputs=[
+            RerankOutput(idx=0, q_good=0.90, confidence=0.9, rationale_short="only eligible"),
+            RerankOutput(idx=1, q_good=0.10, confidence=0.9, rationale_short="too far"),
+            RerankOutput(idx=2, q_good=0.10, confidence=0.9, rationale_short="too far"),
+        ],
+        mode="ei_preserving_tiebreak",
+        gate=0.10,
+        max_log_ei_gap=0.01,
+        max_bonus=0.05,
+        q_bad_threshold=0.60,
+        min_confidence=0.50,
+    )
+
+    assert rerank_result["selected_indices"] == []
+    assert rerank_result["fallback_reason"] == "eligible_too_small"
+
+
+def test_risk_veto_only_does_not_reward_low_ei_candidate() -> None:
     rerank_result = rerank_topm_with_llm(
         topm_candidates=_make_candidates()[:2],
         llm_outputs=[
-            RerankOutput(idx=0, q_good=0.20, confidence=0.7, rationale_short="too risky"),
-            RerankOutput(idx=1, q_good=0.90, confidence=0.8, rationale_short="better tradeoff"),
+            RerankOutput(idx=0, q_good=0.55, confidence=0.9, rationale_short="acceptable"),
+            RerankOutput(idx=1, q_good=0.95, confidence=0.9, rationale_short="looks safe"),
         ],
-        gate_value=0.6,
-        score_mode="log_ei_plus_gate",
-        n_select=1,
+        mode="risk_veto_only",
+        gate=0.10,
+        max_log_ei_gap=0.20,
+        max_bonus=0.05,
+        q_bad_threshold=0.60,
+        min_confidence=0.50,
     )
 
-    assert rerank_result["selected_indices"] == [1]
-    assert rerank_result["entropy_mean"] is not None
+    assert rerank_result["selected_indices"] == [0]
 
 
-def test_llm_interface_rerank_falls_back_under_mock() -> None:
+def test_low_confidence_is_neutralized() -> None:
+    rerank_result = rerank_topm_with_llm(
+        topm_candidates=_make_candidates()[:2],
+        llm_outputs=[
+            RerankOutput(idx=0, q_good=0.10, confidence=0.90, rationale_short="bad"),
+            RerankOutput(idx=1, q_good=1.00, confidence=0.20, rationale_short="low confidence"),
+        ],
+        mode="ei_preserving_tiebreak",
+        gate=0.10,
+        max_log_ei_gap=0.20,
+        max_bonus=0.05,
+        q_bad_threshold=0.60,
+        min_confidence=0.50,
+    )
+
+    row_by_idx = {int(row["idx"]): row for row in rerank_result["rows"]}
+    assert row_by_idx[1]["q_effective"] == 0.5
+    assert row_by_idx[1]["confidence_effective"] == 0.0
+    assert rerank_result["selected_indices"] == [0]
+
+
+def test_llm_interface_rerank_mock_returns_structured_scores() -> None:
     llm = build_llm_interface(
         DEFAULT_BOUNDS,
         backend="mock",

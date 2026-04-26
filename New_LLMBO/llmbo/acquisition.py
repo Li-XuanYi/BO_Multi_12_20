@@ -503,6 +503,8 @@ def build_ei_candidate_pool(
 
     rank_by_ei = np.empty(len(ei_arr), dtype=int)
     rank_by_ei[np.argsort(ei_arr)[::-1]] = np.arange(1, len(ei_arr) + 1)
+    log_ei_arr = np.log(np.maximum(ei_arr, 1e-12))
+    best_log_ei = float(np.max(log_ei_arr)) if len(log_ei_arr) else float("-inf")
     theta_best_arr = None if theta_best is None else np.asarray(theta_best, dtype=float).ravel()
     pareto = None if pareto_points is None else np.atleast_2d(np.asarray(pareto_points, dtype=float))
 
@@ -524,6 +526,8 @@ def build_ei_candidate_pool(
                 sigma_fw=float(sigma_arr[idx]),
                 ei=float(ei_arr[idx]),
                 rank_by_ei=int(rank_by_ei[idx]),
+                log_ei=float(log_ei_arr[idx]),
+                log_ei_gap_to_best=float(best_log_ei - log_ei_arr[idx]),
                 dist_to_best=dist_to_best,
                 dist_to_pareto=dist_to_pareto,
             )

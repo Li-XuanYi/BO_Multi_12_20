@@ -35,6 +35,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 from llmbo.rerank import CandidateInfo, RerankOutput, RerankState
+from llmbo.scalarization import compute_tchebycheff_from_raw_with_ideal
 from utils.constants import (
     DEFAULT_BOUNDS as CANONICAL_DEFAULT_BOUNDS,
     LLM_SAFE_DSOC_SUM_MAX,
@@ -693,7 +694,25 @@ def _build_iteration_prompt(
             try:
                 feasible = database.get_feasible()
                 if len(feasible) >= 5:
-                    scored = [(obs.scalarized, obs) for obs in feasible]
+                    y_min = state_dict.get("y_min", getattr(database, "_y_min", None))
+                    y_max = state_dict.get("y_max", getattr(database, "_y_max", None))
+                    ideal = state_dict.get("ideal_point_raw", getattr(database, "_ideal_point_raw", None))
+                    eta = float(state_dict.get("eta", getattr(database, "_eta", 0.05)))
+                    if y_min is None or y_max is None or ideal is None:
+                        scored = []
+                    else:
+                        Y_raw = np.array([obs.objectives for obs in feasible], dtype=float)
+                        scores = compute_tchebycheff_from_raw_with_ideal(
+                            Y_raw,
+                            w,
+                            np.asarray(ideal, dtype=float),
+                            np.asarray(y_min, dtype=float),
+                            np.asarray(y_max, dtype=float),
+                            eta=eta,
+                        )
+                        scored = list(zip(scores, feasible))
+                    if not scored:
+                        raise ValueError("scalarization context unavailable for few-shot prompt")
                     scored.sort(key=lambda x: x[0])
 
                     top_3 = scored[:3]
@@ -961,6 +980,7 @@ class LLMInterface:
                     q_good=q_good,
                     confidence=confidence,
                     rationale_short=rationale,
+                    risk_flags=[],
                 )
             )
         return outputs
@@ -972,6 +992,8 @@ class LLMInterface:
     ) -> List[RerankOutput]:
         if not candidates:
             return []
+        if str(self._config.backend).lower() == "mock":
+            return self._fallback_candidate_goodness(state, candidates)
 
         prompt = render_candidate_rerank_prompt(
             state=state,
@@ -1005,7 +1027,7 @@ class LLMInterface:
                 if not isinstance(row, dict):
                     continue
                 try:
-                    idx = int(row.get("idx"))
+                    idx = int(row.get("candidate_id", row.get("idx")))
                 except Exception:
                     continue
                 if idx not in candidate_ids:
@@ -1018,26 +1040,25 @@ class LLMInterface:
                     confidence = float(np.clip(float(row.get("confidence", 0.5)), 0.0, 1.0))
                 except Exception:
                     confidence = 0.5
+                risk_flags = row.get("risk_flags", [])
+                if not isinstance(risk_flags, list):
+                    risk_flags = []
                 aggregated.setdefault(idx, []).append(
                     {
                         "q_good": q_good,
                         "confidence": confidence,
-                        "rationale_short": str(row.get("rationale_short", ""))[:120],
+                        "rationale_short": str(row.get("rationale_short", row.get("note", "")))[:120],
+                        "risk_flags": [str(flag)[:64] for flag in risk_flags[:5]],
                     }
                 )
 
         if not aggregated:
-            return self._fallback_candidate_goodness(state, candidates)
+            return []
 
-        fallback_map = {
-            int(item.idx): item
-            for item in self._fallback_candidate_goodness(state, candidates)
-        }
         outputs: List[RerankOutput] = []
         for candidate in candidates:
             rows = aggregated.get(int(candidate.idx))
             if not rows:
-                outputs.append(fallback_map[int(candidate.idx)])
                 continue
             q_good = float(np.mean([float(row["q_good"]) for row in rows]))
             confidence = float(np.mean([float(row["confidence"]) for row in rows]))
@@ -1048,6 +1069,7 @@ class LLMInterface:
                     q_good=float(np.clip(q_good, 0.0, 1.0)),
                     confidence=float(np.clip(confidence, 0.0, 1.0)),
                     rationale_short=str(best_row.get("rationale_short", "")),
+                    risk_flags=list(best_row.get("risk_flags", [])),
                 )
             )
         return outputs
@@ -1147,6 +1169,9 @@ class LLMInterface:
         -------
         np.ndarray (n, 5)
         """
+        logger.info(
+            "generate_iteration_candidates is a legacy path; optimizer mainline uses guidance/rerank interfaces"
+        )
         t = state_dict.get("iteration", 0)
         logger.info("=== Touchpoint 2: 迭代候选生成 (t=%d, n=%d) ===", t, n)
 

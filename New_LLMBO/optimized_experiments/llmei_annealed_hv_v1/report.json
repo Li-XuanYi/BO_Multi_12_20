@@ -1,0 +1,245 @@
+{
+  "meta": {
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "iterations": 8,
+    "output_root": "optimized_experiments\\llmei_annealed_hv_v1",
+    "model": "gpt-4.1-mini",
+    "api_base": "https://api.nuwaapi.com/v1"
+  },
+  "baseline_strict": {
+    "mean_final_hv": 0.8590209247410487,
+    "std_final_hv": 0.06689976422867239,
+    "mean_final_hv_raw": 10.110693431608196,
+    "mean_init_hv": 0.6207007724255522,
+    "mean_pareto_size": 14.0,
+    "mean_hv_violations": 0.0,
+    "rerank_active_count": 0,
+    "rerank_applied_count": 0,
+    "mean_rerank_entropy_mean": null,
+    "runs": [
+      {
+        "seed": 0,
+        "final_hv": 0.9282149239741078,
+        "final_hv_raw": 10.925108183802138,
+        "init_hv": 0.6651657512868973,
+        "pareto_size": 13,
+        "hv_violations": 0,
+        "rerank_active": false,
+        "rerank_applied": false,
+        "rerank_gate": null,
+        "rerank_entropy_mean": null
+      },
+      {
+        "seed": 1,
+        "final_hv": 0.7685444965896863,
+        "final_hv_raw": 9.045784066215134,
+        "init_hv": 0.6039964367410424,
+        "pareto_size": 16,
+        "hv_violations": 0,
+        "rerank_active": false,
+        "rerank_applied": false,
+        "rerank_gate": null,
+        "rerank_entropy_mean": null
+      },
+      {
+        "seed": 2,
+        "final_hv": 0.8803033536593521,
+        "final_hv_raw": 10.361188044807315,
+        "init_hv": 0.5929401292487169,
+        "pareto_size": 13,
+        "hv_violations": 0,
+        "rerank_active": false,
+        "rerank_applied": false,
+        "rerank_gate": null,
+        "rerank_entropy_mean": null
+      }
+    ]
+  },
+  "warmstart_plain_ei": {
+    "mean_final_hv": 0.7895612323850677,
+    "std_final_hv": 0.1131793353770836,
+    "mean_final_hv_raw": 9.293151466053812,
+    "mean_init_hv": 0.5758704697599555,
+    "mean_pareto_size": 13.333333333333334,
+    "mean_hv_violations": 0.0,
+    "rerank_active_count": 0,
+    "rerank_applied_count": 0,
+    "mean_rerank_entropy_mean": null,
+    "runs": [
+      {
+        "seed": 0,
+        "final_hv": 0.9138026666944541,
+        "final_hv_raw": 10.755475627929338,
+        "init_hv": 0.6133764457987251,
+        "pareto_size": 14,
+        "hv_violations": 0,
+        "rerank_active": false,
+        "rerank_applied": false,
+        "rerank_gate": null,
+        "rerank_entropy_mean": null
+      },
+      {
+        "seed": 1,
+        "final_hv": 0.8148326912826814,
+        "final_hv_raw": 9.59059704173671,
+        "init_hv": 0.595974971045683,
+        "pareto_size": 14,
+        "hv_violations": 0,
+        "rerank_active": false,
+        "rerank_applied": false,
+        "rerank_gate": null,
+        "rerank_entropy_mean": null
+      },
+      {
+        "seed": 2,
+        "final_hv": 0.6400483391780678,
+        "final_hv_raw": 7.533381728495385,
+        "init_hv": 0.5182599924354584,
+        "pareto_size": 12,
+        "hv_violations": 0,
+        "rerank_active": false,
+        "rerank_applied": false,
+        "rerank_gate": null,
+        "rerank_entropy_mean": null
+      }
+    ]
+  },
+  "warmstart_llmei_const": {
+    "mean_final_hv": 0.8243642625874154,
+    "std_final_hv": 0.10870884758299787,
+    "mean_final_hv_raw": 9.702783826258555,
+    "mean_init_hv": 0.5763807034809528,
+    "mean_pareto_size": 13.333333333333334,
+    "mean_hv_violations": 0.0,
+    "rerank_active_count": 3,
+    "rerank_applied_count": 3,
+    "mean_rerank_entropy_mean": 0.6183164529211828,
+    "runs": [
+      {
+        "seed": 0,
+        "final_hv": 0.8945288895015056,
+        "final_hv_raw": 10.528622885633487,
+        "init_hv": 0.6143210510930666,
+        "pareto_size": 13,
+        "hv_violations": 0,
+        "rerank_active": true,
+        "rerank_applied": true,
+        "rerank_gate": 0.25,
+        "rerank_entropy_mean": 0.6093631834314949
+      },
+      {
+        "seed": 1,
+        "final_hv": 0.9077476157251272,
+        "final_hv_raw": 10.684207557152037,
+        "init_hv": 0.5965610669143333,
+        "pareto_size": 14,
+        "hv_violations": 0,
+        "rerank_active": true,
+        "rerank_applied": true,
+        "rerank_gate": 0.25,
+        "rerank_entropy_mean": 0.6713777690007391
+      },
+      {
+        "seed": 2,
+        "final_hv": 0.6708162825356134,
+        "final_hv_raw": 7.895521035990142,
+        "init_hv": 0.5182599924354584,
+        "pareto_size": 13,
+        "hv_violations": 0,
+        "rerank_active": true,
+        "rerank_applied": true,
+        "rerank_gate": 0.25,
+        "rerank_entropy_mean": 0.5742084063313143
+      }
+    ]
+  },
+  "warmstart_llmei_annealed_hv": {
+    "mean_final_hv": 0.7834182957821362,
+    "std_final_hv": 0.03211146054441575,
+    "mean_final_hv_raw": 9.220848979614649,
+    "mean_init_hv": 0.5756196741728655,
+    "mean_pareto_size": 12.666666666666666,
+    "mean_hv_violations": 0.0,
+    "rerank_active_count": 3,
+    "rerank_applied_count": 3,
+    "mean_rerank_entropy_mean": 0.6810634034543783,
+    "runs": [
+      {
+        "seed": 0,
+        "final_hv": 0.7873533485344323,
+        "final_hv_raw": 9.267164629059005,
+        "init_hv": 0.6130559038934463,
+        "pareto_size": 14,
+        "hv_violations": 0,
+        "rerank_active": true,
+        "rerank_applied": true,
+        "rerank_gate": 0.09872805357502952,
+        "rerank_entropy_mean": 0.7940816807036257
+      },
+      {
+        "seed": 1,
+        "final_hv": 0.8206311901199218,
+        "final_hv_raw": 9.65884548879817,
+        "init_hv": 0.595543126189692,
+        "pareto_size": 14,
+        "hv_violations": 0,
+        "rerank_active": true,
+        "rerank_applied": true,
+        "rerank_gate": 0.07009100187579098,
+        "rerank_entropy_mean": 0.45496148203432957
+      },
+      {
+        "seed": 2,
+        "final_hv": 0.7422703486920545,
+        "final_hv_raw": 8.736536820986775,
+        "init_hv": 0.5182599924354584,
+        "pareto_size": 10,
+        "hv_violations": 0,
+        "rerank_active": true,
+        "rerank_applied": true,
+        "rerank_gate": 0.053550971843774074,
+        "rerank_entropy_mean": 0.7941470476251796
+      }
+    ]
+  },
+  "plain_vs_baseline": {
+    "abs_diff": -0.06945969235598093,
+    "rel_diff_pct": -7.607381580308009,
+    "wins": 1,
+    "total": 3
+  },
+  "const_vs_plain": {
+    "abs_diff": 0.034803030202347617,
+    "rel_diff_pct": 4.700296478247808,
+    "wins": 2,
+    "total": 3
+  },
+  "const_vs_baseline": {
+    "abs_diff": -0.03465666215363331,
+    "rel_diff_pct": -3.1045670184902137,
+    "wins": 1,
+    "total": 3
+  },
+  "annealed_vs_plain": {
+    "abs_diff": -0.006142936602931563,
+    "rel_diff_pct": 0.9482986467973836,
+    "wins": 2,
+    "total": 3
+  },
+  "annealed_vs_baseline": {
+    "abs_diff": -0.0756026289589125,
+    "rel_diff_pct": -8.026127114865371,
+    "wins": 1,
+    "total": 3
+  },
+  "annealed_vs_const": {
+    "abs_diff": -0.04094596680527918,
+    "rel_diff_pct": -3.642135484256663,
+    "wins": 1,
+    "total": 3
+  }
+}

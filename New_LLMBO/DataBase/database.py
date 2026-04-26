@@ -18,6 +18,12 @@ from datetime import datetime
 from typing import Dict, List, Optional, Tuple, Any
 
 import numpy as np
+from llmbo.scalarization import (
+    apply_min_range_floor,
+    canonical_hv_from_raw,
+    compute_tchebycheff_from_raw,
+    compute_tchebycheff_from_raw_with_ideal,
+)
 from utils.constants import (
     DEFAULT_BOUNDS as CANONICAL_DEFAULT_BOUNDS,
     DSOC_SUM_MAX as CANONICAL_DSOC_SUM_MAX,
@@ -492,6 +498,10 @@ class ObservationDB:
         """未归一化超体积（供调试）。"""
         return self._compute_hypervolume_value(ref_point=ref_point)
 
+    def compute_hypervolume_canonical(self, ref_point: Optional[np.ndarray] = None) -> float:
+        """Canonical normalized HV used for benchmark and ablation comparisons."""
+        return canonical_hv_from_raw(self.compute_hypervolume_raw(ref_point=ref_point), self.hv_max)
+
     def _compute_hypervolume_value(self, ref_point: Optional[np.ndarray] = None) -> float:
         ref = np.asarray(ref_point if ref_point is not None else self.ref_point, dtype=float).copy()
         _, Y_pf = self.get_pareto_XY()
@@ -568,6 +578,9 @@ class ObservationDB:
             "n_feasible":      self.n_feasible,
             "pareto_size":     self.pareto_size,
             "hypervolume":     self.compute_hypervolume(),
+            "display_hv":      self.compute_hypervolume(),
+            "canonical_hv":    self.compute_hypervolume_canonical(),
+            "hypervolume_canonical": self.compute_hypervolume_canonical(),
             "hypervolume_raw": self.compute_hypervolume_raw(),
         }
         y_stats = self.get_Y_stats(feasible_only=True)
@@ -593,30 +606,46 @@ class ObservationDB:
     def get_hv_trace(self) -> np.ndarray:
         return np.array([s["hypervolume"] for s in self._iteration_stats])
 
+    def get_canonical_hv_trace(self) -> np.ndarray:
+        return np.array([
+            s.get("canonical_hv", canonical_hv_from_raw(s.get("hypervolume_raw", 0.0), self.hv_max))
+            for s in self._iteration_stats
+        ])
+
     def get_hv_feedback_summary(self, window: int = 3) -> Dict[str, Any]:
-        current_hv = float(self.compute_hypervolume())
+        current_display_hv = float(self.compute_hypervolume())
+        current_canonical_hv = float(self.compute_hypervolume_canonical())
         stats = self.get_iteration_stats()
         window = max(int(window), 1)
         if not stats:
             return {
-                "current_hv": current_hv,
+                "current_hv": current_display_hv,
+                "current_display_hv": current_display_hv,
+                "current_canonical_hv": current_canonical_hv,
                 "hv_delta_last_k": 0.0,
+                "canonical_hv_delta_last_k": 0.0,
                 "pareto_delta_last_k": 0,
                 "window": window,
                 "summary": "HV history unavailable in this iteration.",
             }
 
         recent = stats[-window:]
-        start_hv = float(recent[0].get("hypervolume", current_hv))
-        delta = current_hv - start_hv
+        start_hv = float(recent[0].get("hypervolume", current_display_hv))
+        start_canonical = float(recent[0].get("canonical_hv", current_canonical_hv))
+        delta = current_display_hv - start_hv
+        canonical_delta = current_canonical_hv - start_canonical
         pareto_delta = int(self.pareto_size) - int(recent[0].get("pareto_size", self.pareto_size))
         return {
-            "current_hv": current_hv,
+            "current_hv": current_display_hv,
+            "current_display_hv": current_display_hv,
+            "current_canonical_hv": current_canonical_hv,
             "hv_delta_last_k": float(delta),
+            "canonical_hv_delta_last_k": float(canonical_delta),
             "pareto_delta_last_k": int(pareto_delta),
             "window": window,
             "summary": (
-                f"current_hv={current_hv:.6f}, hv_delta_last_{window}={delta:.6f}, "
+                f"display_hv={current_display_hv:.6f}, canonical_hv={current_canonical_hv:.6f}, "
+                f"canonical_hv_delta_last_{window}={canonical_delta:.6f}, "
                 f"pareto_size={self.pareto_size}, pareto_delta_last_{window}={pareto_delta}"
             ),
         }
@@ -661,7 +690,7 @@ class ObservationDB:
                 continue
 
             next_stat = stats[idx + 1]
-            hv_gain = float(next_stat.get("hypervolume", 0.0)) - float(stat.get("hypervolume", 0.0))
+            hv_gain = float(next_stat.get("canonical_hv", 0.0)) - float(stat.get("canonical_hv", 0.0))
             pf_gain = int(next_stat.get("pareto_size", 0)) - int(stat.get("pareto_size", 0))
             success = 1.0 if (hv_gain > float(hv_gain_threshold) or pf_gain > 0) else 0.0
             weighted_success += similarity * success
@@ -937,7 +966,7 @@ class ObservationDB:
         if not feasible:
             return
 
-        Y_raw = np.array([o.objectives for o in feasible])
+        Y_raw = np.array([o.objectives for o in feasible], dtype=float)
 
         # log₁₀ 变换
         Y_tilde = Y_raw.copy()
@@ -966,6 +995,33 @@ class ObservationDB:
         w  = self._w_vec
         Wf = w[np.newaxis, :] * Y_bar
         F_tch = Wf.max(axis=1) + self._eta * Wf.sum(axis=1)
+
+        # Final scalarization is delegated to the shared module so optimizer,
+        # database, and prompts use the same context-dependent f_w semantics.
+        y_min, y_max = apply_min_range_floor(
+            self._y_min,
+            self._y_max,
+            self.ideal_point,
+            self.ref_point,
+            min_fraction=0.05,
+        )
+        if self._ideal_point_raw is not None:
+            F_tch = compute_tchebycheff_from_raw_with_ideal(
+                Y_raw,
+                self._w_vec,
+                self._ideal_point_raw,
+                y_min,
+                y_max,
+                eta=self._eta,
+            )
+        else:
+            F_tch = compute_tchebycheff_from_raw(
+                Y_raw,
+                self._w_vec,
+                y_min,
+                y_max,
+                eta=self._eta,
+            )
 
         best_idx = int(np.argmin(F_tch))
         self._prev_f_min = self._f_min

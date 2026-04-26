@@ -172,7 +172,6 @@ def build_run_manifest() -> List[Dict[str, Any]]:
                 "enable_acq_prior_coupling": bool(config.get("enable_acq_prior_coupling", False)),
                 "enable_llm_rerank": bool(config.get("enable_llm_rerank", False)),
                 "enable_proposal_sampler": bool(config.get("enable_proposal_sampler", False)),
-                "llm_rerank_gate_mode": config.get("llm_rerank_gate_mode"),
                 "llm_rerank_const_gate": _safe_float(config.get("llm_rerank_const_gate")),
                 "last_guidance_mode": (summary.get("last_guidance") or {}).get("mode"),
                 "last_guidance_confidence": _safe_float((summary.get("last_guidance") or {}).get("confidence")),

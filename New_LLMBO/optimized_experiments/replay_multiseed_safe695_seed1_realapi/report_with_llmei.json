@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "seed": 1,
+    "iterations": 5,
+    "backend": "real_api",
+    "experiment": "replay_multiseed_safe695"
+  },
+  "groups": {
+    "baseline_strict": {
+      "summary_path": "optimized_experiments\\replay_multiseed_safe695_seed1_realapi\\baseline_strict\\summary.json",
+      "init_display_hv": 0.6069166158468122,
+      "init_canonical_hv": 0.2427666463387249,
+      "final_display_hv": 0.7795972194202736,
+      "final_canonical_hv": 0.3118388877681095,
+      "hypervolume_raw": 9.175874834560846,
+      "pareto_size": 10,
+      "hv_violations": 0
+    },
+    "warm3_safe695_focus": {
+      "summary_path": "optimized_experiments\\replay_multiseed_safe695_seed1_realapi\\warm3_safe695_focus\\summary.json",
+      "init_display_hv": 0.5493230912610106,
+      "init_canonical_hv": 0.21972923650440426,
+      "final_display_hv": 0.8777813158883594,
+      "final_canonical_hv": 0.3511125263553438,
+      "hypervolume_raw": 10.331503609898899,
+      "pareto_size": 11,
+      "hv_violations": 0
+    },
+    "warm3_safe695_const_llmei": {
+      "summary_path": "optimized_experiments\\replay_multiseed_safe695_seed1_realapi\\warm3_safe695_const_llmei\\summary.json",
+      "init_display_hv": 0.5493129220039558,
+      "init_canonical_hv": 0.21972516880158233,
+      "final_display_hv": 0.7659262819663539,
+      "final_canonical_hv": 0.3063705127865416,
+      "hypervolume_raw": 9.014967627834839,
+      "pareto_size": 13,
+      "hv_violations": 0,
+      "rerank_applied_count": 2,
+      "last_rerank_summary": {
+        "active": true,
+        "applied": false,
+        "llm_called": true,
+        "tau_t": 0.06482626342631248,
+        "top_m": 12,
+        "gate": 0.25,
+        "gate_state": {
+          "g_value": 0.25,
+          "mode": "constant",
+          "hv_gain_recent_mean": 0.019210224167406583,
+          "violation_rate_recent": 0.0,
+          "llm_uncertainty_recent": 0.8114847890186413
+        },
+        "entropy_mean": 0.8097084885402751,
+        "selected_indices_before": [
+          137,
+          142
+        ],
+        "selected_indices_after": [
+          137,
+          142
+        ],
+        "fallback_reason": "high_entropy",
+        "rows": []
+      }
+    }
+  },
+  "comparison": {
+    "warm_minus_baseline": 0.039273638587234316
+  },
+  "comparison_three_way": {
+    "llmei_minus_plain": -0.0447420135688022,
+    "llmei_minus_baseline": -0.005468374981567881,
+    "plain_minus_baseline": 0.039273638587234316,
+    "ordering": [
+      [
+        "warm3_safe695_focus",
+        0.3511125263553438
+      ],
+      [
+        "baseline_strict",
+        0.3118388877681095
+      ],
+      [
+        "warm3_safe695_const_llmei",
+        0.3063705127865416
+      ]
+    ]
+  }
+}

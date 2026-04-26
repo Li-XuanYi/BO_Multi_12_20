@@ -11,7 +11,7 @@ Decision variables:
   dSOC2 in [[DSOC2_MIN], [DSOC2_MAX]]
 Practical hard limit: keep dSOC1 + dSOC2 strictly below [DSOC_HARD_LIMIT].
 Safety margin: dSOC1 + dSOC2 <= [DSOC_SAFE_LIMIT] is strongly recommended.
-Current profile guideline: I1 >= I2 >= I3 is preferred when possible.
+Current profile guideline: I1 >= I2 >= I3 is a soft preference, not a hard constraint.
 Objectives to minimize: charging time [s], temperature rise [K], aging [%].
 
 Current BO round:
@@ -43,16 +43,20 @@ Important rules:
 1. Judge relative quality under the current weight vector, not any single raw objective in isolation.
 2. Respect safety margins first. Candidates near the dSOC boundary or with non-monotone current profiles should receive lower q_good unless there is a very strong reason.
 3. Do not invent new candidates.
-4. Return JSON only.
+4. Lower scalarized objective is better under the current weight vector.
+5. 0.70 is hard feasibility and 0.65 is the soft safety margin.
+6. Do not override EI unless candidates are nearly tied; use log_ei_gap_to_best as a tie-strength hint.
+7. Return JSON only.
 
 Return exactly:
 {
   "candidates": [
     {
-      "idx": 0,
+      "candidate_id": 0,
       "q_good": 0.73,
       "confidence": 0.81,
-      "rationale_short": "better weighted tradeoff"
+      "risk_flags": ["near_dsoc_boundary"],
+      "note": "better weighted tradeoff"
     }
   ]
 }

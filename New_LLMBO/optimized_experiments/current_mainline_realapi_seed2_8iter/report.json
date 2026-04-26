@@ -1,0 +1,204 @@
+{
+  "meta": {
+    "seed": 2,
+    "iterations": 8,
+    "backend": "real_api"
+  },
+  "groups": {
+    "baseline_strict": {
+      "summary_path": "optimized_experiments\\current_mainline_realapi_seed2_8iter\\baseline_strict\\summary.json",
+      "init_display_hv": 0.6173519804576071,
+      "init_canonical_hv": 0.24694079218304285,
+      "final_display_hv": 0.8396733799487762,
+      "final_canonical_hv": 0.3358693519795105,
+      "hypervolume_raw": 9.882972443195785,
+      "pareto_size": 16,
+      "hv_violations": 0,
+      "rerank_applied_count": 0,
+      "last_rerank_summary": null
+    },
+    "warmstart_plain_ei": {
+      "summary_path": "optimized_experiments\\current_mainline_realapi_seed2_8iter\\warmstart_plain_ei\\summary.json",
+      "init_display_hv": 0.5645896439073335,
+      "init_canonical_hv": 0.2258358575629334,
+      "final_display_hv": 0.7183632594235595,
+      "final_canonical_hv": 0.2873453037694238,
+      "hypervolume_raw": 8.45514990307356,
+      "pareto_size": 18,
+      "hv_violations": 0,
+      "rerank_applied_count": 0,
+      "last_rerank_summary": null
+    },
+    "warmstart_llmei_const": {
+      "summary_path": "optimized_experiments\\current_mainline_realapi_seed2_8iter\\warmstart_llmei_const\\summary.json",
+      "init_display_hv": 0.5640138789279943,
+      "init_canonical_hv": 0.22560555157119772,
+      "final_display_hv": 0.7720456531393639,
+      "final_canonical_hv": 0.3088182612557456,
+      "hypervolume_raw": 9.08699274869342,
+      "pareto_size": 18,
+      "hv_violations": 0,
+      "rerank_applied_count": 3,
+      "last_rerank_summary": {
+        "active": true,
+        "applied": true,
+        "llm_called": true,
+        "tau_t": 0.0314789957087475,
+        "top_m": 12,
+        "gate": 0.25,
+        "gate_state": {
+          "g_value": 0.25,
+          "mode": "constant",
+          "hv_gain_recent_mean": 0.009394911418666604,
+          "violation_rate_recent": 0.0,
+          "llm_uncertainty_recent": 0.6863372941737489
+        },
+        "entropy_mean": 0.46298062975223314,
+        "score_mode": "log_ei_plus_gate",
+        "selected_indices_before": [
+          135,
+          40
+        ],
+        "selected_scores_before": [
+          0.025540714860493516,
+          0.01659081960258354
+        ],
+        "selected_indices_after": [
+          135,
+          136
+        ],
+        "selected_scores_after": [
+          -3.8924814388910853,
+          -4.1227727129761425
+        ],
+        "rows": [
+          {
+            "idx": 135,
+            "ei": 0.025540714860493516,
+            "q_good": 0.05,
+            "confidence": 0.7,
+            "entropy": 0.2863969571159562,
+            "centered_score": -0.9,
+            "rerank_score": -3.8924814388910853,
+            "rationale_short": "violates hard dSOC limit; non-monotone current profile; high mu_fw"
+          },
+          {
+            "idx": 136,
+            "ei": 0.013598813767126561,
+            "q_good": 0.85,
+            "confidence": 0.9,
+            "entropy": 0.6098403047164005,
+            "centered_score": 0.7,
+            "rerank_score": -4.1227727129761425,
+            "rationale_short": "within safety margin; monotone current profile; very low mu_fw and sigma_fw"
+          },
+          {
+            "idx": 133,
+            "ei": 0.013598813766367734,
+            "q_good": 0.85,
+            "confidence": 0.9,
+            "entropy": 0.6098403047164005,
+            "centered_score": 0.7,
+            "rerank_score": -4.122772713031943,
+            "rationale_short": "identical to candidate 136; safe and monotone"
+          },
+          {
+            "idx": 137,
+            "ei": 0.013598813758484343,
+            "q_good": 0.85,
+            "confidence": 0.9,
+            "entropy": 0.6098403047164005,
+            "centered_score": 0.7,
+            "rerank_score": -4.122772713611655,
+            "rationale_short": "identical to candidate 136; safe and monotone"
+          },
+          {
+            "idx": 40,
+            "ei": 0.01659081960258354,
+            "q_good": 0.02,
+            "confidence": 0.65,
+            "entropy": 0.14144054254182067,
+            "centered_score": -0.96,
+            "rerank_score": -4.338905772529117,
+            "rationale_short": "dSOC sum slightly above safety margin; I1<I2 violates preferred current profile; high mu_fw"
+          },
+          {
+            "idx": 131,
+            "ei": 0.015495388307523464,
+            "q_good": 0.03,
+            "confidence": 0.68,
+            "entropy": 0.1943918578315762,
+            "centered_score": -0.94,
+            "rerank_score": -4.402212827809674,
+            "rationale_short": "dSOC sum well below hard limit; monotone current profile; moderate mu_fw"
+          },
+          {
+            "idx": 65,
+            "ei": 0.013564511817161465,
+            "q_good": 0.1,
+            "confidence": 0.6,
+            "entropy": 0.46899559358928117,
+            "centered_score": -0.8,
+            "rerank_score": -4.5002983218593124,
+            "rationale_short": "dSOC sum below hard limit but current profile non-monotone; moderate mu_fw"
+          },
+          {
+            "idx": 3,
+            "ei": 0.010995985069506196,
+            "q_good": 0.5,
+            "confidence": 0.8,
+            "entropy": 1.0,
+            "centered_score": 0.0,
+            "rerank_score": -4.510225066400485,
+            "rationale_short": "dSOC sum well below safety margin; monotone profile; low mu_fw"
+          },
+          {
+            "idx": 93,
+            "ei": 0.012519683450932566,
+            "q_good": 0.02,
+            "confidence": 0.65,
+            "entropy": 0.14144054254182067,
+            "centered_score": -0.96,
+            "rerank_score": -4.620453197021782,
+            "rationale_short": "dSOC sum near safety margin; I1<I2 violates preferred profile; high mu_fw"
+          },
+          {
+            "idx": 117,
+            "ei": 0.01100328050857469,
+            "q_good": 0.12,
+            "confidence": 0.65,
+            "entropy": 0.5293608652873644,
+            "centered_score": -0.76,
+            "rerank_score": -4.699561822501787,
+            "rationale_short": "dSOC sum below hard limit; non-monotone profile; low mu_fw"
+          },
+          {
+            "idx": 102,
+            "ei": 0.011401682337141374,
+            "q_good": 0.04,
+            "confidence": 0.7,
+            "entropy": 0.24229218908241482,
+            "centered_score": -0.92,
+            "rerank_score": -4.703994360948416,
+            "rationale_short": "dSOC sum near safety margin; monotone profile; moderate mu_fw"
+          },
+          {
+            "idx": 134,
+            "ei": 0.008533845357416959,
+            "q_good": 0.2,
+            "confidence": 0.75,
+            "entropy": 0.7219280948873623,
+            "centered_score": -0.6,
+            "rerank_score": -4.913715215025348,
+            "rationale_short": "dSOC sum at safety margin; non-monotone profile; moderate mu_fw"
+          }
+        ]
+      }
+    }
+  },
+  "comparisons": {
+    "warmstart_plain_minus_baseline": -0.04852404821008671,
+    "llmei_const_minus_plain": 0.021472957486321775,
+    "llmei_const_minus_baseline": -0.027051090723764937
+  }
+}

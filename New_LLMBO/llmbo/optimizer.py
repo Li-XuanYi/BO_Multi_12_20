@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import dataclasses
 import json
 import logging
 import os
@@ -18,17 +19,27 @@ from llmbo.acquisition import (
     build_ei_candidate_pool,
     select_topm_for_rerank,
 )
+from llmbo.constraint_policy import build_constraint_policy
 from llmbo.gp_model import build_gp_stack
 from llmbo.proposal import ProposalTrainingRecord, build_proposal_sampler
-from llmbo.rerank import RerankState, TrialTelemetry, compute_online_gate, rerank_topm_with_llm
+from llmbo.rerank import (
+    RerankState,
+    TrialTelemetry,
+    rerank_topm_with_llm,
+)
+from llmbo.scalarization import (
+    apply_min_range_floor,
+    canonical_hv_from_raw,
+    compute_dynamic_bounds,
+    compute_tchebycheff_from_raw_with_ideal,
+    log_transform_objectives,
+)
 from pybamm_simulator import PyBaMMSimulator
 from utils.constants import (
     DSOC_SUM_MAX as CANONICAL_DSOC_SUM_MAX,
     IDEAL_POINT,
     LLM_SAFE_DSOC_SUM_MAX,
     REF_POINT,
-    dsoc_sum_violates_limit,
-    project_dsoc_pair,
 )
 
 logger = logging.getLogger(__name__)
@@ -44,6 +55,7 @@ def _stable_sigmoid(x: np.ndarray) -> np.ndarray:
 
 
 DEFAULT_CONFIG = {
+    "experiment_preset": None,
     "max_iterations": 20,
     "n_warmstart": 10,
     "n_random_init": 3,
@@ -117,16 +129,19 @@ DEFAULT_CONFIG = {
     "acq_risk_hard_weight": 3.00,
     "acq_risk_monotone_weight": 0.40,
     "enable_llm_rerank": False,
-    "llm_rerank_top_m": 12,
+    "llm_rerank_mode": "none",
+    "llm_rerank_top_m": 5,
     "llm_rerank_gamma_quantile": 0.20,
-    "llm_rerank_score_mode": "log_ei_plus_gate",
-    "llm_rerank_gate_mode": "online",
+    "llm_rerank_eps": 1e-12,
+    "llm_rerank_max_log_ei_gap": 0.20,
+    "llm_rerank_gate": 0.10,
+    "llm_rerank_max_bonus": 0.05,
+    "llm_rerank_q_bad_threshold": 0.60,
+    "llm_rerank_min_confidence": 0.50,
+    "llm_rerank_parse_fail_open": True,
+    "llm_rerank_score_mode": "unsafe_legacy_const_gate",
     "llm_rerank_const_gate": 0.25,
-    "llm_rerank_lambda_max": 0.60,
     "llm_rerank_gate_window": 5,
-    "llm_rerank_gate_a": 4.0,
-    "llm_rerank_gate_b": 3.0,
-    "llm_rerank_gate_c": 2.0,
     "llm_rerank_min_ei": 1e-10,
     "llm_rerank_entropy_threshold": 0.80,
     "llm_rerank_fail_open_to_plain_ei": True,
@@ -139,66 +154,46 @@ DEFAULT_CONFIG = {
 }
 
 
-def log_transform_objectives(Y_raw: np.ndarray) -> np.ndarray:
-    Y_raw = np.atleast_2d(np.asarray(Y_raw, dtype=float))
-    Y_tilde = Y_raw.copy()
-    Y_tilde[:, 0] = np.log10(np.maximum(Y_raw[:, 0], 1.0))
-    Y_tilde[:, 2] = np.log10(np.maximum(Y_raw[:, 2], 1e-12))
-    return Y_tilde
-
-
-def compute_dynamic_bounds(Y_tilde: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-    Y_tilde = np.atleast_2d(np.asarray(Y_tilde, dtype=float))
-    return Y_tilde.min(axis=0), Y_tilde.max(axis=0)
-
-
-def normalize_objectives(
-    Y_tilde: np.ndarray,
-    y_min: np.ndarray,
-    y_max: np.ndarray,
-) -> np.ndarray:
-    denom = np.asarray(y_max, dtype=float) - np.asarray(y_min, dtype=float)
-    denom = np.where(denom < 1e-12, 1.0, denom)
-    return (np.asarray(Y_tilde, dtype=float) - np.asarray(y_min, dtype=float)) / denom
-
-
-def compute_tchebycheff(
-    Y_bar: np.ndarray,
-    w_vec: np.ndarray,
-    eta: float = 0.05,
-) -> np.ndarray:
-    Y_bar = np.atleast_2d(np.asarray(Y_bar, dtype=float))
-    w = np.asarray(w_vec, dtype=float).ravel()
-    weighted = Y_bar * w[np.newaxis, :]
-    return weighted.max(axis=1) + float(eta) * weighted.sum(axis=1)
-
-
-def compute_tchebycheff_from_raw(
-    Y_raw: np.ndarray,
-    w_vec: np.ndarray,
-    y_min: np.ndarray,
-    y_max: np.ndarray,
-    eta: float = 0.05,
-) -> np.ndarray:
-    Y_tilde = log_transform_objectives(Y_raw)
-    Y_bar = normalize_objectives(Y_tilde, y_min, y_max)
-    return compute_tchebycheff(Y_bar, w_vec, eta=eta)
-
-
-def compute_tchebycheff_from_raw_with_ideal(
-    Y_raw: np.ndarray,
-    w_vec: np.ndarray,
-    ideal_point_raw: np.ndarray,
-    y_min: np.ndarray,
-    y_max: np.ndarray,
-    eta: float = 0.05,
-) -> np.ndarray:
-    Y_tilde = log_transform_objectives(Y_raw)
-    ideal_tilde = log_transform_objectives(np.asarray(ideal_point_raw, dtype=float)[None, :])[0]
-    denom = np.asarray(y_max, dtype=float) - np.asarray(y_min, dtype=float)
-    denom = np.where(denom < 1e-12, 1.0, denom)
-    Y_gap = np.abs(Y_tilde - ideal_tilde[np.newaxis, :]) / denom[np.newaxis, :]
-    return compute_tchebycheff(Y_gap, w_vec, eta=eta)
+EXPERIMENT_PRESETS = {
+    "warmstart_plain_ei": {
+        "n_warmstart": 3,
+        "n_random_init": 3,
+        "enable_iterative_guidance": False,
+        "enable_gp_llm_coupling": False,
+        "enable_acq_prior_coupling": False,
+        "enable_proposal_sampler": False,
+        "enable_llm_rerank": False,
+    },
+    "strict_baseline": {
+        "n_warmstart": 0,
+        "n_random_init": 6,
+        "enable_iterative_guidance": False,
+        "enable_gp_llm_coupling": False,
+        "enable_acq_prior_coupling": False,
+        "enable_proposal_sampler": False,
+        "enable_llm_rerank": False,
+    },
+    "warmstart_safe_tiebreak": {
+        "n_warmstart": 3,
+        "n_random_init": 3,
+        "enable_iterative_guidance": False,
+        "enable_gp_llm_coupling": False,
+        "enable_acq_prior_coupling": False,
+        "enable_proposal_sampler": False,
+        "enable_llm_rerank": True,
+        "llm_rerank_mode": "ei_preserving_tiebreak",
+    },
+    "warmstart_risk_veto": {
+        "n_warmstart": 3,
+        "n_random_init": 3,
+        "enable_iterative_guidance": False,
+        "enable_gp_llm_coupling": False,
+        "enable_acq_prior_coupling": False,
+        "enable_proposal_sampler": False,
+        "enable_llm_rerank": True,
+        "llm_rerank_mode": "risk_veto_only",
+    },
+}
 
 
 def _project_to_simplex(v: np.ndarray) -> np.ndarray:
@@ -262,12 +257,21 @@ def generate_riesz_weight_set(
 
 class BayesOptimizer:
     def __init__(self, config: Optional[Dict[str, Any]] = None):
-        user_cfg = config or {}
-        self.cfg = {**DEFAULT_CONFIG, **user_cfg}
+        user_cfg = dict(config or {})
+        preset_name = user_cfg.get("experiment_preset") or user_cfg.get("preset")
+        cfg = dict(DEFAULT_CONFIG)
+        if preset_name:
+            if str(preset_name) not in EXPERIMENT_PRESETS:
+                available = ", ".join(sorted(EXPERIMENT_PRESETS))
+                raise ValueError(f"Unknown experiment preset '{preset_name}'. Available: {available}")
+            cfg.update(EXPERIMENT_PRESETS[str(preset_name)])
+        cfg.update(user_cfg)
+        cfg["experiment_preset"] = preset_name
+        self.cfg = cfg
         if "enable_gp_llm_coupling" not in user_cfg and "enable_region_lift" in user_cfg:
             self.cfg["enable_gp_llm_coupling"] = bool(user_cfg["enable_region_lift"])
-        if self.cfg.get("n_candidates") and not config.get("ei_n_random_samples") if config else True:
-            self.cfg.setdefault("ei_n_random_samples", max(64, int(self.cfg["n_candidates"]) * 8))
+        if "n_candidates" in user_cfg and self.cfg.get("n_candidates") and "ei_n_random_samples" not in user_cfg:
+            self.cfg["ei_n_random_samples"] = max(64, int(self.cfg["n_candidates"]) * 8)
 
         seed = self.cfg.get("w_sample_seed")
         self._rng = np.random.default_rng(seed)
@@ -281,6 +285,7 @@ class BayesOptimizer:
         self.gp: Any = None
         self.af: Any = None
         self.proposal: Any = None
+        self.constraint_policy = build_constraint_policy(self.cfg)
         self._weight_set: Optional[np.ndarray] = None
         self._warmstart_hv_trace: List[Dict[str, Any]] = []
         self._hv_eval_trace: List[Dict[str, Any]] = []
@@ -449,11 +454,17 @@ class BayesOptimizer:
             )
 
             if i % log_interval == 0 or i == len(scheduled):
+                hv_raw = self.database.compute_hypervolume_raw()
+                hv_canonical = canonical_hv_from_raw(hv_raw, self.database.hv_max)
+                hv_display = self.database.compute_hypervolume()
                 hv_trace.append(
                     {
                         "n_evaluated": i,
-                        "hypervolume": self.database.compute_hypervolume(),
-                        "hypervolume_raw": self.database.compute_hypervolume_raw(),
+                        "hypervolume": hv_display,
+                        "display_hv": hv_display,
+                        "canonical_hv": hv_canonical,
+                        "hypervolume_canonical": hv_canonical,
+                        "hypervolume_raw": hv_raw,
                         "pareto_size": self.database.pareto_size,
                     }
                 )
@@ -657,10 +668,17 @@ class BayesOptimizer:
                 if guidance is not None else None
             )
             rerank_selected_map: Dict[int, Dict[str, Any]] = {}
+            topm_candidate_map: Dict[int, Dict[str, Any]] = {}
             if self._last_rerank_summary and self._last_rerank_summary.get("rows"):
                 rerank_selected_map = {
                     int(row["idx"]): row
                     for row in self._last_rerank_summary.get("rows", [])
+                }
+            if self._last_rerank_summary and self._last_rerank_summary.get("topm_candidates"):
+                topm_candidate_map = {
+                    int(row["idx"]): row
+                    for row in self._last_rerank_summary.get("topm_candidates", [])
+                    if isinstance(row, dict) and "idx" in row
                 }
             for rank, theta in enumerate(acq_result.selected_thetas):
                 logger.info("  Evaluate rank=%d theta=%s", rank, np.round(theta, 4))
@@ -672,6 +690,8 @@ class BayesOptimizer:
                 plain_idx = int(plain_selected_indices[min(rank, len(plain_selected_indices) - 1)]) if plain_selected_indices else selected_idx
                 plain_score = float(plain_selected_scores[min(rank, len(plain_selected_scores) - 1)]) if len(plain_selected_scores) else None
                 rerank_row = rerank_selected_map.get(selected_idx, {})
+                plain_row = rerank_selected_map.get(plain_idx, topm_candidate_map.get(plain_idx, {}))
+                rerank_candidate = topm_candidate_map.get(selected_idx, {})
                 self.database.add_from_simulator(
                     theta=theta,
                     result=sim_result,
@@ -745,6 +765,27 @@ class BayesOptimizer:
                     hv_after=float(hv_after_raw),
                     hv_gain=float(hv_after_raw - hv_before_raw),
                     feasible=bool(sim_result["feasible"]),
+                    plain_ei=None if not plain_row else plain_row.get("ei"),
+                    rerank_ei=None if not rerank_candidate else rerank_candidate.get("ei"),
+                    ei_ratio=(
+                        None
+                        if not plain_row or not rerank_candidate or float(plain_row.get("ei", 0.0)) <= 1e-12
+                        else float(rerank_candidate.get("ei", 0.0)) / float(plain_row.get("ei", 1.0))
+                    ),
+                    log_ei_gap=None if not rerank_row else rerank_row.get("log_ei_gap_to_best"),
+                    plain_mu=None if not plain_row else plain_row.get("mu_fw"),
+                    plain_sigma=None if not plain_row else plain_row.get("sigma_fw"),
+                    rerank_mu=None if not rerank_candidate else rerank_candidate.get("mu_fw"),
+                    rerank_sigma=None if not rerank_candidate else rerank_candidate.get("sigma_fw"),
+                    plain_rank_by_ei=None if not plain_row else plain_row.get("rank_by_ei"),
+                    rerank_rank_by_ei=None if not rerank_candidate else rerank_candidate.get("rank_by_ei"),
+                    llm_q_plain=None if not plain_row else plain_row.get("q_good"),
+                    llm_q_rerank=None if not rerank_row else rerank_row.get("q_good"),
+                    llm_conf_plain=None if not plain_row else plain_row.get("confidence"),
+                    llm_conf_rerank=None if not rerank_row else rerank_row.get("confidence"),
+                    selected_changed=bool(plain_idx != selected_idx),
+                    fallback_reason=None if not self._last_rerank_summary else self._last_rerank_summary.get("fallback_reason"),
+                    rerank_mode=None if not self._last_rerank_summary else self._last_rerank_summary.get("rerank_mode"),
                 )
                 self._rerank_telemetry.append(telemetry.to_dict())
                 n_new += 1
@@ -803,12 +844,19 @@ class BayesOptimizer:
         with open(output / "pareto_front.json", "w", encoding="utf-8") as f:
             json.dump(pareto, f, indent=2, ensure_ascii=False)
 
+        hv_raw = self.database.compute_hypervolume_raw()
+        hv_canonical = canonical_hv_from_raw(hv_raw, self.database.hv_max)
+        hv_display = self.database.compute_hypervolume()
+        rerank_summary = self._summarize_rerank_telemetry()
         summary = {
             "n_total": self.database.size,
             "n_feasible": self.database.n_feasible,
             "pareto_size": self.database.pareto_size,
-            "hypervolume": self.database.compute_hypervolume(),
-            "hypervolume_raw": self.database.compute_hypervolume_raw(),
+            "hypervolume": hv_display,
+            "display_hv": hv_display,
+            "canonical_hv": hv_canonical,
+            "hypervolume_canonical": hv_canonical,
+            "hypervolume_raw": hv_raw,
             "warmstart_trace": self._warmstart_hv_trace,
             "hv_trace": self._hv_eval_trace,
             "last_guidance": self._previous_guidance,
@@ -819,6 +867,7 @@ class BayesOptimizer:
             "last_candidate_source_counts": self._last_candidate_source_counts,
             "rerank_telemetry": self._rerank_telemetry,
             "config": self._jsonable_config(),
+            **rerank_summary,
         }
         with open(output / "summary.json", "w", encoding="utf-8") as f:
             json.dump(summary, f, indent=2, ensure_ascii=False)
@@ -832,13 +881,20 @@ class BayesOptimizer:
         with open(ckpt_dir / f"af_t{t:04d}.json", "w", encoding="utf-8") as f:
             json.dump(self.af.save_state(), f, indent=2)
         with open(ckpt_dir / f"summary_t{t:04d}.json", "w", encoding="utf-8") as f:
+            hv_raw = self.database.compute_hypervolume_raw()
+            hv_canonical = canonical_hv_from_raw(hv_raw, self.database.hv_max)
+            hv_display = self.database.compute_hypervolume()
             json.dump(
                 {
                     "t": t,
                     "n_total": self.database.size,
                     "n_feasible": self.database.n_feasible,
                     "pareto_size": self.database.pareto_size,
-                    "hypervolume": self.database.compute_hypervolume(),
+                    "hypervolume": hv_display,
+                    "display_hv": hv_display,
+                    "canonical_hv": hv_canonical,
+                    "hypervolume_canonical": hv_canonical,
+                    "hypervolume_raw": hv_raw,
                     "last_guidance": self._previous_guidance,
                     "last_gp_llm_coupling": self._last_coupling_summary,
                     "last_proposal_summary": self._last_proposal_summary,
@@ -861,30 +917,13 @@ class BayesOptimizer:
         Y_raw = np.array([obs.objectives for obs in feasible], dtype=float)
         Y_tilde = log_transform_objectives(Y_raw)
         self._y_tilde_min, self._y_tilde_max = compute_dynamic_bounds(Y_tilde)
-
-        global_min = np.array(
-            [
-                np.log10(self.database.ideal_point[0]),
-                self.database.ideal_point[1],
-                np.log10(self.database.ideal_point[2]),
-            ],
-            dtype=float,
+        self._y_tilde_min, self._y_tilde_max = apply_min_range_floor(
+            self._y_tilde_min,
+            self._y_tilde_max,
+            self.database.ideal_point,
+            self.database.ref_point,
+            min_fraction=0.05,
         )
-        global_max = np.array(
-            [
-                np.log10(self.database.ref_point[0]),
-                self.database.ref_point[1],
-                np.log10(self.database.ref_point[2]),
-            ],
-            dtype=float,
-        )
-        hist_range = self._y_tilde_max - self._y_tilde_min
-        global_range = global_max - global_min
-
-        for i in range(3):
-            if hist_range[i] < 0.05 * global_range[i]:
-                self._y_tilde_min[i] = global_min[i]
-                self._y_tilde_max[i] = global_max[i]
 
     def _next_weight(self) -> np.ndarray:
         if not self._weight_order:
@@ -1146,8 +1185,10 @@ class BayesOptimizer:
         return prior if prior.is_active() else None
 
     def _compute_canonical_hv(self) -> float:
-        hv_max = max(float(getattr(self.database, "hv_max", 1.0)), 1e-12)
-        return float(self.database.compute_hypervolume_raw() / hv_max)
+        return canonical_hv_from_raw(
+            self.database.compute_hypervolume_raw(),
+            getattr(self.database, "hv_max", 1.0),
+        )
 
     def _compute_recent_hv_gain_mean(self, window: int) -> float:
         stats = self.database.get_iteration_stats()
@@ -1245,6 +1286,65 @@ class BayesOptimizer:
             history_summary=self._build_rerank_history_summary(gate_window),
         )
 
+    def _augment_rerank_candidates(self, candidates: List[Any]) -> List[Any]:
+        soft_limit = float(self.cfg.get("llm_safe_dsoc_sum_max", 0.65))
+        hard_limit = float(DSOC_SUM_MAX)
+        augmented: List[Any] = []
+        for candidate in candidates:
+            x = np.asarray(candidate.x, dtype=float).ravel()
+            dsoc_sum = float(x[3] + x[4]) if x.size >= 5 else None
+            monotone_flag = None
+            if x.size >= 3:
+                monotone_flag = bool(x[0] >= x[1] >= x[2])
+            augmented.append(
+                dataclasses.replace(
+                    candidate,
+                    dSOC_sum=dsoc_sum,
+                    margin_to_soft_limit=(
+                        None if dsoc_sum is None else float(soft_limit - dsoc_sum)
+                    ),
+                    hard_violation_flag=(
+                        None if dsoc_sum is None else bool(dsoc_sum > hard_limit + 1e-12)
+                    ),
+                    monotone_flag=monotone_flag,
+                )
+            )
+        return augmented
+
+    def _rerank_mode(self) -> str:
+        mode = str(self.cfg.get("llm_rerank_mode", "none") or "none")
+        if mode == "const_gate":
+            return "unsafe_legacy_const_gate"
+        return mode
+
+    def _rerank_fail_open(self, mode: str) -> bool:
+        if mode in {"ei_preserving_tiebreak", "risk_veto_only"}:
+            return True
+        return bool(self.cfg.get("llm_rerank_parse_fail_open", self.cfg.get("llm_rerank_fail_open_to_plain_ei", True)))
+
+    def _summarize_rerank_telemetry(self) -> Dict[str, Any]:
+        if not self._rerank_telemetry:
+            return {
+                "rerank_applied_count": 0,
+                "rerank_changed_count": 0,
+                "rerank_fail_open_count": 0,
+                "mean_ei_ratio_when_changed": None,
+                "mean_hv_gain_when_changed": None,
+            }
+
+        applied = [item for item in self._rerank_telemetry if item.get("llm_called")]
+        changed = [item for item in self._rerank_telemetry if item.get("selected_changed")]
+        fail_open = [item for item in self._rerank_telemetry if item.get("fallback_reason")]
+        ei_ratios = [float(item["ei_ratio"]) for item in changed if item.get("ei_ratio") is not None]
+        hv_gains = [float(item["hv_gain"]) for item in changed if item.get("hv_gain") is not None]
+        return {
+            "rerank_applied_count": int(len(applied)),
+            "rerank_changed_count": int(len(changed)),
+            "rerank_fail_open_count": int(len(fail_open)),
+            "mean_ei_ratio_when_changed": None if not ei_ratios else float(np.mean(ei_ratios)),
+            "mean_hv_gain_when_changed": None if not hv_gains else float(np.mean(hv_gains)),
+        }
+
     def _maybe_apply_llm_rerank(
         self,
         *,
@@ -1255,13 +1355,15 @@ class BayesOptimizer:
         plain_selected_indices: List[int],
         plain_selected_scores: np.ndarray,
     ) -> Any:
-        if not bool(self.cfg.get("enable_llm_rerank", False)):
+        mode = self._rerank_mode()
+        if not bool(self.cfg.get("enable_llm_rerank", False)) or mode == "none":
             return acq_result
         if acq_result.candidate_pool is None or len(acq_result.candidate_pool) == 0:
             self._last_rerank_summary = {
                 "active": True,
                 "applied": False,
                 "fallback_reason": "empty_candidate_pool",
+                "rerank_mode": mode,
             }
             return acq_result
 
@@ -1274,40 +1376,55 @@ class BayesOptimizer:
             theta_best=self.database.get_theta_best(),
             pareto_points=np.vstack(pareto_points) if pareto_points else None,
         )
+        candidate_infos = self._augment_rerank_candidates(candidate_infos)
         topm_candidates = select_topm_for_rerank(
             candidate_infos,
-            top_m=int(self.cfg.get("llm_rerank_top_m", 12)),
+            top_m=int(self.cfg.get("llm_rerank_top_m", 5)),
             min_ei=float(self.cfg.get("llm_rerank_min_ei", 1e-10)),
         )
         rerank_state = self._build_rerank_state(t=t, w_vec=w_vec, scalar_y=scalar_y)
-        gate_mode = str(self.cfg.get("llm_rerank_gate_mode", "online")).lower()
-        if gate_mode == "constant":
-            gate_value = float(np.clip(self.cfg.get("llm_rerank_const_gate", 0.25), 0.0, 1.0))
-            gate_state = {
-                "g_value": gate_value,
-                "mode": "constant",
-                "hv_gain_recent_mean": float(rerank_state.hv_gain_recent_mean),
-                "violation_rate_recent": float(rerank_state.violation_rate_recent),
-                "llm_uncertainty_recent": float(rerank_state.llm_uncertainty_recent),
-            }
-        else:
-            gate_obj = compute_online_gate(
-                hv_gain_recent_mean=float(rerank_state.hv_gain_recent_mean),
-                violation_rate_recent=float(rerank_state.violation_rate_recent),
-                llm_uncertainty_recent=float(rerank_state.llm_uncertainty_recent),
-                lambda_max=float(self.cfg.get("llm_rerank_lambda_max", 0.60)),
-                a=float(self.cfg.get("llm_rerank_gate_a", 4.0)),
-                b=float(self.cfg.get("llm_rerank_gate_b", 3.0)),
-                c=float(self.cfg.get("llm_rerank_gate_c", 2.0)),
+        gate_value = float(
+            np.clip(
+                self.cfg.get(
+                    "llm_rerank_const_gate" if mode == "unsafe_legacy_const_gate" else "llm_rerank_gate",
+                    0.25 if mode == "unsafe_legacy_const_gate" else 0.10,
+                ),
+                0.0,
+                1.0,
             )
-            gate_value = float(gate_obj.g_value)
-            gate_state = gate_obj.to_dict()
-            gate_state["mode"] = "online"
+        )
+        gate_state = {
+            "g_value": gate_value,
+            "mode": mode,
+            "hv_gain_recent_mean": float(rerank_state.hv_gain_recent_mean),
+            "violation_rate_recent": float(rerank_state.violation_rate_recent),
+            "llm_uncertainty_recent": float(rerank_state.llm_uncertainty_recent),
+        }
 
         llm_outputs = self.llm.score_candidate_goodness(rerank_state, topm_candidates)
         entropy_mean = float(np.mean([output.entropy() for output in llm_outputs])) if llm_outputs else None
         entropy_threshold = float(self.cfg.get("llm_rerank_entropy_threshold", 0.80))
-        fail_open = bool(self.cfg.get("llm_rerank_fail_open_to_plain_ei", True))
+        fail_open = self._rerank_fail_open(mode)
+        if not llm_outputs and fail_open:
+            self._last_rerank_summary = {
+                "active": True,
+                "applied": False,
+                "llm_called": False,
+                "tau_t": float(rerank_state.tau_t),
+                "top_m": int(len(topm_candidates)),
+                "gate": float(gate_value),
+                "gate_state": gate_state,
+                "entropy_mean": entropy_mean,
+                "rerank_mode": mode,
+                "parse_fail_open": bool(fail_open),
+                "selected_indices_before": list(plain_selected_indices),
+                "selected_indices_after": list(plain_selected_indices),
+                "fallback_reason": "empty_llm_output",
+                "rows": [],
+                "eligible_indices": [],
+                "topm_candidates": [candidate.to_dict() for candidate in topm_candidates],
+            }
+            return acq_result
         if entropy_mean is not None and entropy_mean > entropy_threshold and fail_open:
             self._last_rerank_summary = {
                 "active": True,
@@ -1318,19 +1435,28 @@ class BayesOptimizer:
                 "gate": float(gate_value),
                 "gate_state": gate_state,
                 "entropy_mean": float(entropy_mean),
+                "rerank_mode": mode,
+                "parse_fail_open": bool(fail_open),
                 "selected_indices_before": list(plain_selected_indices),
                 "selected_indices_after": list(plain_selected_indices),
                 "fallback_reason": "high_entropy",
                 "rows": [],
+                "eligible_indices": [],
+                "topm_candidates": [candidate.to_dict() for candidate in topm_candidates],
             }
             return acq_result
 
         rerank_result = rerank_topm_with_llm(
             topm_candidates=topm_candidates,
             llm_outputs=llm_outputs,
-            gate_value=float(gate_value),
-            score_mode=str(self.cfg.get("llm_rerank_score_mode", "log_ei_plus_gate")),
+            mode=mode,
+            gate=float(gate_value),
+            max_log_ei_gap=float(self.cfg.get("llm_rerank_max_log_ei_gap", 0.20)),
+            max_bonus=float(self.cfg.get("llm_rerank_max_bonus", 0.05)),
+            q_bad_threshold=float(self.cfg.get("llm_rerank_q_bad_threshold", 0.60)),
+            min_confidence=float(self.cfg.get("llm_rerank_min_confidence", 0.50)),
             n_select=int(self.cfg.get("n_select", 1)),
+            eps=float(self.cfg.get("llm_rerank_eps", 1e-12)),
         )
         if not rerank_result["selected_indices"]:
             self._last_rerank_summary = {
@@ -1342,10 +1468,14 @@ class BayesOptimizer:
                 "gate": float(gate_value),
                 "gate_state": gate_state,
                 "entropy_mean": entropy_mean,
+                "rerank_mode": mode,
+                "parse_fail_open": bool(fail_open),
                 "selected_indices_before": list(plain_selected_indices),
                 "selected_indices_after": list(plain_selected_indices),
-                "fallback_reason": "empty_rerank_result",
+                "fallback_reason": rerank_result.get("fallback_reason", "empty_rerank_result"),
                 "rows": [],
+                "eligible_indices": list(rerank_result.get("eligible_indices", [])),
+                "topm_candidates": [candidate.to_dict() for candidate in topm_candidates],
             }
             return acq_result
 
@@ -1362,12 +1492,17 @@ class BayesOptimizer:
             "gate": float(gate_value),
             "gate_state": gate_state,
             "entropy_mean": rerank_result["entropy_mean"],
-            "score_mode": str(self.cfg.get("llm_rerank_score_mode", "log_ei_plus_gate")),
+            "score_mode": mode,
+            "rerank_mode": mode,
+            "parse_fail_open": bool(fail_open),
             "selected_indices_before": list(plain_selected_indices),
             "selected_scores_before": np.asarray(plain_selected_scores, dtype=float).tolist(),
             "selected_indices_after": selected_indices,
             "selected_scores_after": np.asarray(acq_result.selected_scores, dtype=float).tolist(),
             "rows": rerank_result["rows"],
+            "eligible_indices": list(rerank_result.get("eligible_indices", [])),
+            "selected_changed": bool(list(plain_selected_indices) != selected_indices),
+            "topm_candidates": [candidate.to_dict() for candidate in topm_candidates],
         }
         return acq_result
 
@@ -1628,9 +1763,7 @@ class BayesOptimizer:
         candidates = []
         for row in samples:
             theta = lo + row * (hi - lo)
-            if dsoc_sum_violates_limit(theta[3], theta[4], dsoc_sum_max=DSOC_SUM_MAX):
-                theta[3], theta[4] = project_dsoc_pair(theta[3], theta[4], dsoc_sum_max=DSOC_SUM_MAX)
-            candidates.append(np.clip(theta, lo, hi))
+            candidates.append(self.constraint_policy.repair_hard(theta, bounds=self.param_bounds))
         return candidates
 
     @staticmethod
@@ -1660,14 +1793,7 @@ class BayesOptimizer:
         return deduped
 
     def _repair_theta(self, theta: np.ndarray) -> np.ndarray:
-        x = np.asarray(theta, dtype=float).ravel().copy()
-        lo = np.array([self.param_bounds[k][0] for k in PARAM_KEYS], dtype=float)
-        hi = np.array([self.param_bounds[k][1] for k in PARAM_KEYS], dtype=float)
-        x = np.clip(x, lo, hi)
-        if dsoc_sum_violates_limit(x[3], x[4], dsoc_sum_max=DSOC_SUM_MAX):
-            x[3], x[4] = project_dsoc_pair(x[3], x[4], dsoc_sum_max=DSOC_SUM_MAX)
-            x = np.clip(x, lo, hi)
-        return x
+        return self.constraint_policy.repair_hard(theta, bounds=self.param_bounds)
 
     def _jsonable_config(self) -> Dict[str, Any]:
         result: Dict[str, Any] = {}
@@ -1693,6 +1819,9 @@ class BayesOptimizer:
         if self.database is None:
             return
 
+        hv_raw = self.database.compute_hypervolume_raw()
+        hv_canonical = canonical_hv_from_raw(hv_raw, self.database.hv_max)
+        hv_display = self.database.compute_hypervolume()
         snapshot = {
             "eval_index": self.database.size,
             "phase": phase,
@@ -1700,8 +1829,11 @@ class BayesOptimizer:
             "source": source,
             "theta": np.asarray(theta, dtype=float).ravel().tolist(),
             "feasible": bool(feasible),
-            "hypervolume": self.database.compute_hypervolume(),
-            "hypervolume_raw": self.database.compute_hypervolume_raw(),
+            "hypervolume": hv_display,
+            "display_hv": hv_display,
+            "canonical_hv": hv_canonical,
+            "hypervolume_canonical": hv_canonical,
+            "hypervolume_raw": hv_raw,
             "pareto_size": self.database.pareto_size,
             "n_total": self.database.size,
             "n_feasible": self.database.n_feasible,

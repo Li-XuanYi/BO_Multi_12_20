@@ -11,8 +11,11 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from DataBase.database import ObservationDB
+from llmbo.constraint_policy import ConstraintPolicy
 from llm.llm_interface import PhysicsHeuristicFallback, ResponseParser
 from llmbo.gp_model import MaternGPModel
+from llmbo.optimizer import BayesOptimizer
+from llmbo.scalarization import compute_tchebycheff_from_raw_with_ideal
 from utils.constants import (
     DEFAULT_BOUNDS,
     DSOC_SUM_MAX,
@@ -54,6 +57,83 @@ def test_hypervolume_is_non_decreasing_for_duplicate_and_better_points() -> None
 
     assert hv_2 >= hv_1
     assert hv_3 >= hv_2
+
+
+def test_canonical_and_display_hv_are_distinct_metrics() -> None:
+    db = ObservationDB()
+    db.add_observation(
+        theta=np.array([4.0, 3.5, 2.5, 0.25, 0.20], dtype=float),
+        objectives=np.array([4200.0, 4.2, 0.80], dtype=float),
+        feasible=True,
+        source="test",
+    )
+
+    hv_raw = db.compute_hypervolume_raw()
+    canonical = db.compute_hypervolume_canonical()
+    display = db.compute_hypervolume()
+
+    assert canonical == hv_raw / db.hv_max
+    assert display > canonical
+    assert np.isclose(display, canonical / 0.4)
+
+
+def test_database_scalarization_matches_shared_module() -> None:
+    db = ObservationDB()
+    observations = [
+        (np.array([4.0, 3.5, 2.5, 0.25, 0.20]), np.array([4200.0, 4.2, 0.80])),
+        (np.array([5.0, 4.0, 2.8, 0.20, 0.18]), np.array([3600.0, 4.0, 0.70])),
+        (np.array([3.6, 3.1, 2.2, 0.30, 0.20]), np.array([5000.0, 3.6, 0.60])),
+    ]
+    for theta, objectives in observations:
+        db.add_observation(theta=theta, objectives=objectives, feasible=True, source="test")
+
+    w_vec = np.array([0.55, 0.25, 0.20], dtype=float)
+    y_min = np.array([3.2, 0.0, -1.0], dtype=float)
+    y_max = np.array([4.0, 40.0, 1.0], dtype=float)
+    ideal = np.array([1800.0, 0.0, 0.3], dtype=float)
+    db.update_tchebycheff_context(
+        w_vec=w_vec,
+        y_min=y_min,
+        y_max=y_max,
+        ideal_point_raw=ideal,
+        eta=0.05,
+    )
+
+    shared_scores = compute_tchebycheff_from_raw_with_ideal(
+        np.array([obj for _, obj in observations]),
+        w_vec,
+        ideal,
+        y_min,
+        y_max,
+        eta=0.05,
+    )
+
+    assert np.isclose(db.get_f_min(), float(np.min(shared_scores)))
+
+
+def test_warmstart_plain_ei_preset_disables_research_branches() -> None:
+    bo = BayesOptimizer(config={"experiment_preset": "warmstart_plain_ei"})
+
+    assert bo.cfg["n_warmstart"] == 3
+    assert bo.cfg["n_random_init"] == 3
+    assert bo.cfg["enable_iterative_guidance"] is False
+    assert bo.cfg["enable_gp_llm_coupling"] is False
+    assert bo.cfg["enable_acq_prior_coupling"] is False
+    assert bo.cfg["enable_proposal_sampler"] is False
+    assert bo.cfg["enable_llm_rerank"] is False
+
+
+def test_constraint_policy_keeps_hard_and_soft_semantics_separate() -> None:
+    policy = ConstraintPolicy()
+    theta = np.array([3.0, 4.0, 4.2, 0.40, 0.30], dtype=float)
+
+    hard_repaired = policy.repair_hard(theta, bounds=DEFAULT_BOUNDS)
+    soft_repaired = policy.repair_soft(theta, bounds=DEFAULT_BOUNDS)
+
+    assert hard_repaired[3] + hard_repaired[4] < DSOC_SUM_MAX
+    assert soft_repaired[3] + soft_repaired[4] <= LLM_SAFE_DSOC_SUM_MAX + 1e-9
+    assert policy.monotone_violation(theta) > 0.0
+    assert policy.monotone_profile_is_soft is True
 
 
 def test_lambda_is_annealed_and_clamped() -> None:
