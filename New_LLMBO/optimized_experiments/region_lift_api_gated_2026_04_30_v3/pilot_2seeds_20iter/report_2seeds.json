@@ -1,0 +1,369 @@
+{
+  "meta": {
+    "iterations": 20,
+    "seeds": [
+      0,
+      1
+    ],
+    "variants": [
+      "strict_baseline",
+      "warmstart_plain_ei",
+      "warmstart_region_lifted_gp"
+    ],
+    "output_root": "optimized_experiments\\region_lift_api_gated_2026_04_30_v3\\pilot_2seeds_20iter",
+    "api_base": "https://api.nuwaapi.com/v1",
+    "model": "gpt-4.1-mini"
+  },
+  "records": [
+    {
+      "seed": 0,
+      "variant": "strict_baseline",
+      "status": "ok",
+      "summary_path": "optimized_experiments\\region_lift_api_gated_2026_04_30_v3\\pilot_2seeds_20iter\\seed0\\strict_baseline\\summary.json",
+      "display_hv": 0.9093613717066135,
+      "canonical_hv": 0.3637445486826454,
+      "hypervolume_raw": 10.703201497267234,
+      "hv_violations": 0,
+      "pareto_size": 20,
+      "n_total": 26,
+      "n_feasible": 26,
+      "lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "zero_shift_accept_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 1,
+      "variant": "strict_baseline",
+      "status": "ok",
+      "summary_path": "optimized_experiments\\region_lift_api_gated_2026_04_30_v3\\pilot_2seeds_20iter\\seed1\\strict_baseline\\summary.json",
+      "display_hv": 0.9446416574711417,
+      "canonical_hv": 0.3778566629884567,
+      "hypervolume_raw": 11.118451164965615,
+      "hv_violations": 0,
+      "pareto_size": 21,
+      "n_total": 26,
+      "n_feasible": 26,
+      "lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "zero_shift_accept_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 0,
+      "variant": "warmstart_plain_ei",
+      "status": "ok",
+      "summary_path": "optimized_experiments\\region_lift_api_gated_2026_04_30_v3\\pilot_2seeds_20iter\\seed0\\warmstart_plain_ei\\summary.json",
+      "display_hv": 0.9193488778144759,
+      "canonical_hv": 0.3677395511257904,
+      "hypervolume_raw": 10.820754643523074,
+      "hv_violations": 0,
+      "pareto_size": 19,
+      "n_total": 26,
+      "n_feasible": 26,
+      "lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "zero_shift_accept_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 1,
+      "variant": "warmstart_plain_ei",
+      "status": "ok",
+      "summary_path": "optimized_experiments\\region_lift_api_gated_2026_04_30_v3\\pilot_2seeds_20iter\\seed1\\warmstart_plain_ei\\summary.json",
+      "display_hv": 0.9180558151140265,
+      "canonical_hv": 0.3672223260456106,
+      "hypervolume_raw": 10.805535269727223,
+      "hv_violations": 0,
+      "pareto_size": 15,
+      "n_total": 26,
+      "n_feasible": 26,
+      "lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "zero_shift_accept_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 0,
+      "variant": "warmstart_region_lifted_gp",
+      "status": "ok",
+      "summary_path": "optimized_experiments\\region_lift_api_gated_2026_04_30_v3\\pilot_2seeds_20iter\\seed0\\warmstart_region_lifted_gp\\summary.json",
+      "display_hv": 0.8804726561306239,
+      "canonical_hv": 0.35218906245224957,
+      "hypervolume_raw": 10.363180738273726,
+      "hv_violations": 0,
+      "pareto_size": 18,
+      "n_total": 26,
+      "n_feasible": 26,
+      "lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 2,
+      "zero_shift_accept_count": 0,
+      "fallback_distribution": {
+        "override_disabled": 20
+      }
+    },
+    {
+      "seed": 1,
+      "variant": "warmstart_region_lifted_gp",
+      "status": "ok",
+      "summary_path": "optimized_experiments\\region_lift_api_gated_2026_04_30_v3\\pilot_2seeds_20iter\\seed1\\warmstart_region_lifted_gp\\summary.json",
+      "display_hv": 0.9290783086649724,
+      "canonical_hv": 0.371631323465989,
+      "hypervolume_raw": 10.93527023884813,
+      "hv_violations": 0,
+      "pareto_size": 21,
+      "n_total": 26,
+      "n_feasible": 26,
+      "lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "plain_candidate_inside_region_count": 2,
+      "diagnostic_override_candidate_count": 2,
+      "zero_shift_accept_count": 0,
+      "fallback_distribution": {
+        "override_disabled": 20
+      }
+    }
+  ],
+  "aggregates": {
+    "strict_baseline": {
+      "n_runs": 2,
+      "mean_canonical_hv": 0.3708006058355511,
+      "median_canonical_hv": 0.3708006058355511,
+      "worst_quartile_canonical_hv": 0.3637445486826454,
+      "variance_canonical_hv": 4.97879425450712e-05,
+      "mean_display_hv": 0.9270015145888776,
+      "mean_raw_hv": 10.910826331116425,
+      "hv_violations_total": 0,
+      "mean_lift_accept_rate": 0.0,
+      "mean_effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count_total": 0,
+      "plain_candidate_inside_region_count_total": 0,
+      "diagnostic_override_candidate_count_total": 0,
+      "zero_shift_accept_count_total": 0,
+      "fallback_distribution": {},
+      "runs": [
+        {
+          "seed": 0,
+          "variant": "strict_baseline",
+          "status": "ok",
+          "summary_path": "optimized_experiments\\region_lift_api_gated_2026_04_30_v3\\pilot_2seeds_20iter\\seed0\\strict_baseline\\summary.json",
+          "display_hv": 0.9093613717066135,
+          "canonical_hv": 0.3637445486826454,
+          "hypervolume_raw": 10.703201497267234,
+          "hv_violations": 0,
+          "pareto_size": 20,
+          "n_total": 26,
+          "n_feasible": 26,
+          "lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "zero_shift_accept_count": 0,
+          "fallback_distribution": {}
+        },
+        {
+          "seed": 1,
+          "variant": "strict_baseline",
+          "status": "ok",
+          "summary_path": "optimized_experiments\\region_lift_api_gated_2026_04_30_v3\\pilot_2seeds_20iter\\seed1\\strict_baseline\\summary.json",
+          "display_hv": 0.9446416574711417,
+          "canonical_hv": 0.3778566629884567,
+          "hypervolume_raw": 11.118451164965615,
+          "hv_violations": 0,
+          "pareto_size": 21,
+          "n_total": 26,
+          "n_feasible": 26,
+          "lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "zero_shift_accept_count": 0,
+          "fallback_distribution": {}
+        }
+      ],
+      "missing_runs": []
+    },
+    "warmstart_plain_ei": {
+      "n_runs": 2,
+      "mean_canonical_hv": 0.3674809385857005,
+      "median_canonical_hv": 0.3674809385857005,
+      "worst_quartile_canonical_hv": 0.3672223260456106,
+      "variance_canonical_hv": 6.688044589174025e-08,
+      "mean_display_hv": 0.9187023464642512,
+      "mean_raw_hv": 10.813144956625148,
+      "hv_violations_total": 0,
+      "mean_lift_accept_rate": 0.0,
+      "mean_effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count_total": 0,
+      "plain_candidate_inside_region_count_total": 0,
+      "diagnostic_override_candidate_count_total": 0,
+      "zero_shift_accept_count_total": 0,
+      "fallback_distribution": {},
+      "runs": [
+        {
+          "seed": 0,
+          "variant": "warmstart_plain_ei",
+          "status": "ok",
+          "summary_path": "optimized_experiments\\region_lift_api_gated_2026_04_30_v3\\pilot_2seeds_20iter\\seed0\\warmstart_plain_ei\\summary.json",
+          "display_hv": 0.9193488778144759,
+          "canonical_hv": 0.3677395511257904,
+          "hypervolume_raw": 10.820754643523074,
+          "hv_violations": 0,
+          "pareto_size": 19,
+          "n_total": 26,
+          "n_feasible": 26,
+          "lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "zero_shift_accept_count": 0,
+          "fallback_distribution": {}
+        },
+        {
+          "seed": 1,
+          "variant": "warmstart_plain_ei",
+          "status": "ok",
+          "summary_path": "optimized_experiments\\region_lift_api_gated_2026_04_30_v3\\pilot_2seeds_20iter\\seed1\\warmstart_plain_ei\\summary.json",
+          "display_hv": 0.9180558151140265,
+          "canonical_hv": 0.3672223260456106,
+          "hypervolume_raw": 10.805535269727223,
+          "hv_violations": 0,
+          "pareto_size": 15,
+          "n_total": 26,
+          "n_feasible": 26,
+          "lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "zero_shift_accept_count": 0,
+          "fallback_distribution": {}
+        }
+      ],
+      "missing_runs": []
+    },
+    "warmstart_region_lifted_gp": {
+      "n_runs": 2,
+      "mean_canonical_hv": 0.3619101929591193,
+      "median_canonical_hv": 0.3619101929591193,
+      "worst_quartile_canonical_hv": 0.35218906245224957,
+      "variance_canonical_hv": 9.45003783315929e-05,
+      "mean_display_hv": 0.9047754823977981,
+      "mean_raw_hv": 10.649225488560928,
+      "hv_violations_total": 0,
+      "mean_lift_accept_rate": 0.0,
+      "mean_effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count_total": 0,
+      "plain_candidate_inside_region_count_total": 2,
+      "diagnostic_override_candidate_count_total": 4,
+      "zero_shift_accept_count_total": 0,
+      "fallback_distribution": {
+        "override_disabled": 40
+      },
+      "runs": [
+        {
+          "seed": 0,
+          "variant": "warmstart_region_lifted_gp",
+          "status": "ok",
+          "summary_path": "optimized_experiments\\region_lift_api_gated_2026_04_30_v3\\pilot_2seeds_20iter\\seed0\\warmstart_region_lifted_gp\\summary.json",
+          "display_hv": 0.8804726561306239,
+          "canonical_hv": 0.35218906245224957,
+          "hypervolume_raw": 10.363180738273726,
+          "hv_violations": 0,
+          "pareto_size": 18,
+          "n_total": 26,
+          "n_feasible": 26,
+          "lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 2,
+          "zero_shift_accept_count": 0,
+          "fallback_distribution": {
+            "override_disabled": 20
+          }
+        },
+        {
+          "seed": 1,
+          "variant": "warmstart_region_lifted_gp",
+          "status": "ok",
+          "summary_path": "optimized_experiments\\region_lift_api_gated_2026_04_30_v3\\pilot_2seeds_20iter\\seed1\\warmstart_region_lifted_gp\\summary.json",
+          "display_hv": 0.9290783086649724,
+          "canonical_hv": 0.371631323465989,
+          "hypervolume_raw": 10.93527023884813,
+          "hv_violations": 0,
+          "pareto_size": 21,
+          "n_total": 26,
+          "n_feasible": 26,
+          "lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "plain_candidate_inside_region_count": 2,
+          "diagnostic_override_candidate_count": 2,
+          "zero_shift_accept_count": 0,
+          "fallback_distribution": {
+            "override_disabled": 20
+          }
+        }
+      ],
+      "missing_runs": []
+    }
+  },
+  "comparisons": {
+    "warmstart_plain_ei_vs_strict_baseline": {
+      "lhs": "warmstart_plain_ei",
+      "rhs": "strict_baseline",
+      "shared_seeds": [
+        0,
+        1
+      ],
+      "mean_canonical_hv_delta": -0.0033196672498505553,
+      "mean_canonical_hv_pct_delta": -0.8580424716693684,
+      "wins": 1,
+      "total": 2
+    },
+    "warmstart_region_lifted_gp_vs_warmstart_plain_ei": {
+      "lhs": "warmstart_region_lifted_gp",
+      "rhs": "warmstart_plain_ei",
+      "shared_seeds": [
+        0,
+        1
+      ],
+      "mean_canonical_hv_delta": -0.005570745626581219,
+      "mean_canonical_hv_pct_delta": -1.514017357807608,
+      "wins": 1,
+      "total": 2
+    },
+    "warmstart_region_lifted_gp_vs_strict_baseline": {
+      "lhs": "warmstart_region_lifted_gp",
+      "rhs": "strict_baseline",
+      "shared_seeds": [
+        0,
+        1
+      ],
+      "mean_canonical_hv_delta": -0.008890412876431775,
+      "mean_canonical_hv_pct_delta": -2.4121767726446532,
+      "wins": 0,
+      "total": 2
+    }
+  }
+}

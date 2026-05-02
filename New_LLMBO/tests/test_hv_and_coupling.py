@@ -121,6 +121,7 @@ def test_warmstart_plain_ei_preset_disables_research_branches() -> None:
     assert bo.cfg["enable_acq_prior_coupling"] is False
     assert bo.cfg["enable_proposal_sampler"] is False
     assert bo.cfg["enable_llm_rerank"] is False
+    assert bo.cfg["target_transform_mode"] == "none"
 
 
 def test_constraint_policy_keeps_hard_and_soft_semantics_separate() -> None:

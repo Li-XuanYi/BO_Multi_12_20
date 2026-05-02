@@ -11,7 +11,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from DataBase.database import ObservationDB
-from llm.llm_interface import _build_guidance_prompt
+from llm.llm_interface import LLMConfig, LLMInterface, _build_guidance_prompt
 from llm.warmstart_prompt import PLACEHOLDER_PATTERN
 from llmbo.gp_model import LLMPreferenceCoupling, MaternGPModel
 from utils.constants import DEFAULT_BOUNDS
@@ -142,7 +142,39 @@ def test_point_coupling_is_localized_by_mask() -> None:
 
     with patch.object(gp, "predict", return_value=(np.array([0.40, 0.40]), np.array([0.10, 0.10]))):
         with patch.object(gp, "posterior_covariance", return_value=np.array([[1.0], [1.0]], dtype=float)):
-            mean, std = gp.predict_with_coupling(np.vstack([near, far]), coupling=coupling)
+            with patch.object(gp, "target_standardization", return_value=(0.0, 1.0)):
+                mean, std = gp.predict_with_coupling(np.vstack([near, far]), coupling=coupling)
 
     assert std.shape == (2,)
     assert mean[0] < mean[1]
+
+
+def test_mock_backend_region_preference_returns_heuristic_point() -> None:
+    llm = LLMInterface(
+        param_bounds=DEFAULT_BOUNDS,
+        config=LLMConfig(backend="mock", n_samples=1, temperature=0.0),
+    )
+    state = {
+        "iteration": 2,
+        "top_scalar_points": [
+            {
+                "theta": [4.8, 4.0, 2.8, 0.22, 0.18],
+                "raw_objectives": [3600.0, 4.0, 0.70],
+                "scalar_y": 0.12,
+            },
+            {
+                "theta": [4.4, 3.6, 2.6, 0.20, 0.17],
+                "raw_objectives": [3900.0, 3.8, 0.62],
+                "scalar_y": 0.16,
+            },
+        ],
+        "recent_observations": [],
+    }
+
+    pref = llm.query_region_preference(state)
+
+    assert pref.kind == "point"
+    assert pref.coordinate_space == "raw"
+    assert pref.preference_direction == "promising"
+    assert pref.point is not None
+    assert pref.confidence >= 0.7

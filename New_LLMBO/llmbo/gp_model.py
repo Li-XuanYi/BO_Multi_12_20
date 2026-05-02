@@ -115,6 +115,12 @@ class GPProtocol(Protocol):
     def training_summary(self) -> Dict[str, Any]:
         ...
 
+    def target_standardization(self) -> Tuple[float, float]:
+        ...
+
+    def transform_targets(self, y: np.ndarray) -> np.ndarray:
+        ...
+
 
 class PsiFunction:
     """
@@ -174,6 +180,7 @@ class MaternGPModel:
         alpha: float = 1e-6,
         normalize_y: bool = True,
         n_restarts_optimizer: int = 5,
+        target_transform_mode: str = "none",
         random_state: Optional[int] = None,
     ) -> None:
         self.param_bounds = param_bounds
@@ -181,17 +188,28 @@ class MaternGPModel:
         self.alpha = float(alpha)
         self.normalize_y = bool(normalize_y)
         self.n_restarts_optimizer = int(n_restarts_optimizer)
+        self.target_transform_mode = str(target_transform_mode or "none").lower()
         self.random_state = random_state
 
         self._lo = np.array([param_bounds[k][0] for k in PARAM_KEYS], dtype=float)
         self._hi = np.array([param_bounds[k][1] for k in PARAM_KEYS], dtype=float)
         self._model: Optional[GaussianProcessRegressor] = None
+        self._y_train_mean: float = 0.0
+        self._y_train_std: float = 1.0
+        self._target_transform_shift: float = 0.0
         self._last_summary: Dict[str, Any] = {
             "n_train": 0,
             "kernel": None,
             "length_scale": None,
             "noise": None,
             "y_best": None,
+            "target_transform_mode": self.target_transform_mode,
+            "target_transform_shift": 0.0,
+            "nll": None,
+            "standardized_residual_mean": None,
+            "standardized_residual_var": None,
+            "sigma_coverage_1sigma": None,
+            "sigma_coverage_2sigma": None,
         }
 
     def fit(
@@ -211,6 +229,7 @@ class MaternGPModel:
             raise ValueError("Need at least 2 points to fit the GP")
 
         X_norm = self._normalize_X(X)
+        y_model = self._fit_target_transform(y)
         kernel = (
             ConstantKernel(1.0, (1e-3, 1e3))
             * Matern(
@@ -232,7 +251,8 @@ class MaternGPModel:
         )
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", ConvergenceWarning)
-            self._model.fit(X_norm, y)
+            self._model.fit(X_norm, y_model)
+        self._sync_target_standardization(y_model)
 
         length_scale = None
         noise = None
@@ -241,19 +261,29 @@ class MaternGPModel:
             noise = float(self._model.kernel_.k2.noise_level)
         except Exception:
             pass
+        nll = None
+        try:
+            nll = float(-self._model.log_marginal_likelihood_value_)
+        except Exception:
+            nll = None
+        residual_summary = self._training_residual_summary(X, y_model)
 
         self._last_summary = {
             "n_train": int(X.shape[0]),
             "kernel": str(self._model.kernel_),
             "length_scale": length_scale,
             "noise": noise,
-            "y_best": float(np.min(y)),
+            "y_best": float(np.min(y_model)),
             "iteration": int(t),
+            "target_transform_mode": self.target_transform_mode,
+            "target_transform_shift": float(self._target_transform_shift),
+            "nll": nll,
+            **residual_summary,
         }
         logger.info(
             "Fitted Matern GP: n=%d y_best=%.6f kernel=%s",
             X.shape[0],
-            float(np.min(y)),
+            float(np.min(y_model)),
             self._last_summary["kernel"],
         )
         return self
@@ -264,9 +294,65 @@ class MaternGPModel:
             raise ValueError(f"Expected {len(PARAM_KEYS)} features, got {X_new.shape[1]}")
 
         mean = self._require_model().predict(self._normalize_X(X_new), return_std=False)
-        cov = self.posterior_covariance(X_new)
+        cov = self.posterior_covariance_raw(X_new)
         std = np.sqrt(np.clip(np.diag(cov), 1e-12, None))
         return np.asarray(mean, dtype=float), np.asarray(std, dtype=float)
+
+    def target_standardization(self) -> Tuple[float, float]:
+        """Return the fitted target standardization in the GP modeling space."""
+        self._require_model()
+        return float(self._y_train_mean), float(max(self._y_train_std, 1e-12))
+
+    def transform_targets(self, y: np.ndarray) -> np.ndarray:
+        values = np.asarray(y, dtype=float).ravel()
+        mode = self.target_transform_mode
+        if mode == "none":
+            return values
+        if mode == "log1p_shifted":
+            return np.log1p(values + float(self._target_transform_shift))
+        raise ValueError(f"Unknown target_transform_mode: {self.target_transform_mode}")
+
+    def _fit_target_transform(self, y: np.ndarray) -> np.ndarray:
+        values = np.asarray(y, dtype=float).ravel()
+        if self.target_transform_mode == "none":
+            self._target_transform_shift = 0.0
+            return values
+        if self.target_transform_mode == "log1p_shifted":
+            self._target_transform_shift = max(0.0, -float(np.min(values)) + 1e-6)
+            return np.log1p(values + float(self._target_transform_shift))
+        raise ValueError(f"Unknown target_transform_mode: {self.target_transform_mode}")
+
+    def predict_standardized(self, X_new: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Predict in the GP standardized objective space.
+
+        Region-Lifted GP v1 applies acquisition-time mean shifts only in this
+        standardized space. The covariance scaling is cov_z = cov_y / y_std^2.
+        """
+        X_new = np.atleast_2d(np.asarray(X_new, dtype=float))
+        mean_y = self._require_model().predict(self._normalize_X(X_new), return_std=False)
+        y_mean, y_std = self.target_standardization()
+        mean_z = (np.asarray(mean_y, dtype=float) - y_mean) / y_std
+        cov_z = self.posterior_covariance_standardized(X_new)
+        std_z = np.sqrt(np.clip(np.diag(cov_z), 1e-12, None))
+        return mean_z, std_z
+
+    def posterior_covariance_standardized(
+        self,
+        X_left: np.ndarray,
+        X_right: Optional[np.ndarray] = None,
+    ) -> np.ndarray:
+        """Posterior covariance in standardized target space."""
+        return self.posterior_covariance(X_left, X_right)
+
+    def posterior_covariance_raw(
+        self,
+        X_left: np.ndarray,
+        X_right: Optional[np.ndarray] = None,
+    ) -> np.ndarray:
+        """Posterior covariance in raw scalarized-target space."""
+        _, y_std = self.target_standardization()
+        return self.posterior_covariance_standardized(X_left, X_right) * (y_std ** 2)
 
     def predict_with_coupling(
         self,
@@ -277,16 +363,18 @@ class MaternGPModel:
         if coupling is None:
             return mean, std
 
-        sigma_xg = self.posterior_covariance(X_new, coupling.grid)
-        base = np.asarray(sigma_xg @ coupling.weights, dtype=float).ravel()
+        sigma_xg_z = self.posterior_covariance_standardized(X_new, coupling.grid)
+        base_z = np.asarray(sigma_xg_z @ coupling.weights, dtype=float).ravel()
         mask = self._coupling_local_mask(X_new, coupling)
-        shift = (
+        shift_z = (
             float(coupling.lambda_value)
             * float(np.clip(coupling.gate, 0.0, 1.0))
             * mask
-            * base
+            * base_z
         )
-        return mean - shift, std
+        _, y_std = self.target_standardization()
+        shift_y = shift_z * y_std
+        return mean - shift_y, std
 
     def posterior_covariance(
         self,
@@ -464,6 +552,43 @@ class MaternGPModel:
             raise RuntimeError("GP model has not been fitted yet")
         return self._model
 
+    def _sync_target_standardization(self, y: np.ndarray) -> None:
+        model = self._require_model()
+        mean = getattr(model, "_y_train_mean", 0.0)
+        std = getattr(model, "_y_train_std", 1.0)
+        try:
+            self._y_train_mean = float(np.asarray(mean, dtype=float).ravel()[0])
+        except Exception:
+            self._y_train_mean = float(np.mean(np.asarray(y, dtype=float)))
+        try:
+            self._y_train_std = float(np.asarray(std, dtype=float).ravel()[0])
+        except Exception:
+            self._y_train_std = float(np.std(np.asarray(y, dtype=float)))
+        if not np.isfinite(self._y_train_std) or self._y_train_std <= 1e-12:
+            self._y_train_std = 1.0
+
+    def _training_residual_summary(self, X: np.ndarray, y_model: np.ndarray) -> Dict[str, Optional[float]]:
+        try:
+            pred_mean = self._require_model().predict(self._normalize_X(X), return_std=False)
+            cov = self.posterior_covariance_raw(X)
+            pred_std = np.sqrt(np.clip(np.diag(cov), 1e-12, None))
+            standardized = (
+                np.asarray(y_model, dtype=float).ravel() - np.asarray(pred_mean, dtype=float).ravel()
+            ) / pred_std
+            return {
+                "standardized_residual_mean": float(np.mean(standardized)),
+                "standardized_residual_var": float(np.var(standardized)),
+                "sigma_coverage_1sigma": float(np.mean(np.abs(standardized) <= 1.0)),
+                "sigma_coverage_2sigma": float(np.mean(np.abs(standardized) <= 2.0)),
+            }
+        except Exception:
+            return {
+                "standardized_residual_mean": None,
+                "standardized_residual_var": None,
+                "sigma_coverage_1sigma": None,
+                "sigma_coverage_2sigma": None,
+            }
+
     @staticmethod
     def _coupling_local_mask(
         X_new: np.ndarray,
@@ -509,6 +634,7 @@ def build_gp_stack(
     alpha: float = 1e-6,
     normalize_y: bool = True,
     n_restarts_optimizer: int = 5,
+    target_transform_mode: str = "none",
     random_state: Optional[int] = None,
     **_: Any,
 ) -> Tuple[PsiFunction, None, None, MaternGPModel]:
@@ -527,6 +653,7 @@ def build_gp_stack(
         alpha=alpha,
         normalize_y=normalize_y,
         n_restarts_optimizer=n_restarts_optimizer,
+        target_transform_mode=target_transform_mode,
         random_state=random_state,
     )
     return psi_fn, None, None, gp_model

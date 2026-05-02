@@ -1,443 +1,741 @@
-# Codex总结文档
+# New_LLMBO Codex总结文档
 
-## 1. 目标与当前定位
+更新时间：2026-04-29
 
-`New_LLMBO` 当前最合理的定位不是“全程持续耦合 LLM 的新 BO 框架”，而是：
+## 1. 当前项目定位
 
-`LLM warmstart + ParEGO 风格标量化 + 单输出 GP + plain EI`
+当前推荐主线仍然是：
 
-也就是：
+```text
+LLM WarmStart + augmented Tchebycheff scalarization + single-output Matern GP + plain EI
+```
 
-1. 多目标原始输出是 `time_s / delta_temp_K / aging_pct`
-2. 每轮采样一个 `w_vec`
-3. 用 augmented Tchebycheff 把三目标压成当前轮单目标 `f_w`
-4. 用单输出 `Matern GP` 拟合 `f_w`
-5. 用 `plain EI` 选下一个点
-6. LLM 主要在 warmstart 上提供帮助，后续 guidance / coupling / rerank 都是研究支线
+一句话说明：
 
-当前最稳主线仍然是：
+> LLM 主要负责在初始化阶段生成更好的候选池和 warmstart portfolio；GP 仍然负责概率建模；EI 仍然负责正式选点。
 
-- `warmstart_plain_ei`
+当前已经实现、但默认关闭的 GP-LLM 研究支线是：
 
-而不是：
+```text
+Region-Lifted GP
+```
 
-- 持续 `GP-LLM coupling`
-- `acq_prior`
-- `proposal sampler`
-- `LLMEI const gate`
+它的真实语义不是“重训练一个新的 GP”，而是：
 
-## 2. 当前代码框架
+```text
+在 acquisition 阶段，对标准化目标空间里的 posterior mean 做一个 bounded mean shift；
+不 refit GP；
+不改 posterior covariance；
+不改 EI 公式；
+任何异常都 fail-open 回 plain EI。
+```
 
-### 2.1 主流程
+这也是当前 README 中已经明确写出的语义声明。
 
-主入口：
+## 2. 当前代码框架总览
 
-- [main.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/main.py)
+核心入口和主文件：
 
-核心优化器：
+- `main.py`
+- `llmbo/optimizer.py`
+- `llmbo/gp_model.py`
+- `llmbo/scalarization.py`
+- `llmbo/acquisition.py`
+- `llm/llm_interface.py`
+- `llm/region_prompt.py`
+- `llmbo/region_lifted_gp.py`
+- `llmbo/warmstart_selector.py`
+- `DataBase/database.py`
 
-- [llmbo/optimizer.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/llmbo/optimizer.py)
+主流程可以概括为：
 
-主流程大致是：
+```text
+1. main.py 读取配置 / preset，并构造 flat config
+2. BayesOptimizer.setup()
+   - simulator
+   - database
+   - llm interface
+   - GP
+   - acquisition
+3. run_initialization()
+   - LLM warmstart candidate pool
+   - deterministic warmstart selector
+   - random init
+   - simulator evaluate
+   - database update
+4. run_optimization_loop()
+   - sample current weight w_vec
+   - 从 raw objectives 现算当前轮 scalarized objective f_w
+   - 拟合单输出 Matern GP
+   - plain EI 在 candidate pool 上选点
+   - 可选：LLM rerank 或 Region-Lifted GP
+   - simulator evaluate
+   - update HV / Pareto / telemetry
+5. save_results()
+   - summary.json
+   - database.json
+   - pareto_front.json
+```
 
-1. `BayesOptimizer.setup()`
-   - 初始化 simulator
-   - 初始化 database
-   - 初始化 LLM 接口
-   - 初始化 GP
-   - 初始化 acquisition
-2. `run_initialization()`
-   - 产生 warmstart 点
-   - 产生 random init 点
-   - 写入 database
-3. `run_optimization_loop()`
-   - 取当前轮 `w_vec`
-   - 根据 raw objectives 重算当前轮 `scalar_y = f_w`
-   - 拟合 GP
-   - 跑 EI
-   - 可选接 rerank / prior / coupling
-   - 调 simulator 评估
-   - 更新 database / HV / telemetry
-4. `save_results()`
-   - 输出 `summary.json`
-   - 输出 HV trace
-   - 输出 rerank telemetry 等
+## 3. 当前主线的关键语义
 
-### 2.2 关键模块
+### 3.1 Scalarization
 
-#### 标量化与 HV
+当前不是直接在三目标上做 multi-output BO，而是每轮对当前权重 `w_vec` 做一次 ParEGO 风格标量化：
 
-- [llmbo/scalarization.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/llmbo/scalarization.py)
-- [DataBase/database.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/DataBase/database.py)
+```text
+raw objectives
+-> log transform
+-> dynamic normalization
+-> augmented Tchebycheff under current w_vec
+-> scalar_y = f_w
+```
 
-这里已经做过一轮语义清理：
+相关代码在：
 
-- `log_transform_objectives`
-- `compute_dynamic_bounds`
-- `compute_tchebycheff_from_raw_with_ideal`
-- canonical HV 与 display HV 分离
+- `llmbo/scalarization.py`
+- `DataBase/database.py`
+- `llmbo/optimizer.py`
 
-现在要记住：
+重要约束：
 
-- `compute_hypervolume_raw()` / `canonical_hv` 是算法比较主指标
-- `compute_hypervolume()` / `display_hv` 只是展示值，内部保留了 `/0.4` 缩放
+- 不要新增永久 `Observation.scalarized` 字段
+- `scalar_y` 是“当前轮上下文相关量”，不是静态 observation 属性
 
-#### GP
+### 3.2 GP
 
-- [llmbo/gp_model.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/llmbo/gp_model.py)
+当前主线 surrogate 仍然是单输出 Matern GP，代码在 `llmbo/gp_model.py`。
 
-当前仍然是标准单输出 GP：
-
-- `MaternGPModel`
-
-还没有上：
+当前没有默认启用：
 
 - deep-kernel GP
 - multi-output GP
-- qNEHVI / BoTorch 主干
+- qNEHVI / BoTorch 重构
+- 持续型旧版 `enable_gp_llm_coupling`
 
-#### Acquisition
+主线仍然是：
 
-- [llmbo/acquisition.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/llmbo/acquisition.py)
+```text
+fit GP on scalar_y
+-> posterior mean / std
+-> plain EI
+```
 
-当前主线 acquisition 仍然是：
+### 3.3 Acquisition
 
-- `plain EI`
+当前主线 acquisition 仍然是 plain EI，代码在 `llmbo/acquisition.py`。
 
-`acquisition.py` 负责：
+当前研究支线有两类：
 
-- EI 计算
-- candidate pool 生成
-- L-BFGS-B 局部优化
-- 候选元信息导出
+- post-EI rerank
+- Region-Lifted GP
 
-注意：
+但默认推荐 preset 里，这两类都关闭。
 
-- battery-specific 风险特征不要继续塞回 acquisition core
-- 这些应该留在 optimizer/rerank 层补充
+## 4. LLM 当前在项目中的使用位置
 
-#### LLM 接口
+当前 LLM 不是一个统一大入口，而是分成几个明确触点。
 
-- [llm/llm_interface.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/llm/llm_interface.py)
-- [llm/warmstart_prompt.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/llm/warmstart_prompt.py)
-- [llm/rerank_prompt.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/llm/rerank_prompt.py)
-- [llm/templates/candidate_rerank.txt](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/llm/templates/candidate_rerank.txt)
+### 4.1 WarmStart
 
-当前活跃 touchpoint：
+相关文件：
 
-- warmstart candidate generation
-- rerank scoring
+- `llm/llm_interface.py`
+- `llm/warmstart_prompt.py`
+- `llmbo/warmstart_selector.py`
 
-之前已经修过一个重要问题：
+当前 WarmStart 不是“直接拿 LLM 给出的前 3 个点”，而是：
 
-- prompt 不再依赖不存在的 `Observation.scalarized`
-- 所有 scalarized 信息都按当前 `w_vec / ideal / y_min / y_max / eta` 现算
+```text
+LLM over-sample 一个候选池
+-> hard filter
+-> soft safety / monotone / diversity / archive-aware selector
+-> 输出最终 warmstart portfolio
+```
 
-#### Rerank
+实现要点：
 
-- [llmbo/rerank.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/llmbo/rerank.py)
+- 默认 `warmstart_pool_size = 16`
+- 默认 `n_warmstart = 3`
+- 默认 `n_random_init = 3`
+- selector 不是随机选，而是 deterministic selection
+- 已支持磁盘缓存，避免真实 API 抽样波动反复污染实验
 
-现在支持三类 rerank 模式：
+WarmStart 相关关键参数：
+
+```text
+warmstart_batch_size = 10
+warmstart_max_attempts = 4
+warmstart_max_retries = 3
+warmstart_max_tokens = 2500
+warmstart_pool_size = 16
+warmstart_diversity_weight = 0.45
+warmstart_soft_penalty_weight = 0.65
+warmstart_monotone_bonus = 0.08
+warmstart_archive_bonus_weight = 0.0
+warmstart_boundary_probe_limit = 1
+```
+
+WarmStart cache 相关参数：
+
+```text
+warmstart_cache_path
+warmstart_cache_mode = read / write / read_write
+warmstart_cache_use_selected = true / false
+random_init_cache_path
+```
+
+### 4.2 Region-Lifted GP
+
+相关文件：
+
+- `llm/region_prompt.py`
+- `llm/llm_interface.py`
+- `llmbo/region_lifted_gp.py`
+- `llmbo/optimizer.py`
+- `llmbo/gp_model.py`
+
+这是当前真正的 GP-LLM 研究实现。
+
+它不是让 LLM 替代 GP，也不是让 LLM 直接替代 EI，而是：
+
+```text
+LLM 输出一个 raw-space promising point/region
+-> 转成一个 bounded standardized-space mean shift
+-> 用 shifted mean + 原始 sigma 重新算 EI
+-> 同一个 candidate pool 上比较 plain EI 与 lifted EI
+-> guard 通过才允许使用 lifted 选点
+-> 否则 fail-open 回 plain EI
+```
+
+### 4.3 Safe Rerank
+
+相关文件：
+
+- `llmbo/rerank.py`
+- `llm/rerank_prompt.py`
+- `llm/templates/candidate_rerank.txt`
+
+当前支持的 rerank mode：
 
 - `none`
 - `ei_preserving_tiebreak`
 - `risk_veto_only`
-- `unsafe_legacy_const_gate`（历史对照）
+- `unsafe_legacy_const_gate`
 
-其中安全模式是新的收紧版实现。
+但当前推荐主线和当前 region-lift 实验都没有打开 rerank。
 
-#### 约束策略
+## 5. 当前 GP-LLM 的详细实现逻辑
 
-- [llmbo/constraint_policy.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/llmbo/constraint_policy.py)
+这一节是目前最重要的工程说明。
 
-当前语义已经固定为两层：
+### 5.1 入口和开关
 
-- hard feasibility: `dSOC1 + dSOC2 <= 0.70`
-- soft safety margin: `dSOC1 + dSOC2 <= 0.65`
+Region-Lifted GP 的开关在：
 
-并且：
+- `main.py`
+- `llmbo/optimizer.py`
 
-- `I1 >= I2 >= I3` 仍然只是软偏好
-- 不能硬写进 simulator 拒绝逻辑
+核心参数名：
 
-## 3. 当前推荐 preset
+```text
+enable_region_lifted_gp
+```
 
-在 [llmbo/optimizer.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/llmbo/optimizer.py) 里当前有这些关键 preset：
+推荐 preset：
 
 - `warmstart_plain_ei`
 - `strict_baseline`
-- `warmstart_safe_tiebreak`
-- `warmstart_risk_veto`
+- `warmstart_region_lifted_gp`
 
-### 3.1 主线
+其中：
 
-推荐主线：
+- `warmstart_plain_ei`：主线推荐
+- `strict_baseline`：无 LLM 对照
+- `warmstart_region_lifted_gp`：默认关闭的研究支线
 
-- `warmstart_plain_ei`
+### 5.2 先拟合普通 GP，再决定是否做 lift
 
-含义：
+Region-Lifted GP 不改训练过程。
 
-- `n_warmstart = 3`
-- `n_random_init = 3`
-- `enable_iterative_guidance = false`
-- `enable_gp_llm_coupling = false`
-- `enable_acq_prior_coupling = false`
-- `enable_proposal_sampler = false`
-- `enable_llm_rerank = false`
+真实顺序是：
 
-### 3.2 对照
+```text
+1. 先用当前轮 scalar_y 拟合 base Matern GP
+2. 用 plain EI 在 candidate pool 上得到 x_plain
+3. 再向 LLM 查询当前轮 region preference
+4. 在同一个 candidate pool 上构造 lifted EI
+5. 如果 guard 通过，再允许 x_lift 替换 x_plain
+```
 
-- `strict_baseline`
-  - no warmstart
-  - no LLM
-  - plain EI
+也就是说，lift 是 acquisition-time shaping，不是 refit。
 
-### 3.3 研究支线
+### 5.3 标准化目标空间
 
-- `warmstart_safe_tiebreak`
-  - `llm_rerank_mode = "ei_preserving_tiebreak"`
-- `warmstart_risk_veto`
-  - `llm_rerank_mode = "risk_veto_only"`
+Region-Lifted GP v1 统一在 GP 标准化目标空间中工作。
 
-## 4. 最近完成的重要工程清理
+`llmbo/gp_model.py` 里新增了：
 
-### 4.1 已完成
+- `target_standardization()`
+- `predict_standardized()`
+- `posterior_covariance_standardized()`
+- `posterior_covariance_raw()`
 
-1. 主线固化
-   - `warmstart_plain_ei` 成为明确主线
-2. scalarization 中心化
-   - optimizer 与 database 共用一套标量化逻辑
-3. canonical/display HV 分离
-4. hard/soft dSOC 语义固定
-5. `Observation.scalarized` 依赖清理
-6. 新版 safe rerank 落地
-   - 只在 EI 后处理
-   - 不改 GP
-   - 不改 EI 主公式
-   - 不改 simulator
-   - parse fail open
-7. rerank telemetry 增强
+核心关系是：
 
-### 4.2 safe rerank 现在怎么工作
+```text
+mu_z  = (mu_y - y_mean) / y_std
+sigma_z = sigma_y / y_std
+cov_z = cov_y / y_std^2
+```
 
-具体实现：
+因此当前 lift 的语义不是在 raw scalar_y 上直接偏移，而是在 standardized `z-space` 中做偏移。
 
-- [llmbo/optimizer.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/llmbo/optimizer.py:1348)
-- [llmbo/rerank.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/llmbo/rerank.py:184)
+### 5.4 LLM 输出的 region schema
 
-流程：
+Region prompt 在 `llm/region_prompt.py`。
 
-1. 先跑 plain EI 得到候选池
-2. 取 `Top-M`（当前默认 5）
-3. 计算 `log_ei`
-4. 只保留 `eligible`：
-   - `best_log_ei - log_ei_i <= max_log_ei_gap`
-5. 调 LLM 对 shortlist 打 `q_good`
-6. 若空输出 / 解析失败 / 高熵：
-   - 直接 fail-open 回 plain EI
-7. 若是 `ei_preserving_tiebreak`：
-   - 只做很小 tie-break
-8. 若是 `risk_veto_only`：
-   - 只惩罚高风险点，不奖励低 EI 点
+当前要求 LLM 返回的 JSON 结构是：
 
-保守性设计：
+```json
+{
+  "kind": "point | region | none",
+  "coordinate_space": "raw",
+  "preference_direction": "promising",
+  "point": {"I1": null, "I2": null, "I3": null, "dSOC1": null, "dSOC2": null},
+  "lb": {"I1": null, "I2": null, "I3": null, "dSOC1": null, "dSOC2": null},
+  "ub": {"I1": null, "I2": null, "I3": null, "dSOC1": null, "dSOC2": null},
+  "confidence": 0.72,
+  "preference_type": "balanced | fast_charge | thermal_safe | aging_safe | boundary_probe",
+  "reason": "short rationale",
+  "risk_flags": []
+}
+```
 
-- `confidence < min_confidence` 时视为中性
-- `conf_eff = confidence * (1 - entropy)`
-- safe mode 只能在 eligible 内改选
+当前 v1 只接受：
 
-## 5. 当前实验结论
+- `coordinate_space = raw`
+- `preference_direction = promising`
 
-### 5.1 历史上已确认的事实
+以下情况会直接 fail-open：
 
-1. `WarmStart` 有时能明显好于 `Baseline`
-2. `LLMEI const gate` 经常拖后腿
-3. 之前更激进的 GP mean coupling 没有稳定守住优势
-4. 当前最稳仍是 `WarmStart + PlainEI`
+- `kind = none`
+- 非法 JSON
+- `coordinate_space != raw`
+- `preference_direction != promising`
+- `confidence < region_lift_min_confidence`
 
-### 5.2 已复现实验
+### 5.5 Region-Lifted GP 的数学实现
 
-#### 一条确认过的历史线
+当前实现位于 `llmbo/region_lifted_gp.py`。
 
-目录：
+在通过 parser 和初步 validation 后，系统会：
 
-- [optimized_experiments/replay_multiseed_safe695_seed1_realapi/report.json](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/optimized_experiments/replay_multiseed_safe695_seed1_realapi/report.json)
+```text
+1. 把 region 的 lb / ub 转成 raw-space box
+2. 归一化后检查 volume 和每维宽度
+3. 在 box 内用 deterministic Sobol 采样 anchors
+4. 对 anchors 做 deterministic feasibility check
+5. 计算 anchors 到历史点的距离，避免全贴着已采样区域
+6. 用 standardized posterior covariance 构造 bounded mean shift
+7. 同一 candidate pool 上算 plain EI 和 lifted EI
+8. 用 EI gap guard 决定是否接受 lift
+```
 
-关键结果：
+当前公式是：
 
-- `baseline_strict`: canonical HV `0.311839`
-- `warm3_safe695_focus`: canonical HV `0.351113`
+```text
+lambda_t =
+  anneal_t
+  * lambda_max
+  * confidence
+  * trust
+  / sqrt(max(a^T (K_GG + jitter I) a, min_norm_sq))
+```
 
-也就是：
+```text
+shift_z = clip(lambda_t * K_xG @ a, 0, max_shift_std)
+```
 
-- `WarmStart > Baseline`
+```text
+mu_lifted_z = mu_plain_z - shift_z
+sigma_lifted_z = sigma_plain_z
+```
 
-#### 三组对比
+也就是说：
 
-目录：
+- minimization 语义下，promising region 会把局部 mean 往更小方向推
+- `sigma` 不变
+- LLM 改的是 desirability，不是 epistemic uncertainty
 
-- [optimized_experiments/replay_multiseed_safe695_seed1_realapi/report_with_llmei.json](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/optimized_experiments/replay_multiseed_safe695_seed1_realapi/report_with_llmei.json)
+### 5.6 为什么是同一个 candidate pool
 
-结果排序：
+当前 v1 明确要求：
 
-- `warmstart_plain_ei > baseline > const_llmei`
+```text
+x_plain 和 x_lift 必须在同一个离散 candidate pool 上比较
+```
+
+这样做的目的，是避免“差异来自优化器随机性”而不是“差异来自 lift”。
+
+当前 guard 用的是：
+
+```text
+plain_log_ei_surrogate = log(max(EI_plain, eps))
+gap = plain_log_ei_surrogate(x_plain) - plain_log_ei_surrogate(x_lift)
+```
+
+只有当：
+
+```text
+gap <= region_lift_max_plain_ei_gap
+```
+
+时，才允许接受 lifted 候选。
+
+### 5.7 当前 fail-open 机制
+
+当前 branch 非常保守，任何异常都回 plain EI。
+
+当前真正落盘过的 fallback 原因包括：
+
+- `parse_fail`
+- `bad_region_volume`
+- `bad_region_width`
+- `empty_region`
+
+代码里还定义了更多 guard 名称，例如：
+
+- `non_raw_coordinate_space`
+- `non_promising_direction`
+- `low_confidence`
+- `too_close_to_existing`
+- `low_feasible_anchor_ratio`
+- `no_feasible_anchors`
+- `plain_ei_gap`
+
+但在最新 5-seed 实验中，主要触发的是前四类。
+
+### 5.8 trust 更新机制
+
+trust 不是固定常数，而是 EMA 风格更新，逻辑在 `llmbo/optimizer.py` 的 `_finalize_region_lift_trust()`。
+
+关键点：
+
+- 只有 `selected_source == lifted` 时才正常更新 trust
+- 如果只是 parser/invalid preference 失败，会做 small decay
+- 如果是 `EI gap fail-open`，不会像“真用了 lift 却效果差”那样重罚
+
+当前默认参数：
+
+```text
+region_lift_trust_init = 0.5
+region_lift_trust_beta = 0.2
+```
+
+## 6. 当前 LLM 的使用方式和默认参数
+
+### 6.1 通用 LLM 配置
+
+当前默认配置来自 `main.py` 和 `llmbo/optimizer.py`：
+
+```text
+llm_backend = openai
+llm_model = gpt-4.1-mini
+llm_api_base = https://api.nuwaapi.com/v1
+llm_n_samples = 3
+llm_temperature = 0.7
+```
 
 说明：
 
-- 老版 `ConstLLMEI` 不是当前推荐方向
+- 真实实验里主要使用 `openai` backend
+- baseline 组通常用 `mock` backend 或关闭 LLM 触点
+- 真实 API 会有波动，因此 cache 很重要
 
-### 5.3 新版 safe rerank 实验结论
+### 6.2 WarmStart 调用方式
 
-#### 第一轮：非固定初始化
+WarmStart 由 `llm_interface.generate_warmstart_candidates()` 驱动。
 
-目录：
+特点：
 
-- [optimized_experiments/replay_seed1_safe695_safe_rerank_v1/report.json](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/optimized_experiments/replay_seed1_safe695_safe_rerank_v1/report.json)
+- 可以多 batch 调 LLM
+- 默认目标不是只拿 `n_warmstart` 个点，而是先过采样一个 pool
+- 如果 LLM 候选不够，会用 physics-informed fallback 补齐
 
-表面上：
+WarmStart 还支持：
 
-- `warmstart_risk_veto` 看起来最好
+- selected cache replay
+- candidate pool cache replay
 
-但不能直接下结论，因为各组 warmstart 重新调用了真实 API，初始化点不同。
+这也是当前我们能稳定复现实验结果的关键原因之一。
 
-#### 第二轮：固定初始化
+### 6.3 Region preference 调用方式
 
-目录：
+Region-Lifted GP 的 LLM 调用在 `llm_interface.query_region_preference()`：
 
-- [optimized_experiments/replay_seed1_safe695_safe_rerank_fixedinit_v1/report.json](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/optimized_experiments/replay_seed1_safe695_safe_rerank_fixedinit_v1/report.json)
+```text
+n = 1
+temperature = min(config.temperature, 0.3)
+max_tokens = 1000
+```
 
-公平结论：
+这个路径没有 heuristic fallback。
 
-- `warmstart_plain_ei_fixedinit`
-- `warmstart_safe_tiebreak_fixedinit`
-- `warmstart_risk_veto_fixedinit`
+也就是说：
 
-三者最终 canonical HV 完全相同：
+```text
+解析失败 -> kind = none / parse_fail
+-> optimizer fail-open 回 plain EI
+```
 
-- `0.2389694455564263`
+这是刻意设计的，目的是避免“把 LLM 失败偷偷变成 heuristic 成功”。
 
-同时：
+### 6.4 Rerank 调用方式
 
-- `rerank_changed_count = 0`
-- `rerank_fail_open_count = 5`
+虽然当前主线不用 rerank，但文档里保留一下，方便后续接手。
 
-所以当前 safe rerank 的真实结论是：
+`score_candidate_goodness()` 的当前行为：
 
-- 它成功做到了“不污染主线”
-- 但暂时没有带来正增益
+- `mock` backend 下会走 GP-based fallback 打分
+- real backend 下会做多样本 candidate scoring 聚合
+- rerank 使用的温度更低：
 
-## 6. 当前最关键的问题
+```text
+temperature = min(config.temperature, 0.2)
+```
 
-目前最大问题已经不是“LLM 会乱改 EI”，而是：
+不过当前推荐主线和当前 region-lift 实验都没有开 rerank。
 
-- shortlist 太相似
-- `log_ei_gap` 很小
-- LLM 对 top candidates 的判断熵很高
-- safe rerank 几乎总是 fail-open
+## 7. 当前推荐 preset
 
-也就是说，当前 safe rerank 更像：
+### 7.1 推荐主线
 
-- 一个成功的保护层
+```text
+warmstart_plain_ei
+```
 
-而不是：
+含义：
 
-- 一个成功的增益层
+```text
+n_warmstart = 3
+n_random_init = 3
+enable_warmstart_portfolio = true
+enable_iterative_guidance = false
+enable_gp_llm_coupling = false
+enable_acq_prior_coupling = false
+enable_proposal_sampler = false
+enable_llm_rerank = false
+enable_region_lifted_gp = false
+```
 
-## 7. 新对话最建议继续做的事
+### 7.2 严格对照
 
-### 7.1 最高优先级
+```text
+strict_baseline
+```
 
-做 rerank 诊断，而不是立刻继续铺更大实验。
+含义：
 
-建议顺序：
+```text
+n_warmstart = 0
+n_random_init = 6
+no LLM
+plain GP
+plain EI
+```
 
-1. 缩 `top_m`
-   - 从 5 降到 3
-2. 做 candidate 去冗余
-   - 当前 top candidates 过于相似
-3. 分析 `eligible_indices` 和 `entropy`
-   - 为什么 LLM 几乎轮轮高熵
-4. 只在 fixed-init 下比较
-   - 避免被 warmstart 漂移污染
+### 7.3 当前 GP-LLM 研究支线
 
-### 7.2 暂时不要做
+```text
+warmstart_region_lifted_gp
+```
 
-本阶段不建议直接推进：
+它只是在 `warmstart_plain_ei` 的基础上打开：
 
-- deep-kernel GP
-- multi-output GP
-- qNEHVI
-- proposal sampler 大改
-- 重新恢复 GP mean coupling
-- calibrated utility fusion
+```text
+enable_region_lifted_gp = true
+```
 
-原因是主线还没完全吃透，safe rerank 也还在“保护层验证”阶段。
+其余大部分研究开关仍然关闭。
 
-## 8. 当前重要设计边界
+### 7.4 一个重要提醒
 
-新来的工程师不要轻易打破下面这些边界：
+不要裸用 `DEFAULT_CONFIG` 当实验结论。
 
-1. 不要把 `warmstart_plain_ei` 主线改掉
-2. 不要把 `0.65` 和 `0.70` 混成一个阈值
-3. 不要把 `I1 >= I2 >= I3` 硬写成 simulator 约束
-4. 不要新增持久化 `Observation.scalarized`
-5. 不要用 display HV 当论文/benchmark 主指标
-6. 不要一次混改 `scalarization / prior / rerank / coupling`
-7. 不要把 safe rerank 重新放大成 acquisition 主导者
+原因是 `DEFAULT_CONFIG` 里仍然保留了一些 legacy 默认值，例如：
 
-## 9. 如何快速上手
+- `enable_iterative_guidance = True`
+- `enable_acq_prior_coupling = True`
 
-### 9.1 先读这些文件
+真正推荐的实验语义来自 preset 覆盖，而不是裸 default。
 
-建议顺序：
+## 8. 目前 5 组实验效果
 
-1. [llmbo/optimizer.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/llmbo/optimizer.py)
-2. [llmbo/acquisition.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/llmbo/acquisition.py)
-3. [llmbo/rerank.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/llmbo/rerank.py)
-4. [llm/llm_interface.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/llm/llm_interface.py)
-5. [llmbo/scalarization.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/llmbo/scalarization.py)
-6. [DataBase/database.py](d:/Users/aa133/Desktop/BO_Multi_12_20/New_LLMBO/DataBase/database.py)
+这里的“5组”指的是：
 
-### 9.2 推荐先跑的实验
+```text
+seed = 0, 1, 2, 3, 4
+```
 
-如果要继续接手实验，先跑 fixed-init 的这三组：
+每个 seed 都跑了 3 个 variant：
 
-1. `warmstart_plain_ei`
-2. `warmstart_safe_tiebreak`
-3. `warmstart_risk_veto`
+- `strict_baseline`
+- `warmstart_plain_ei`
+- `warmstart_region_lifted_gp`
 
-并保持：
+实验总报告：
 
-- 相同 `fixed_init_points`
-- 相同 `w_sample_seed`
-- 相同 `init_seed`
+- `optimized_experiments/region_lift_20iter_seed012_2026_04_28/report_5seeds.json`
 
-### 9.3 读报告时先看什么
+### 8.1 实验设置
 
-优先看：
+本轮设置是：
 
-- `canonical_hv`
-- `hypervolume_raw`
-- `hv_violations`
-- `rerank_changed_count`
-- `rerank_fail_open_count`
-- `mean_ei_ratio_when_changed`
-- `mean_hv_gain_when_changed`
+```text
+n_iterations = 20
+variants = strict_baseline / warmstart_plain_ei / warmstart_region_lifted_gp
+LLM model = gpt-4.1-mini
+LLM backend = openai
+llm_n_samples = 3
+llm_temperature = 0.7
+```
 
-不要只看：
+此外：
 
-- `display_hv`
+- per-seed warmstart cache 保持一致
+- per-seed random init cache 保持一致
+- `w_sample_seed` 与 `init_seed` 按 seed 对齐
+- region-lift 内部的 plain/lift 比较使用同一 candidate pool
 
-## 10. 一句话总结
+### 8.2 5-seed 汇总结果
 
-当前工程已经从“LLM 乱入 GP/EI 主循环”的探索期，收敛到了一个更干净的结构：
+按 `canonical_hv` 汇总：
 
-`WarmStart + PlainEI` 是主线，`safe rerank` 是保护层研究支线。
+| Variant | Mean | Median | Worst-Quartile | Min | Variance |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| strict_baseline | 0.358726 | 0.372048 | 0.327386 | 0.327386 | 0.000391964 |
+| warmstart_plain_ei | 0.372059 | 0.371509 | 0.360444 | 0.360444 | 0.000052075 |
+| warmstart_region_lifted_gp | 0.374784 | 0.377571 | 0.366655 | 0.366655 | 0.000027118 |
 
-现在最值得做的，不是继续堆更复杂的算法，而是把：
+结论：
 
-- shortlist 多样性
-- rerank 熵过高
-- fixed-init 公平评估
+- `WarmStart + PlainEI` 明显优于 `Baseline`
+- `WarmStart + Region-Lifted GP` 的均值、median、worst-quartile 都优于 `WarmStart + PlainEI`
+- `Region-Lifted GP` 的方差没有变大，反而更小
 
-这三件事先彻底搞清楚。
+### 8.3 每个 seed 的结果
+
+| Seed | Baseline | WarmStart + PlainEI | WarmStart + Region-Lifted GP | Region Lift Accept Rate |
+| --- | ---: | ---: | ---: | ---: |
+| 0 | 0.372729 | 0.360444 | 0.379859 | 0.10 |
+| 1 | 0.372048 | 0.379157 | 0.379157 | 0.00 |
+| 2 | 0.343472 | 0.371509 | 0.370677 | 0.10 |
+| 3 | 0.377997 | 0.380159 | 0.377571 | 0.15 |
+| 4 | 0.327386 | 0.369028 | 0.366655 | 0.25 |
+
+观察：
+
+- Region-Lifted GP 不是每个 seed 都赢
+- 但从 5-seed aggregate 看，它已经满足“统计上优于 plain warmstart”的当前门槛
+- `seed=1` 完全没接受 lift，所以它和 `warmstart_plain_ei` 数字相同
+
+### 8.4 当前 fallback 分布
+
+从 5-seed 的 `region_lift_telemetry` 汇总：
+
+```text
+lifted   = 12
+fallback = 88
+overall lift_accept_rate = 0.12
+```
+
+fallback 原因分布：
+
+| Fallback Reason | Count |
+| --- | ---: |
+| bad_region_volume | 39 |
+| empty_region | 32 |
+| parse_fail | 12 |
+| bad_region_width | 5 |
+
+这说明当前 lift 接受率低的主因不是 `EI gap`，而是：
+
+```text
+1. LLM 输出的 region 尺度问题
+2. 空 region / 非法 bounds
+3. parse_fail
+```
+
+目前 5-seed 数据并没有显示：
+
+- `plain_ei_gap` 是主导失败原因
+- `too_close_anchors` 是主导失败原因
+- `low_feasible_anchor_ratio` 是主导失败原因
+
+因此下一步更合理的是：
+
+- 先修 region output 质量和 parser 稳定性
+- 再谈是否放宽 guard
+
+## 9. 当前可以对外怎么讲
+
+目前最稳妥的说法是：
+
+> New_LLMBO 的主线仍然是 WarmStart + PlainGP + PlainEI。LLM 在当前系统中最稳的作用仍然是 WarmStart。与此同时，我们已经实现了一个默认关闭的 Region-Lifted GP 研究支线：LLM 只提供 coarse region preference，系统仅在 standardized objective space 中对 posterior mean 做 bounded shift，并保持 covariance 与 plain EI 主流程不变。5 seeds × 20 iterations 的当前结果表明，这条支线在 aggregate 统计上已经优于 warmstart_plain_ei，但它仍然是保守 fail-open 的研究分支，而不是默认生产主线。
+
+不建议现在直接对外说：
+
+- “LLM 已经稳定替代 GP”
+- “LLM-EI 是当前最优主线”
+- “Region-Lifted GP 已经每个 seed 都赢”
+
+## 10. 当前最合理的下一步
+
+优先级建议：
+
+1. 继续把 Region-Lifted GP 的 fallback 分类做细
+2. 优先修 `bad_region_volume / empty_region / parse_fail`
+3. 不要先急着放宽 EI gap guard
+4. 之后再补 3 个 ablation：
+   - `warmstart_region_lifted_gp_random_region_ablation`
+   - `warmstart_region_lifted_gp_no_trust`
+   - `warmstart_region_lifted_gp_oracle_region`
+
+这三组的作用分别是：
+
+- random region：验证收益是不是“随便加个 region bias 都能来”
+- no trust：验证 trust EMA 是否真的有贡献
+- oracle region：验证 lift mechanism 的上限是否存在
+
+## 11. 新工程师建议阅读顺序
+
+建议按下面顺序读：
+
+1. `main.py`
+2. `llmbo/optimizer.py`
+3. `llmbo/scalarization.py`
+4. `llmbo/gp_model.py`
+5. `llmbo/acquisition.py`
+6. `llmbo/region_lifted_gp.py`
+7. `llm/llm_interface.py`
+8. `llm/region_prompt.py`
+9. `llmbo/warmstart_selector.py`
+10. `DataBase/database.py`
+
+推荐先跑的验证：
+
+```powershell
+python -m py_compile main.py llm\llm_interface.py llmbo\optimizer.py llmbo\region_lifted_gp.py llmbo\warmstart_selector.py
+python -m pytest tests -q
+```
+
+## 12. 最短总结
+
+当前最重要的结论可以压缩成三句话：
+
+```text
+1. 主线仍然是 warmstart_plain_ei，不是让 LLM 替代 GP 或 EI。
+2. 当前真正的 GP-LLM 实现是 Region-Lifted GP：LLM 只改 standardized-space posterior mean，不改 covariance，不 refit GP。
+3. 5 seeds × 20 iterations 的最新结果里，warmstart_region_lifted_gp 的 mean / median / worst-quartile canonical HV 都优于 warmstart_plain_ei，但它仍然是一个低接受率、强 fail-open 的研究分支。
+```

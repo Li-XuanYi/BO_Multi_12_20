@@ -1,0 +1,65 @@
+{
+  "config_name": "warmstart_region_lifted_gp_force_pool_tuned",
+  "config_snapshot": {
+    "region_lift_active_until": 16,
+    "region_lift_include_raw_candidates": false,
+    "region_lift_n_anchors": 64,
+    "region_lift_candidate_oversample": 16,
+    "region_lift_point_current_probe_levels": 3,
+    "region_lift_point_current_probe_keep": 2,
+    "region_lift_min_width": 0.03,
+    "region_lift_max_volume": 0.08,
+    "region_lift_close_distance": 0.03,
+    "ei_n_external_restarts": 32,
+    "region_lift_dsoc_margin": 0.01
+  },
+  "validation": {
+    "seed0_20iter": {
+      "seed": 0,
+      "canonical_hv_tuned": 0.3559002587708649,
+      "canonical_hv_plain": 0.35463266265124255,
+      "canonical_hv_strict": 0.3637445486826454,
+      "delta_vs_plain": 0.0012675961196223495,
+      "delta_vs_strict": -0.007844289911780489,
+      "region_pool_influenced_acquisition_count": 16,
+      "fallback_distribution": {
+        "too_close_to_existing": 1,
+        "plain_ei_gap": 4,
+        "same_as_plain": 5,
+        "outside_region": 6,
+        "inactive_window_skipped": 4
+      }
+    },
+    "seed1_20iter": {
+      "seed": 1,
+      "canonical_hv_tuned": 0.36778963897263733,
+      "canonical_hv_plain": 0.36077176381103676,
+      "canonical_hv_strict": 0.3778566629884567,
+      "delta_vs_plain": 0.007017875161600573,
+      "delta_vs_strict": -0.010067024015819381,
+      "region_pool_influenced_acquisition_count": 16,
+      "fallback_distribution": {
+        "too_close_to_existing": 1,
+        "same_as_plain": 8,
+        "override_disabled": 1,
+        "plain_ei_gap": 3,
+        "outside_region": 3,
+        "inactive_window_skipped": 4
+      }
+    },
+    "seed8409_50iter": {
+      "config": "wider_active16_ext32",
+      "canonical_hv_tuned": 0.38482555920297173,
+      "delta_vs_plain": 0.006151023173182446,
+      "delta_vs_strict": 0.013439352460171694,
+      "region_pool_influenced_acquisition_count": 16,
+      "fallback_distribution": {
+        "too_close_to_existing": 1,
+        "plain_ei_gap": 1,
+        "same_as_plain": 11,
+        "outside_region": 3,
+        "inactive_window_skipped": 34
+      }
+    }
+  }
+}

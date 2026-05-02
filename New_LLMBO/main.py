@@ -24,7 +24,7 @@ import asyncio
 import os
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Any, Dict, Optional
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent
@@ -33,7 +33,7 @@ sys.path.insert(0, str(project_root))
 # 使用显式导入（不再使用 from config import ...）
 from config.schema import Config, create_minimal_config, get_default_config
 from config.load import load_config, parse_cli_overrides
-from llmbo.optimizer import BayesOptimizer
+from llmbo.optimizer import BayesOptimizer, EXPERIMENT_PRESETS
 from utils.constants import DSOC_SUM_MAX
 
 
@@ -94,7 +94,17 @@ def create_parser() -> argparse.ArgumentParser:
         "--preset",
         type=str,
         default=None,
-        choices=["warmstart_plain_ei", "strict_baseline"],
+        choices=[
+            "warmstart_plain_ei",
+            "warmstart_portfolio_plain_ei",
+            "strict_baseline",
+            "parego_baseline",
+            "warmstart_safe_tiebreak",
+            "warmstart_risk_veto",
+            "warmstart_region_lifted_gp",
+            "warmstart_region_lifted_gp_guarded_pool",
+            "warmstart_region_lifted_gp_force_pool_tuned",
+        ],
         help="Experiment preset. warmstart_plain_ei is the recommended mainline.",
     )
 
@@ -206,6 +216,99 @@ def load_configuration(args: argparse.Namespace) -> Config:
 # §C  优化器运行
 # ═══════════════════════════════════════════════════════════════════════════
 
+def build_optimizer_config(config: Config, args: argparse.Namespace, output_dir: Path) -> Dict[str, Any]:
+    preset = getattr(args, "preset", None)
+    flat: Dict[str, Any] = {
+        "experiment_preset": preset,
+        "max_iterations": config.bo.n_iterations,
+        "n_warmstart": config.bo.n_warmstart,
+        "n_random_init": getattr(config.bo, "n_random_init", 3),
+        "n_candidates": config.acquisition.n_cand,
+        "n_select": config.acquisition.n_select,
+        "llm_backend": "mock" if getattr(args, "mock", False) else (config.llm.api_key and "openai" or "mock"),
+        "llm_model": config.llm.model,
+        "llm_api_base": config.llm.base_url,
+        "llm_api_key": config.llm.api_key,
+        "llm_n_samples": getattr(config.llm, "n_samples", 1),
+        "llm_temperature": config.llm.warmstart.temperature,
+        "battery_param_set": config.battery.param_set,
+        "warmstart_context_level": config.llm.warmstart.context_level,
+        "warmstart_max_tokens": config.llm.warmstart.max_tokens,
+        "warmstart_max_retries": config.llm.warmstart.max_retries,
+        "warmstart_temperature": config.llm.warmstart.temperature,
+        "enable_warmstart_portfolio": True,
+        "warmstart_pool_size": 16,
+        "warmstart_cache_path": None,
+        "warmstart_cache_mode": "read_write",
+        "warmstart_cache_use_selected": False,
+        "soc_start": config.charging_range.soc0,
+        "soc_end": config.charging_range.soc_end,
+        "dsoc_sum_max": DSOC_SUM_MAX,
+        "enable_iterative_guidance": False,
+        "enable_gp_llm_coupling": False,
+        "enable_acq_prior_coupling": False,
+        "enable_proposal_sampler": False,
+        "enable_llm_rerank": False,
+        "llm_rerank_mode": "none",
+        "llm_rerank_top_m": 5,
+        "llm_rerank_parse_fail_open": True,
+        "target_transform_mode": "none",
+        "weight_strategy": "riesz_relaxed_cycle",
+        "weight_simplex_divisions": 10,
+        "weight_count": 30,
+        "acquisition_strategy": "ei_lbfgsb",
+        "parego_lcb_variance_weight": 0.5,
+        "parego_de_population": 30,
+        "parego_de_maxiter": 200,
+        "enable_region_lifted_gp": False,
+        "region_lift_apply_override": False,
+        "region_lift_external_influence_mode": "diagnostic_only",
+        "region_lift_include_raw_candidates": True,
+        "region_lift_lambda_max": 0.25,
+        "region_lift_min_confidence": 0.60,
+        "region_lift_n_anchors": 32,
+        "region_lift_max_shift_std": 0.25,
+        "region_lift_active_until": 12,
+        "region_lift_anneal": "linear_decay",
+        "region_lift_max_plain_ei_gap": 0.25,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_lift_kernel_jitter": 1e-6,
+        "region_lift_min_norm_sq": 1e-12,
+        "region_lift_min_volume": 1e-5,
+        "region_lift_max_volume": 0.25,
+        "region_lift_min_width": 0.03,
+        "region_lift_max_width": 0.80,
+        "region_lift_close_distance": 0.05,
+        "region_lift_max_close_fraction": 0.5,
+        "region_lift_min_feasible_anchor_ratio": 0.6,
+        "region_lift_near_region_tol": 0.05,
+        "region_lift_trust_init": 0.5,
+        "region_lift_trust_beta": 0.2,
+        "region_lift_anchor_weighting": "ei_softmax",
+        "region_lift_anchor_temperature": 0.35,
+        "region_lift_require_inside": True,
+        "region_lift_min_sigma_ratio": 0.85,
+        "region_lift_candidate_oversample": 8,
+        "region_lift_point_current_probe_levels": 0,
+        "region_lift_point_current_probe_keep": 0,
+        "region_lift_dsoc_margin": 0.02,
+        "region_lift_guard_min_anchor_consistency": 0.35,
+        "region_lift_guard_min_reliability": 0.20,
+        "region_lift_guard_max_plain_ei_gap": 0.25,
+        "region_lift_guard_require_inside": True,
+        "region_lift_guard_require_positive_corr": True,
+        "ei_n_external_restarts": 16,
+        "checkpoint_dir": str(output_dir / "checkpoints"),
+        "checkpoint_every": config.data.save_interval,
+    }
+    if preset:
+        if str(preset) not in EXPERIMENT_PRESETS:
+            available = ", ".join(sorted(EXPERIMENT_PRESETS))
+            raise ValueError(f"Unknown experiment preset '{preset}'. Available: {available}")
+        flat.update(EXPERIMENT_PRESETS[str(preset)])
+    return flat
+
+
 async def run_optimization(config: Config, args: argparse.Namespace) -> None:
     """
     运行优化器
@@ -267,7 +370,7 @@ async def run_optimization(config: Config, args: argparse.Namespace) -> None:
         ):
             optimizer_kwargs['config'].pop(key, None)
 
-    optimizer = BayesOptimizer(**optimizer_kwargs)
+    optimizer = BayesOptimizer(config=build_optimizer_config(config, args, output_dir))
 
     # 运行优化
     print("\n[优化] 开始运行...")

@@ -1,0 +1,265 @@
+{
+  "version": 1,
+  "backend": "openai",
+  "model": "gpt-4.1-mini",
+  "temperature": 0.0,
+  "target_pool": 16,
+  "candidate_pool": [
+    [
+      5.8,
+      4.3,
+      2.6,
+      0.18,
+      0.19
+    ],
+    [
+      3.9,
+      3.3,
+      2.2,
+      0.31,
+      0.21
+    ],
+    [
+      3.5,
+      2.9,
+      2.0,
+      0.24,
+      0.22
+    ],
+    [
+      4.2,
+      3.7,
+      2.4,
+      0.27,
+      0.18
+    ],
+    [
+      5.5,
+      3.8,
+      2.3,
+      0.16,
+      0.21
+    ],
+    [
+      3.7,
+      3.1,
+      2.1,
+      0.28,
+      0.19
+    ],
+    [
+      2.8,
+      2.5,
+      2.0,
+      0.35,
+      0.2
+    ],
+    [
+      4.8,
+      4.2,
+      2.7,
+      0.15,
+      0.18
+    ],
+    [
+      3.2,
+      2.8,
+      2.0,
+      0.3,
+      0.2
+    ],
+    [
+      2.5,
+      2.2,
+      2.0,
+      0.38,
+      0.18
+    ],
+    [
+      4.5,
+      3.9,
+      2.3,
+      0.2,
+      0.19
+    ],
+    [
+      3.6,
+      3.0,
+      2.1,
+      0.29,
+      0.18
+    ],
+    [
+      2.2,
+      2.0,
+      2.0,
+      0.4,
+      0.2
+    ],
+    [
+      5.9,
+      4.8,
+      2.9,
+      0.14,
+      0.18
+    ],
+    [
+      3.8,
+      3.2,
+      2.1,
+      0.31,
+      0.19
+    ],
+    [
+      2.9,
+      2.6,
+      2.0,
+      0.34,
+      0.18
+    ]
+  ],
+  "final_selected": [
+    [
+      5.8,
+      4.3,
+      2.6,
+      0.18,
+      0.19
+    ],
+    [
+      2.2,
+      2.0,
+      2.0,
+      0.4,
+      0.2
+    ],
+    [
+      3.9,
+      3.3,
+      2.2,
+      0.31,
+      0.21
+    ]
+  ],
+  "summary": {
+    "input_count": 16,
+    "valid_count": 16,
+    "filtered": {
+      "non_finite": 0,
+      "shape": 0,
+      "bounds": 0,
+      "hard_dsoc": 0,
+      "duplicate": 0
+    },
+    "requested": 3,
+    "selected_count": 3,
+    "selected": [
+      {
+        "theta": [
+          5.8,
+          4.3,
+          2.6,
+          0.18,
+          0.19
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 0,
+        "quality": 0.58,
+        "diversity": 0.0,
+        "archive_bonus": 0.0,
+        "score": 0.58,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.37,
+        "monotone": true
+      },
+      {
+        "theta": [
+          2.2,
+          2.0,
+          2.0,
+          0.4,
+          0.2
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 12,
+        "quality": 0.58,
+        "diversity": 1.515933888913219,
+        "archive_bonus": 0.0,
+        "score": 1.2621702500109486,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.6000000000000001,
+        "monotone": true
+      },
+      {
+        "theta": [
+          3.9,
+          3.3,
+          2.2,
+          0.31,
+          0.21
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 1,
+        "quality": 0.58,
+        "diversity": 0.7077448535862184,
+        "archive_bonus": 0.0,
+        "score": 0.8984851841137982,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.52,
+        "monotone": true
+      }
+    ],
+    "boundary_selected": 0,
+    "method": "portfolio_selector",
+    "config": {
+      "hard_dsoc_sum_max": 0.7,
+      "soft_dsoc_sum_max": 0.65,
+      "diversity_weight": 0.45,
+      "soft_penalty_weight": 0.65,
+      "monotone_bonus": 0.08,
+      "archive_bonus_weight": 0.0,
+      "boundary_probe_limit": 1
+    },
+    "enabled": true,
+    "pool_target": 16,
+    "pool_collected": 16,
+    "disk_cache": "miss",
+    "cache_path": "optimized_experiments\\region_lift_random10seeds_10iter_2026_04_30\\seed7953\\shared_warmstart_cache.json",
+    "final_selected_count": 3,
+    "final_selected": [
+      [
+        5.8,
+        4.3,
+        2.6,
+        0.18,
+        0.19
+      ],
+      [
+        2.2,
+        2.0,
+        2.0,
+        0.4,
+        0.2
+      ],
+      [
+        3.9,
+        3.3,
+        2.2,
+        0.31,
+        0.21
+      ]
+    ]
+  }
+}

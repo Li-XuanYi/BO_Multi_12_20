@@ -1,0 +1,4216 @@
+{
+  "version": "2.0",
+  "param_bounds": {
+    "I1": [
+      2.0,
+      6.0
+    ],
+    "I2": [
+      2.0,
+      5.0
+    ],
+    "I3": [
+      2.0,
+      3.0
+    ],
+    "dSOC1": [
+      0.1,
+      0.4
+    ],
+    "dSOC2": [
+      0.1,
+      0.3
+    ]
+  },
+  "ref_point": [
+    7200.0,
+    40.0,
+    5.0
+  ],
+  "ideal_point": [
+    1800.0,
+    0.0,
+    0.3
+  ],
+  "normalize": true,
+  "observations": [
+    {
+      "theta": [
+        5.75,
+        4.15,
+        2.55,
+        0.185,
+        0.195
+      ],
+      "objectives": [
+        4390.0,
+        4.864634902453298,
+        1.0227519671236185
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:16:37.915771"
+    },
+    {
+      "theta": [
+        2.1,
+        2.0,
+        2.0,
+        0.1,
+        0.1
+      ],
+      "objectives": [
+        7157.0,
+        1.5293706126422024,
+        0.6467789716649339
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:16:41.298804"
+    },
+    {
+      "theta": [
+        3.45,
+        2.95,
+        2.0,
+        0.235,
+        0.215
+      ],
+      "objectives": [
+        5688.0,
+        2.97434140990311,
+        0.8501987494872751
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:16:44.410032"
+    },
+    {
+      "theta": [
+        2.247000351405365,
+        3.8179354020723255,
+        2.7384853434474055,
+        0.3149995751872575,
+        0.24397806013006207
+      ],
+      "objectives": [
+        5257.0,
+        3.504527914516092,
+        0.6495244700063567
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:16:47.508172"
+    },
+    {
+      "theta": [
+        2.9032782228731007,
+        2.3763660485395435,
+        2.110530103412099,
+        0.11047080606181098,
+        0.18986649567112612
+      ],
+      "objectives": [
+        6384.0,
+        1.925349066210771,
+        0.7199848983482205
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:16:50.933986"
+    },
+    {
+      "theta": [
+        5.86034549723551,
+        4.257576848161175,
+        2.1688067470611343,
+        0.29373120285960896,
+        0.27712734424207897
+      ],
+      "objectives": [
+        3976.0,
+        5.874159642887884,
+        1.1906907764120165
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:16:53.840977"
+    },
+    {
+      "theta": [
+        6.0,
+        5.0,
+        2.0000004941460823,
+        0.3999999832515829,
+        0.3
+      ],
+      "objectives": [
+        3180.0,
+        7.566964191322911,
+        1.3197440175628958
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 1,
+      "acq_value": 0.19264043112666038,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": -0.18185600210855768,
+        "mean_base": -0.18185600210855768,
+        "std": 0.045555091682511074,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.2,
+        "region_lift_max_shift_z": 0.05123162888718697
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:17:07.079342"
+    },
+    {
+      "theta": [
+        6.0,
+        5.0,
+        2.0,
+        0.1,
+        0.3
+      ],
+      "objectives": [
+        4980.0,
+        5.673007895293404,
+        1.0609169779863152
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 2,
+      "acq_value": 0.0008135864761880128,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.010795823381393066,
+        "mean_base": 0.010795823381393066,
+        "std": 0.0020537518283508024,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.18333333333333335,
+        "region_lift_max_shift_z": 0.031206972692775035
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:17:15.857379"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        3.0,
+        0.1,
+        0.1
+      ],
+      "objectives": [
+        5400.0,
+        3.1009617636453926,
+        0.6152625753930788
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 3,
+      "acq_value": 0.04584349374153707,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": -0.032560360543378075,
+        "mean_base": -0.032560360543378075,
+        "std": 0.04037715933307024,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.16666666666666669,
+        "region_lift_max_shift_z": 0.044549081857361374
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:17:28.023173"
+    },
+    {
+      "theta": [
+        2.0,
+        2.6839254338787,
+        2.0,
+        0.1,
+        0.17877984692424415
+      ],
+      "objectives": [
+        6790.0,
+        1.9709036915384333,
+        0.6870219855364358
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 4,
+      "acq_value": 0.009487916510816437,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.041553339262777766,
+        "mean_base": 0.041553339262777766,
+        "std": 0.054158918806317076,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.15000000000000002,
+        "region_lift_max_shift_z": 0.038361203111509284
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:17:41.888255"
+    },
+    {
+      "theta": [
+        6.0,
+        5.0,
+        3.0,
+        0.4,
+        0.29999999709444136
+      ],
+      "objectives": [
+        2880.0,
+        7.566964191322911,
+        1.2606511928531257
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 5,
+      "acq_value": 0.03362085882173682,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.07616526613905683,
+        "mean_base": 0.07616526613905683,
+        "std": 0.15240500764408837,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.13333333333333336,
+        "region_lift_max_shift_z": 0.041757687937773486
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:17:53.273983"
+    },
+    {
+      "theta": [
+        6.0,
+        5.0,
+        3.0,
+        0.4,
+        0.29999999709444136
+      ],
+      "objectives": [
+        2880.0,
+        7.566964191322911,
+        1.2606511928531257
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 6,
+      "acq_value": 0.008769687358539193,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.015381802703066771,
+        "mean_base": 0.015381802703066771,
+        "std": 0.027391464907412708,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.11666666666666665,
+        "region_lift_max_shift_z": 0.01776568269908941
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:18:09.104847"
+    },
+    {
+      "theta": [
+        6.0,
+        5.0,
+        3.0,
+        0.4,
+        0.1
+      ],
+      "objectives": [
+        3360.0,
+        7.16381113134745,
+        1.2290995145402808
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 7,
+      "acq_value": 0.010690209250356688,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.07498340742803788,
+        "mean_base": 0.07498340742803788,
+        "std": 0.08382498483754316,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.1,
+        "region_lift_max_shift_z": 0.024728768090039602
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:18:18.649354"
+    },
+    {
+      "theta": [
+        2.0789741340112813,
+        2.0,
+        3.0,
+        0.3703873271127036,
+        0.1
+      ],
+      "objectives": [
+        6085.0,
+        2.8163616175667587,
+        0.5855667453767507
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 8,
+      "acq_value": 0.08738028338892923,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": -0.06146957147158161,
+        "mean_base": -0.06146957147158161,
+        "std": 0.11258263522500894,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.08333333333333333,
+        "region_lift_max_shift_z": 0.01764142419669465
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:18:29.983275"
+    },
+    {
+      "theta": [
+        6.0,
+        5.0,
+        2.813357285193433,
+        0.4,
+        0.29999999233329744
+      ],
+      "objectives": [
+        2920.0,
+        7.566964191322911,
+        1.2698505034440988
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 9,
+      "acq_value": 0.0003578785508164962,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.0317109297240723,
+        "mean_base": 0.0317109297240723,
+        "std": 0.013557958584954543,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.06666666666666668,
+        "region_lift_max_shift_z": 0.024950930596603398
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:18:38.793417"
+    },
+    {
+      "theta": [
+        2.172273581203218,
+        2.4424638334823117,
+        2.0,
+        0.1,
+        0.16101441316479248
+      ],
+      "objectives": [
+        6867.0,
+        1.7591961549569988,
+        0.6824262441091844
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 10,
+      "acq_value": 0.11768910274809963,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": -0.09710717664076318,
+        "mean_base": -0.09710717664076318,
+        "std": 0.11260956155417136,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.05,
+        "region_lift_max_shift_z": 0.010393342070152937
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:18:51.206992"
+    },
+    {
+      "theta": [
+        2.5717881193167895,
+        2.0,
+        2.0,
+        0.1,
+        0.1
+      ],
+      "objectives": [
+        7000.0,
+        1.533132169059394,
+        0.6725838703852943
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 11,
+      "acq_value": 0.025208491903642525,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": -0.014612796088800395,
+        "mean_base": -0.014612796088800395,
+        "std": 0.014390940293021029,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.033333333333333326,
+        "region_lift_max_shift_z": 0.00863375545260005
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:19:02.707906"
+    },
+    {
+      "theta": [
+        2.0,
+        5.0,
+        3.0,
+        0.4,
+        0.1
+      ],
+      "objectives": [
+        5760.0,
+        3.1828643920045185,
+        0.5736501852847433
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 12,
+      "acq_value": 0.03116532601018636,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.021353010541971584,
+        "mean_base": 0.021353010541971584,
+        "std": 0.09327352971440923,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.016666666666666673,
+        "region_lift_max_shift_z": 0.004066943308699421
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:19:15.847962"
+    },
+    {
+      "theta": [
+        6.0,
+        5.0,
+        3.0,
+        0.4,
+        0.29999999709444136
+      ],
+      "objectives": [
+        2880.0,
+        7.566964191322911,
+        1.2606511928531257
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 13,
+      "acq_value": 0.00010436545802328948,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.010753782888512586,
+        "mean_base": 0.010753782888512586,
+        "std": 0.0002570949310092339,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.0,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:19:24.079589"
+    },
+    {
+      "theta": [
+        6.0,
+        2.0,
+        3.0,
+        0.39999495162426885,
+        0.2999966344161792
+      ],
+      "objectives": [
+        4500.0,
+        6.869988837727863,
+        1.09396578745837
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 14,
+      "acq_value": 0.00312345885212658,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.10314658866731546,
+        "mean_base": 0.10314658866731546,
+        "std": 0.07040899649272461,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.0,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:19:33.863586"
+    },
+    {
+      "theta": [
+        2.295863578769995,
+        2.0,
+        2.0,
+        0.15006188509478072,
+        0.1
+      ],
+      "objectives": [
+        7026.0,
+        1.5331245439210877,
+        0.6664490254761134
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 15,
+      "acq_value": 0.01632191558622446,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.015660383682668866,
+        "mean_base": 0.015660383682668866,
+        "std": 0.04747997711994512,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.0,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:19:47.891509"
+    },
+    {
+      "theta": [
+        2.0,
+        3.4499146519853197,
+        3.0,
+        0.4,
+        0.1
+      ],
+      "objectives": [
+        5922.0,
+        2.9804660644935326,
+        0.5727503400490257
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 16,
+      "acq_value": 0.020183516379714453,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": -0.007464949172339752,
+        "mean_base": -0.007464949172339752,
+        "std": 0.02693806923583579,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.0,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:19:57.176966"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        3.0,
+        0.4,
+        0.1
+      ],
+      "objectives": [
+        6300.0,
+        2.745268585340426,
+        0.5732749323591635
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 17,
+      "acq_value": 0.006283465231162848,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.0054176355342163696,
+        "mean_base": 0.0054176355342163696,
+        "std": 0.012145113558914358,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.0,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:20:06.617285"
+    },
+    {
+      "theta": [
+        2.309406247642041,
+        2.0,
+        2.0,
+        0.1,
+        0.1
+      ],
+      "objectives": [
+        7079.0,
+        1.5311055503347293,
+        0.65918178490299
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 18,
+      "acq_value": 0.008463323900225946,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.0017063147701563142,
+        "mean_base": 0.0017063147701563142,
+        "std": 0.0028961417740941556,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.0,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:20:18.330810"
+    },
+    {
+      "theta": [
+        2.0,
+        4.344078714705587,
+        3.0,
+        0.4,
+        0.1
+      ],
+      "objectives": [
+        5814.0,
+        3.1007013253057214,
+        0.5730446159314738
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 19,
+      "acq_value": 0.0015962376182240645,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.006964199401906956,
+        "mean_base": 0.006964199401906956,
+        "std": 0.0023706500601758814,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.0,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:20:28.804754"
+    },
+    {
+      "theta": [
+        5.602057537505673,
+        5.0,
+        3.0,
+        0.39999999882497117,
+        0.3
+      ],
+      "objectives": [
+        2965.0,
+        7.3092058777214906,
+        1.1928602285351628
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 20,
+      "acq_value": 0.0007268540851561251,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.03953374058395287,
+        "mean_base": 0.03953374058395287,
+        "std": 0.02037368382884788,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.0,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T19:20:41.487100"
+    }
+  ],
+  "pareto_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    8,
+    9,
+    10,
+    12,
+    13,
+    15,
+    16,
+    17,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25
+  ],
+  "iteration_stats": [
+    {
+      "iteration": 1,
+      "n_total": 7,
+      "n_feasible": 7,
+      "pareto_size": 7,
+      "hypervolume": 0.7765768368194437,
+      "display_hv": 0.7765768368194437,
+      "canonical_hv": 0.31063073472777747,
+      "hypervolume_canonical": 0.31063073472777747,
+      "hypervolume_raw": 9.140324871057498,
+      "best_time_s": 3180.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.6467789716649339,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 0,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 13.24,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "77bf5bcc00361b76",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 168,
+        "plain_log_ei_surrogate_at_plain": -0.604739829928391,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          5.6490522939774745,
+          4.102589863336696,
+          2.117144621112267,
+          0.27823228633371616,
+          0.26679452422249467
+        ],
+        "region_raw_ub": [
+          6.0,
+          4.412564136663304,
+          2.2204693788877337,
+          0.30922971366628393,
+          0.2874594757775054
+        ],
+        "region_normalized_lb": [
+          0.9122630734941406,
+          0.7008632877786651,
+          0.11714462111214993,
+          0.5941076211104068,
+          0.8339726211083035
+        ],
+        "region_normalized_ub": [
+          0.99999999999975,
+          0.8041880455541667,
+          0.22046937888751317,
+          0.6974323788852883,
+          0.9372973788828406
+        ],
+        "relative_volume": 1e-05,
+        "per_dim_widths": [
+          0.08773692650563136,
+          0.103324757775536,
+          0.10332475777546657,
+          0.1033247577752259,
+          0.10332475777505375
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.008954837756353938,
+        "anchor_close_fraction": 0.14583333333333334,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.12713852117962543,
+        "anchor_mean_ei": 0.0206501837625537,
+        "anchor_weight_max": 0.14709929895142876,
+        "anchor_weight_entropy": 2.9989019945938447,
+        "anchor_consistency": 0.4078793696639567,
+        "anchor_novelty_mean": 0.06359895025176725,
+        "lambda_t": 0.2,
+        "kernel_norm_sq": 0.00015785811725100462,
+        "anneal_t": 1.0,
+        "region_reliability": 0.25696400288829274,
+        "positive_kernel_fraction": 0.5271686159844055,
+        "corr_at_plain": 0.8918017429404913,
+        "max_corr": 0.9968639247392631,
+        "max_shift_z": 0.05123162888718697,
+        "mean_shift_z": 0.01832530392121777,
+        "lift_idx": 168,
+        "sigma_unchanged": true,
+        "accepted": false,
+        "selected_index_before": 168,
+        "selected_score_before": 0.19264043112666038,
+        "selected_index_after": 168,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 5.860345,
+            "I2": 4.257577,
+            "I3": 2.168807,
+            "dSOC1": 0.293731,
+            "dSOC2": 0.277127
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "fast_charge",
+          "reason": "Best scalarized objective point with feasible dSOC sum below hard limit and good current ordering.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 5.860345,
+              "I2": 4.257577,
+              "I3": 2.168807,
+              "dSOC1": 0.293731,
+              "dSOC2": 0.277127
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "fast_charge",
+            "reason": "Best scalarized objective point with feasible dSOC sum below hard limit and good current ordering.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "77bf5bcc00361b76",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "same_as_plain",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 1.8202628926729822
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 2,
+      "n_total": 8,
+      "n_feasible": 8,
+      "pareto_size": 7,
+      "hypervolume": 0.7765768368194437,
+      "display_hv": 0.7765768368194437,
+      "canonical_hv": 0.31063073472777747,
+      "hypervolume_canonical": 0.31063073472777747,
+      "hypervolume_raw": 9.140324871057498,
+      "best_time_s": 3180.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.6467789716649339,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 1,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 8.78,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "51fa2646aa544db6",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 157,
+        "plain_log_ei_surrogate_at_plain": -6.005800552757421,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          5.6,
+          4.699999999999999,
+          2.0,
+          0.358,
+          0.27199999999999996
+        ],
+        "region_raw_ub": [
+          6.0,
+          4.999999999999999,
+          2.1,
+          0.388,
+          0.292
+        ],
+        "region_normalized_lb": [
+          0.8999999999997749,
+          0.8999999999996997,
+          0.0,
+          0.8599999999971333,
+          0.8599999999956999
+        ],
+        "region_normalized_ub": [
+          0.99999999999975,
+          0.9999999999996664,
+          0.09999999999990009,
+          0.9599999999968001,
+          0.9599999999951999
+        ],
+        "relative_volume": 1.0000000000000028e-05,
+        "per_dim_widths": [
+          0.10000000000000009,
+          0.09999999999999994,
+          0.10000000000000009,
+          0.10000000000000007,
+          0.1000000000000001
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.10490525872059787,
+        "anchor_close_fraction": 0.0,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 6.08841932750459e-14,
+        "anchor_mean_ei": 1.3084022711188666e-15,
+        "anchor_weight_max": 0.30690590213172203,
+        "anchor_weight_entropy": 3.040051753664463,
+        "anchor_consistency": 0.2718616355871549,
+        "anchor_novelty_mean": 0.16593950846602867,
+        "lambda_t": 0.18333333333333335,
+        "kernel_norm_sq": 0.0003897578283583494,
+        "anneal_t": 0.9166666666666666,
+        "region_reliability": 0.1712728304199076,
+        "positive_kernel_fraction": 0.58671875,
+        "corr_at_plain": 0.02348898900910343,
+        "max_corr": 0.9938520349910384,
+        "max_shift_z": 0.031206972692775035,
+        "mean_shift_z": 0.014138072272144139,
+        "lift_idx": 49,
+        "plain_log_ei_surrogate_at_lift": -12.250319621862385,
+        "lifted_ei_at_lift": 0.015169097608661142,
+        "plain_ei_at_plain": 0.002464415663939908,
+        "plain_ei_at_lift": 4.783588208389702e-06,
+        "plain_ei_gap": 6.244519069104964,
+        "corr_at_lift": 0.5834454379947258,
+        "lift_candidate_inside_region": true,
+        "sigma_unchanged": true,
+        "lift_sigma_z": 0.0013616860172603739,
+        "plain_sigma_z": 0.006220971370305049,
+        "accepted": false,
+        "selected_index_before": 157,
+        "selected_score_before": 0.0008135864761880128,
+        "selected_index_after": 157,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 6.0,
+            "I2": 5.0,
+            "I3": 2.0,
+            "dSOC1": 0.4,
+            "dSOC2": 0.3
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "fast_charge",
+          "reason": "Lowest scalarized objective found at this point; feasible and meets hard dSOC feasibility limit.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 6.0,
+              "I2": 5.0,
+              "I3": 2.0,
+              "dSOC1": 0.4,
+              "dSOC2": 0.3
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "fast_charge",
+            "reason": "Lowest scalarized objective found at this point; feasible and meets hard dSOC feasibility limit.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "51fa2646aa544db6",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "plain_ei_gap",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.0
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 3,
+      "n_total": 9,
+      "n_feasible": 9,
+      "pareto_size": 8,
+      "hypervolume": 0.786743032580416,
+      "display_hv": 0.786743032580416,
+      "canonical_hv": 0.3146972130321664,
+      "hypervolume_canonical": 0.3146972130321664,
+      "hypervolume_raw": 9.259981198097368,
+      "best_time_s": 3180.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.6152625753930788,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 2,
+      "w_vec": [
+        0.00980392156862745,
+        0.9803921568627451,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 12.16,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "c780084d140c9523",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 157,
+        "plain_log_ei_surrogate_at_plain": -1.98634081547423,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.0,
+          2.0,
+          2.0,
+          0.1,
+          0.1
+        ],
+        "region_raw_ub": [
+          2.5532647468889262,
+          2.276632373444532,
+          2.0922107911481773,
+          0.12766323734445323,
+          0.11844215822963548
+        ],
+        "region_normalized_lb": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "region_normalized_ub": [
+          0.13831618672219698,
+          0.09221079114814658,
+          0.0922107911480851,
+          0.09221079114787004,
+          0.09221079114771634
+        ],
+        "relative_volume": 9.999999999999992e-06,
+        "per_dim_widths": [
+          0.13831618672223156,
+          0.09221079114817732,
+          0.09221079114817732,
+          0.0922107911481774,
+          0.0922107911481774
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.02499999999999377,
+        "anchor_close_fraction": 0.020833333333333332,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.011172330182101658,
+        "anchor_mean_ei": 0.000622788270563803,
+        "anchor_weight_max": 0.2052066408223162,
+        "anchor_weight_entropy": 2.8574330959132705,
+        "anchor_consistency": 0.432936801385049,
+        "anchor_novelty_mean": 0.11643718013627453,
+        "lambda_t": 0.16666666666666669,
+        "kernel_norm_sq": 0.00021023837108956195,
+        "anneal_t": 0.8333333333333334,
+        "region_reliability": 0.27275018487258085,
+        "positive_kernel_fraction": 0.5361635220125787,
+        "corr_at_plain": 0.4230461941964529,
+        "max_corr": 0.9799974700990163,
+        "max_shift_z": 0.044549081857361374,
+        "mean_shift_z": 0.01177121076077365,
+        "lift_idx": 157,
+        "sigma_unchanged": true,
+        "accepted": false,
+        "selected_index_before": 157,
+        "selected_score_before": 0.04584349374153707,
+        "selected_index_after": 157,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.1,
+            "I2": 2.0,
+            "I3": 2.0,
+            "dSOC1": 0.1,
+            "dSOC2": 0.1
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "balanced",
+          "reason": "Lowest scalarized objective with feasible dSOC1+dSOC2 below hard limit and soft safety margin respected.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.1,
+              "I2": 2.0,
+              "I3": 2.0,
+              "dSOC1": 0.1,
+              "dSOC2": 0.1
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "balanced",
+            "reason": "Lowest scalarized objective with feasible dSOC1+dSOC2 below hard limit and soft safety margin respected.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "c780084d140c9523",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "same_as_plain",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.11965632703986984
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 4,
+      "n_total": 10,
+      "n_feasible": 10,
+      "pareto_size": 9,
+      "hypervolume": 0.7867877057268138,
+      "display_hv": 0.7867877057268138,
+      "canonical_hv": 0.31471508229072553,
+      "hypervolume_canonical": 0.31471508229072553,
+      "hypervolume_raw": 9.260507001922216,
+      "best_time_s": 3180.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.6152625753930788,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 3,
+      "w_vec": [
+        0.00980392156862745,
+        0.9803921568627451,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 13.86,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "8eda7908fb053e68",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 161,
+        "plain_log_ei_surrogate_at_plain": -3.521290756932898,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.0,
+          2.0,
+          2.0,
+          0.1,
+          0.1
+        ],
+        "region_raw_ub": [
+          2.5532647468889262,
+          2.276632373444532,
+          2.0922107911481773,
+          0.12766323734445323,
+          0.11844215822963548
+        ],
+        "region_normalized_lb": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "region_normalized_ub": [
+          0.13831618672219698,
+          0.09221079114814658,
+          0.0922107911480851,
+          0.09221079114787004,
+          0.09221079114771634
+        ],
+        "relative_volume": 9.999999999999992e-06,
+        "per_dim_widths": [
+          0.13831618672223156,
+          0.09221079114817732,
+          0.09221079114817732,
+          0.0922107911481774,
+          0.0922107911481774
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.02499999999999377,
+        "anchor_close_fraction": 0.020833333333333332,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.01056234253326709,
+        "anchor_mean_ei": 0.0017269893527624123,
+        "anchor_weight_max": 0.18171847043250466,
+        "anchor_weight_entropy": 2.879719385426374,
+        "anchor_consistency": 0.43360496288890904,
+        "anchor_novelty_mean": 0.11643718013627453,
+        "lambda_t": 0.15000000000000002,
+        "kernel_norm_sq": 0.001392666379625463,
+        "anneal_t": 0.75,
+        "region_reliability": 0.25799495291890084,
+        "positive_kernel_fraction": 0.5870833333333333,
+        "corr_at_plain": 0.4340720944247325,
+        "max_corr": 0.9912649498888425,
+        "max_shift_z": 0.038361203111509284,
+        "mean_shift_z": 0.010921622525005947,
+        "lift_idx": 0,
+        "plain_log_ei_surrogate_at_lift": -4.636702845521835,
+        "lifted_ei_at_lift": 0.0362537696277081,
+        "plain_ei_at_plain": 0.029561254138254493,
+        "plain_ei_at_lift": 0.009689593101776788,
+        "plain_ei_gap": 1.1154120885889371,
+        "corr_at_lift": 0.7356299155577314,
+        "lift_candidate_inside_region": true,
+        "sigma_unchanged": true,
+        "lift_sigma_z": 0.01212183911119307,
+        "plain_sigma_z": 0.16874153149023283,
+        "accepted": false,
+        "selected_index_before": 161,
+        "selected_score_before": 0.009487916510816437,
+        "selected_index_after": 161,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.1,
+            "I2": 2.0,
+            "I3": 2.0,
+            "dSOC1": 0.1,
+            "dSOC2": 0.1
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.85,
+          "preference_type": "balanced",
+          "reason": "Lowest scalarized objective with feasible dSOC sum below hard limit and good balance of currents.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.1,
+              "I2": 2.0,
+              "I3": 2.0,
+              "dSOC1": 0.1,
+              "dSOC2": 0.1
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.85,
+            "preference_type": "balanced",
+            "reason": "Lowest scalarized objective with feasible dSOC sum below hard limit and good balance of currents.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "8eda7908fb053e68",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "plain_ei_gap",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.0005258038248481256
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 5,
+      "n_total": 11,
+      "n_feasible": 11,
+      "pareto_size": 9,
+      "hypervolume": 0.8630645267526699,
+      "display_hv": 0.8630645267526699,
+      "canonical_hv": 0.34522581070106795,
+      "hypervolume_canonical": 0.34522581070106795,
+      "hypervolume_raw": 10.15828670800162,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.6152625753930788,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 4,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.38,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "b74c6acf95598a4b",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 157,
+        "plain_log_ei_surrogate_at_plain": -2.190103068799927,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          5.6,
+          4.699999999999999,
+          2.0,
+          0.358,
+          0.27199999999999996
+        ],
+        "region_raw_ub": [
+          6.0,
+          4.999999999999999,
+          2.1,
+          0.388,
+          0.292
+        ],
+        "region_normalized_lb": [
+          0.8999999999997749,
+          0.8999999999996997,
+          0.0,
+          0.8599999999971333,
+          0.8599999999956999
+        ],
+        "region_normalized_ub": [
+          0.99999999999975,
+          0.9999999999996664,
+          0.09999999999990009,
+          0.9599999999968001,
+          0.9599999999951999
+        ],
+        "relative_volume": 1.0000000000000028e-05,
+        "per_dim_widths": [
+          0.10000000000000009,
+          0.09999999999999994,
+          0.10000000000000009,
+          0.10000000000000007,
+          0.1000000000000001
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.10490525872059787,
+        "anchor_close_fraction": 0.0,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 9.584948120305775e-07,
+        "anchor_mean_ei": 3.415684446630633e-08,
+        "anchor_weight_max": 0.37913745928935155,
+        "anchor_weight_entropy": 2.214116543278412,
+        "anchor_consistency": 0.4974041829653875,
+        "anchor_novelty_mean": 0.16593950846602867,
+        "lambda_t": 0.13333333333333336,
+        "kernel_norm_sq": 0.003127564499625771,
+        "anneal_t": 0.6666666666666667,
+        "region_reliability": 0.31336463526819414,
+        "positive_kernel_fraction": 0.7336128048780488,
+        "corr_at_plain": 0.08474258159515777,
+        "max_corr": 0.9994192843913694,
+        "max_shift_z": 0.041757687937773486,
+        "mean_shift_z": 0.01647583158312709,
+        "lift_idx": 157,
+        "sigma_unchanged": true,
+        "accepted": false,
+        "selected_index_before": 157,
+        "selected_score_before": 0.03362085882173682,
+        "selected_index_after": 157,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 6.0,
+            "I2": 5.0,
+            "I3": 2.0,
+            "dSOC1": 0.4,
+            "dSOC2": 0.3
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "fast_charge",
+          "reason": "Best scalarized objective point with feasible dSOC1+dSOC2 at hard limit 0.7, highest confidence in fast charging performance.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 6.0,
+              "I2": 5.0,
+              "I3": 2.0,
+              "dSOC1": 0.4,
+              "dSOC2": 0.3
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "fast_charge",
+            "reason": "Best scalarized objective point with feasible dSOC1+dSOC2 at hard limit 0.7, highest confidence in fast charging performance.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "b74c6acf95598a4b",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "same_as_plain",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.8977797060794046
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 6,
+      "n_total": 12,
+      "n_feasible": 12,
+      "pareto_size": 9,
+      "hypervolume": 0.8630645267526699,
+      "display_hv": 0.8630645267526699,
+      "canonical_hv": 0.34522581070106795,
+      "hypervolume_canonical": 0.34522581070106795,
+      "hypervolume_raw": 10.15828670800162,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.6152625753930788,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 5,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 15.83,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "4a1051ae94ca0749",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 48,
+        "plain_log_ei_surrogate_at_plain": -3.591396977739642,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          5.6,
+          4.699999999999999,
+          2.9,
+          0.358,
+          0.27199999999999996
+        ],
+        "region_raw_ub": [
+          6.0,
+          4.999999999999999,
+          3.0,
+          0.388,
+          0.292
+        ],
+        "region_normalized_lb": [
+          0.8999999999997749,
+          0.8999999999996997,
+          0.8999999999990999,
+          0.8599999999971333,
+          0.8599999999956999
+        ],
+        "region_normalized_ub": [
+          0.99999999999975,
+          0.9999999999996664,
+          0.9999999999989999,
+          0.9599999999968001,
+          0.9599999999951999
+        ],
+        "relative_volume": 1.0000000000000028e-05,
+        "per_dim_widths": [
+          0.10000000000000009,
+          0.09999999999999994,
+          0.10000000000000009,
+          0.10000000000000007,
+          0.1000000000000001
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.09717342197317397,
+        "anchor_close_fraction": 0.0,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.002156850895674106,
+        "anchor_mean_ei": 0.0001706920864019186,
+        "anchor_weight_max": 0.09233888879700138,
+        "anchor_weight_entropy": 3.407739708156058,
+        "anchor_consistency": 0.2424987010657039,
+        "anchor_novelty_mean": 0.1670714092220671,
+        "lambda_t": 0.11666666666666665,
+        "kernel_norm_sq": 0.006892624486167604,
+        "anneal_t": 0.5833333333333333,
+        "region_reliability": 0.15277418167139345,
+        "positive_kernel_fraction": 0.8935467479674797,
+        "corr_at_plain": 0.8919655905576638,
+        "max_corr": 0.9967474779570216,
+        "max_shift_z": 0.01776568269908941,
+        "mean_shift_z": 0.00852986061654493,
+        "lift_idx": 48,
+        "sigma_unchanged": true,
+        "accepted": false,
+        "selected_index_before": 48,
+        "selected_score_before": 0.008769687358539193,
+        "selected_index_after": 48,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 6.0,
+            "I2": 5.0,
+            "I3": 3.0,
+            "dSOC1": 0.4,
+            "dSOC2": 0.3
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "fast_charge",
+          "reason": "Top scalarized point with lowest scalar objective, feasible and near hard feasibility limit, maximizing charge currents and SOC increments for fast charging.",
+          "risk_flags": [
+            "near_hard"
+          ],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 6.0,
+              "I2": 5.0,
+              "I3": 3.0,
+              "dSOC1": 0.4,
+              "dSOC2": 0.3
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "fast_charge",
+            "reason": "Top scalarized point with lowest scalar objective, feasible and near hard feasibility limit, maximizing charge currents and SOC increments for fast charging.",
+            "risk_flags": [
+              "near_hard"
+            ]
+          },
+          "raw_response_hash": "4a1051ae94ca0749",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "same_as_plain",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.0
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 7,
+      "n_total": 13,
+      "n_feasible": 13,
+      "pareto_size": 10,
+      "hypervolume": 0.8668080383678565,
+      "display_hv": 0.8668080383678565,
+      "canonical_hv": 0.3467232153471426,
+      "hypervolume_canonical": 0.3467232153471426,
+      "hypervolume_raw": 10.202347914438736,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.6152625753930788,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 6,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 9.54,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "ef40d87375527fd5",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 158,
+        "plain_log_ei_surrogate_at_plain": -3.4771830565165978,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          5.6,
+          4.699999999999999,
+          2.9,
+          0.358,
+          0.27199999999999996
+        ],
+        "region_raw_ub": [
+          6.0,
+          4.999999999999999,
+          3.0,
+          0.388,
+          0.292
+        ],
+        "region_normalized_lb": [
+          0.8999999999997749,
+          0.8999999999996997,
+          0.8999999999990999,
+          0.8599999999971333,
+          0.8599999999956999
+        ],
+        "region_normalized_ub": [
+          0.99999999999975,
+          0.9999999999996664,
+          0.9999999999989999,
+          0.9599999999968001,
+          0.9599999999951999
+        ],
+        "relative_volume": 1.0000000000000028e-05,
+        "per_dim_widths": [
+          0.10000000000000009,
+          0.09999999999999994,
+          0.10000000000000009,
+          0.10000000000000007,
+          0.1000000000000001
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.09717342197317397,
+        "anchor_close_fraction": 0.0,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 4.230302979191681e-07,
+        "anchor_mean_ei": 4.514116847818504e-08,
+        "anchor_weight_max": 0.21265946276957828,
+        "anchor_weight_entropy": 2.7742107248499686,
+        "anchor_consistency": 0.39683106787379024,
+        "anchor_novelty_mean": 0.1670714092220671,
+        "lambda_t": 0.1,
+        "kernel_norm_sq": 0.002453881616060087,
+        "anneal_t": 0.5,
+        "region_reliability": 0.25000357276048785,
+        "positive_kernel_fraction": 0.818939393939394,
+        "corr_at_plain": 0.11050992111115662,
+        "max_corr": 0.9891365878091121,
+        "max_shift_z": 0.024728768090039602,
+        "mean_shift_z": 0.009356673028429487,
+        "lift_idx": 158,
+        "sigma_unchanged": true,
+        "accepted": false,
+        "selected_index_before": 158,
+        "selected_score_before": 0.010690209250356688,
+        "selected_index_after": 158,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 6.0,
+            "I2": 5.0,
+            "I3": 3.0,
+            "dSOC1": 0.4,
+            "dSOC2": 0.3
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "fast_charge",
+          "reason": "Top scalarized point with lowest scalar objective and feasible dSOC sum at hard limit",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 6.0,
+              "I2": 5.0,
+              "I3": 3.0,
+              "dSOC1": 0.4,
+              "dSOC2": 0.3
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "fast_charge",
+            "reason": "Top scalarized point with lowest scalar objective and feasible dSOC sum at hard limit",
+            "risk_flags": []
+          },
+          "raw_response_hash": "ef40d87375527fd5",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "same_as_plain",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.04406120643711553
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 8,
+      "n_total": 14,
+      "n_feasible": 14,
+      "pareto_size": 11,
+      "hypervolume": 0.8721255380866688,
+      "display_hv": 0.8721255380866688,
+      "canonical_hv": 0.3488502152346675,
+      "hypervolume_canonical": 0.3488502152346675,
+      "hypervolume_raw": 10.264934992274796,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.5855667453767507,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 7,
+      "w_vec": [
+        0.00980392156862745,
+        0.00980392156862745,
+        0.9803921568627451
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.33,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "6f988c13a92f22d2",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 162,
+        "plain_log_ei_surrogate_at_plain": -1.4858461910504466,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.0,
+          2.0,
+          2.9,
+          0.1,
+          0.1
+        ],
+        "region_raw_ub": [
+          2.4,
+          2.3,
+          3.0,
+          0.13,
+          0.12000000000000001
+        ],
+        "region_normalized_lb": [
+          0.0,
+          0.0,
+          0.8999999999990999,
+          0.0,
+          0.0
+        ],
+        "region_normalized_ub": [
+          0.09999999999997497,
+          0.0999999999999666,
+          0.9999999999989999,
+          0.09999999999966666,
+          0.09999999999950003
+        ],
+        "relative_volume": 1e-05,
+        "per_dim_widths": [
+          0.09999999999999998,
+          0.09999999999999994,
+          0.10000000000000009,
+          0.09999999999999998,
+          0.10000000000000003
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.05970304117036787,
+        "anchor_close_fraction": 0.0,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.07387223715911129,
+        "anchor_mean_ei": 0.035346505211252974,
+        "anchor_weight_max": 0.0813944556646679,
+        "anchor_weight_entropy": 3.35195214736932,
+        "anchor_consistency": 0.33725358345101913,
+        "anchor_novelty_mean": 0.1252793723482751,
+        "lambda_t": 0.08333333333333333,
+        "kernel_norm_sq": 0.01041635493581793,
+        "anneal_t": 0.41666666666666663,
+        "region_reliability": 0.21246975757414205,
+        "positive_kernel_fraction": 0.7341216216216216,
+        "corr_at_plain": -0.1868056838857588,
+        "max_corr": 0.9963634014429719,
+        "max_shift_z": 0.01764142419669465,
+        "mean_shift_z": 0.005551161626763971,
+        "lift_idx": 162,
+        "sigma_unchanged": true,
+        "accepted": false,
+        "selected_index_before": 162,
+        "selected_score_before": 0.08738028338892923,
+        "selected_index_after": 162,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.0,
+            "I2": 2.0,
+            "I3": 3.0,
+            "dSOC1": 0.1,
+            "dSOC2": 0.1
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "fast_charge",
+          "reason": "Lowest scalarized objective with feasible dSOC1+dSOC2 below hard limit and best observed performance.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.0,
+              "I2": 2.0,
+              "I3": 3.0,
+              "dSOC1": 0.1,
+              "dSOC2": 0.1
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "fast_charge",
+            "reason": "Lowest scalarized objective with feasible dSOC1+dSOC2 below hard limit and best observed performance.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "6f988c13a92f22d2",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "same_as_plain",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.06258707783605999
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 9,
+      "n_total": 15,
+      "n_feasible": 15,
+      "pareto_size": 11,
+      "hypervolume": 0.8721255380866688,
+      "display_hv": 0.8721255380866688,
+      "canonical_hv": 0.3488502152346675,
+      "hypervolume_canonical": 0.3488502152346675,
+      "hypervolume_raw": 10.264934992274796,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.5855667453767507,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 8,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 8.81,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "6f43e6ad94c4c24a",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 157,
+        "plain_log_ei_surrogate_at_plain": -6.870768664871474,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          5.6,
+          4.699999999999999,
+          2.9,
+          0.358,
+          0.27199999999999996
+        ],
+        "region_raw_ub": [
+          6.0,
+          4.999999999999999,
+          3.0,
+          0.388,
+          0.292
+        ],
+        "region_normalized_lb": [
+          0.8999999999997749,
+          0.8999999999996997,
+          0.8999999999990999,
+          0.8599999999971333,
+          0.8599999999956999
+        ],
+        "region_normalized_ub": [
+          0.99999999999975,
+          0.9999999999996664,
+          0.9999999999989999,
+          0.9599999999968001,
+          0.9599999999951999
+        ],
+        "relative_volume": 1.0000000000000028e-05,
+        "per_dim_widths": [
+          0.10000000000000009,
+          0.09999999999999994,
+          0.10000000000000009,
+          0.10000000000000007,
+          0.1000000000000001
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.09717342197317397,
+        "anchor_close_fraction": 0.0,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 5.5280697268318534e-08,
+        "anchor_mean_ei": 1.773450075597979e-09,
+        "anchor_weight_max": 0.3665911761402061,
+        "anchor_weight_entropy": 1.64523262586061,
+        "anchor_consistency": 0.5952975525267135,
+        "anchor_novelty_mean": 0.1670714092220671,
+        "lambda_t": 0.06666666666666668,
+        "kernel_norm_sq": 0.0023218828796655283,
+        "anneal_t": 0.33333333333333337,
+        "region_reliability": 0.3750374580918295,
+        "positive_kernel_fraction": 0.7819616977225673,
+        "corr_at_plain": -0.20851847626206077,
+        "max_corr": 0.9979375416346035,
+        "max_shift_z": 0.024950930596603398,
+        "mean_shift_z": 0.009275795880829994,
+        "lift_idx": 55,
+        "plain_log_ei_surrogate_at_lift": -10.011534434904231,
+        "lifted_ei_at_lift": 0.0013953391756281381,
+        "plain_ei_at_plain": 0.001037679130487182,
+        "plain_ei_at_lift": 4.487927572547484e-05,
+        "plain_ei_gap": 3.1407657700327567,
+        "corr_at_lift": 0.9698942315499853,
+        "lift_candidate_inside_region": true,
+        "sigma_unchanged": true,
+        "lift_sigma_z": 0.017342547768834086,
+        "plain_sigma_z": 0.03931169007899208,
+        "accepted": false,
+        "selected_index_before": 157,
+        "selected_score_before": 0.0003578785508164962,
+        "selected_index_after": 157,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 6.0,
+            "I2": 5.0,
+            "I3": 3.0,
+            "dSOC1": 0.4,
+            "dSOC2": 0.3
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "fast_charge",
+          "reason": "Top scalarized point with lowest scalar objective, feasible with dSOC1+dSOC2 at hard limit 0.7, maximizing charge currents and SOC increments for fast charging.",
+          "risk_flags": [
+            "dSOC1+dSOC2 at hard feasibility limit",
+            "High currents may increase thermal and aging risks"
+          ],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 6.0,
+              "I2": 5.0,
+              "I3": 3.0,
+              "dSOC1": 0.4,
+              "dSOC2": 0.3
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "fast_charge",
+            "reason": "Top scalarized point with lowest scalar objective, feasible with dSOC1+dSOC2 at hard limit 0.7, maximizing charge currents and SOC increments for fast charging.",
+            "risk_flags": [
+              "dSOC1+dSOC2 at hard feasibility limit",
+              "High currents may increase thermal and aging risks"
+            ]
+          },
+          "raw_response_hash": "6f43e6ad94c4c24a",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "plain_ei_gap",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.0
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 10,
+      "n_total": 16,
+      "n_feasible": 16,
+      "pareto_size": 12,
+      "hypervolume": 0.8723502512692913,
+      "display_hv": 0.8723502512692913,
+      "canonical_hv": 0.34894010050771657,
+      "hypervolume_canonical": 0.34894010050771657,
+      "hypervolume_raw": 10.267579870919892,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.5855667453767507,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 9,
+      "w_vec": [
+        0.00980392156862745,
+        0.9803921568627451,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 12.41,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "6e7e114e3e5fa4ed",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 165,
+        "plain_log_ei_surrogate_at_plain": -1.1856533816938966,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.0,
+          2.0,
+          2.0,
+          0.1,
+          0.1
+        ],
+        "region_raw_ub": [
+          2.5532647468889262,
+          2.276632373444532,
+          2.0922107911481773,
+          0.12766323734445323,
+          0.11844215822963548
+        ],
+        "region_normalized_lb": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "region_normalized_ub": [
+          0.13831618672219698,
+          0.09221079114814658,
+          0.0922107911480851,
+          0.09221079114787004,
+          0.09221079114771634
+        ],
+        "relative_volume": 9.999999999999992e-06,
+        "per_dim_widths": [
+          0.13831618672223156,
+          0.09221079114817732,
+          0.09221079114817732,
+          0.0922107911481774,
+          0.0922107911481774
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.02499999999999377,
+        "anchor_close_fraction": 0.020833333333333332,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.27550115551068244,
+        "anchor_mean_ei": 0.14372522101215093,
+        "anchor_weight_max": 0.06673179251705172,
+        "anchor_weight_entropy": 3.471117236937264,
+        "anchor_consistency": 0.3339665763118461,
+        "anchor_novelty_mean": 0.11643718013627453,
+        "lambda_t": 0.05,
+        "kernel_norm_sq": 0.36858065437826615,
+        "anneal_t": 0.25,
+        "region_reliability": 0.21039894307646306,
+        "positive_kernel_fraction": 0.7152072758037225,
+        "corr_at_plain": 0.3857405829351511,
+        "max_corr": 0.987965235773622,
+        "max_shift_z": 0.010393342070152937,
+        "mean_shift_z": 0.0027341686821171964,
+        "lift_idx": 165,
+        "sigma_unchanged": true,
+        "accepted": false,
+        "selected_index_before": 165,
+        "selected_score_before": 0.11768910274809963,
+        "selected_index_after": 165,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.1,
+            "I2": 2.0,
+            "I3": 2.0,
+            "dSOC1": 0.1,
+            "dSOC2": 0.1
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "fast_charge",
+          "reason": "Lowest scalarized objective with feasible dSOC1+dSOC2 below hard limit and good safety margin",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.1,
+              "I2": 2.0,
+              "I3": 2.0,
+              "dSOC1": 0.1,
+              "dSOC2": 0.1
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "fast_charge",
+            "reason": "Lowest scalarized objective with feasible dSOC1+dSOC2 below hard limit and good safety margin",
+            "risk_flags": []
+          },
+          "raw_response_hash": "6e7e114e3e5fa4ed",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "same_as_plain",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.002644878645096327
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 11,
+      "n_total": 17,
+      "n_feasible": 17,
+      "pareto_size": 13,
+      "hypervolume": 0.8725169024860631,
+      "display_hv": 0.8725169024860631,
+      "canonical_hv": 0.34900676099442524,
+      "hypervolume_canonical": 0.34900676099442524,
+      "hypervolume_raw": 10.269541359067915,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.5855667453767507,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 10,
+      "w_vec": [
+        0.00980392156862745,
+        0.9803921568627451,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.49,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "acfc6fa77c5d2732",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 162,
+        "plain_log_ei_surrogate_at_plain": -2.7472599072269213,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.0,
+          2.0,
+          2.0,
+          0.1,
+          0.1
+        ],
+        "region_raw_ub": [
+          2.5532647468889262,
+          2.276632373444532,
+          2.0922107911481773,
+          0.12766323734445323,
+          0.11844215822963548
+        ],
+        "region_normalized_lb": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "region_normalized_ub": [
+          0.13831618672219698,
+          0.09221079114814658,
+          0.0922107911480851,
+          0.09221079114787004,
+          0.09221079114771634
+        ],
+        "relative_volume": 9.999999999999992e-06,
+        "per_dim_widths": [
+          0.13831618672223156,
+          0.09221079114817732,
+          0.09221079114817732,
+          0.0922107911481774,
+          0.0922107911481774
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.02499999999999377,
+        "anchor_close_fraction": 0.020833333333333332,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.041726475065316466,
+        "anchor_mean_ei": 0.00827299271333204,
+        "anchor_weight_max": 0.09005620703611998,
+        "anchor_weight_entropy": 3.1053426764261407,
+        "anchor_consistency": 0.4133064006940227,
+        "anchor_novelty_mean": 0.11643718013627453,
+        "lambda_t": 0.033333333333333326,
+        "kernel_norm_sq": 0.0008735679905915162,
+        "anneal_t": 0.16666666666666663,
+        "region_reliability": 0.2603830324372343,
+        "positive_kernel_fraction": 0.6332417582417582,
+        "corr_at_plain": 0.8720853456143408,
+        "max_corr": 0.9947371038488727,
+        "max_shift_z": 0.00863375545260005,
+        "mean_shift_z": 0.003230973997268061,
+        "lift_idx": 164,
+        "plain_log_ei_surrogate_at_lift": -2.747259917219197,
+        "lifted_ei_at_lift": 0.0714209461092149,
+        "plain_ei_at_plain": 0.06410326968520177,
+        "plain_ei_at_lift": 0.06410326904466422,
+        "plain_ei_gap": 9.992275895598368e-09,
+        "corr_at_lift": 0.8720923271971404,
+        "lift_candidate_inside_region": true,
+        "sigma_unchanged": true,
+        "lift_sigma_z": 0.03659241462762737,
+        "plain_sigma_z": 0.036595062098652,
+        "sigma_ratio_vs_plain": 0.9999276549656483,
+        "accepted": false,
+        "selected_index_before": 162,
+        "selected_score_before": 0.025208491903642525,
+        "selected_index_after": 162,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.1,
+            "I2": 2.0,
+            "I3": 2.0,
+            "dSOC1": 0.1,
+            "dSOC2": 0.1
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "fast_charge",
+          "reason": "Lowest scalarized objective point with feasible dSOC1+dSOC2 below hard limit and balanced currents near lower bounds.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.1,
+              "I2": 2.0,
+              "I3": 2.0,
+              "dSOC1": 0.1,
+              "dSOC2": 0.1
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "fast_charge",
+            "reason": "Lowest scalarized objective point with feasible dSOC1+dSOC2 below hard limit and balanced currents near lower bounds.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "acfc6fa77c5d2732",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "lifted",
+        "diagnostic_fallback_reason": null,
+        "diagnostic_override_candidate_available": true,
+        "hv_gain_raw": 0.001961488148022994
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 12,
+      "n_total": 18,
+      "n_feasible": 18,
+      "pareto_size": 14,
+      "hypervolume": 0.8768257053524553,
+      "display_hv": 0.8768257053524553,
+      "canonical_hv": 0.3507302821409821,
+      "hypervolume_canonical": 0.3507302821409821,
+      "hypervolume_raw": 10.32025605481582,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.5736501852847433,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 11,
+      "w_vec": [
+        0.00980392156862745,
+        0.00980392156862745,
+        0.9803921568627451
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 13.0,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "b8cc7acad7a5c1b3",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 159,
+        "plain_log_ei_surrogate_at_plain": -2.5019453828512423,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.0,
+          2.0,
+          2.91855071914857,
+          0.3459522157446525,
+          0.1
+        ],
+        "region_raw_ub": [
+          2.454444633524823,
+          2.2443478425542898,
+          2.9999999999999996,
+          0.3948217842553476,
+          0.11628985617028598
+        ],
+        "region_normalized_lb": [
+          0.0,
+          0.0,
+          0.9185507191476512,
+          0.8198407191461088,
+          0.0
+        ],
+        "region_normalized_ub": [
+          0.11361115838117732,
+          0.08144928085140277,
+          0.9999999999989995,
+          0.9827392808478826,
+          0.08144928085102261
+        ],
+        "relative_volume": 9.999999999999996e-06,
+        "per_dim_widths": [
+          0.11361115838120572,
+          0.08144928085142993,
+          0.08144928085142977,
+          0.16289856170231687,
+          0.08144928085142986
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.038080375559035734,
+        "anchor_close_fraction": 0.020833333333333332,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.044125417812430935,
+        "anchor_mean_ei": 0.00453728995875678,
+        "anchor_weight_max": 0.1860633457525778,
+        "anchor_weight_entropy": 2.833986895807486,
+        "anchor_consistency": 0.4011832201647373,
+        "anchor_novelty_mean": 0.10254560159382942,
+        "lambda_t": 0.016666666666666673,
+        "kernel_norm_sq": 0.000578924569023698,
+        "anneal_t": 0.08333333333333337,
+        "region_reliability": 0.25274542870378447,
+        "positive_kernel_fraction": 0.6197289156626506,
+        "corr_at_plain": 0.4697442741020258,
+        "max_corr": 0.965463944386312,
+        "max_shift_z": 0.004066943308699421,
+        "mean_shift_z": 0.0011573226459376308,
+        "lift_idx": 159,
+        "sigma_unchanged": true,
+        "accepted": false,
+        "selected_index_before": 159,
+        "selected_score_before": 0.03116532601018636,
+        "selected_index_after": 159,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.078974,
+            "I2": 2.0,
+            "I3": 3.0,
+            "dSOC1": 0.370387,
+            "dSOC2": 0.1
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "balanced",
+          "reason": "Best scalarized objective point with feasible dSOC1+dSOC2 > 0.47 and good trade-off in objectives.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.078974,
+              "I2": 2.0,
+              "I3": 3.0,
+              "dSOC1": 0.370387,
+              "dSOC2": 0.1
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "balanced",
+            "reason": "Best scalarized objective point with feasible dSOC1+dSOC2 > 0.47 and good trade-off in objectives.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "b8cc7acad7a5c1b3",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "same_as_plain",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.05071469574790477
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 13,
+      "n_total": 19,
+      "n_feasible": 19,
+      "pareto_size": 14,
+      "hypervolume": 0.8768257053524553,
+      "display_hv": 0.8768257053524553,
+      "canonical_hv": 0.3507302821409821,
+      "hypervolume_canonical": 0.3507302821409821,
+      "hypervolume_raw": 10.32025605481582,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.5736501852847433,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 12,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 8.23,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "e3c5ef8f201312c2",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 48,
+        "plain_log_ei_surrogate_at_plain": -8.156073668723392,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          5.6,
+          4.699999999999999,
+          2.9,
+          0.358,
+          0.27199999999999996
+        ],
+        "region_raw_ub": [
+          6.0,
+          4.999999999999999,
+          3.0,
+          0.388,
+          0.292
+        ],
+        "region_normalized_lb": [
+          0.8999999999997749,
+          0.8999999999996997,
+          0.8999999999990999,
+          0.8599999999971333,
+          0.8599999999956999
+        ],
+        "region_normalized_ub": [
+          0.99999999999975,
+          0.9999999999996664,
+          0.9999999999989999,
+          0.9599999999968001,
+          0.9599999999951999
+        ],
+        "relative_volume": 1.0000000000000028e-05,
+        "per_dim_widths": [
+          0.10000000000000009,
+          0.09999999999999994,
+          0.10000000000000009,
+          0.10000000000000007,
+          0.1000000000000001
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.09717342197317397,
+        "anchor_close_fraction": 0.0,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 2.2529613250248804e-07,
+        "anchor_mean_ei": 1.3275957167421682e-08,
+        "anchor_weight_max": 0.22503676634976352,
+        "anchor_weight_entropy": 2.64857199622175,
+        "anchor_consistency": 0.4388235957786968,
+        "anchor_novelty_mean": 0.16676495713983708,
+        "lambda_t": 0.0,
+        "kernel_norm_sq": 0.0025304645376270194,
+        "anneal_t": 0.0,
+        "region_reliability": 0.27645886534057895,
+        "positive_kernel_fraction": 0.8600460122699386,
+        "accepted": false,
+        "selected_index_before": 48,
+        "selected_score_before": 0.00010436545802328948,
+        "selected_index_after": 48,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 6.0,
+            "I2": 5.0,
+            "I3": 3.0,
+            "dSOC1": 0.4,
+            "dSOC2": 0.3
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "fast_charge",
+          "reason": "Best scalarized objective found at upper bounds with feasible dSOC sum at hard limit 0.7, maximizing fast charge current.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 6.0,
+              "I2": 5.0,
+              "I3": 3.0,
+              "dSOC1": 0.4,
+              "dSOC2": 0.3
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "fast_charge",
+            "reason": "Best scalarized objective found at upper bounds with feasible dSOC sum at hard limit 0.7, maximizing fast charge current.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "e3c5ef8f201312c2",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "inactive_anneal",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.0
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 14,
+      "n_total": 20,
+      "n_feasible": 20,
+      "pareto_size": 14,
+      "hypervolume": 0.8768257053524553,
+      "display_hv": 0.8768257053524553,
+      "canonical_hv": 0.3507302821409821,
+      "hypervolume_canonical": 0.3507302821409821,
+      "hypervolume_raw": 10.32025605481582,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.5736501852847433,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 13,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 9.78,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "4149cbe87557bef7",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 159,
+        "plain_log_ei_surrogate_at_plain": -4.791201603840388,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          5.6,
+          4.699999999999999,
+          2.9,
+          0.358,
+          0.27199999999999996
+        ],
+        "region_raw_ub": [
+          6.0,
+          4.999999999999999,
+          3.0,
+          0.388,
+          0.292
+        ],
+        "region_normalized_lb": [
+          0.8999999999997749,
+          0.8999999999996997,
+          0.8999999999990999,
+          0.8599999999971333,
+          0.8599999999956999
+        ],
+        "region_normalized_ub": [
+          0.99999999999975,
+          0.9999999999996664,
+          0.9999999999989999,
+          0.9599999999968001,
+          0.9599999999951999
+        ],
+        "relative_volume": 1.0000000000000028e-05,
+        "per_dim_widths": [
+          0.10000000000000009,
+          0.09999999999999994,
+          0.10000000000000009,
+          0.10000000000000007,
+          0.1000000000000001
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.09717342197317397,
+        "anchor_close_fraction": 0.0,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 2.0802197685882582e-07,
+        "anchor_mean_ei": 1.236732474617952e-08,
+        "anchor_weight_max": 0.22342680314994198,
+        "anchor_weight_entropy": 2.6486171181994127,
+        "anchor_consistency": 0.43863546549440047,
+        "anchor_novelty_mean": 0.16676495713983708,
+        "lambda_t": 0.0,
+        "kernel_norm_sq": 0.002360534873912143,
+        "anneal_t": 0.0,
+        "region_reliability": 0.2763403432614723,
+        "positive_kernel_fraction": 0.8369341563786008,
+        "accepted": false,
+        "selected_index_before": 159,
+        "selected_score_before": 0.00312345885212658,
+        "selected_index_after": 159,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 6.0,
+            "I2": 5.0,
+            "I3": 3.0,
+            "dSOC1": 0.4,
+            "dSOC2": 0.3
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "fast_charge",
+          "reason": "Top scalarized point with lowest scalar objective and feasible under hard dSOC1+dSOC2 limit",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 6.0,
+              "I2": 5.0,
+              "I3": 3.0,
+              "dSOC1": 0.4,
+              "dSOC2": 0.3
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "fast_charge",
+            "reason": "Top scalarized point with lowest scalar objective and feasible under hard dSOC1+dSOC2 limit",
+            "risk_flags": []
+          },
+          "raw_response_hash": "4149cbe87557bef7",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "inactive_anneal",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.0
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 15,
+      "n_total": 21,
+      "n_feasible": 21,
+      "pareto_size": 15,
+      "hypervolume": 0.876829190762182,
+      "display_hv": 0.876829190762182,
+      "canonical_hv": 0.35073167630487284,
+      "hypervolume_canonical": 0.35073167630487284,
+      "hypervolume_raw": 10.320297078157878,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.5736501852847433,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 14,
+      "w_vec": [
+        0.00980392156862745,
+        0.9803921568627451,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 14.02,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "9a12398a85fbcf9f",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 174,
+        "plain_log_ei_surrogate_at_plain": -3.1992449211008265,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.2235677746816194,
+          2.0,
+          2.0,
+          0.1,
+          0.1
+        ],
+        "region_raw_ub": [
+          2.92000822531838,
+          2.26116516898885,
+          2.087055056329617,
+          0.12611651689888503,
+          0.11741101126592335
+        ],
+        "region_normalized_lb": [
+          0.05589194367039087,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "region_normalized_ub": [
+          0.23000205632953752,
+          0.08705505632958768,
+          0.08705505632952978,
+          0.08705505632932657,
+          0.08705505632918144
+        ],
+        "relative_volume": 1.0000000000000006e-05,
+        "per_dim_widths": [
+          0.17411011265919019,
+          0.0870550563296167,
+          0.08705505632961685,
+          0.08705505632961674,
+          0.08705505632961673
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.030891943670397097,
+        "anchor_close_fraction": 0.041666666666666664,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.026388674251789083,
+        "anchor_mean_ei": 0.004551050822294765,
+        "anchor_weight_max": 0.16359515008780662,
+        "anchor_weight_entropy": 2.996031121548018,
+        "anchor_consistency": 0.40943165229719936,
+        "anchor_novelty_mean": 0.10509672230456403,
+        "lambda_t": 0.0,
+        "kernel_norm_sq": 0.0027947359223632635,
+        "anneal_t": 0.0,
+        "region_reliability": 0.2436118331168336,
+        "positive_kernel_fraction": 0.5989583333333334,
+        "accepted": false,
+        "selected_index_before": 174,
+        "selected_score_before": 0.01632191558622446,
+        "selected_index_after": 174,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.571788,
+            "I2": 2.0,
+            "I3": 2.0,
+            "dSOC1": 0.1,
+            "dSOC2": 0.1
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.85,
+          "preference_type": "balanced",
+          "reason": "Lowest scalarized objective point found with feasible dSOC1+dSOC2 below hard limit and balanced objectives.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.571788,
+              "I2": 2.0,
+              "I3": 2.0,
+              "dSOC1": 0.1,
+              "dSOC2": 0.1
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.85,
+            "preference_type": "balanced",
+            "reason": "Lowest scalarized objective point found with feasible dSOC1+dSOC2 below hard limit and balanced objectives.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "9a12398a85fbcf9f",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "inactive_anneal",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 4.102334205846603e-05
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 16,
+      "n_total": 22,
+      "n_feasible": 22,
+      "pareto_size": 16,
+      "hypervolume": 0.8770455146917472,
+      "display_hv": 0.8770455146917472,
+      "canonical_hv": 0.3508182058766989,
+      "hypervolume_canonical": 0.3508182058766989,
+      "hypervolume_raw": 10.322843215127024,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.5727503400490257,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 15,
+      "w_vec": [
+        0.00980392156862745,
+        0.00980392156862745,
+        0.9803921568627451
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 9.28,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "5dfb5cf64975aa57",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 157,
+        "plain_log_ei_surrogate_at_plain": -2.93124720684445,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.0,
+          4.699999999999999,
+          2.9,
+          0.37,
+          0.1
+        ],
+        "region_raw_ub": [
+          2.4,
+          4.999999999999999,
+          3.0,
+          0.4,
+          0.12000000000000001
+        ],
+        "region_normalized_lb": [
+          0.0,
+          0.8999999999996997,
+          0.8999999999990999,
+          0.899999999997,
+          0.0
+        ],
+        "region_normalized_ub": [
+          0.09999999999997497,
+          0.9999999999996664,
+          0.9999999999989999,
+          0.9999999999966668,
+          0.09999999999950003
+        ],
+        "relative_volume": 1.0000000000000011e-05,
+        "per_dim_widths": [
+          0.09999999999999998,
+          0.09999999999999994,
+          0.10000000000000009,
+          0.10000000000000007,
+          0.10000000000000003
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.042303082408283135,
+        "anchor_close_fraction": 0.020833333333333332,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.0015038088698682104,
+        "anchor_mean_ei": 3.685264531919495e-05,
+        "anchor_weight_max": 0.29860501970824554,
+        "anchor_weight_entropy": 2.5573959744677053,
+        "anchor_consistency": 0.414747419948003,
+        "anchor_novelty_mean": 0.12653658530681688,
+        "lambda_t": 0.0,
+        "kernel_norm_sq": 0.0002651437087795975,
+        "anneal_t": 0.0,
+        "region_reliability": 0.2612908745672419,
+        "positive_kernel_fraction": 0.7554240631163708,
+        "accepted": false,
+        "selected_index_before": 157,
+        "selected_score_before": 0.020183516379714453,
+        "selected_index_after": 157,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.0,
+            "I2": 5.0,
+            "I3": 3.0,
+            "dSOC1": 0.4,
+            "dSOC2": 0.1
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "balanced",
+          "reason": "Best scalarized objective with feasible dSOC sum below hard limit and balanced current settings.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.0,
+              "I2": 5.0,
+              "I3": 3.0,
+              "dSOC1": 0.4,
+              "dSOC2": 0.1
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "balanced",
+            "reason": "Best scalarized objective with feasible dSOC sum below hard limit and balanced current settings.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "5dfb5cf64975aa57",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "inactive_anneal",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.0025461369691459623
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 17,
+      "n_total": 23,
+      "n_feasible": 23,
+      "pareto_size": 17,
+      "hypervolume": 0.8771124530292452,
+      "display_hv": 0.8771124530292452,
+      "canonical_hv": 0.3508449812116981,
+      "hypervolume_canonical": 0.3508449812116981,
+      "hypervolume_raw": 10.323631080695572,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.5727503400490257,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 16,
+      "w_vec": [
+        0.00980392156862745,
+        0.00980392156862745,
+        0.9803921568627451
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 9.43,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "5e1a8cc47c56dd34",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 156,
+        "plain_log_ei_surrogate_at_plain": -4.114561908543551,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.0,
+          4.699999999999999,
+          2.9,
+          0.37,
+          0.1
+        ],
+        "region_raw_ub": [
+          2.4,
+          4.999999999999999,
+          3.0,
+          0.4,
+          0.12000000000000001
+        ],
+        "region_normalized_lb": [
+          0.0,
+          0.8999999999996997,
+          0.8999999999990999,
+          0.899999999997,
+          0.0
+        ],
+        "region_normalized_ub": [
+          0.09999999999997497,
+          0.9999999999996664,
+          0.9999999999989999,
+          0.9999999999966668,
+          0.09999999999950003
+        ],
+        "relative_volume": 1.0000000000000011e-05,
+        "per_dim_widths": [
+          0.09999999999999998,
+          0.09999999999999994,
+          0.10000000000000009,
+          0.10000000000000007,
+          0.10000000000000003
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.042303082408283135,
+        "anchor_close_fraction": 0.020833333333333332,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 5.3819497548334e-05,
+        "anchor_mean_ei": 1.5272549284690118e-06,
+        "anchor_weight_max": 0.6139389385076979,
+        "anchor_weight_entropy": 1.8336007156947558,
+        "anchor_consistency": 0.5254837773586519,
+        "anchor_novelty_mean": 0.12653658530681688,
+        "lambda_t": 0.0,
+        "kernel_norm_sq": 0.0003254858243834271,
+        "anneal_t": 0.0,
+        "region_reliability": 0.3310547797359507,
+        "positive_kernel_fraction": 0.8172979797979798,
+        "accepted": false,
+        "selected_index_before": 156,
+        "selected_score_before": 0.006283465231162848,
+        "selected_index_after": 156,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.0,
+            "I2": 5.0,
+            "I3": 3.0,
+            "dSOC1": 0.4,
+            "dSOC2": 0.1
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "balanced",
+          "reason": "Lowest scalarized objective with feasible dSOC sum below hard limit and good recent performance.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.0,
+              "I2": 5.0,
+              "I3": 3.0,
+              "dSOC1": 0.4,
+              "dSOC2": 0.1
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "balanced",
+            "reason": "Lowest scalarized objective with feasible dSOC sum below hard limit and good recent performance.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "5e1a8cc47c56dd34",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "inactive_anneal",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.0007878655685473746
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 18,
+      "n_total": 24,
+      "n_feasible": 24,
+      "pareto_size": 18,
+      "hypervolume": 0.8771155052224516,
+      "display_hv": 0.8771155052224516,
+      "canonical_hv": 0.35084620208898065,
+      "hypervolume_canonical": 0.35084620208898065,
+      "hypervolume_raw": 10.323667005070536,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.5727503400490257,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 17,
+      "w_vec": [
+        0.00980392156862745,
+        0.9803921568627451,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.71,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "13eefbfeed127a97",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 170,
+        "plain_log_ei_surrogate_at_plain": -3.84479154463709,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.2235677746816194,
+          2.0,
+          2.0,
+          0.1,
+          0.1
+        ],
+        "region_raw_ub": [
+          2.92000822531838,
+          2.26116516898885,
+          2.087055056329617,
+          0.12611651689888503,
+          0.11741101126592335
+        ],
+        "region_normalized_lb": [
+          0.05589194367039087,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "region_normalized_ub": [
+          0.23000205632953752,
+          0.08705505632958768,
+          0.08705505632952978,
+          0.08705505632932657,
+          0.08705505632918144
+        ],
+        "relative_volume": 1.0000000000000006e-05,
+        "per_dim_widths": [
+          0.17411011265919019,
+          0.0870550563296167,
+          0.08705505632961685,
+          0.08705505632961674,
+          0.08705505632961673
+        ],
+        "plain_candidate_inside_region": true,
+        "anchor_min_dist_to_existing": 0.030891943670397097,
+        "anchor_close_fraction": 0.041666666666666664,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.017942289666936128,
+        "anchor_mean_ei": 0.0005674482878217247,
+        "anchor_weight_max": 0.20013499547215877,
+        "anchor_weight_entropy": 3.167769509665062,
+        "anchor_consistency": 0.3563797364097608,
+        "anchor_novelty_mean": 0.10477627681765718,
+        "lambda_t": 0.0,
+        "kernel_norm_sq": 0.0002773327440767637,
+        "anneal_t": 0.0,
+        "region_reliability": 0.21204594316380765,
+        "positive_kernel_fraction": 0.6112612612612612,
+        "accepted": false,
+        "selected_index_before": 170,
+        "selected_score_before": 0.008463323900225946,
+        "selected_index_after": 170,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.571788,
+            "I2": 2.0,
+            "I3": 2.0,
+            "dSOC1": 0.1,
+            "dSOC2": 0.1
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.85,
+          "preference_type": "balanced",
+          "reason": "Lowest scalarized objective point with feasible dSOC1+dSOC2 below hard limit and soft safety margin respected.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.571788,
+              "I2": 2.0,
+              "I3": 2.0,
+              "dSOC1": 0.1,
+              "dSOC2": 0.1
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.85,
+            "preference_type": "balanced",
+            "reason": "Lowest scalarized objective point with feasible dSOC1+dSOC2 below hard limit and soft safety margin respected.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "13eefbfeed127a97",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "inactive_anneal",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 3.59243749645799e-05
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 19,
+      "n_total": 25,
+      "n_feasible": 25,
+      "pareto_size": 19,
+      "hypervolume": 0.8771287219164527,
+      "display_hv": 0.8771287219164527,
+      "canonical_hv": 0.3508514887665811,
+      "hypervolume_canonical": 0.3508514887665811,
+      "hypervolume_raw": 10.323822565822757,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.5727503400490257,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 18,
+      "w_vec": [
+        0.00980392156862745,
+        0.00980392156862745,
+        0.9803921568627451
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 10.47,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "d1144f1c442e0ac4",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 160,
+        "plain_log_ei_surrogate_at_plain": -5.489006419576742,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.0,
+          4.699999999999999,
+          2.9,
+          0.37,
+          0.1
+        ],
+        "region_raw_ub": [
+          2.4,
+          4.999999999999999,
+          3.0,
+          0.4,
+          0.12000000000000001
+        ],
+        "region_normalized_lb": [
+          0.0,
+          0.8999999999996997,
+          0.8999999999990999,
+          0.899999999997,
+          0.0
+        ],
+        "region_normalized_ub": [
+          0.09999999999997497,
+          0.9999999999996664,
+          0.9999999999989999,
+          0.9999999999966668,
+          0.09999999999950003
+        ],
+        "relative_volume": 1.0000000000000011e-05,
+        "per_dim_widths": [
+          0.09999999999999998,
+          0.09999999999999994,
+          0.10000000000000009,
+          0.10000000000000007,
+          0.10000000000000003
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.042303082408283135,
+        "anchor_close_fraction": 0.020833333333333332,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 4.3811257563255274e-05,
+        "anchor_mean_ei": 1.0147970697187448e-06,
+        "anchor_weight_max": 0.6636985233456858,
+        "anchor_weight_entropy": 1.6280947647941235,
+        "anchor_consistency": 0.5591312003880816,
+        "anchor_novelty_mean": 0.12653658530681688,
+        "lambda_t": 0.0,
+        "kernel_norm_sq": 0.000300455417064969,
+        "anneal_t": 0.0,
+        "region_reliability": 0.3522526562444914,
+        "positive_kernel_fraction": 0.7636758691206544,
+        "accepted": false,
+        "selected_index_before": 160,
+        "selected_score_before": 0.0015962376182240645,
+        "selected_index_after": 160,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.0,
+            "I2": 5.0,
+            "I3": 3.0,
+            "dSOC1": 0.4,
+            "dSOC2": 0.1
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "balanced",
+          "reason": "Top scalarized point with lowest scalar_y, feasible and within hard dSOC limit",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.0,
+              "I2": 5.0,
+              "I3": 3.0,
+              "dSOC1": 0.4,
+              "dSOC2": 0.1
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "balanced",
+            "reason": "Top scalarized point with lowest scalar_y, feasible and within hard dSOC limit",
+            "risk_flags": []
+          },
+          "raw_response_hash": "d1144f1c442e0ac4",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "inactive_anneal",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.00015556075222100674
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    },
+    {
+      "iteration": 20,
+      "n_total": 26,
+      "n_feasible": 26,
+      "pareto_size": 20,
+      "hypervolume": 0.8841010110034672,
+      "display_hv": 0.8841010110034672,
+      "canonical_hv": 0.3536404044013869,
+      "hypervolume_canonical": 0.3536404044013869,
+      "hypervolume_raw": 10.40588654755475,
+      "best_time_s": 2880.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.5727503400490257,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 19,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 12.68,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "4787094f9cedd5cd",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 165,
+        "plain_log_ei_surrogate_at_plain": -6.2049887931205046,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          5.6,
+          4.699999999999999,
+          2.9,
+          0.358,
+          0.27199999999999996
+        ],
+        "region_raw_ub": [
+          6.0,
+          4.999999999999999,
+          3.0,
+          0.388,
+          0.292
+        ],
+        "region_normalized_lb": [
+          0.8999999999997749,
+          0.8999999999996997,
+          0.8999999999990999,
+          0.8599999999971333,
+          0.8599999999956999
+        ],
+        "region_normalized_ub": [
+          0.99999999999975,
+          0.9999999999996664,
+          0.9999999999989999,
+          0.9599999999968001,
+          0.9599999999951999
+        ],
+        "relative_volume": 1.0000000000000028e-05,
+        "per_dim_widths": [
+          0.10000000000000009,
+          0.09999999999999994,
+          0.10000000000000009,
+          0.10000000000000007,
+          0.1000000000000001
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.09717342197317397,
+        "anchor_close_fraction": 0.0,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 2.1378894131699112e-05,
+        "anchor_mean_ei": 1.295874629999101e-06,
+        "anchor_weight_max": 0.19230384721515734,
+        "anchor_weight_entropy": 2.8881682480999844,
+        "anchor_consistency": 0.44691798952801925,
+        "anchor_novelty_mean": 0.16676495713983708,
+        "lambda_t": 0.0,
+        "kernel_norm_sq": 0.0024780576460717066,
+        "anneal_t": 0.0,
+        "region_reliability": 0.28155833340265213,
+        "positive_kernel_fraction": 0.8783284023668639,
+        "accepted": false,
+        "selected_index_before": 165,
+        "selected_score_before": 0.0007268540851561251,
+        "selected_index_after": 165,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 6.0,
+            "I2": 5.0,
+            "I3": 3.0,
+            "dSOC1": 0.4,
+            "dSOC2": 0.3
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "fast_charge",
+          "reason": "Top scalarized point with lowest scalar objective, feasible with dSOC1+dSOC2=0.7 at hard limit, maximizing currents for fast charging.",
+          "risk_flags": [
+            "dSOC1+dSOC2 at hard feasibility limit",
+            "High currents may increase thermal and aging risks"
+          ],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 6.0,
+              "I2": 5.0,
+              "I3": 3.0,
+              "dSOC1": 0.4,
+              "dSOC2": 0.3
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "fast_charge",
+            "reason": "Top scalarized point with lowest scalar objective, feasible with dSOC1+dSOC2=0.7 at hard limit, maximizing currents for fast charging.",
+            "risk_flags": [
+              "dSOC1+dSOC2 at hard feasibility limit",
+              "High currents may increase thermal and aging risks"
+            ]
+          },
+          "raw_response_hash": "4787094f9cedd5cd",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "inactive_anneal",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.08206398173199325
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 48
+      }
+    }
+  ],
+  "improvement_window": [
+    true,
+    true
+  ],
+  "saved_at": "2026-04-30T19:20:41.499187"
+}

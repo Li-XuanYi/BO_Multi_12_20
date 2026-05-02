@@ -5,6 +5,7 @@ import json
 import logging
 import os
 import time
+from collections import Counter
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -22,6 +23,12 @@ from llmbo.acquisition import (
 from llmbo.constraint_policy import build_constraint_policy
 from llmbo.gp_model import build_gp_stack
 from llmbo.proposal import ProposalTrainingRecord, build_proposal_sampler
+from llmbo.region_lifted_gp import (
+    LLMRegionPreference,
+    RegionLiftConfig,
+    evaluate_region_lift_on_pool,
+    sample_region_candidates,
+)
 from llmbo.rerank import (
     RerankState,
     TrialTelemetry,
@@ -41,6 +48,7 @@ from utils.constants import (
     LLM_SAFE_DSOC_SUM_MAX,
     REF_POINT,
 )
+from utils.model_labels import canonical_model_label
 
 logger = logging.getLogger(__name__)
 
@@ -69,6 +77,17 @@ DEFAULT_CONFIG = {
     "warmstart_batch_size": 10,
     "warmstart_max_attempts": 4,
     "warmstart_hv_log_interval": 5,
+    "enable_warmstart_portfolio": True,
+    "warmstart_pool_size": 16,
+    "warmstart_diversity_weight": 0.45,
+    "warmstart_soft_penalty_weight": 0.65,
+    "warmstart_monotone_bonus": 0.08,
+    "warmstart_archive_bonus_weight": 0.0,
+    "warmstart_boundary_probe_limit": 1,
+    "warmstart_cache_path": None,
+    "warmstart_cache_mode": "read_write",
+    "warmstart_cache_use_selected": False,
+    "random_init_cache_path": None,
     "llm_backend": os.getenv("LLM_BACKEND", "openai"),
     "llm_model": os.getenv("LLM_MODEL", "gpt-4.1-mini"),
     "llm_api_base": os.getenv("LLM_BASE_URL") or os.getenv("OPENAI_BASE_URL", "https://api.nuwaapi.com/v1"),
@@ -84,13 +103,22 @@ DEFAULT_CONFIG = {
     "gp_alpha": 1e-6,
     "gp_normalize_y": True,
     "gp_n_restarts_optimizer": 5,
+    "target_transform_mode": "none",
     "ei_n_restarts": 12,
     "ei_n_random_samples": 96,
+    "ei_n_external_restarts": 16,
     "riesz_n_div": 10,
     "riesz_s": 2.0,
     "riesz_n_iter": 300,
     "riesz_lr": 5e-3,
     "riesz_seed": 42,
+    "weight_strategy": "riesz_relaxed_cycle",
+    "weight_simplex_divisions": 10,
+    "weight_count": 30,
+    "acquisition_strategy": "ei_lbfgsb",
+    "parego_lcb_variance_weight": 0.5,
+    "parego_de_population": 30,
+    "parego_de_maxiter": 200,
     "w_sample_seed": 0,
     "init_seed": 2026,
     "eta": 0.05,
@@ -145,6 +173,43 @@ DEFAULT_CONFIG = {
     "llm_rerank_min_ei": 1e-10,
     "llm_rerank_entropy_threshold": 0.80,
     "llm_rerank_fail_open_to_plain_ei": True,
+    "enable_region_lifted_gp": False,
+    "region_lift_apply_override": False,
+    "region_lift_external_influence_mode": "diagnostic_only",
+    "region_lift_include_raw_candidates": True,
+    "region_lift_lambda_max": 0.25,
+    "region_lift_min_confidence": 0.60,
+    "region_lift_n_anchors": 32,
+    "region_lift_max_shift_std": 0.25,
+    "region_lift_active_until": 12,
+    "region_lift_anneal": "linear_decay",
+    "region_lift_max_plain_ei_gap": 0.25,
+    "region_lift_log_ei_eps": 1e-12,
+    "region_lift_kernel_jitter": 1e-6,
+    "region_lift_min_norm_sq": 1e-12,
+    "region_lift_min_volume": 1e-5,
+    "region_lift_max_volume": 0.25,
+    "region_lift_min_width": 0.03,
+    "region_lift_max_width": 0.80,
+    "region_lift_close_distance": 0.05,
+    "region_lift_max_close_fraction": 0.5,
+    "region_lift_min_feasible_anchor_ratio": 0.6,
+    "region_lift_near_region_tol": 0.05,
+    "region_lift_trust_init": 0.5,
+    "region_lift_trust_beta": 0.2,
+    "region_lift_anchor_weighting": "ei_softmax",
+    "region_lift_anchor_temperature": 0.35,
+    "region_lift_require_inside": True,
+    "region_lift_min_sigma_ratio": 0.85,
+    "region_lift_candidate_oversample": 8,
+    "region_lift_point_current_probe_levels": 0,
+    "region_lift_point_current_probe_keep": 0,
+    "region_lift_dsoc_margin": 0.02,
+    "region_lift_guard_min_anchor_consistency": 0.35,
+    "region_lift_guard_min_reliability": 0.20,
+    "region_lift_guard_max_plain_ei_gap": 0.25,
+    "region_lift_guard_require_inside": True,
+    "region_lift_guard_require_positive_corr": True,
     "checkpoint_dir": "checkpoints",
     "checkpoint_every": 5,
     "battery_model": "LG INR21700-M50 (Chen2020)",
@@ -158,11 +223,27 @@ EXPERIMENT_PRESETS = {
     "warmstart_plain_ei": {
         "n_warmstart": 3,
         "n_random_init": 3,
+        "enable_warmstart_portfolio": True,
         "enable_iterative_guidance": False,
         "enable_gp_llm_coupling": False,
         "enable_acq_prior_coupling": False,
         "enable_proposal_sampler": False,
         "enable_llm_rerank": False,
+        "enable_region_lifted_gp": False,
+        "target_transform_mode": "none",
+    },
+    "warmstart_portfolio_plain_ei": {
+        "n_warmstart": 3,
+        "n_random_init": 3,
+        "enable_warmstart_portfolio": True,
+        "warmstart_pool_size": 16,
+        "enable_iterative_guidance": False,
+        "enable_gp_llm_coupling": False,
+        "enable_acq_prior_coupling": False,
+        "enable_proposal_sampler": False,
+        "enable_llm_rerank": False,
+        "enable_region_lifted_gp": False,
+        "target_transform_mode": "none",
     },
     "strict_baseline": {
         "n_warmstart": 0,
@@ -172,6 +253,25 @@ EXPERIMENT_PRESETS = {
         "enable_acq_prior_coupling": False,
         "enable_proposal_sampler": False,
         "enable_llm_rerank": False,
+        "enable_region_lifted_gp": False,
+        "target_transform_mode": "none",
+    },
+    "parego_baseline": {
+        "n_warmstart": 0,
+        "n_random_init": 6,
+        "enable_iterative_guidance": False,
+        "enable_gp_llm_coupling": False,
+        "enable_acq_prior_coupling": False,
+        "enable_proposal_sampler": False,
+        "enable_llm_rerank": False,
+        "enable_region_lifted_gp": False,
+        "target_transform_mode": "none",
+        "weight_strategy": "parego_reference_cycle",
+        "weight_count": 30,
+        "acquisition_strategy": "parego_lcb_de",
+        "parego_lcb_variance_weight": 0.5,
+        "parego_de_population": 30,
+        "parego_de_maxiter": 200,
     },
     "warmstart_safe_tiebreak": {
         "n_warmstart": 3,
@@ -182,6 +282,8 @@ EXPERIMENT_PRESETS = {
         "enable_proposal_sampler": False,
         "enable_llm_rerank": True,
         "llm_rerank_mode": "ei_preserving_tiebreak",
+        "enable_region_lifted_gp": False,
+        "target_transform_mode": "none",
     },
     "warmstart_risk_veto": {
         "n_warmstart": 3,
@@ -192,6 +294,103 @@ EXPERIMENT_PRESETS = {
         "enable_proposal_sampler": False,
         "enable_llm_rerank": True,
         "llm_rerank_mode": "risk_veto_only",
+        "enable_region_lifted_gp": False,
+        "target_transform_mode": "none",
+    },
+    "warmstart_region_lifted_gp": {
+        "n_warmstart": 3,
+        "n_random_init": 3,
+        "enable_warmstart_portfolio": True,
+        "enable_iterative_guidance": False,
+        "enable_gp_llm_coupling": False,
+        "enable_acq_prior_coupling": False,
+        "enable_proposal_sampler": False,
+        "enable_llm_rerank": False,
+        "enable_region_lifted_gp": True,
+        "target_transform_mode": "none",
+        "region_lift_apply_override": False,
+        "region_lift_external_influence_mode": "diagnostic_only",
+        "region_lift_include_raw_candidates": True,
+        "region_lift_lambda_max": 0.20,
+        "region_lift_n_anchors": 32,
+        "region_lift_active_until": 12,
+        "region_lift_max_plain_ei_gap": 0.25,
+        "region_lift_min_volume": 1e-5,
+        "region_lift_min_width": 0.03,
+        "region_lift_trust_init": 0.7,
+        "region_lift_anchor_weighting": "ei_softmax",
+        "region_lift_anchor_temperature": 0.35,
+        "region_lift_require_inside": True,
+        "region_lift_min_sigma_ratio": 0.85,
+        "region_lift_candidate_oversample": 8,
+        "region_lift_point_current_probe_levels": 0,
+        "region_lift_point_current_probe_keep": 0,
+        "region_lift_dsoc_margin": 0.02,
+        "ei_n_external_restarts": 16,
+    },
+    "warmstart_region_lifted_gp_guarded_pool": {
+        "n_warmstart": 3,
+        "n_random_init": 3,
+        "enable_warmstart_portfolio": True,
+        "enable_iterative_guidance": False,
+        "enable_gp_llm_coupling": False,
+        "enable_acq_prior_coupling": False,
+        "enable_proposal_sampler": False,
+        "enable_llm_rerank": False,
+        "enable_region_lifted_gp": True,
+        "target_transform_mode": "none",
+        "region_lift_apply_override": False,
+        "region_lift_external_influence_mode": "guarded_pool",
+        "region_lift_include_raw_candidates": True,
+        "region_lift_lambda_max": 0.20,
+        "region_lift_n_anchors": 32,
+        "region_lift_active_until": 12,
+        "region_lift_max_plain_ei_gap": 0.25,
+        "region_lift_min_volume": 1e-5,
+        "region_lift_min_width": 0.03,
+        "region_lift_trust_init": 0.7,
+        "region_lift_anchor_weighting": "ei_softmax",
+        "region_lift_anchor_temperature": 0.35,
+        "region_lift_require_inside": True,
+        "region_lift_min_sigma_ratio": 0.85,
+        "region_lift_candidate_oversample": 8,
+        "region_lift_point_current_probe_levels": 0,
+        "region_lift_point_current_probe_keep": 0,
+        "region_lift_dsoc_margin": 0.02,
+        "ei_n_external_restarts": 16,
+    },
+    "warmstart_region_lifted_gp_force_pool_tuned": {
+        "n_warmstart": 3,
+        "n_random_init": 3,
+        "enable_warmstart_portfolio": True,
+        "enable_iterative_guidance": False,
+        "enable_gp_llm_coupling": False,
+        "enable_acq_prior_coupling": False,
+        "enable_proposal_sampler": False,
+        "enable_llm_rerank": False,
+        "enable_region_lifted_gp": True,
+        "target_transform_mode": "none",
+        "region_lift_apply_override": False,
+        "region_lift_external_influence_mode": "force_pool",
+        "region_lift_include_raw_candidates": False,
+        "region_lift_lambda_max": 0.20,
+        "region_lift_n_anchors": 64,
+        "region_lift_active_until": 16,
+        "region_lift_max_plain_ei_gap": 0.25,
+        "region_lift_min_volume": 1e-8,
+        "region_lift_max_volume": 0.08,
+        "region_lift_min_width": 0.03,
+        "region_lift_trust_init": 0.7,
+        "region_lift_anchor_weighting": "ei_softmax",
+        "region_lift_anchor_temperature": 0.35,
+        "region_lift_require_inside": True,
+        "region_lift_min_sigma_ratio": 0.85,
+        "region_lift_candidate_oversample": 16,
+        "region_lift_point_current_probe_levels": 3,
+        "region_lift_point_current_probe_keep": 2,
+        "region_lift_close_distance": 0.03,
+        "region_lift_dsoc_margin": 0.01,
+        "ei_n_external_restarts": 32,
     },
 }
 
@@ -205,6 +404,65 @@ def _project_to_simplex(v: np.ndarray) -> np.ndarray:
     rho = np.nonzero(u * np.arange(1, len(v) + 1) > (cssv - 1))[0][-1]
     theta = float(cssv[rho] - 1.0) / float(rho + 1)
     return np.maximum(v - theta, 0.0)
+
+
+def generate_das_dennis_weight_set(
+    n_obj: int = 3,
+    n_div: int = 10,
+    eps_min: float = 0.01,
+) -> np.ndarray:
+    """Generate the evenly spread simplex weight set used by classic ParEGO."""
+
+    def _das_dennis(divisions: int, dimensions: int) -> List[List[int]]:
+        if dimensions == 1:
+            return [[divisions]]
+        points: List[List[int]] = []
+        for i in range(divisions + 1):
+            for rest in _das_dennis(divisions - i, dimensions - 1):
+                points.append([i] + rest)
+        return points
+
+    W = np.array(_das_dennis(int(n_div), int(n_obj)), dtype=float)
+    W = W / float(n_div)
+    W = np.maximum(W, float(eps_min))
+    return W / W.sum(axis=1, keepdims=True)
+
+
+def generate_reference_parego_weight_set(
+    n_obj: int = 3,
+    n_weights: int = 30,
+    seed: int = 42,
+    eps_min: float = 0.01,
+) -> np.ndarray:
+    """Build a simple, evenly spread reference weight set for ParEGO."""
+    target = max(int(n_weights), int(n_obj))
+    n_div = 1
+    base = generate_das_dennis_weight_set(n_obj=n_obj, n_div=n_div, eps_min=eps_min)
+    while len(base) < target:
+        n_div += 1
+        base = generate_das_dennis_weight_set(n_obj=n_obj, n_div=n_div, eps_min=eps_min)
+
+    if len(base) == target:
+        return base
+
+    rng = np.random.default_rng(seed)
+    first_idx = int(rng.integers(0, len(base)))
+    chosen = [first_idx]
+    remaining = [idx for idx in range(len(base)) if idx != first_idx]
+
+    while len(chosen) < target and remaining:
+        chosen_points = base[chosen]
+        best_idx = remaining[0]
+        best_dist = -1.0
+        for idx in remaining:
+            dist = float(np.min(np.linalg.norm(base[idx][None, :] - chosen_points, axis=1)))
+            if dist > best_dist:
+                best_dist = dist
+                best_idx = idx
+        chosen.append(best_idx)
+        remaining.remove(best_idx)
+
+    return base[chosen]
 
 
 def generate_riesz_weight_set(
@@ -223,18 +481,11 @@ def generate_riesz_weight_set(
     the Riesz energy to spread the weights more evenly across the simplex.
     """
 
-    def das_dennis(divisions: int, dimensions: int) -> List[List[int]]:
-        if dimensions == 1:
-            return [[divisions]]
-        points: List[List[int]] = []
-        for i in range(divisions + 1):
-            for rest in das_dennis(divisions - i, dimensions - 1):
-                points.append([i] + rest)
-        return points
-
-    W = np.array(das_dennis(n_div, n_obj), dtype=float) / float(n_div)
-    W = np.maximum(W, eps_min)
-    W = W / W.sum(axis=1, keepdims=True)
+    W = generate_das_dennis_weight_set(
+        n_obj=n_obj,
+        n_div=n_div,
+        eps_min=eps_min,
+    )
 
     for _ in range(int(n_iter)):
         grad = np.zeros_like(W)
@@ -288,6 +539,7 @@ class BayesOptimizer:
         self.constraint_policy = build_constraint_policy(self.cfg)
         self._weight_set: Optional[np.ndarray] = None
         self._warmstart_hv_trace: List[Dict[str, Any]] = []
+        self._warmstart_portfolio_summary: Dict[str, Any] = {}
         self._hv_eval_trace: List[Dict[str, Any]] = []
         self._y_tilde_min = np.zeros(3, dtype=float)
         self._y_tilde_max = np.ones(3, dtype=float)
@@ -296,8 +548,12 @@ class BayesOptimizer:
         self._last_proposal_summary: Optional[Dict[str, Any]] = None
         self._last_acq_prior_summary: Optional[Dict[str, Any]] = None
         self._last_rerank_summary: Optional[Dict[str, Any]] = None
+        self._last_region_lift_summary: Optional[Dict[str, Any]] = None
         self._last_candidate_source_counts: Dict[str, int] = {}
         self._rerank_telemetry: List[Dict[str, Any]] = []
+        self._region_lift_telemetry: List[Dict[str, Any]] = []
+        self._region_lift_trust: float = float(self.cfg.get("region_lift_trust_init", 0.5))
+        self._region_influence_gate_open: bool = False
 
         Path(self.cfg["checkpoint_dir"]).mkdir(parents=True, exist_ok=True)
 
@@ -345,6 +601,16 @@ class BayesOptimizer:
             soc_end=float(self.cfg.get("soc_end", getattr(self.simulator, "soc_end", 0.8))),
             dsoc_sum_max=float(self.cfg.get("dsoc_sum_max", getattr(self.simulator, "dsoc_sum_max", DSOC_SUM_MAX))),
             safe_dsoc_sum_max=float(self.cfg.get("llm_safe_dsoc_sum_max", LLM_SAFE_DSOC_SUM_MAX)),
+            enable_warmstart_portfolio=bool(self.cfg.get("enable_warmstart_portfolio", True)),
+            warmstart_pool_size=int(self.cfg.get("warmstart_pool_size", 16)),
+            warmstart_diversity_weight=float(self.cfg.get("warmstart_diversity_weight", 0.45)),
+            warmstart_soft_penalty_weight=float(self.cfg.get("warmstart_soft_penalty_weight", 0.65)),
+            warmstart_monotone_bonus=float(self.cfg.get("warmstart_monotone_bonus", 0.08)),
+            warmstart_archive_bonus_weight=float(self.cfg.get("warmstart_archive_bonus_weight", 0.0)),
+            warmstart_boundary_probe_limit=int(self.cfg.get("warmstart_boundary_probe_limit", 1)),
+            warmstart_cache_path=self.cfg.get("warmstart_cache_path"),
+            warmstart_cache_mode=str(self.cfg.get("warmstart_cache_mode", "read_write")),
+            warmstart_cache_use_selected=bool(self.cfg.get("warmstart_cache_use_selected", False)),
         )
 
         self.psi_fn, _, _, self.gp = build_gp_stack(
@@ -353,6 +619,7 @@ class BayesOptimizer:
             alpha=self.cfg["gp_alpha"],
             normalize_y=self.cfg["gp_normalize_y"],
             n_restarts_optimizer=self.cfg["gp_n_restarts_optimizer"],
+            target_transform_mode=self.cfg.get("target_transform_mode", "none"),
             random_state=self.cfg.get("w_sample_seed"),
         )
 
@@ -363,7 +630,12 @@ class BayesOptimizer:
             n_select=self.cfg["n_select"],
             n_restarts_optimizer=self.cfg["ei_n_restarts"],
             n_random_candidates=self.cfg["ei_n_random_samples"],
+            n_external_local_restarts=self.cfg.get("ei_n_external_restarts", 0),
             random_seed=self.cfg.get("w_sample_seed"),
+            acquisition_strategy=self.cfg.get("acquisition_strategy", "ei_lbfgsb"),
+            parego_lcb_variance_weight=self.cfg.get("parego_lcb_variance_weight", 0.5),
+            parego_de_population=self.cfg.get("parego_de_population", 30),
+            parego_de_maxiter=self.cfg.get("parego_de_maxiter", 200),
         )
 
         if bool(self.cfg.get("enable_proposal_sampler", False)):
@@ -376,17 +648,36 @@ class BayesOptimizer:
         else:
             self.proposal = None
 
-        from llmbo.riesz_cache import load_or_generate_riesz
+        weight_strategy = str(self.cfg.get("weight_strategy", "riesz_relaxed_cycle")).lower()
+        if weight_strategy == "parego_reference_cycle":
+            self._weight_set = generate_reference_parego_weight_set(
+                n_obj=3,
+                n_weights=int(self.cfg.get("weight_count", 30)),
+                seed=int(self.cfg.get("riesz_seed", 42)),
+                eps_min=0.01,
+            )
+            logger.info("Reference ParEGO weight set ready: shape=%s", self._weight_set.shape)
+        elif weight_strategy == "parego_das_dennis_cycle":
+            self._weight_set = generate_das_dennis_weight_set(
+                n_obj=3,
+                n_div=int(self.cfg.get("weight_simplex_divisions", 10)),
+                eps_min=0.01,
+            )
+            logger.info("ParEGO Das-Dennis weight set ready: shape=%s", self._weight_set.shape)
+        elif weight_strategy == "riesz_relaxed_cycle":
+            from llmbo.riesz_cache import load_or_generate_riesz
 
-        self._weight_set = load_or_generate_riesz(
-            n_obj=3,
-            n_div=self.cfg["riesz_n_div"],
-            s=self.cfg["riesz_s"],
-            n_iter=self.cfg["riesz_n_iter"],
-            lr=self.cfg["riesz_lr"],
-            seed=self.cfg["riesz_seed"],
-        )
-        logger.info("Riesz weight set ready: shape=%s", self._weight_set.shape)
+            self._weight_set = load_or_generate_riesz(
+                n_obj=3,
+                n_div=self.cfg["riesz_n_div"],
+                s=self.cfg["riesz_s"],
+                n_iter=self.cfg["riesz_n_iter"],
+                lr=self.cfg["riesz_lr"],
+                seed=self.cfg["riesz_seed"],
+            )
+            logger.info("Riesz weight set ready: shape=%s", self._weight_set.shape)
+        else:
+            raise ValueError(f"Unsupported weight_strategy: {weight_strategy}")
 
     def run_initialization(self) -> None:
         n_warmstart, n_random_init = self._resolve_init_counts()
@@ -414,10 +705,15 @@ class BayesOptimizer:
                     batch_size=int(self.cfg["warmstart_batch_size"]),
                     max_attempts=int(self.cfg["warmstart_max_attempts"]),
                 )
+                if hasattr(self.llm, "get_warmstart_summary"):
+                    try:
+                        self._warmstart_portfolio_summary = self.llm.get_warmstart_summary()
+                    except Exception:
+                        self._warmstart_portfolio_summary = {}
                 scheduled.extend(("llm_warmstart", theta) for theta in warmstart_points)
 
             if n_random_init > 0:
-                random_points = self._lhs_candidates(
+                random_points = self._get_random_init_points(
                     n_random_init,
                     seed=int(self.cfg.get("init_seed", self.cfg.get("w_sample_seed", 2026) or 2026)),
                 )
@@ -514,6 +810,7 @@ class BayesOptimizer:
         logger.info("=" * 60)
         logger.info("Optimization loop: %d iterations", self.cfg["max_iterations"])
         logger.info("=" * 60)
+        self._region_influence_gate_open = False
 
         for t in range(int(self.cfg["max_iterations"])):
             iter_start = time.perf_counter()
@@ -560,11 +857,19 @@ class BayesOptimizer:
             acq_prior = None
             X_candidates = None
             proposal_candidates = np.empty((0, len(PARAM_KEYS)), dtype=float)
+            region_acquisition_candidates = np.empty((0, len(PARAM_KEYS)), dtype=float)
+            region_restart_candidates = np.empty((0, len(PARAM_KEYS)), dtype=float)
+            diagnostic_region_candidates = np.empty((0, len(PARAM_KEYS)), dtype=float)
+            hotspot_candidates = np.empty((0, len(PARAM_KEYS)), dtype=float)
             uncertainty_hotspots: List[Dict[str, Any]] = []
+            region_preference: Optional[LLMRegionPreference] = None
+            region_pool_influenced_acquisition = False
+            region_influence_mode = self._region_influence_mode()
             self._previous_guidance = None
             self._last_coupling_summary = None
             self._last_acq_prior_summary = None
             self._last_rerank_summary = None
+            self._last_region_lift_summary = None
             self._last_candidate_source_counts = {}
             guidance_candidates = None
 
@@ -573,6 +878,27 @@ class BayesOptimizer:
             if self.proposal is not None:
                 self._last_proposal_summary = self.proposal.fit(proposal_records)
                 proposal_candidates = self._sample_proposal_candidates(theta_best=self.database.get_theta_best())
+
+            if bool(self.cfg.get("enable_region_lifted_gp", False)):
+                if self._region_lift_window_active(t):
+                    region_preference = self._query_region_preference(
+                        t=t,
+                        w_vec=w_vec,
+                        scalar_y=scalar_y,
+                        ideal_point_raw=ideal_point_raw,
+                    )
+                    diagnostic_region_candidates = self._sample_region_candidates_from_preference(
+                        preference=region_preference,
+                        t=t,
+                    )
+                    region_pool_influenced_acquisition = self._should_influence_acquisition_with_region(t=t)
+                    if region_pool_influenced_acquisition:
+                        if bool(self.cfg.get("region_lift_include_raw_candidates", True)):
+                            region_acquisition_candidates = diagnostic_region_candidates.copy()
+                        else:
+                            region_restart_candidates = diagnostic_region_candidates.copy()
+                else:
+                    region_preference = LLMRegionPreference.none("inactive_window_skipped")
 
             if bool(self.cfg.get("enable_iterative_guidance", True)):
                 uncertainty_hotspots = self._compute_uncertainty_hotspots(t)
@@ -617,19 +943,16 @@ class BayesOptimizer:
                     dtype=float,
                 ) if uncertainty_hotspots else np.empty((0, len(PARAM_KEYS)))
 
-                tagged_candidates: List[Tuple[str, np.ndarray]] = []
-                if proposal_candidates.size:
-                    tagged_candidates.extend(("proposal", row) for row in proposal_candidates)
-                if guidance_candidates is not None:
-                    tagged_candidates.extend(("guidance", row) for row in guidance_candidates)
-                if hotspot_candidates.size:
-                    tagged_candidates.extend(("hotspot", row) for row in hotspot_candidates)
-                if tagged_candidates:
-                    tagged_candidates = self._deduplicate_tagged_points(tagged_candidates)
-                    self._last_candidate_source_counts = self._summarize_tagged_points(tagged_candidates)
-                    X_candidates = np.vstack([theta for _, theta in tagged_candidates])
-            elif proposal_candidates.size:
-                tagged_candidates = [("proposal", row) for row in proposal_candidates]
+            tagged_candidates: List[Tuple[str, np.ndarray]] = []
+            if proposal_candidates.size:
+                tagged_candidates.extend(("proposal", row) for row in proposal_candidates)
+            if region_acquisition_candidates.size:
+                tagged_candidates.extend(("region", row) for row in region_acquisition_candidates)
+            if guidance_candidates is not None:
+                tagged_candidates.extend(("guidance", row) for row in guidance_candidates)
+            if hotspot_candidates.size:
+                tagged_candidates.extend(("hotspot", row) for row in hotspot_candidates)
+            if tagged_candidates:
                 tagged_candidates = self._deduplicate_tagged_points(tagged_candidates)
                 self._last_candidate_source_counts = self._summarize_tagged_points(tagged_candidates)
                 X_candidates = np.vstack([theta for _, theta in tagged_candidates])
@@ -645,14 +968,29 @@ class BayesOptimizer:
 
             acq_result = self.af.step(
                 X_candidates=X_candidates,
+                X_external_restarts=region_restart_candidates if region_restart_candidates.size else None,
                 database=self.database,
                 t=t,
                 w_vec=w_vec,
-                lift=coupling,
+                lift=None if bool(self.cfg.get("enable_region_lifted_gp", False)) else coupling,
                 prior=acq_prior,
             )
             plain_selected_indices = list(acq_result.selected_indices)
             plain_selected_scores = np.asarray(acq_result.selected_scores, dtype=float).copy()
+            acq_result = self._maybe_apply_region_lifted_gp(
+                t=t,
+                w_vec=w_vec,
+                scalar_y=scalar_y,
+                ideal_point_raw=ideal_point_raw,
+                acq_result=acq_result,
+                plain_selected_indices=plain_selected_indices,
+                plain_selected_scores=plain_selected_scores,
+                preference=region_preference,
+                diagnostic_region_candidates=diagnostic_region_candidates,
+                region_pool_influenced_acquisition=region_pool_influenced_acquisition,
+                region_influence_mode=region_influence_mode,
+            )
+            self._update_region_influence_gate_from_summary()
             acq_result = self._maybe_apply_llm_rerank(
                 t=t,
                 w_vec=w_vec,
@@ -692,21 +1030,29 @@ class BayesOptimizer:
                 rerank_row = rerank_selected_map.get(selected_idx, {})
                 plain_row = rerank_selected_map.get(plain_idx, topm_candidate_map.get(plain_idx, {}))
                 rerank_candidate = topm_candidate_map.get(selected_idx, {})
+                if str(self.cfg.get("acquisition_strategy", "ei_lbfgsb")).lower() == "parego_lcb_de":
+                    acq_type = "LCB_de"
+                else:
+                    acq_type = (
+                        "EI_region_lifted_gp"
+                        if self._last_region_lift_summary is not None and self._last_region_lift_summary.get("accepted", False)
+                        else (
+                            "EI_llm_rerank"
+                            if self._last_rerank_summary is not None and self._last_rerank_summary.get("applied", False)
+                            else (
+                                "EI_gp_llm_coupled"
+                                if coupling is not None
+                                else ("EI_prior" if acq_prior is not None and acq_prior.is_active() else "EI")
+                            )
+                        )
+                    )
                 self.database.add_from_simulator(
                     theta=theta,
                     result=sim_result,
                     source="bo",
                     iteration=t + 1,
                     acq_value=float(acq_result.selected_scores[rank]),
-                    acq_type=(
-                        "EI_llm_rerank"
-                        if self._last_rerank_summary is not None and self._last_rerank_summary.get("applied", False)
-                        else (
-                            "EI_gp_llm_coupled"
-                            if coupling is not None
-                            else ("EI_prior" if acq_prior is not None and acq_prior.is_active() else "EI")
-                        )
-                    ),
+                    acq_type=acq_type,
                     gp_pred={
                         "mean_coupled": float(acq_result.all_mean[acq_result.selected_indices[rank]]),
                         "mean_base": float(acq_result.all_mean_base[acq_result.selected_indices[rank]]),
@@ -725,6 +1071,18 @@ class BayesOptimizer:
                         "rerank_gate": (
                             float(self._last_rerank_summary.get("gate", 0.0))
                             if self._last_rerank_summary else 0.0
+                        ),
+                        "region_lift_selected_source": (
+                            None if not self._last_region_lift_summary
+                            else self._last_region_lift_summary.get("selected_source")
+                        ),
+                        "region_lift_lambda_t": (
+                            None if not self._last_region_lift_summary
+                            else self._last_region_lift_summary.get("lambda_t")
+                        ),
+                        "region_lift_max_shift_z": (
+                            None if not self._last_region_lift_summary
+                            else self._last_region_lift_summary.get("max_shift_z")
                         ),
                     },
                     llm_rationale=guidance_payload,
@@ -788,6 +1146,8 @@ class BayesOptimizer:
                     rerank_mode=None if not self._last_rerank_summary else self._last_rerank_summary.get("rerank_mode"),
                 )
                 self._rerank_telemetry.append(telemetry.to_dict())
+                if rank == 0 and self._last_region_lift_summary is not None:
+                    self._finalize_region_lift_trust(hv_gain=float(hv_after_raw - hv_before_raw))
                 n_new += 1
 
             iter_elapsed = time.perf_counter() - iter_start
@@ -801,6 +1161,7 @@ class BayesOptimizer:
                     "gp_llm_coupling": self._last_coupling_summary,
                     "acq_prior": self._last_acq_prior_summary,
                     "llm_rerank": self._last_rerank_summary,
+                    "region_lifted_gp": self._last_region_lift_summary,
                     "proposal_summary": self._last_proposal_summary,
                     "candidate_source_counts": self._last_candidate_source_counts,
                 }
@@ -825,6 +1186,476 @@ class BayesOptimizer:
         logger.info("Optimization finished: HV=%.6f", self.database.compute_hypervolume())
         return self.database
 
+    def _maybe_apply_region_lifted_gp(
+        self,
+        *,
+        t: int,
+        w_vec: np.ndarray,
+        scalar_y: np.ndarray,
+        ideal_point_raw: np.ndarray,
+        acq_result: Any,
+        plain_selected_indices: List[int],
+        plain_selected_scores: np.ndarray,
+        preference: Optional[LLMRegionPreference],
+        diagnostic_region_candidates: np.ndarray,
+        region_pool_influenced_acquisition: bool,
+        region_influence_mode: str,
+    ) -> Any:
+        if not bool(self.cfg.get("enable_region_lifted_gp", False)):
+            return acq_result
+        region_preference = preference or LLMRegionPreference.none("missing_preference")
+        override_enabled = bool(self.cfg.get("region_lift_apply_override", False))
+        plain_index_before = int(plain_selected_indices[0]) if plain_selected_indices else None
+        summary_base = {
+            "override_enabled": override_enabled,
+            "preference": region_preference.to_dict(),
+            "region_pool_influenced_acquisition": bool(region_pool_influenced_acquisition),
+            "region_influence_mode": region_influence_mode,
+            "region_influence_gate_passed": False,
+            "inactive_window_skipped": False,
+            "diagnostic_region_candidate_count": int(
+                np.atleast_2d(np.asarray(diagnostic_region_candidates, dtype=float)).shape[0]
+            ) if np.asarray(diagnostic_region_candidates).size else 0,
+        }
+        if not self._region_lift_window_active(t):
+            self._last_region_lift_summary = {
+                "active": False,
+                "accepted": False,
+                "selected_source": "plain_ei",
+                "fallback_reason": "inactive_window_skipped",
+                "selected_index_before": plain_index_before,
+                "selected_index_after": plain_index_before,
+                **summary_base,
+                "inactive_window_skipped": True,
+            }
+            return acq_result
+        if acq_result.candidate_pool is None or len(acq_result.candidate_pool) == 0:
+            self._last_region_lift_summary = {
+                "active": True,
+                "accepted": False,
+                "selected_source": "fallback",
+                "fallback_reason": "empty_candidate_pool",
+                "selected_index_before": plain_index_before,
+                "selected_index_after": plain_index_before,
+                **summary_base,
+            }
+            return acq_result
+
+        config = RegionLiftConfig.from_config(self.cfg)
+        existing_X = np.vstack([obs.theta for obs in self.database.get_all()]) if self.database.size else np.empty((0, len(PARAM_KEYS)))
+        candidate_pool = np.atleast_2d(np.asarray(acq_result.candidate_pool, dtype=float))
+        selected_theta_before = (
+            np.asarray(acq_result.selected_thetas[0], dtype=float).copy()
+            if acq_result.selected_thetas else candidate_pool[0].copy()
+        )
+        diagnostic_pool = candidate_pool
+        plain_index_override = plain_index_before
+        if not override_enabled:
+            diagnostic_pool, plain_index_override = self._build_region_diagnostic_pool(
+                candidate_pool=candidate_pool,
+                plain_selected_theta=selected_theta_before,
+                plain_selected_index=plain_index_before,
+                diagnostic_region_candidates=diagnostic_region_candidates,
+            )
+        result = evaluate_region_lift_on_pool(
+            gp=self.gp,
+            candidate_pool=diagnostic_pool,
+            f_min_y=float(self.database.get_f_min()),
+            preference=region_preference,
+            existing_X=existing_X,
+            bounds=self.param_bounds,
+            config=config,
+            trust=float(self._region_lift_trust),
+            bo_iteration=int(t),
+            plain_index_override=plain_index_override,
+        )
+        summary = dict(result.telemetry)
+        summary.update(
+            {
+                "accepted": bool(result.accepted),
+                "selected_index_before": plain_index_before,
+                "selected_score_before": float(plain_selected_scores[0]) if len(plain_selected_scores) else None,
+                "selected_index_after": int(result.selected_index),
+                "diagnostic_candidate_pool_size": int(diagnostic_pool.shape[0]),
+                "acquisition_candidate_pool_size": int(candidate_pool.shape[0]),
+                **summary_base,
+            }
+        )
+        gate_passed = self._region_influence_gate_passes(summary)
+        summary["region_influence_gate_passed"] = bool(gate_passed)
+        if not override_enabled:
+            summary["diagnostic_selected_source"] = str(summary.get("selected_source", result.selected_source))
+            summary["diagnostic_fallback_reason"] = result.fallback_reason
+            summary["diagnostic_override_candidate_available"] = bool(result.accepted)
+            summary["accepted"] = False
+            summary["selected_source"] = "plain_ei"
+            summary["fallback_reason"] = "override_disabled" if bool(result.accepted) else (result.fallback_reason or "diagnostic_only")
+            if plain_selected_indices:
+                summary["selected_index_after"] = plain_index_before
+        self._last_region_lift_summary = summary
+        if override_enabled and result.accepted:
+            idx = int(result.selected_index)
+            acq_result.selected_indices = [idx]
+            acq_result.selected_thetas = [candidate_pool[idx].copy()]
+            score = float(summary.get("lifted_ei_at_lift", acq_result.all_ei[idx]))
+            acq_result.selected_scores = np.asarray([score], dtype=float)
+            acq_result.lift_summary = summary
+        return acq_result
+
+    def _region_influence_mode(self) -> str:
+        raw = str(self.cfg.get("region_lift_external_influence_mode", "diagnostic_only") or "diagnostic_only").lower()
+        if raw in {"diagnostic_only", "guarded_pool", "force_pool"}:
+            return raw
+        return "diagnostic_only"
+
+    def _region_lift_window_active(self, t: int) -> bool:
+        active_until = max(int(self.cfg.get("region_lift_active_until", 0)), 0)
+        return int(t) < active_until
+
+    def _should_influence_acquisition_with_region(self, *, t: int) -> bool:
+        if not self._region_lift_window_active(t):
+            return False
+        mode = self._region_influence_mode()
+        if mode == "force_pool":
+            return True
+        if mode == "guarded_pool":
+            return bool(self._region_influence_gate_open)
+        return False
+
+    def _update_region_influence_gate_from_summary(self) -> None:
+        mode = self._region_influence_mode()
+        if mode != "guarded_pool" or self._last_region_lift_summary is None:
+            self._region_influence_gate_open = False
+            return
+        self._region_influence_gate_open = bool(self._last_region_lift_summary.get("region_influence_gate_passed", False))
+
+    def _region_influence_gate_passes(self, summary: Dict[str, Any]) -> bool:
+        if bool(summary.get("inactive_window_skipped", False)):
+            return False
+        if float(summary.get("lambda_t", 0.0) or 0.0) <= 0.0:
+            return False
+        if not bool(summary.get("diagnostic_override_candidate_available", summary.get("accepted", False))):
+            return False
+        gap = summary.get("plain_ei_gap")
+        if gap is None or float(gap) > float(self.cfg.get("region_lift_guard_max_plain_ei_gap", 0.25)):
+            return False
+        if float(summary.get("anchor_consistency", 0.0) or 0.0) < float(
+            self.cfg.get("region_lift_guard_min_anchor_consistency", 0.35)
+        ):
+            return False
+        if float(summary.get("region_reliability", 0.0) or 0.0) < float(
+            self.cfg.get("region_lift_guard_min_reliability", 0.20)
+        ):
+            return False
+        if bool(self.cfg.get("region_lift_guard_require_inside", True)) and not bool(
+            summary.get("lift_candidate_inside_region", False)
+        ):
+            return False
+        if bool(self.cfg.get("region_lift_guard_require_positive_corr", True)) and float(
+            summary.get("corr_at_lift", 0.0) or 0.0
+        ) <= 0.0:
+            return False
+        return True
+
+    def _build_region_diagnostic_pool(
+        self,
+        *,
+        candidate_pool: np.ndarray,
+        plain_selected_theta: np.ndarray,
+        plain_selected_index: Optional[int],
+        diagnostic_region_candidates: np.ndarray,
+    ) -> Tuple[np.ndarray, Optional[int]]:
+        base = np.atleast_2d(np.asarray(candidate_pool, dtype=float))
+        extras = (
+            np.atleast_2d(np.asarray(diagnostic_region_candidates, dtype=float))
+            if np.asarray(diagnostic_region_candidates).size else np.empty((0, len(PARAM_KEYS)), dtype=float)
+        )
+        if extras.size == 0:
+            return base.copy(), plain_selected_index
+
+        merged_points = [row.copy() for row in base]
+        merged_points.extend(np.asarray(row, dtype=float).copy() for row in extras)
+        merged = np.vstack(self._deduplicate_points(merged_points))
+        plain_idx = self._find_point_index(merged, plain_selected_theta)
+        if plain_idx is None:
+            merged = np.vstack([np.asarray(plain_selected_theta, dtype=float), merged])
+            plain_idx = 0
+        return merged, plain_idx
+
+    @staticmethod
+    def _find_point_index(pool: np.ndarray, theta: np.ndarray, tol: float = 1e-9) -> Optional[int]:
+        X = np.atleast_2d(np.asarray(pool, dtype=float))
+        target = np.asarray(theta, dtype=float).ravel()
+        for idx, row in enumerate(X):
+            if np.allclose(row, target, atol=tol, rtol=0.0):
+                return int(idx)
+        return None
+
+    def _query_region_preference(
+        self,
+        *,
+        t: int,
+        w_vec: np.ndarray,
+        scalar_y: np.ndarray,
+        ideal_point_raw: np.ndarray,
+    ) -> LLMRegionPreference:
+        state = self._build_region_preference_state(
+            t=t,
+            w_vec=w_vec,
+            scalar_y=scalar_y,
+            ideal_point_raw=ideal_point_raw,
+        )
+        try:
+            return self.llm.query_region_preference(state)
+        except Exception as exc:
+            logger.warning("Region preference query failed: %s", exc)
+            return LLMRegionPreference.none("query_exception")
+
+    def _sample_region_candidates_from_preference(
+        self,
+        *,
+        preference: Optional[LLMRegionPreference],
+        t: int,
+    ) -> np.ndarray:
+        region_preference = preference or LLMRegionPreference.none("missing_preference")
+        config = RegionLiftConfig.from_config(self.cfg)
+        target_n = max(int(config.region_lift_n_anchors), 1)
+        oversample = max(int(self.cfg.get("region_lift_candidate_oversample", 1)), 1)
+        candidates = sample_region_candidates(
+            region_preference,
+            self.param_bounds,
+            config,
+            n_candidates=target_n * oversample,
+        )
+        point_probes = self._build_point_current_probe_candidates(region_preference)
+        if point_probes:
+            if len(candidates) == 0:
+                candidates = np.vstack(point_probes)
+            else:
+                candidates = np.vstack([np.atleast_2d(np.asarray(candidates, dtype=float)), np.vstack(point_probes)])
+        if len(candidates) == 0:
+            return np.empty((0, len(PARAM_KEYS)), dtype=float)
+        repaired = [self._repair_theta(row) for row in np.atleast_2d(np.asarray(candidates, dtype=float))]
+        unique = self._deduplicate_points(repaired)
+        if not unique:
+            return np.empty((0, len(PARAM_KEYS)), dtype=float)
+        forced_probe_keep = max(int(self.cfg.get("region_lift_point_current_probe_keep", 0)), 0)
+        forced_probes = point_probes[-forced_probe_keep:] if forced_probe_keep > 0 and point_probes else []
+        ranked_budget = max(target_n - len(forced_probes), 1)
+        ranked = self._rank_region_candidates_with_gp(unique, max_keep=ranked_budget)
+        if forced_probes:
+            ranked = self._deduplicate_points(ranked + [self._repair_theta(row) for row in forced_probes])
+        if not ranked:
+            return np.empty((0, len(PARAM_KEYS)), dtype=float)
+        return np.vstack(ranked)
+
+    def _build_point_current_probe_candidates(
+        self,
+        preference: LLMRegionPreference,
+    ) -> List[np.ndarray]:
+        if preference.kind != "point" or not preference.point:
+            return []
+        levels = max(int(self.cfg.get("region_lift_point_current_probe_levels", 0)), 0)
+        if levels <= 0:
+            return []
+
+        try:
+            point = np.array([float(preference.point[key]) for key in PARAM_KEYS], dtype=float)
+        except Exception:
+            return []
+
+        lo = np.array([self.param_bounds[key][0] for key in PARAM_KEYS], dtype=float)
+        hi = np.array([self.param_bounds[key][1] for key in PARAM_KEYS], dtype=float)
+        current_hi = hi[:3]
+        current_lo = lo[:3]
+        base = self._repair_theta(point)
+        alphas = np.linspace(1.0 / float(levels), 1.0, levels)
+        probes: List[np.ndarray] = []
+        for alpha in alphas:
+            full_current = base.copy()
+            full_current[:3] = base[:3] + float(alpha) * (current_hi - base[:3])
+            probes.append(self._repair_theta(full_current))
+
+            front_loaded = base.copy()
+            front_loaded[0] = base[0] + float(alpha) * (current_hi[0] - base[0])
+            front_loaded[1] = base[1] + float(alpha) * (current_hi[1] - base[1])
+            front_loaded[2] = max(base[2], current_lo[2])
+            probes.append(self._repair_theta(front_loaded))
+
+        return self._deduplicate_points(probes)
+
+    def _rank_region_candidates_with_gp(
+        self,
+        candidates: List[np.ndarray],
+        *,
+        max_keep: int,
+    ) -> List[np.ndarray]:
+        unique = self._deduplicate_points([self._repair_theta(row) for row in candidates])
+        if not unique:
+            return []
+        max_keep = max(int(max_keep), 1)
+        if len(unique) <= max_keep or self.gp is None or self.database is None or self.database.size == 0:
+            return unique[:max_keep]
+
+        try:
+            X = np.vstack(unique)
+            mean_z, sigma_z = self.gp.predict_standardized(X)
+            y_mean, y_std = self.gp.target_standardization()
+            f_min_model = self._model_target_value(float(self.database.get_f_min()))
+            f_min_z = (float(f_min_model) - float(y_mean)) / float(y_std)
+            ei = expected_improvement(mean_z, sigma_z, f_min_z)
+        except Exception as exc:
+            logger.debug("Failed to GP-rank region candidates: %s", exc)
+            return unique[:max_keep]
+
+        lo = np.array([self.param_bounds[k][0] for k in PARAM_KEYS], dtype=float)
+        hi = np.array([self.param_bounds[k][1] for k in PARAM_KEYS], dtype=float)
+        X_norm = (X - lo) / (hi - lo + 1e-12)
+        existing = np.vstack([obs.theta for obs in self.database.get_all()]) if self.database.size else np.empty((0, len(PARAM_KEYS)))
+        if existing.size:
+            existing_norm = (existing - lo) / (hi - lo + 1e-12)
+            novelty = np.min(np.linalg.norm(X_norm[:, None, :] - existing_norm[None, :, :], axis=2), axis=1)
+        else:
+            novelty = np.ones(X.shape[0], dtype=float)
+        log_ei = np.log(np.maximum(np.asarray(ei, dtype=float), 1e-12))
+        candidate_score = (
+            self._zscore_feature(log_ei)
+            + 0.35 * self._zscore_feature(np.asarray(sigma_z, dtype=float))
+            + 0.20 * self._zscore_feature(novelty)
+        )
+        order = np.argsort(np.asarray(candidate_score, dtype=float))[::-1]
+        min_sep = 0.5 * float(self.cfg.get("region_lift_close_distance", 0.05))
+
+        selected: List[int] = []
+        for idx in order:
+            if any(np.linalg.norm(X_norm[idx] - X_norm[j]) < min_sep for j in selected):
+                continue
+            selected.append(int(idx))
+            if len(selected) >= max_keep:
+                break
+        if len(selected) < max_keep:
+            for idx in order:
+                if int(idx) in selected:
+                    continue
+                selected.append(int(idx))
+                if len(selected) >= max_keep:
+                    break
+        return [X[idx].copy() for idx in selected]
+
+    @staticmethod
+    def _zscore_feature(values: np.ndarray) -> np.ndarray:
+        arr = np.asarray(values, dtype=float).ravel()
+        if len(arr) <= 1:
+            return np.zeros_like(arr)
+        mean = float(np.mean(arr))
+        std = float(np.std(arr))
+        if std <= 1e-12:
+            return np.zeros_like(arr)
+        return np.clip((arr - mean) / std, -3.0, 3.0)
+
+    def _model_target_value(self, value: float) -> float:
+        try:
+            transformed = self.gp.transform_targets(np.array([float(value)], dtype=float))
+            return float(np.asarray(transformed, dtype=float).ravel()[0])
+        except Exception:
+            return float(value)
+
+    def _build_region_preference_state(
+        self,
+        *,
+        t: int,
+        w_vec: np.ndarray,
+        scalar_y: np.ndarray,
+        ideal_point_raw: np.ndarray,
+    ) -> Dict[str, Any]:
+        X_train, Y_raw = self.database.get_train_XY(feasible_only=True, normalize_X=False, normalize_Y=False)
+        scalar = np.asarray(scalar_y, dtype=float).ravel()
+        order = np.argsort(scalar)[: min(5, len(scalar))]
+        top_rows = []
+        for idx in order:
+            top_rows.append(
+                {
+                    "theta": np.asarray(X_train[idx], dtype=float).round(6).tolist(),
+                    "raw_objectives": np.asarray(Y_raw[idx], dtype=float).round(6).tolist(),
+                    "scalar_y": float(scalar[idx]),
+                }
+            )
+        return {
+            "iteration": int(t),
+            "w_vec": np.asarray(w_vec, dtype=float).round(6).tolist(),
+            "ideal_point_raw": np.asarray(ideal_point_raw, dtype=float).round(6).tolist(),
+            "y_min": np.asarray(self._y_tilde_min, dtype=float).round(6).tolist(),
+            "y_max": np.asarray(self._y_tilde_max, dtype=float).round(6).tolist(),
+            "eta": float(self.cfg.get("eta", 0.05)),
+            "f_min": float(self.database.get_f_min()),
+            "hv_feedback": self.database.get_hv_feedback_summary(window=3),
+            "boundary_failures": self.database.get_boundary_failure_stats(),
+            "top_scalar_points": top_rows,
+            "recent_observations": [
+                {
+                    "theta": obs.theta.round(6).tolist(),
+                    "objectives": obs.objectives.round(6).tolist(),
+                    "feasible": bool(obs.feasible),
+                    "source": obs.source,
+                }
+                for obs in self.database.get_all()[-5:]
+            ],
+        }
+
+    def _finalize_region_lift_trust(self, *, hv_gain: float) -> None:
+        if self._last_region_lift_summary is None:
+            return
+        summary = dict(self._last_region_lift_summary)
+        trust_before = float(summary.get("trust_before", self._region_lift_trust))
+        trust_after = float(self._region_lift_trust)
+        reason = "skipped_not_lifted"
+        beta = float(np.clip(self.cfg.get("region_lift_trust_beta", 0.2), 0.0, 1.0))
+
+        if summary.get("selected_source") == "lifted":
+            recent = [
+                float(item.get("hv_gain_raw", 0.0))
+                for item in self._region_lift_telemetry[-5:]
+                if item.get("selected_source") == "lifted"
+            ]
+            threshold = float(np.median(recent)) if recent else 0.0
+            inside = bool(summary.get("lift_candidate_inside_region", False))
+            if inside and float(hv_gain) > threshold:
+                success_t = 1.0
+                reason = "lifted_inside_improved"
+            elif inside:
+                success_t = 0.5
+                reason = "lifted_inside_unclear"
+            elif float(hv_gain) > threshold:
+                success_t = 0.25
+                reason = "lifted_outside_improved"
+            else:
+                success_t = 0.0
+                reason = "lifted_no_improvement"
+            trust_after = float(np.clip((1.0 - beta) * trust_before + beta * success_t, 0.0, 1.0))
+        elif summary.get("fallback_reason") in {
+            "parse_fail",
+            "invalid_json",
+            "invalid_kind",
+            "invalid_region_bounds",
+            "invalid_point",
+            "low_confidence",
+            "non_raw_coordinate_space",
+            "non_promising_direction",
+            "bad_region_volume",
+            "bad_region_width",
+            "low_feasible_anchor_ratio",
+        }:
+            trust_after = float(np.clip(trust_before * (1.0 - 0.25 * beta), 0.0, 1.0))
+            reason = "small_decay_after_invalid_preference"
+
+        self._region_lift_trust = trust_after
+        summary["trust_before"] = trust_before
+        summary["trust_after"] = trust_after
+        summary["trust_update_reason"] = reason
+        summary["hv_gain_raw"] = float(hv_gain)
+        self._last_region_lift_summary = summary
+        self._region_lift_telemetry.append(summary)
+
     def save_results(self, output_dir: str = "results") -> None:
         output = Path(output_dir)
         output.mkdir(parents=True, exist_ok=True)
@@ -848,6 +1679,7 @@ class BayesOptimizer:
         hv_canonical = canonical_hv_from_raw(hv_raw, self.database.hv_max)
         hv_display = self.database.compute_hypervolume()
         rerank_summary = self._summarize_rerank_telemetry()
+        region_lift_summary = self._summarize_region_lift_telemetry()
         summary = {
             "n_total": self.database.size,
             "n_feasible": self.database.n_feasible,
@@ -858,16 +1690,21 @@ class BayesOptimizer:
             "hypervolume_canonical": hv_canonical,
             "hypervolume_raw": hv_raw,
             "warmstart_trace": self._warmstart_hv_trace,
+            "warmstart_portfolio_summary": self._warmstart_portfolio_summary,
             "hv_trace": self._hv_eval_trace,
             "last_guidance": self._previous_guidance,
             "last_gp_llm_coupling": self._last_coupling_summary,
             "last_proposal_summary": self._last_proposal_summary,
             "last_acq_prior_summary": self._last_acq_prior_summary,
             "last_llm_rerank_summary": self._last_rerank_summary,
+            "last_region_lifted_gp_summary": self._last_region_lift_summary,
             "last_candidate_source_counts": self._last_candidate_source_counts,
             "rerank_telemetry": self._rerank_telemetry,
+            "region_lift_telemetry": self._region_lift_telemetry,
+            "llm_model_display": canonical_model_label(self.cfg.get("llm_model")),
             "config": self._jsonable_config(),
             **rerank_summary,
+            **region_lift_summary,
         }
         with open(output / "summary.json", "w", encoding="utf-8") as f:
             json.dump(summary, f, indent=2, ensure_ascii=False)
@@ -900,7 +1737,9 @@ class BayesOptimizer:
                     "last_proposal_summary": self._last_proposal_summary,
                     "last_acq_prior_summary": self._last_acq_prior_summary,
                     "last_llm_rerank_summary": self._last_rerank_summary,
+                    "last_region_lifted_gp_summary": self._last_region_lift_summary,
                     "last_candidate_source_counts": self._last_candidate_source_counts,
+                    "llm_model_display": canonical_model_label(self.cfg.get("llm_model")),
                     "config": self._jsonable_config(),
                 },
                 f,
@@ -1345,6 +2184,81 @@ class BayesOptimizer:
             "mean_hv_gain_when_changed": None if not hv_gains else float(np.mean(hv_gains)),
         }
 
+    def _summarize_region_lift_telemetry(self) -> Dict[str, Any]:
+        if not self._region_lift_telemetry:
+            return {
+                "region_lift_attempt_count": 0,
+                "region_lift_accept_count": 0,
+                "lift_accept_rate": 0.0,
+                "effective_lift_accept_count": 0,
+                "effective_lift_accept_rate": 0.0,
+                "region_lift_fallback_count": 0,
+                "region_lift_fallback_reasons": {},
+                "plain_candidate_inside_region_count": 0,
+                "plain_candidate_inside_region_rate": 0.0,
+                "diagnostic_override_candidate_count": 0,
+                "region_pool_influenced_acquisition_count": 0,
+                "region_pool_influenced_acquisition_rate": 0.0,
+                "region_influence_gate_pass_count": 0,
+                "inactive_window_skipped_count": 0,
+                "zero_shift_accept_count": 0,
+                "mean_region_lift_hv_gain": None,
+            }
+        attempts = list(self._region_lift_telemetry)
+        accepted = [item for item in attempts if bool(item.get("accepted", False))]
+        fallbacks = [item for item in attempts if item.get("fallback_reason")]
+        plain_inside = [item for item in attempts if bool(item.get("plain_candidate_inside_region", False))]
+        diagnostic_available = [
+            item for item in attempts
+            if bool(item.get("diagnostic_override_candidate_available", False))
+        ]
+        influenced = [
+            item for item in attempts
+            if bool(item.get("region_pool_influenced_acquisition", False))
+        ]
+        gated = [
+            item for item in attempts
+            if bool(item.get("region_influence_gate_passed", False))
+        ]
+        inactive_skips = [
+            item for item in attempts
+            if bool(item.get("inactive_window_skipped", False))
+        ]
+        fallback_counter: Counter[str] = Counter(
+            str(item.get("fallback_reason"))
+            for item in fallbacks
+            if item.get("fallback_reason")
+        )
+        effective = [
+            item
+            for item in accepted
+            if int(item.get("selected_index_after", -1)) != int(item.get("selected_index_before", -1))
+        ]
+        zero_shift = [
+            item
+            for item in accepted
+            if float(item.get("max_shift_z", 0.0)) <= float(self.cfg.get("region_lift_log_ei_eps", 1e-12))
+        ]
+        gains = [float(item["hv_gain_raw"]) for item in attempts if item.get("hv_gain_raw") is not None]
+        return {
+            "region_lift_attempt_count": int(len(attempts)),
+            "region_lift_accept_count": int(len(accepted)),
+            "lift_accept_rate": float(len(accepted) / max(len(attempts), 1)),
+            "effective_lift_accept_count": int(len(effective)),
+            "effective_lift_accept_rate": float(len(effective) / max(len(attempts), 1)),
+            "region_lift_fallback_count": int(len(fallbacks)),
+            "region_lift_fallback_reasons": dict(fallback_counter),
+            "plain_candidate_inside_region_count": int(len(plain_inside)),
+            "plain_candidate_inside_region_rate": float(len(plain_inside) / max(len(attempts), 1)),
+            "diagnostic_override_candidate_count": int(len(diagnostic_available)),
+            "region_pool_influenced_acquisition_count": int(len(influenced)),
+            "region_pool_influenced_acquisition_rate": float(len(influenced) / max(len(attempts), 1)),
+            "region_influence_gate_pass_count": int(len(gated)),
+            "inactive_window_skipped_count": int(len(inactive_skips)),
+            "zero_shift_accept_count": int(len(zero_shift)),
+            "mean_region_lift_hv_gain": None if not gains else float(np.mean(gains)),
+        }
+
     def _maybe_apply_llm_rerank(
         self,
         *,
@@ -1745,6 +2659,42 @@ class BayesOptimizer:
         for source, _ in tagged_points:
             counts[source] = counts.get(source, 0) + 1
         return counts
+
+    def _get_random_init_points(self, n: int, seed: int = 0) -> List[np.ndarray]:
+        cache_path = self.cfg.get("random_init_cache_path")
+        if not cache_path:
+            return self._lhs_candidates(n, seed=seed)
+
+        path = Path(str(cache_path))
+        if path.exists():
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    payload = json.load(f)
+                points = np.asarray(payload.get("points", payload), dtype=float)
+                if points.ndim == 2 and points.shape[0] >= int(n) and points.shape[1] == len(PARAM_KEYS):
+                    logger.info("Using cached random init points from %s", path)
+                    return [self._repair_theta(row) for row in points[: int(n)]]
+            except Exception as exc:
+                logger.warning("Failed to read random init cache %s: %s", path, exc)
+
+        points = self._lhs_candidates(n, seed=seed)
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(
+                    {
+                        "method": "lhs",
+                        "n": int(n),
+                        "seed": int(seed),
+                        "points": [np.asarray(theta, dtype=float).ravel().tolist() for theta in points],
+                    },
+                    f,
+                    indent=2,
+                )
+            logger.info("Saved random init cache to %s", path)
+        except Exception as exc:
+            logger.warning("Failed to save random init cache %s: %s", path, exc)
+        return points
 
     def _lhs_candidates(self, n: int, seed: int = 0) -> List[np.ndarray]:
         if n <= 0:

@@ -31,11 +31,18 @@ import json
 import logging
 import re
 import time
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 from llmbo.rerank import CandidateInfo, RerankOutput, RerankState
+from llmbo.region_lifted_gp import LLMRegionPreference, parse_region_preference_payload
 from llmbo.scalarization import compute_tchebycheff_from_raw_with_ideal
+from llmbo.warmstart_selector import (
+    WarmStartCandidate,
+    WarmStartSelectionConfig,
+    select_warmstart_portfolio,
+)
 from utils.constants import (
     DEFAULT_BOUNDS as CANONICAL_DEFAULT_BOUNDS,
     LLM_SAFE_DSOC_SUM_MAX,
@@ -45,6 +52,7 @@ from utils.constants import (
 
 try:
     from llm.iteration_prompt import render_iteration_guidance_prompt
+    from llm.region_prompt import render_region_preference_prompt
     from llm.rerank_prompt import render_candidate_rerank_prompt
     from llm.warmstart_prompt import (
         DEFAULT_DSOC_SUM_MAX,
@@ -54,6 +62,7 @@ try:
     )
 except ModuleNotFoundError:  # pragma: no cover - allows direct script execution
     from iteration_prompt import render_iteration_guidance_prompt
+    from region_prompt import render_region_preference_prompt
     from rerank_prompt import render_candidate_rerank_prompt
     from warmstart_prompt import (
         DEFAULT_DSOC_SUM_MAX,
@@ -803,6 +812,16 @@ class LLMInterface:
         soc_end: float = 0.8,
         dsoc_sum_max: float = _DSOC_SUM_MAX,
         safe_dsoc_sum_max: Optional[float] = LLM_SAFE_DSOC_SUM_MAX,
+        enable_warmstart_portfolio: bool = True,
+        warmstart_pool_size: int = 16,
+        warmstart_diversity_weight: float = 0.45,
+        warmstart_soft_penalty_weight: float = 0.65,
+        warmstart_monotone_bonus: float = 0.08,
+        warmstart_archive_bonus_weight: float = 0.0,
+        warmstart_boundary_probe_limit: int = 1,
+        warmstart_cache_path: Optional[str] = None,
+        warmstart_cache_mode: str = "read_write",
+        warmstart_cache_use_selected: bool = False,
     ):
         self._bounds   = param_bounds or DEFAULT_BOUNDS
         self._config   = config or LLMConfig()
@@ -823,6 +842,16 @@ class LLMInterface:
             min(self._dsoc_sum_max, float(safe_dsoc_sum_max))
             if safe_dsoc_sum_max is not None else None
         )
+        self._enable_warmstart_portfolio = bool(enable_warmstart_portfolio)
+        self._warmstart_pool_size = max(1, int(warmstart_pool_size))
+        self._warmstart_diversity_weight = float(warmstart_diversity_weight)
+        self._warmstart_soft_penalty_weight = float(warmstart_soft_penalty_weight)
+        self._warmstart_monotone_bonus = float(warmstart_monotone_bonus)
+        self._warmstart_archive_bonus_weight = float(warmstart_archive_bonus_weight)
+        self._warmstart_boundary_probe_limit = max(0, int(warmstart_boundary_probe_limit))
+        self._warmstart_cache_path = Path(str(warmstart_cache_path)) if warmstart_cache_path else None
+        self._warmstart_cache_mode = str(warmstart_cache_mode or "read_write").lower()
+        self._warmstart_cache_use_selected = bool(warmstart_cache_use_selected)
 
         self._caller   = LLMCaller(self._config)
         self._parser   = ResponseParser(
@@ -847,6 +876,7 @@ class LLMInterface:
         )
 
         self._warmstart_cache: Optional[List[np.ndarray]] = None
+        self._warmstart_summary: Dict[str, Any] = {}
 
         logger.info(
             "LLMInterface 初始化: backend=%s model=%s warmstart_level=%s param_set=%s",
@@ -859,6 +889,66 @@ class LLMInterface:
     def _render_warmstart_prompt(self, num_recommendation: int) -> str:
         context = self._warmstart_context_builder.build(num_recommendation=num_recommendation)
         return render_warmstart_prompt(self._warmstart_context_level, context)
+
+    @staticmethod
+    def _coerce_theta_list(rows: Any) -> List[np.ndarray]:
+        if not isinstance(rows, list):
+            return []
+        points: List[np.ndarray] = []
+        for row in rows:
+            try:
+                theta = np.asarray(row, dtype=float).ravel()
+            except Exception:
+                continue
+            if theta.size == len(PARAM_KEYS) and np.all(np.isfinite(theta)):
+                points.append(theta)
+        return points
+
+    def _load_warmstart_disk_cache(self) -> Optional[Dict[str, Any]]:
+        if self._warmstart_cache_path is None:
+            return None
+        if self._warmstart_cache_mode not in {"read", "read_write"}:
+            return None
+        if not self._warmstart_cache_path.exists():
+            return None
+        try:
+            with open(self._warmstart_cache_path, "r", encoding="utf-8") as f:
+                payload = json.load(f)
+        except Exception as exc:
+            logger.warning("Failed to read warmstart cache %s: %s", self._warmstart_cache_path, exc)
+            return None
+        if not isinstance(payload, dict):
+            return None
+        return payload
+
+    def _save_warmstart_disk_cache(
+        self,
+        *,
+        candidate_pool: List[np.ndarray],
+        selected: List[np.ndarray],
+        summary: Dict[str, Any],
+        target_pool: int,
+    ) -> None:
+        if self._warmstart_cache_path is None:
+            return
+        if self._warmstart_cache_mode not in {"write", "read_write"}:
+            return
+        payload = {
+            "version": 1,
+            "backend": str(self._config.backend),
+            "model": str(self._config.model),
+            "temperature": float(self._warmstart_temperature),
+            "target_pool": int(target_pool),
+            "candidate_pool": [np.asarray(theta, dtype=float).ravel().tolist() for theta in candidate_pool],
+            "final_selected": [np.asarray(theta, dtype=float).ravel().tolist() for theta in selected],
+            "summary": summary,
+        }
+        try:
+            self._warmstart_cache_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(self._warmstart_cache_path, "w", encoding="utf-8") as f:
+                json.dump(payload, f, indent=2, ensure_ascii=False)
+        except Exception as exc:
+            logger.warning("Failed to save warmstart cache %s: %s", self._warmstart_cache_path, exc)
 
     def _build_pareto_context(
         self,
@@ -918,6 +1008,70 @@ class LLMInterface:
             note="heuristic-fallback",
         )
 
+    def _fallback_region_preference(
+        self,
+        state_dict: Dict[str, Any],
+    ) -> LLMRegionPreference:
+        rows = state_dict.get("top_scalar_points") or []
+        top_points: List[np.ndarray] = []
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            theta = row.get("theta")
+            if theta is None:
+                continue
+            try:
+                point = self._parser.repair_theta(np.asarray(theta, dtype=float).ravel())
+            except Exception:
+                continue
+            if point.size == len(PARAM_KEYS):
+                top_points.append(point)
+
+        if not top_points:
+            recent = state_dict.get("recent_observations") or []
+            for row in recent:
+                if not isinstance(row, dict):
+                    continue
+                theta = row.get("theta")
+                if theta is None:
+                    continue
+                try:
+                    point = self._parser.repair_theta(np.asarray(theta, dtype=float).ravel())
+                except Exception:
+                    continue
+                if point.size == len(PARAM_KEYS):
+                    top_points.append(point)
+                if len(top_points) >= 3:
+                    break
+
+        if not top_points:
+            return LLMRegionPreference.none("mock_no_candidates")
+
+        count = min(len(top_points), 3)
+        weights = np.linspace(float(count), 1.0, count, dtype=float)
+        weights = weights / max(float(np.sum(weights)), 1e-12)
+        center = np.sum(np.vstack(top_points[:count]) * weights[:, None], axis=0)
+        center = self._parser.repair_theta(center)
+        point_dict = {
+            key: float(center[idx])
+            for idx, key in enumerate(PARAM_KEYS)
+        }
+        payload = {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": point_dict,
+            "confidence": 0.72,
+            "preference_type": "balanced",
+            "reason": "mock fallback: weighted center of top scalarized historical points",
+            "risk_flags": [],
+        }
+        pref = parse_region_preference_payload(payload)
+        pref.raw_response = dict(payload)
+        pref.raw_response_hash = str(abs(hash(json.dumps(payload, sort_keys=True))))
+        pref.parser_status = "ok"
+        return pref
+
     def query_iteration_guidance(
         self,
         state_dict: Dict[str, Any],
@@ -954,6 +1108,44 @@ class LLMInterface:
             guidance.note or "-",
         )
         return guidance
+
+    def query_region_preference(
+        self,
+        state_dict: Dict[str, Any],
+    ) -> LLMRegionPreference:
+        """
+        Region-Lifted GP preference query.
+
+        This path intentionally has no heuristic fallback: invalid, empty, or
+        low-quality LLM responses become kind="none" so the optimizer can
+        fail-open to plain EI. The only exception is `mock` backend, where we
+        return a deterministic point preference so the coupling path can be
+        exercised offline and in tests.
+        """
+        t = int(state_dict.get("iteration", 0))
+        logger.info("=== Region-Lifted GP preference query (t=%d) ===", t)
+        if str(self._config.backend).lower() == "mock":
+            return self._fallback_region_preference(state_dict)
+
+        prompt = render_region_preference_prompt(
+            state=state_dict,
+            param_bounds=self._bounds,
+        )
+        responses = self._caller.call(
+            prompt,
+            n=1,
+            temperature=min(float(self._config.temperature), 0.3),
+            max_tokens=1000,
+        )
+        for text in responses:
+            parsed = self._parser.extract_json(text)
+            if parsed is None:
+                continue
+            pref = parse_region_preference_payload(parsed)
+            if pref.raw_response_hash is None:
+                pref.raw_response_hash = str(abs(hash(text)))
+            return pref
+        return LLMRegionPreference.none("parse_fail")
 
     # ──────────────────────────────────────────────────────────────
     # Touchpoint 1b: Warm-Start 候选点生成
@@ -1094,12 +1286,47 @@ class LLMInterface:
 
         all_candidates: List[np.ndarray] = []
         seen = set()
+        target_pool = max(
+            int(n),
+            int(batch_size),
+            int(self._warmstart_pool_size),
+        )
+        disk_cache = self._load_warmstart_disk_cache()
+        cache_hit = False
+        if disk_cache is not None:
+            cached_selected = self._coerce_theta_list(disk_cache.get("final_selected"))
+            cached_pool = self._coerce_theta_list(disk_cache.get("candidate_pool"))
+            if self._warmstart_cache_use_selected and len(cached_selected) >= int(n):
+                candidates = [self._parser.repair_theta(theta) for theta in cached_selected[: int(n)]]
+                self._warmstart_summary = dict(disk_cache.get("summary") or {})
+                self._warmstart_summary.update(
+                    {
+                        "disk_cache": "hit_selected",
+                        "cache_path": str(self._warmstart_cache_path),
+                        "final_selected_count": int(len(candidates)),
+                        "final_selected": [np.asarray(theta, dtype=float).ravel().tolist() for theta in candidates],
+                    }
+                )
+                self._warmstart_cache = [c.copy() for c in candidates]
+                logger.info("Touchpoint 1b using selected warmstart cache: %s", self._warmstart_cache_path)
+                return candidates
+            if cached_pool:
+                all_candidates = [self._parser.repair_theta(theta) for theta in cached_pool]
+                cache_hit = True
+                logger.info(
+                    "Touchpoint 1b loaded %d cached warmstart pool points from %s",
+                    len(all_candidates),
+                    self._warmstart_cache_path,
+                )
 
         for batch_idx in range(max_attempts):
-            if len(all_candidates) >= n:
+            if cache_hit:
+                break
+            if len(all_candidates) >= target_pool:
                 break
 
-            prompt = self._render_warmstart_prompt(batch_size)
+            request_size = max(int(batch_size), min(target_pool - len(all_candidates), target_pool))
+            prompt = self._render_warmstart_prompt(request_size)
 
             batch: List[np.ndarray] = []
             for retry_idx in range(self._warmstart_max_retries + 1):
@@ -1129,16 +1356,68 @@ class LLMInterface:
 
             logger.info(
                 "  批次 %d/%d: 新增 %d 个有效候选点（总计 %d/%d）",
-                batch_idx + 1, max_attempts, new_cnt, len(all_candidates), n
+                batch_idx + 1, max_attempts, new_cnt, len(all_candidates), target_pool
             )
 
         # 不足则用物理启发式补全
-        if len(all_candidates) < n:
-            shortage = n - len(all_candidates)
+        if len(all_candidates) < target_pool:
+            shortage = target_pool - len(all_candidates)
             logger.info("  LLM 候选不足，补充 %d 个物理启发式候选点", shortage)
             all_candidates.extend(self._fallback.physics_informed_warmstart(shortage))
 
-        candidates = all_candidates[:n]
+        if self._enable_warmstart_portfolio:
+            wrapped = [
+                WarmStartCandidate(theta=np.asarray(theta, dtype=float), source="llm_pool", raw_index=i)
+                for i, theta in enumerate(all_candidates)
+            ]
+            cfg = WarmStartSelectionConfig(
+                n_select=int(n),
+                bounds=self._bounds,
+                hard_dsoc_sum_max=float(self._dsoc_sum_max),
+                soft_dsoc_sum_max=float(self._safe_dsoc_sum_max or self._dsoc_sum_max),
+                diversity_weight=float(self._warmstart_diversity_weight),
+                soft_penalty_weight=float(self._warmstart_soft_penalty_weight),
+                monotone_bonus=float(self._warmstart_monotone_bonus),
+                archive_bonus_weight=float(self._warmstart_archive_bonus_weight),
+                boundary_probe_limit=int(self._warmstart_boundary_probe_limit),
+            )
+            selected, summary = select_warmstart_portfolio(wrapped, cfg)
+            candidates = [np.asarray(item.theta, dtype=float).copy() for item in selected]
+            if len(candidates) < n:
+                shortage = int(n) - len(candidates)
+                logger.info("  Portfolio selector returned %d/%d; appending fallback points", len(candidates), n)
+                candidates.extend(self._fallback.physics_informed_warmstart(shortage))
+            self._warmstart_summary = {
+                **summary,
+                "enabled": True,
+                "pool_target": int(target_pool),
+                "pool_collected": int(len(all_candidates)),
+                "disk_cache": "hit_pool" if cache_hit else "miss",
+                "cache_path": None if self._warmstart_cache_path is None else str(self._warmstart_cache_path),
+            }
+        else:
+            candidates = all_candidates[:n]
+            self._warmstart_summary = {
+                "enabled": False,
+                "method": "first_n",
+                "requested": int(n),
+                "pool_target": int(target_pool),
+                "pool_collected": int(len(all_candidates)),
+                "selected_count": int(len(candidates)),
+                "selected": [np.asarray(theta, dtype=float).ravel().tolist() for theta in candidates],
+                "disk_cache": "hit_pool" if cache_hit else "miss",
+                "cache_path": None if self._warmstart_cache_path is None else str(self._warmstart_cache_path),
+            }
+        self._warmstart_summary["final_selected_count"] = int(len(candidates))
+        self._warmstart_summary["final_selected"] = [
+            np.asarray(theta, dtype=float).ravel().tolist() for theta in candidates
+        ]
+        self._save_warmstart_disk_cache(
+            candidate_pool=all_candidates,
+            selected=candidates,
+            summary=self._warmstart_summary,
+            target_pool=target_pool,
+        )
         self._warmstart_cache = [c.copy() for c in candidates]
         logger.info("Touchpoint 1b 完成: 返回 %d 个候选点", len(candidates))
         return candidates
@@ -1241,6 +1520,9 @@ class LLMInterface:
         logger.info("get_warmstart_center: μ_init = %s", center.round(4))
         return center
 
+    def get_warmstart_summary(self) -> Dict[str, Any]:
+        return dict(self._warmstart_summary)
+
     @property
     def config(self) -> LLMConfig:
         return self._config
@@ -1269,6 +1551,16 @@ def build_llm_interface(
     soc_end: float = 0.8,
     dsoc_sum_max: float = _DSOC_SUM_MAX,
     safe_dsoc_sum_max: Optional[float] = LLM_SAFE_DSOC_SUM_MAX,
+    enable_warmstart_portfolio: bool = True,
+    warmstart_pool_size: int = 16,
+    warmstart_diversity_weight: float = 0.45,
+    warmstart_soft_penalty_weight: float = 0.65,
+    warmstart_monotone_bonus: float = 0.08,
+    warmstart_archive_bonus_weight: float = 0.0,
+    warmstart_boundary_probe_limit: int = 1,
+    warmstart_cache_path: Optional[str] = None,
+    warmstart_cache_mode: str = "read_write",
+    warmstart_cache_use_selected: bool = False,
 ) -> LLMInterface:
     """
     工厂函数：一步构建 LLMInterface。
@@ -1317,6 +1609,16 @@ def build_llm_interface(
         soc_end=soc_end,
         dsoc_sum_max=dsoc_sum_max,
         safe_dsoc_sum_max=safe_dsoc_sum_max,
+        enable_warmstart_portfolio=enable_warmstart_portfolio,
+        warmstart_pool_size=warmstart_pool_size,
+        warmstart_diversity_weight=warmstart_diversity_weight,
+        warmstart_soft_penalty_weight=warmstart_soft_penalty_weight,
+        warmstart_monotone_bonus=warmstart_monotone_bonus,
+        warmstart_archive_bonus_weight=warmstart_archive_bonus_weight,
+        warmstart_boundary_probe_limit=warmstart_boundary_probe_limit,
+        warmstart_cache_path=warmstart_cache_path,
+        warmstart_cache_mode=warmstart_cache_mode,
+        warmstart_cache_use_selected=warmstart_cache_use_selected,
     )
 
 

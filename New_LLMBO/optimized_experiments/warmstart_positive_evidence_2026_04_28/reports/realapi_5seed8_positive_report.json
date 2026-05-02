@@ -1,0 +1,475 @@
+{
+  "meta": {
+    "iterations": 8,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "backend": "real_api",
+    "model": "gpt-4.1-mini",
+    "api_base": "https://api.nuwaapi.com/v1"
+  },
+  "baseline_strict": {
+    "mean_canonical_hv": 0.3410594075230917,
+    "std_canonical_hv": 0.020021058917940412,
+    "min_canonical_hv": 0.31571010193967,
+    "max_canonical_hv": 0.37013618354498595,
+    "runs": [
+      {
+        "seed": 0,
+        "display_hv": 0.9253404588624649,
+        "canonical_hv": 0.37013618354498595,
+        "hypervolume_raw": 10.891275672059265,
+        "n_feasible": 22,
+        "pareto_size": 18,
+        "warmstart_selected": null,
+        "warmstart_selected_count": null,
+        "pool_collected": null,
+        "selector_enabled": null
+      },
+      {
+        "seed": 1,
+        "display_hv": 0.7892752548491749,
+        "canonical_hv": 0.31571010193967,
+        "hypervolume_raw": 9.28978550474779,
+        "n_feasible": 22,
+        "pareto_size": 14,
+        "warmstart_selected": null,
+        "warmstart_selected_count": null,
+        "pool_collected": null,
+        "selector_enabled": null
+      },
+      {
+        "seed": 2,
+        "display_hv": 0.8396733799487762,
+        "canonical_hv": 0.3358693519795105,
+        "hypervolume_raw": 9.882972443195785,
+        "n_feasible": 22,
+        "pareto_size": 16,
+        "warmstart_selected": null,
+        "warmstart_selected_count": null,
+        "pool_collected": null,
+        "selector_enabled": null
+      },
+      {
+        "seed": 3,
+        "display_hv": 0.8154190385046408,
+        "canonical_hv": 0.32616761540185635,
+        "hypervolume_raw": 9.597498360243584,
+        "n_feasible": 22,
+        "pareto_size": 15,
+        "warmstart_selected": null,
+        "warmstart_selected_count": null,
+        "pool_collected": null,
+        "selector_enabled": null
+      },
+      {
+        "seed": 4,
+        "display_hv": 0.8935344618735893,
+        "canonical_hv": 0.35741378474943575,
+        "hypervolume_raw": 10.516918452602576,
+        "n_feasible": 22,
+        "pareto_size": 15,
+        "warmstart_selected": null,
+        "warmstart_selected_count": null,
+        "pool_collected": null,
+        "selector_enabled": null
+      }
+    ]
+  },
+  "old_warmstart_top3": {
+    "mean_canonical_hv": 0.3470956034322187,
+    "std_canonical_hv": 0.014424298299047495,
+    "min_canonical_hv": 0.3263367697793166,
+    "max_canonical_hv": 0.3641207612261952,
+    "runs": [
+      {
+        "seed": 0,
+        "display_hv": 0.891212548289231,
+        "canonical_hv": 0.35648501931569243,
+        "hypervolume_raw": 10.48958948336564,
+        "n_feasible": 22,
+        "pareto_size": 13,
+        "warmstart_selected": [
+          [
+            5.6,
+            4.1,
+            2.4,
+            0.18,
+            0.21
+          ],
+          [
+            3.7,
+            3.1,
+            2.0,
+            0.32,
+            0.22
+          ],
+          [
+            2.9,
+            2.6,
+            2.1,
+            0.15,
+            0.18
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 3,
+        "selector_enabled": false
+      },
+      {
+        "seed": 1,
+        "display_hv": 0.910301903065488,
+        "canonical_hv": 0.3641207612261952,
+        "hypervolume_raw": 10.714271570135669,
+        "n_feasible": 22,
+        "pareto_size": 15,
+        "warmstart_selected": [
+          [
+            5.65,
+            4.15,
+            2.45,
+            0.185,
+            0.195
+          ],
+          [
+            3.75,
+            3.15,
+            2.05,
+            0.31,
+            0.21
+          ],
+          [
+            3.35,
+            2.85,
+            2.0,
+            0.235,
+            0.22
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 3,
+        "selector_enabled": false
+      },
+      {
+        "seed": 2,
+        "display_hv": 0.8158419244482914,
+        "canonical_hv": 0.3263367697793166,
+        "hypervolume_raw": 9.60247573624182,
+        "n_feasible": 22,
+        "pareto_size": 16,
+        "warmstart_selected": [
+          [
+            5.65,
+            4.15,
+            2.45,
+            0.185,
+            0.195
+          ],
+          [
+            3.75,
+            3.15,
+            2.05,
+            0.31,
+            0.21
+          ],
+          [
+            2.85,
+            2.45,
+            2.0,
+            0.23,
+            0.21
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 3,
+        "selector_enabled": false
+      },
+      {
+        "seed": 3,
+        "display_hv": 0.8866116919090317,
+        "canonical_hv": 0.35464467676361267,
+        "hypervolume_raw": 10.435437311930377,
+        "n_feasible": 22,
+        "pareto_size": 17,
+        "warmstart_selected": [
+          [
+            5.65,
+            4.15,
+            2.45,
+            0.185,
+            0.195
+          ],
+          [
+            3.75,
+            3.15,
+            2.05,
+            0.31,
+            0.21
+          ],
+          [
+            3.35,
+            2.85,
+            2.0,
+            0.235,
+            0.215
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 3,
+        "selector_enabled": false
+      },
+      {
+        "seed": 4,
+        "display_hv": 0.8347269751906912,
+        "canonical_hv": 0.3338907900762765,
+        "hypervolume_raw": 9.82475316045512,
+        "n_feasible": 22,
+        "pareto_size": 18,
+        "warmstart_selected": [
+          [
+            5.65,
+            4.15,
+            2.45,
+            0.185,
+            0.195
+          ],
+          [
+            3.75,
+            3.15,
+            2.05,
+            0.31,
+            0.21
+          ],
+          [
+            3.35,
+            2.85,
+            2.0,
+            0.235,
+            0.22
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 3,
+        "selector_enabled": false
+      }
+    ]
+  },
+  "warmstart_portfolio": {
+    "mean_canonical_hv": 0.34994745890280116,
+    "std_canonical_hv": 0.010523970597489744,
+    "min_canonical_hv": 0.3364316599417338,
+    "max_canonical_hv": 0.3629143257896869,
+    "runs": [
+      {
+        "seed": 0,
+        "display_hv": 0.9034419745475092,
+        "canonical_hv": 0.3613767898190037,
+        "hypervolume_raw": 10.633530074544117,
+        "n_feasible": 22,
+        "pareto_size": 15,
+        "warmstart_selected": [
+          [
+            5.75,
+            4.15,
+            2.45,
+            0.185,
+            0.195
+          ],
+          [
+            2.1,
+            2.0,
+            2.0,
+            0.1,
+            0.1
+          ],
+          [
+            3.45,
+            2.85,
+            2.0,
+            0.235,
+            0.215
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 16,
+        "selector_enabled": true
+      },
+      {
+        "seed": 1,
+        "display_hv": 0.8410791498543344,
+        "canonical_hv": 0.3364316599417338,
+        "hypervolume_raw": 9.89951838304558,
+        "n_feasible": 22,
+        "pareto_size": 14,
+        "warmstart_selected": [
+          [
+            5.85,
+            4.1,
+            2.55,
+            0.185,
+            0.195
+          ],
+          [
+            2.1,
+            2.0,
+            2.0,
+            0.1,
+            0.1
+          ],
+          [
+            3.75,
+            3.25,
+            2.05,
+            0.295,
+            0.205
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 16,
+        "selector_enabled": true
+      },
+      {
+        "seed": 2,
+        "display_hv": 0.867674245066818,
+        "canonical_hv": 0.3470696980267272,
+        "hypervolume_raw": 10.212543184576358,
+        "n_feasible": 22,
+        "pareto_size": 16,
+        "warmstart_selected": [
+          [
+            5.75,
+            4.15,
+            2.45,
+            0.185,
+            0.195
+          ],
+          [
+            2.2,
+            2.0,
+            2.0,
+            0.1,
+            0.12
+          ],
+          [
+            3.6,
+            3.1,
+            2.05,
+            0.25,
+            0.2
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 16,
+        "selector_enabled": true
+      },
+      {
+        "seed": 3,
+        "display_hv": 0.8548620523421355,
+        "canonical_hv": 0.34194482093685424,
+        "hypervolume_raw": 10.061743420455366,
+        "n_feasible": 22,
+        "pareto_size": 15,
+        "warmstart_selected": [
+          [
+            5.85,
+            4.1,
+            2.55,
+            0.185,
+            0.195
+          ],
+          [
+            2.1,
+            2.0,
+            2.0,
+            0.1,
+            0.15
+          ],
+          [
+            3.9,
+            3.1,
+            2.0,
+            0.31,
+            0.16
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 16,
+        "selector_enabled": true
+      },
+      {
+        "seed": 4,
+        "display_hv": 0.9072858144742172,
+        "canonical_hv": 0.3629143257896869,
+        "hypervolume_raw": 10.67877214721055,
+        "n_feasible": 22,
+        "pareto_size": 16,
+        "warmstart_selected": [
+          [
+            5.85,
+            4.1,
+            2.55,
+            0.185,
+            0.195
+          ],
+          [
+            2.1,
+            2.0,
+            2.0,
+            0.1,
+            0.15
+          ],
+          [
+            3.75,
+            3.25,
+            2.05,
+            0.295,
+            0.205
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 16,
+        "selector_enabled": true
+      }
+    ]
+  },
+  "old_warmstart_top3_vs_baseline": {
+    "mean_delta_canonical_hv": 0.006036195909126962,
+    "wins": 2,
+    "total": 5,
+    "deltas_by_seed": [
+      -0.013651164229293522,
+      0.048410659286525215,
+      -0.009532582200193929,
+      0.028477061361756317,
+      -0.02352299467315927
+    ]
+  },
+  "warmstart_portfolio_vs_baseline": {
+    "mean_delta_canonical_hv": 0.008888051379709461,
+    "wins": 4,
+    "total": 5,
+    "deltas_by_seed": [
+      -0.008759393725982279,
+      0.020721558002063822,
+      0.011200346047216703,
+      0.015777205534997896,
+      0.005500541040251161
+    ]
+  },
+  "warmstart_portfolio_vs_old_warmstart": {
+    "mean_delta_canonical_hv": 0.0028518554705824982,
+    "wins": 3,
+    "total": 5,
+    "deltas_by_seed": [
+      0.0048917705033112435,
+      -0.027689101284461393,
+      0.02073292824741063,
+      -0.012699855826758422,
+      0.02902353571341043
+    ]
+  }
+}

@@ -306,6 +306,7 @@ class PyBaMMSimulator:
             temp_all = [self.T_init]
             soc_all = []
             current_all = [0.0]
+            loss_all = [0.0] if self.aging_mode in ("physical", "both") else None
 
             c0 = float(param["Initial concentration in negative electrode [mol.m-3]"])
             soc_all.append(_neg_conc_to_soc(c0))
@@ -330,12 +331,15 @@ class PyBaMMSimulator:
                 t_stage = np.asarray(sol["X-averaged cell temperature [K]"].entries, dtype=float).reshape(-1)
                 c_stage = np.asarray(sol["R-averaged negative particle concentration [mol.m-3]"].entries, dtype=float)
                 soc_stage = self._soc_series_from_conc(c_stage, len(v_stage))
+                loss_stage = self._physical_loss_series(sol, len(v_stage)) if loss_all is not None else None
 
                 # 去掉每段首点，避免与上一段末点重复
                 voltage_all.extend(v_stage[1:].tolist())
                 temp_all.extend(t_stage[1:].tolist())
                 soc_all.extend(soc_stage[1:].tolist())
                 current_all.extend([float(stage_I)] * max(0, len(v_stage) - 1))
+                if loss_all is not None and loss_stage is not None:
+                    loss_all.extend(loss_stage[1:].tolist())
 
                 last_sol = sol
 
@@ -346,6 +350,7 @@ class PyBaMMSimulator:
                 temp_all=np.asarray(temp_all, dtype=float),
                 soc_all=np.asarray(soc_all, dtype=float),
                 current_all=np.asarray(current_all, dtype=float),
+                loss_all=None if loss_all is None else np.asarray(loss_all, dtype=float),
                 last_sol=last_sol,
                 total_time_override=planned_total_time,
             )
@@ -356,6 +361,35 @@ class PyBaMMSimulator:
     # ------------------------------------------------------------------
     #  结果提取
     # ------------------------------------------------------------------
+
+    def _time_series_from_entries(self, entries: np.ndarray, n_time: int) -> np.ndarray:
+        """Project PyBaMM variable entries onto a 1D time series."""
+        arr = np.asarray(entries, dtype=float)
+        if arr.ndim == 0:
+            series = np.full(n_time, float(arr), dtype=float)
+        elif arr.ndim == 1:
+            series = arr.reshape(-1)
+        elif arr.ndim == 2:
+            if arr.shape[0] == n_time:
+                series = arr[:, -1]
+            elif arr.shape[1] == n_time:
+                series = arr[-1, :]
+            elif arr.shape[0] > arr.shape[1]:
+                series = arr[:, -1]
+            else:
+                series = arr[-1, :]
+        else:
+            series = arr.reshape(-1)
+
+        if series.size == n_time:
+            return np.asarray(series, dtype=float)
+        if series.size <= 1:
+            fill = float(series[0]) if series.size == 1 else 0.0
+            return np.full(n_time, fill, dtype=float)
+
+        src_x = np.linspace(0.0, 1.0, num=series.size)
+        dst_x = np.linspace(0.0, 1.0, num=n_time)
+        return np.interp(dst_x, src_x, series).astype(float)
 
     def _soc_series_from_conc(self, c_entries: np.ndarray, n_time: int) -> np.ndarray:
         """将浓度 entries 统一映射为按时间排列的 SOC 序列。"""
@@ -375,13 +409,37 @@ class PyBaMMSimulator:
             c_time = c_entries.reshape(-1)
         return np.array([_neg_conc_to_soc(float(c)) for c in c_time], dtype=float)
 
+    def _physical_loss_series(self, sol, n_time: int) -> np.ndarray:
+        """Extract cumulative physical lithium loss as percent of effective capacity."""
+        F = 96485.33212
+        total_mol_series = np.zeros(n_time, dtype=float)
+        for var in (
+            "Loss of lithium to SEI [mol]",
+            "Loss of lithium to negative SEI [mol]",
+            "Loss of lithium to lithium plating [mol]",
+            "Loss of lithium to negative lithium plating [mol]",
+        ):
+            try:
+                total_mol_series += self._time_series_from_entries(sol[var].entries, n_time)
+            except KeyError:
+                continue
+
+        li_loss_ah_series = total_mol_series * F / 3600.0
+        loss_pct_series = li_loss_ah_series / self.Q_eff * 100.0
+        return np.maximum(loss_pct_series, 0.0)
+
     def _extract_from_series(self, voltage_all, temp_all, soc_all, current_all, last_sol,
+                             loss_all: Optional[np.ndarray] = None,
                              total_time_override: Optional[float] = None) -> Dict:
         try:
             total_time = float(total_time_override) if total_time_override is not None else float(len(soc_all) - 1)
             peak_temp = float(np.max(temp_all))
             peak_volt = float(np.max(voltage_all))
             soc_final = float(soc_all[-1])
+            if loss_all is not None:
+                loss_all = np.asarray(loss_all, dtype=float).reshape(-1)
+                if loss_all.size != len(soc_all):
+                    loss_all = self._time_series_from_entries(loss_all, len(soc_all))
 
         except Exception as e:
             return self._penalty(f"结果提取失败: {str(e)[:120]}")
@@ -405,7 +463,9 @@ class PyBaMMSimulator:
 
         aging_empirical = self._aging_empirical(mean_soc_pct, mean_temp, mean_current)
         aging_physical = None
-        if self.aging_mode in ("physical", "both") and last_sol is not None:
+        if loss_all is not None and loss_all.size:
+            aging_physical = float(max(loss_all[-1], 1e-8))
+        elif self.aging_mode in ("physical", "both") and last_sol is not None:
             aging_physical = self._aging_physical(last_sol)
 
         # raw_objectives 中的 aging 取决于 aging_mode
@@ -419,6 +479,8 @@ class PyBaMMSimulator:
             "I": current_all.tolist(),
             "time": np.arange(len(soc_all), dtype=float).tolist(),
         }
+        if loss_all is not None:
+            trajectories["loss_pct"] = loss_all.tolist()
 
         result = {
             "raw_objectives": np.array([total_time, delta_temp, aging_obj]),

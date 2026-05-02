@@ -5,7 +5,7 @@ import logging
 from typing import Any, Dict, List, Optional, Protocol, Tuple, runtime_checkable
 
 import numpy as np
-from scipy.optimize import minimize
+from scipy.optimize import differential_evolution, minimize
 from scipy.stats import norm as scipy_norm
 
 from llmbo.gp_model import GPProtocol
@@ -203,6 +203,7 @@ class AcquisitionFunction:
         n_select: int = 1,
         n_restarts_optimizer: int = 16,
         n_random_candidates: int = 128,
+        n_external_local_restarts: int = 0,
         random_seed: Optional[int] = None,
     ) -> None:
         self.gp = gp
@@ -210,6 +211,7 @@ class AcquisitionFunction:
         self.n_select = int(n_select)
         self.n_restarts_optimizer = int(n_restarts_optimizer)
         self.n_random_candidates = int(n_random_candidates)
+        self.n_external_local_restarts = max(int(n_external_local_restarts), 0)
         self._rng = np.random.default_rng(random_seed)
 
         self._lo = np.array([param_bounds[k][0] for k in PARAM_KEYS], dtype=float)
@@ -260,6 +262,7 @@ class AcquisitionFunction:
     def step(
         self,
         X_candidates: Optional[np.ndarray] = None,
+        X_external_restarts: Optional[np.ndarray] = None,
         database: Optional[DatabaseProtocol] = None,
         t: int = 0,
         w_vec: Optional[np.ndarray] = None,
@@ -269,7 +272,8 @@ class AcquisitionFunction:
         if database is None:
             raise ValueError("database is required")
 
-        f_min = float(database.get_f_min())
+        f_min_raw = float(database.get_f_min())
+        f_min = self._model_target_value(f_min_raw)
         theta_best = self._repair_theta(database.get_theta_best())
         stagnation_count = int(database.get_stagnation_count())
 
@@ -285,7 +289,13 @@ class AcquisitionFunction:
             grad_psi_at_best=np.zeros(len(PARAM_KEYS), dtype=float),
         )
 
-        candidate_pool = self._build_candidate_pool(theta_best, X_candidates, f_min, lift=lift)
+        candidate_pool = self._build_candidate_pool(
+            theta_best,
+            X_candidates,
+            f_min,
+            lift=lift,
+            X_external_restarts=X_external_restarts,
+        )
         mean, std = self.gp.predict_with_coupling(candidate_pool, coupling=lift)
         mean_base = self.gp.predict(candidate_pool)[0] if lift is not None else mean.copy()
         ei = expected_improvement(mean, std, f_min)
@@ -320,11 +330,16 @@ class AcquisitionFunction:
             debug={
                 "n_pool": int(candidate_pool.shape[0]),
                 "n_external_candidates": 0 if X_candidates is None else int(np.atleast_2d(X_candidates).shape[0]),
+                "n_external_restart_candidates": (
+                    0 if X_external_restarts is None else int(np.atleast_2d(X_external_restarts).shape[0])
+                ),
                 "best_score": float(np.max(score)) if len(score) else 0.0,
                 "best_ei": float(np.max(ei)) if len(ei) else 0.0,
                 "best_prior_bonus": float(np.max(prior_bonus)) if len(prior_bonus) else 0.0,
                 "best_risk_penalty": float(np.max(risk_penalty)) if len(risk_penalty) else 0.0,
                 "stagnation_count": stagnation_count,
+                "f_min_raw": f_min_raw,
+                "f_min_model": f_min,
                 "gp_llm_coupling": lift is not None,
                 "acq_prior_active": prior is not None and prior.is_active(),
                 "acq_prior": None if prior is None else prior.to_dict(),
@@ -354,23 +369,34 @@ class AcquisitionFunction:
         X_candidates: Optional[np.ndarray],
         f_min: float,
         lift: Optional[Any] = None,
+        X_external_restarts: Optional[np.ndarray] = None,
     ) -> np.ndarray:
-        pool: List[np.ndarray] = []
-
+        external: List[np.ndarray] = []
         if X_candidates is not None:
-            provided = self._coerce_candidate_array(X_candidates)
-            pool.extend(provided)
+            external = self._coerce_candidate_array(X_candidates)
+        external_restart_only: List[np.ndarray] = []
+        if X_external_restarts is not None:
+            external_restart_only = self._coerce_candidate_array(X_external_restarts)
 
-        pool.append(theta_best.copy())
-        pool.extend(self._sample_gaussian(self.n_restarts_optimizer, self._state.mu, self._state.sigma))
-        pool.extend(self._sample_uniform(self.n_random_candidates))
+        internal_seeds: List[np.ndarray] = [theta_best.copy()]
+        internal_seeds.extend(self._sample_gaussian(self.n_restarts_optimizer, self._state.mu, self._state.sigma))
+        internal_seeds.extend(self._sample_uniform(self.n_random_candidates))
+        internal_seeds = self._deduplicate(internal_seeds)
 
-        seeds = self._deduplicate(pool)
-        optimized: List[np.ndarray] = []
-        for seed in seeds[: self.n_restarts_optimizer]:
-            optimized.append(self._optimize_from_seed(seed, f_min, lift=lift))
+        optimized_internal: List[np.ndarray] = []
+        for seed in internal_seeds[: self.n_restarts_optimizer]:
+            optimized_internal.append(self._optimize_from_seed(seed, f_min, lift=lift))
 
-        pool.extend(optimized)
+        optimized_external: List[np.ndarray] = []
+        external_seeds = self._deduplicate(external + external_restart_only)
+        for seed in external_seeds[: self.n_external_local_restarts]:
+            optimized_external.append(self._optimize_from_seed(seed, f_min, lift=lift))
+
+        pool: List[np.ndarray] = []
+        pool.extend(external)
+        pool.extend(internal_seeds)
+        pool.extend(optimized_internal)
+        pool.extend(optimized_external)
         pool = self._deduplicate(pool)
         if not pool:
             pool = [self._repair_theta(theta_best)]
@@ -403,6 +429,7 @@ class AcquisitionFunction:
         except Exception as exc:
             logger.debug("L-BFGS-B failed from seed %s: %s", np.round(x0, 4), exc)
         return x0
+
 
     def _coerce_candidate_array(self, X_candidates: np.ndarray) -> List[np.ndarray]:
         X = np.atleast_2d(np.asarray(X_candidates, dtype=float))
@@ -473,6 +500,130 @@ class AcquisitionFunction:
                 return np.zeros_like(arr)
             return (arr - float(np.min(arr))) / span - 0.5
         return np.clip((arr - mean) / std, -3.0, 3.0)
+
+    def _model_target_value(self, value: float) -> float:
+        try:
+            transformed = getattr(self.gp, "transform_targets")(np.array([float(value)], dtype=float))
+            return float(np.asarray(transformed, dtype=float).ravel()[0])
+        except Exception:
+            return float(value)
+
+
+class SimpleParEGOAcquisitionFunction(AcquisitionFunction):
+    """Reference-style ParEGO acquisition using LCB + differential evolution."""
+
+    def __init__(
+        self,
+        gp: GPProtocol,
+        param_bounds: Dict[str, Tuple[float, float]],
+        n_select: int = 1,
+        random_seed: Optional[int] = None,
+        lcb_variance_weight: float = 0.5,
+        de_population: int = 30,
+        de_maxiter: int = 200,
+    ) -> None:
+        super().__init__(
+            gp=gp,
+            param_bounds=param_bounds,
+            n_select=n_select,
+            n_restarts_optimizer=1,
+            n_random_candidates=0,
+            n_external_local_restarts=0,
+            random_seed=random_seed,
+        )
+        self.lcb_variance_weight = float(lcb_variance_weight)
+        self.de_population = max(int(de_population), len(PARAM_KEYS))
+        self.de_maxiter = max(int(de_maxiter), 1)
+
+    def step(
+        self,
+        X_candidates: Optional[np.ndarray] = None,
+        X_external_restarts: Optional[np.ndarray] = None,
+        database: Optional[DatabaseProtocol] = None,
+        t: int = 0,
+        w_vec: Optional[np.ndarray] = None,
+        lift: Optional[Any] = None,
+        prior: Optional[AcquisitionPrior] = None,
+    ) -> AcquisitionResult:
+        if database is None:
+            raise ValueError("database is required")
+
+        theta_best = self._repair_theta(database.get_theta_best())
+        stagnation_count = int(database.get_stagnation_count())
+        sigma_scale = 1.0 + 0.20 * min(stagnation_count, 3)
+        self._state = AcquisitionState(
+            mu=theta_best.copy(),
+            sigma=np.maximum((self._hi - self._lo) * 0.15 * sigma_scale, 1e-3),
+            alpha_t=0.0,
+            stagnation_count=stagnation_count,
+            t=int(t),
+            f_min=float(database.get_f_min()),
+            theta_best=theta_best.copy(),
+            grad_psi_at_best=np.zeros(len(PARAM_KEYS), dtype=float),
+        )
+
+        best_theta = self._optimize_with_de()
+        candidate_pool = np.vstack([best_theta])
+        mean, std = self.gp.predict(candidate_pool)
+        variance = np.square(std)
+        lcb = mean - float(self.lcb_variance_weight) * variance
+        score = -lcb
+
+        return AcquisitionResult(
+            selected_thetas=[best_theta.copy()],
+            selected_indices=[0],
+            selected_scores=np.asarray([float(score[0])], dtype=float),
+            all_alpha=np.asarray(score, dtype=float),
+            all_ei=np.zeros_like(score),
+            all_wcharge=np.ones_like(score),
+            all_mean=np.asarray(mean, dtype=float),
+            all_std=np.asarray(std, dtype=float),
+            state=self.get_state(),
+            debug={
+                "n_pool": int(candidate_pool.shape[0]),
+                "parego_style": "reference_simple_lcb_de",
+                "lcb_variance_weight": float(self.lcb_variance_weight),
+                "de_population": int(self.de_population),
+                "de_maxiter": int(self.de_maxiter),
+                "best_lcb": float(lcb[0]),
+                "stagnation_count": stagnation_count,
+            },
+            all_mean_base=np.asarray(mean, dtype=float).copy(),
+            lift_summary=None,
+            all_prior_bonus=np.zeros_like(score),
+            all_risk_penalty=np.zeros_like(score),
+            candidate_pool=candidate_pool.copy(),
+        )
+
+    def _optimize_with_de(self) -> np.ndarray:
+        popsize = max(1, int(np.ceil(self.de_population / len(PARAM_KEYS))))
+
+        def objective(x: np.ndarray) -> float:
+            x = self._repair_theta(x)
+            mean, std = self.gp.predict(x[None, :])
+            variance = float(std[0]) ** 2
+            return float(mean[0]) - float(self.lcb_variance_weight) * variance
+
+        try:
+            result = differential_evolution(
+                objective,
+                bounds=self._bounds,
+                strategy="rand1bin",
+                maxiter=int(self.de_maxiter),
+                popsize=popsize,
+                recombination=0.7,
+                mutation=(0.5, 1.0),
+                polish=False,
+                seed=self._rng,
+                init="latinhypercube",
+                updating="deferred",
+                workers=1,
+            )
+            if result.success:
+                return self._repair_theta(result.x)
+        except Exception as exc:
+            logger.debug("Differential evolution failed: %s", exc)
+        return self._state.theta_best.copy()
 
 
 def expected_improvement(mean: np.ndarray, std: np.ndarray, f_min: float) -> np.ndarray:
@@ -557,14 +708,31 @@ def build_acquisition_function(
     n_select: int = 1,
     n_restarts_optimizer: int = 16,
     n_random_candidates: int = 128,
+    n_external_local_restarts: int = 0,
     random_seed: Optional[int] = None,
+    acquisition_strategy: str = "ei_lbfgsb",
+    parego_lcb_variance_weight: float = 0.5,
+    parego_de_population: int = 30,
+    parego_de_maxiter: int = 200,
     **_: Any,
 ) -> AcquisitionFunction:
+    strategy = str(acquisition_strategy or "ei_lbfgsb").lower()
+    if strategy == "parego_lcb_de":
+        return SimpleParEGOAcquisitionFunction(
+            gp=gp,
+            param_bounds=param_bounds,
+            n_select=n_select,
+            random_seed=random_seed,
+            lcb_variance_weight=parego_lcb_variance_weight,
+            de_population=parego_de_population,
+            de_maxiter=parego_de_maxiter,
+        )
     return AcquisitionFunction(
         gp=gp,
         param_bounds=param_bounds,
         n_select=n_select,
         n_restarts_optimizer=n_restarts_optimizer,
         n_random_candidates=n_random_candidates,
+        n_external_local_restarts=n_external_local_restarts,
         random_seed=random_seed,
     )

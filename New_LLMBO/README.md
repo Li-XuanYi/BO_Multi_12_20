@@ -2,6 +2,12 @@
 
 LLAMBO-MO is a physics-informed multi-objective Bayesian optimization framework that leverages Large Language Models (LLMs) to optimize battery fast-charging protocols. The system balances three competing objectives: minimizing charging time, peak temperature rise, and capacity fade.
 
+## Region-Lifted GP Semantics
+
+Region-Lifted GP does not refit the GP or alter posterior covariance.
+It applies a bounded acquisition-time posterior mean shift in standardized objective space.
+The default production mainline remains `warmstart_plain_ei`; Region-Lifted GP is a default-off research branch with fail-open behavior back to Plain EI.
+
 ## 🎯 Problem Formulation
 
 ### Decision Variables (5D)

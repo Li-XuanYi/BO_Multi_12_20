@@ -1,0 +1,377 @@
+{
+  "version": "2.0",
+  "param_bounds": {
+    "I1": [
+      2.0,
+      6.0
+    ],
+    "I2": [
+      2.0,
+      5.0
+    ],
+    "I3": [
+      2.0,
+      3.0
+    ],
+    "dSOC1": [
+      0.1,
+      0.4
+    ],
+    "dSOC2": [
+      0.1,
+      0.3
+    ]
+  },
+  "ref_point": [
+    7200.0,
+    40.0,
+    5.0
+  ],
+  "ideal_point": [
+    1800.0,
+    0.0,
+    0.3
+  ],
+  "normalize": true,
+  "observations": [
+    {
+      "theta": [
+        5.85,
+        4.15,
+        2.6,
+        0.185,
+        0.195
+      ],
+      "objectives": [
+        4323.0,
+        4.90199444220246,
+        1.02838622049493
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-28T21:44:25.736941"
+    },
+    {
+      "theta": [
+        2.2,
+        2.0,
+        2.0,
+        0.37,
+        0.2
+      ],
+      "objectives": [
+        6897.0,
+        1.6938870320508557,
+        0.6741129391932968
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-28T21:44:29.127139"
+    },
+    {
+      "theta": [
+        2.1,
+        2.0,
+        2.0,
+        0.1,
+        0.12
+      ],
+      "objectives": [
+        7157.0,
+        1.5295465066231886,
+        0.6467781261339677
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-28T21:44:32.547650"
+    },
+    {
+      "theta": [
+        4.721298031914927,
+        2.60663577576718,
+        2.271951184707177,
+        0.11756556206025591,
+        0.19484581474651055
+      ],
+      "objectives": [
+        5656.0,
+        2.520388067772126,
+        0.8053406075254365
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-28T21:44:35.749823"
+    },
+    {
+      "theta": [
+        2.022036847371372,
+        3.7294965609839985,
+        2.667579500056716,
+        0.3863178922349887,
+        0.23522131140969751
+      ],
+      "objectives": [
+        5778.0,
+        3.2657803094360305,
+        0.5879432723009125
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-28T21:44:38.875118"
+    },
+    {
+      "theta": [
+        4.41769365226703,
+        4.543624991465423,
+        2.619134758862523,
+        0.25414612202490916,
+        0.1082855517666376
+      ],
+      "objectives": [
+        4472.0,
+        4.571837156238451,
+        0.9516789172420869
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-28T21:44:41.944619"
+    },
+    {
+      "theta": [
+        6.0,
+        5.0,
+        2.0,
+        0.4,
+        0.1
+      ],
+      "objectives": [
+        4260.0,
+        7.16381113134745,
+        1.228866819651191
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 1,
+      "acq_value": 0.2747501114830171,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": -0.2638658768872023,
+        "mean_base": -0.2638658768872023,
+        "std": 0.10094108850219485,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-28T21:44:53.715589"
+    }
+  ],
+  "pareto_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "iteration_stats": [
+    {
+      "iteration": 1,
+      "n_total": 7,
+      "n_feasible": 7,
+      "pareto_size": 7,
+      "hypervolume": 0.5689166895536153,
+      "display_hv": 0.5689166895536153,
+      "canonical_hv": 0.22756667582144613,
+      "hypervolume_canonical": 0.22756667582144613,
+      "hypervolume_raw": 6.6961607925161974,
+      "best_time_s": 4260.0,
+      "best_temp_K": 1.5295465066231886,
+      "best_aging_pct": 0.5879432723009125,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 0,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.77,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "0ccf8b30e0694e99",
+        "parser_status": "ok",
+        "selected_source": "fallback",
+        "fallback_reason": "bad_region_volume",
+        "trust_before": 0.5,
+        "trust_after": 0.475,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 111,
+        "plain_log_ei_surrogate_at_plain": -0.3517310668369885,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          5.7,
+          4.0,
+          2.5,
+          0.17,
+          0.18
+        ],
+        "region_raw_ub": [
+          6.0,
+          4.5,
+          2.7,
+          0.2,
+          0.2
+        ],
+        "region_normalized_lb": [
+          0.9249999999997688,
+          0.6666666666664445,
+          0.49999999999949996,
+          0.23333333333255557,
+          0.39999999999799996
+        ],
+        "region_normalized_ub": [
+          0.99999999999975,
+          0.8333333333330555,
+          0.6999999999993001,
+          0.3333333333322222,
+          0.49999999999750006
+        ],
+        "relative_volume": 2.4999999999752115e-05,
+        "per_dim_widths": [
+          0.0749999999999812,
+          0.16666666666661112,
+          0.19999999999980017,
+          0.09999999999966666,
+          0.0999999999995001
+        ],
+        "plain_candidate_inside_region": false,
+        "accepted": false,
+        "selected_index_before": 111,
+        "selected_score_before": 0.2747501114830171,
+        "selected_index_after": 111,
+        "preference": {
+          "kind": "region",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": {
+            "I1": 5.7,
+            "I2": 4.0,
+            "I3": 2.5,
+            "dSOC1": 0.17,
+            "dSOC2": 0.18
+          },
+          "ub": {
+            "I1": 6.0,
+            "I2": 4.5,
+            "I3": 2.7,
+            "dSOC1": 0.2,
+            "dSOC2": 0.2
+          },
+          "confidence": 0.85,
+          "preference_type": "fast_charge",
+          "reason": "Region around best scalarized point with lowest scalar_y=0.01078, feasible and below hard feasibility limit on dSOC1+dSOC2, aligns with soft preference I1>=I2>=I3.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "region",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "lb": {
+              "I1": 5.7,
+              "I2": 4.0,
+              "I3": 2.5,
+              "dSOC1": 0.17,
+              "dSOC2": 0.18
+            },
+            "ub": {
+              "I1": 6.0,
+              "I2": 4.5,
+              "I3": 2.7,
+              "dSOC1": 0.2,
+              "dSOC2": 0.2
+            },
+            "confidence": 0.85,
+            "preference_type": "fast_charge",
+            "reason": "Region around best scalarized point with lowest scalar_y=0.01078, feasible and below hard feasibility limit on dSOC1+dSOC2, aligns with soft preference I1>=I2>=I3.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "0ccf8b30e0694e99",
+          "parser_status": "ok"
+        },
+        "hv_gain_raw": 0.12759251310453035
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    }
+  ],
+  "improvement_window": [
+    true,
+    false
+  ],
+  "saved_at": "2026-04-28T21:44:53.723285"
+}

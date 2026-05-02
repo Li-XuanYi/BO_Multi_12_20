@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
+from utils.model_labels import canonical_model_label
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = PROJECT_ROOT / "analysis_runs" / "unified_data_catalog"
@@ -166,6 +168,7 @@ def build_run_manifest() -> List[Dict[str, Any]]:
                 "n_select": _safe_int(config.get("n_select")),
                 "llm_backend": config.get("llm_backend"),
                 "llm_model": config.get("llm_model"),
+                "llm_model_display": summary.get("llm_model_display") or canonical_model_label(config.get("llm_model")),
                 "llm_safe_dsoc_sum_max": _safe_float(config.get("llm_safe_dsoc_sum_max")),
                 "enable_iterative_guidance": bool(config.get("enable_iterative_guidance", False)),
                 "enable_gp_llm_coupling": bool(config.get("enable_gp_llm_coupling", False)),

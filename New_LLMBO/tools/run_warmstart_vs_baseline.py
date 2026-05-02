@@ -13,6 +13,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from llmbo.optimizer import BayesOptimizer
+from utils.model_labels import canonical_model_label
 
 
 DEFAULT_OUTPUT_ROOT = PROJECT_ROOT / "optimized_experiments" / "warmstart_prompt_v2_10iter"
@@ -275,6 +276,7 @@ def main() -> None:
             "seeds": [int(seed) for seed in args.seeds],
             "output_root": str(output_root),
             "model": model,
+            "model_display": canonical_model_label(model),
             "api_base": api_base,
             "warmstart_backend": "mock" if (args.allow_mock_warmstart and not api_key) else "openai",
         }

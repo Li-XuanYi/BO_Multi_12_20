@@ -1,0 +1,265 @@
+{
+  "version": 1,
+  "backend": "openai",
+  "model": "deepseek-v4-flash",
+  "temperature": 0.0,
+  "target_pool": 16,
+  "candidate_pool": [
+    [
+      5.8,
+      4.5,
+      2.6,
+      0.25,
+      0.2
+    ],
+    [
+      5.5,
+      4.5,
+      2.8,
+      0.2,
+      0.2
+    ],
+    [
+      2.5,
+      2.5,
+      2.0,
+      0.35,
+      0.25
+    ],
+    [
+      4.0,
+      3.5,
+      2.5,
+      0.25,
+      0.2
+    ],
+    [
+      5.0,
+      4.0,
+      2.2,
+      0.2,
+      0.25
+    ],
+    [
+      3.5,
+      3.0,
+      2.0,
+      0.3,
+      0.28
+    ],
+    [
+      5.8,
+      3.0,
+      2.0,
+      0.18,
+      0.22
+    ],
+    [
+      3.0,
+      2.8,
+      2.2,
+      0.37237121212121216,
+      0.27437878787878794
+    ],
+    [
+      6.0,
+      5.0,
+      3.0,
+      0.15,
+      0.15
+    ],
+    [
+      2.0,
+      2.0,
+      2.0,
+      0.36957142857142866,
+      0.27717857142857144
+    ],
+    [
+      3.5,
+      3.0,
+      2.5,
+      0.34825000000000006,
+      0.29850000000000004
+    ],
+    [
+      5.8,
+      3.5,
+      2.2,
+      0.18,
+      0.22
+    ],
+    [
+      5.5,
+      4.0,
+      2.0,
+      0.2,
+      0.3
+    ],
+    [
+      2.8,
+      2.5,
+      2.2,
+      0.3614191176470589,
+      0.28533088235294124
+    ],
+    [
+      4.2,
+      3.8,
+      2.6,
+      0.22,
+      0.24
+    ],
+    [
+      3.8,
+      3.2,
+      2.4,
+      0.28,
+      0.26
+    ]
+  ],
+  "final_selected": [
+    [
+      5.8,
+      4.5,
+      2.6,
+      0.25,
+      0.2
+    ],
+    [
+      2.0,
+      2.0,
+      2.0,
+      0.36957142857142866,
+      0.27717857142857144
+    ],
+    [
+      5.8,
+      3.0,
+      2.0,
+      0.18,
+      0.22
+    ]
+  ],
+  "summary": {
+    "input_count": 16,
+    "valid_count": 16,
+    "filtered": {
+      "non_finite": 0,
+      "shape": 0,
+      "bounds": 0,
+      "hard_dsoc": 0,
+      "duplicate": 0
+    },
+    "requested": 3,
+    "selected_count": 3,
+    "selected": [
+      {
+        "theta": [
+          5.8,
+          4.5,
+          2.6,
+          0.25,
+          0.2
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 0,
+        "quality": 0.58,
+        "diversity": 0.0,
+        "archive_bonus": 0.0,
+        "score": 0.58,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.45,
+        "monotone": true
+      },
+      {
+        "theta": [
+          2.0,
+          2.0,
+          2.0,
+          0.36957142857142866,
+          0.27717857142857144
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 9,
+        "quality": 0.58,
+        "diversity": 1.5048976461247427,
+        "archive_bonus": 0.0,
+        "score": 1.2572039407561342,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.6467500000000002,
+        "monotone": true
+      },
+      {
+        "theta": [
+          5.8,
+          3.0,
+          2.0,
+          0.18,
+          0.22
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 6,
+        "quality": 0.58,
+        "diversity": 0.8212456663169947,
+        "archive_bonus": 0.0,
+        "score": 0.9495605498426476,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.4,
+        "monotone": true
+      }
+    ],
+    "boundary_selected": 0,
+    "method": "portfolio_selector",
+    "config": {
+      "hard_dsoc_sum_max": 0.7,
+      "soft_dsoc_sum_max": 0.65,
+      "diversity_weight": 0.45,
+      "soft_penalty_weight": 0.65,
+      "monotone_bonus": 0.08,
+      "archive_bonus_weight": 0.0,
+      "boundary_probe_limit": 1
+    },
+    "enabled": true,
+    "pool_target": 16,
+    "pool_collected": 16,
+    "disk_cache": "miss",
+    "cache_path": "d:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\optimized_experiments\\llmgp_vs_simple_parego_seed8409_10iter_deepseekflash_2026_05_02\\seed8409\\shared_warmstart_cache.json",
+    "final_selected_count": 3,
+    "final_selected": [
+      [
+        5.8,
+        4.5,
+        2.6,
+        0.25,
+        0.2
+      ],
+      [
+        2.0,
+        2.0,
+        2.0,
+        0.36957142857142866,
+        0.27717857142857144
+      ],
+      [
+        5.8,
+        3.0,
+        2.0,
+        0.18,
+        0.22
+      ]
+    ]
+  }
+}

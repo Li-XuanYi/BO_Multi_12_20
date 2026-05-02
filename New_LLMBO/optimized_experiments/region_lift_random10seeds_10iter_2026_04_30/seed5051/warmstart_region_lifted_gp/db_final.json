@@ -1,0 +1,2249 @@
+{
+  "version": "2.0",
+  "param_bounds": {
+    "I1": [
+      2.0,
+      6.0
+    ],
+    "I2": [
+      2.0,
+      5.0
+    ],
+    "I3": [
+      2.0,
+      3.0
+    ],
+    "dSOC1": [
+      0.1,
+      0.4
+    ],
+    "dSOC2": [
+      0.1,
+      0.3
+    ]
+  },
+  "ref_point": [
+    7200.0,
+    40.0,
+    5.0
+  ],
+  "ideal_point": [
+    1800.0,
+    0.0,
+    0.3
+  ],
+  "normalize": true,
+  "observations": [
+    {
+      "theta": [
+        5.85,
+        4.1,
+        2.55,
+        0.185,
+        0.195
+      ],
+      "objectives": [
+        4390.0,
+        4.8514610625609125,
+        1.0243831425917227
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T20:21:35.598187"
+    },
+    {
+      "theta": [
+        2.1,
+        2.0,
+        2.0,
+        0.1,
+        0.1
+      ],
+      "objectives": [
+        7157.0,
+        1.5293706126422024,
+        0.6467789716649339
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T20:21:39.835273"
+    },
+    {
+      "theta": [
+        3.75,
+        3.25,
+        2.05,
+        0.295,
+        0.205
+      ],
+      "objectives": [
+        5185.0,
+        3.560230188771516,
+        0.9098869105760122
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T20:21:43.679277"
+    },
+    {
+      "theta": [
+        3.5746035862685512,
+        3.1623599139949663,
+        2.9094439475675977,
+        0.2612820683869302,
+        0.19696393995327577
+      ],
+      "objectives": [
+        4551.0,
+        3.299209361680488,
+        0.8286957319222733
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T20:21:47.476258"
+    },
+    {
+      "theta": [
+        5.956252363246684,
+        4.18311954824452,
+        2.4105785897305094,
+        0.32527278261580395,
+        0.14924050179088522
+      ],
+      "objectives": [
+        4055.0,
+        6.04320797401972,
+        1.1589422400391756
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T20:21:51.204176"
+    },
+    {
+      "theta": [
+        4.9788012494773275,
+        2.1158126259632923,
+        2.0916190950862705,
+        0.2185391488488609,
+        0.12452419837427056
+      ],
+      "objectives": [
+        5781.0,
+        3.8454102377105017,
+        0.8640987332275644
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T20:21:55.278194"
+    },
+    {
+      "theta": [
+        2.0,
+        5.0,
+        2.0,
+        0.1,
+        0.1
+      ],
+      "objectives": [
+        6660.0,
+        2.649975041560424,
+        0.7155359649195484
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 1,
+      "acq_value": 0.012693142855883747,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.12328861515433703,
+        "mean_base": 0.12328861515433703,
+        "std": 0.1258650710259766,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.2,
+        "region_lift_max_shift_z": 0.05872566321070029
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T20:22:06.979907"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.220713496813737,
+        0.16526876676174562,
+        0.12762591735554635
+      ],
+      "objectives": [
+        6746.0,
+        1.8403045152040762,
+        0.6272259883381847
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 2,
+      "acq_value": 0.03728316345391367,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.011397087377327364,
+        "mean_base": 0.011397087377327364,
+        "std": 0.0948309850440829,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.18333333333333335,
+        "region_lift_max_shift_z": 0.05956398701795562
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T20:22:18.555244"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.0,
+        0.1,
+        0.3
+      ],
+      "objectives": [
+        7200.0,
+        1.5285791733729015,
+        0.6401557211840261
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 3,
+      "acq_value": 0.14080776063649647,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": -0.12408094026657623,
+        "mean_base": -0.12408094026657623,
+        "std": 0.1126393835316987,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.16666666666666669,
+        "region_lift_max_shift_z": 0.04267428612486188
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T20:22:27.896796"
+    },
+    {
+      "theta": [
+        6.0,
+        4.206805583786165,
+        3.0,
+        0.4,
+        0.1
+      ],
+      "objectives": [
+        3428.0,
+        6.870000163312825,
+        1.2091578398590817
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 4,
+      "acq_value": 0.25089868751789524,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": -0.24008098260801924,
+        "mean_base": -0.24008098260801924,
+        "std": 0.08394001333289178,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.15000000000000002,
+        "region_lift_max_shift_z": 0.039178681746453205
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T20:22:39.770875"
+    },
+    {
+      "theta": [
+        6.0,
+        5.0,
+        3.0,
+        0.4,
+        0.1
+      ],
+      "objectives": [
+        3360.0,
+        7.16381113134745,
+        1.2290995145402808
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 5,
+      "acq_value": 0.008483240682624016,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.04541269694505512,
+        "mean_base": 0.04541269694505512,
+        "std": 0.05391025460204558,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.13333333333333336,
+        "region_lift_max_shift_z": 0.04405833940647578
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T20:22:48.646664"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.0,
+        0.1,
+        0.1
+      ],
+      "objectives": [
+        7200.0,
+        1.5284937316556866,
+        0.6401403535835164
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 6,
+      "acq_value": 0.0004750650475430602,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.01013522704350639,
+        "mean_base": 0.01013522704350639,
+        "std": 0.0010509451025410925,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.11666666666666665,
+        "region_lift_max_shift_z": 0.028433830628573988
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T20:23:00.959414"
+    },
+    {
+      "theta": [
+        2.1018633941362963,
+        2.0,
+        2.0,
+        0.1,
+        0.3
+      ],
+      "objectives": [
+        7156.0,
+        1.529355479252297,
+        0.6468592628154795
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 7,
+      "acq_value": 0.00020974188802382846,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.010280456816052053,
+        "mean_base": 0.010280456816052053,
+        "std": 0.0005712178263823204,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.1,
+        "region_lift_max_shift_z": 0.024096119782561497
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T20:23:11.321683"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.2481653924374205,
+        0.14412677059522372,
+        0.3
+      ],
+      "objectives": [
+        6846.0,
+        1.8485738278221335,
+        0.6198639038308469
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 8,
+      "acq_value": 0.0035328130339419847,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.009141797035143284,
+        "mean_base": 0.009141797035143284,
+        "std": 0.008474499924465249,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.08333333333333333,
+        "region_lift_max_shift_z": 0.020016498138328634
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T20:23:24.050454"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.0,
+        0.1,
+        0.19472671148757686
+      ],
+      "objectives": [
+        7200.0,
+        1.5287979912986602,
+        0.640156035187547
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 9,
+      "acq_value": 0.02986403583332476,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": -0.019545048171095647,
+        "mean_base": -0.019545048171095647,
+        "std": 0.013638747449678213,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.06666666666666668,
+        "region_lift_max_shift_z": 0.018763620608374363
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T20:23:34.402160"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        3.0,
+        0.14446598612560266,
+        0.3
+      ],
+      "objectives": [
+        6133.0,
+        2.8462676611709643,
+        0.5713232081177111
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 10,
+      "acq_value": 0.02093620744014223,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": -0.010266297215280606,
+        "mean_base": -0.010266297215280606,
+        "std": 0.01708468723415506,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": 0.05,
+        "region_lift_max_shift_z": 0.016616893733722743
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-04-30T20:23:44.655751"
+    }
+  ],
+  "pareto_indices": [
+    0,
+    1,
+    3,
+    4,
+    6,
+    7,
+    9,
+    10,
+    11,
+    12,
+    13,
+    15
+  ],
+  "iteration_stats": [
+    {
+      "iteration": 1,
+      "n_total": 7,
+      "n_feasible": 7,
+      "pareto_size": 5,
+      "hypervolume": 0.5891056143646145,
+      "display_hv": 0.5891056143646145,
+      "canonical_hv": 0.23564224574584583,
+      "hypervolume_canonical": 0.23564224574584583,
+      "hypervolume_raw": 6.933784840544288,
+      "best_time_s": 4055.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.6467789716649339,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 0,
+      "w_vec": [
+        0.00980392156862745,
+        0.9803921568627451,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.7,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "cfbdb3fe7789db26",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 145,
+        "plain_log_ei_surrogate_at_plain": -3.208924442693888,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.0,
+          2.0,
+          2.0,
+          0.1,
+          0.1
+        ],
+        "region_raw_ub": [
+          2.5532647468899965,
+          2.2766323734449747,
+          2.092210791148263,
+          0.1276632373444145,
+          0.11844215822957893
+        ],
+        "region_normalized_lb": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "region_normalized_ub": [
+          0.13831618672246454,
+          0.09221079114829417,
+          0.09221079114817081,
+          0.09221079114774097,
+          0.09221079114743358
+        ],
+        "relative_volume": 9.999999999999975e-06,
+        "per_dim_widths": [
+          0.13831618672249912,
+          0.09221079114832491,
+          0.09221079114826303,
+          0.09221079114804834,
+          0.09221079114789464
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.02499999999999377,
+        "anchor_close_fraction": 0.03125,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.02348586551209644,
+        "anchor_mean_ei": 0.0019561768740890043,
+        "anchor_weight_max": 0.348779119414748,
+        "anchor_weight_entropy": 2.2350500319991764,
+        "anchor_consistency": 0.4816730542661424,
+        "anchor_novelty_mean": 0.11563680138968722,
+        "lambda_t": 0.2,
+        "kernel_norm_sq": 0.0008443192107140014,
+        "anneal_t": 1.0,
+        "region_reliability": 0.3034540241876697,
+        "positive_kernel_fraction": 0.5651515151515152,
+        "corr_at_plain": 0.10825998706852251,
+        "max_corr": 0.9676204388441669,
+        "max_shift_z": 0.05872566321070029,
+        "mean_shift_z": 0.016592903731969897,
+        "lift_idx": 145,
+        "sigma_unchanged": true,
+        "accepted": false,
+        "selected_index_before": 145,
+        "selected_score_before": 0.012693142855883747,
+        "selected_index_after": 145,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.1,
+            "I2": 2.0,
+            "I3": 2.0,
+            "dSOC1": 0.1,
+            "dSOC2": 0.1
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "fast_charge",
+          "reason": "Lowest scalarized objective with feasible dSOC1+dSOC2 below hard limit and soft safety margin respected.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.1,
+              "I2": 2.0,
+              "I3": 2.0,
+              "dSOC1": 0.1,
+              "dSOC2": 0.1
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "fast_charge",
+            "reason": "Lowest scalarized objective with feasible dSOC1+dSOC2 below hard limit and soft safety margin respected.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "cfbdb3fe7789db26",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "same_as_plain",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.09028052365073957
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 32
+      }
+    },
+    {
+      "iteration": 2,
+      "n_total": 8,
+      "n_feasible": 8,
+      "pareto_size": 6,
+      "hypervolume": 0.5954737057628535,
+      "display_hv": 0.5954737057628535,
+      "canonical_hv": 0.23818948230514142,
+      "hypervolume_canonical": 0.23818948230514142,
+      "hypervolume_raw": 7.008737403418661,
+      "best_time_s": 4055.0,
+      "best_temp_K": 1.5293706126422024,
+      "best_aging_pct": 0.6272259883381847,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 1,
+      "w_vec": [
+        0.00980392156862745,
+        0.00980392156862745,
+        0.9803921568627451
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.57,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "43b4b5c0d02af835",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 143,
+        "plain_log_ei_surrogate_at_plain": -2.1621076305277094,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.0,
+          2.0,
+          2.0,
+          0.1,
+          0.1
+        ],
+        "region_raw_ub": [
+          2.5532647468899965,
+          2.2766323734449747,
+          2.092210791148263,
+          0.1276632373444145,
+          0.11844215822957893
+        ],
+        "region_normalized_lb": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "region_normalized_ub": [
+          0.13831618672246454,
+          0.09221079114829417,
+          0.09221079114817081,
+          0.09221079114774097,
+          0.09221079114743358
+        ],
+        "relative_volume": 9.999999999999975e-06,
+        "per_dim_widths": [
+          0.13831618672249912,
+          0.09221079114832491,
+          0.09221079114826303,
+          0.09221079114804834,
+          0.09221079114789464
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.02499999999999377,
+        "anchor_close_fraction": 0.03125,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.06639729507712365,
+        "anchor_mean_ei": 0.031774949992823,
+        "anchor_weight_max": 0.40906051372604635,
+        "anchor_weight_entropy": 2.2391725092225574,
+        "anchor_consistency": 0.516967135861622,
+        "anchor_novelty_mean": 0.11563680138968722,
+        "lambda_t": 0.18333333333333335,
+        "kernel_norm_sq": 0.011429057363778469,
+        "anneal_t": 0.9166666666666666,
+        "region_reliability": 0.3256892955928219,
+        "positive_kernel_fraction": 0.7557663690476191,
+        "corr_at_plain": 0.8185844251570192,
+        "max_corr": 0.9975595730035252,
+        "max_shift_z": 0.05956398701795562,
+        "mean_shift_z": 0.023423240628776043,
+        "lift_idx": 143,
+        "sigma_unchanged": true,
+        "accepted": false,
+        "selected_index_before": 143,
+        "selected_score_before": 0.03728316345391367,
+        "selected_index_after": 143,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.1,
+            "I2": 2.0,
+            "I3": 2.0,
+            "dSOC1": 0.1,
+            "dSOC2": 0.1
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "aging_safe",
+          "reason": "Lowest scalarized objective with feasible dSOC sum below hard limit and best aging safety",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.1,
+              "I2": 2.0,
+              "I3": 2.0,
+              "dSOC1": 0.1,
+              "dSOC2": 0.1
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "aging_safe",
+            "reason": "Lowest scalarized objective with feasible dSOC sum below hard limit and best aging safety",
+            "risk_flags": []
+          },
+          "raw_response_hash": "43b4b5c0d02af835",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "same_as_plain",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.07495256287437346
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 32
+      }
+    },
+    {
+      "iteration": 3,
+      "n_total": 9,
+      "n_feasible": 9,
+      "pareto_size": 7,
+      "hypervolume": 0.5954737057628535,
+      "display_hv": 0.5954737057628535,
+      "canonical_hv": 0.23818948230514142,
+      "hypervolume_canonical": 0.23818948230514142,
+      "hypervolume_raw": 7.008737403418661,
+      "best_time_s": 4055.0,
+      "best_temp_K": 1.5285791733729015,
+      "best_aging_pct": 0.6272259883381847,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 2,
+      "w_vec": [
+        0.00980392156862745,
+        0.9803921568627451,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 9.34,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "23a209ac055e821c",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 141,
+        "plain_log_ei_surrogate_at_plain": -0.8172799160759212,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.0,
+          2.0,
+          2.0,
+          0.1,
+          0.1
+        ],
+        "region_raw_ub": [
+          2.5532647468899965,
+          2.2766323734449747,
+          2.092210791148263,
+          0.1276632373444145,
+          0.11844215822957893
+        ],
+        "region_normalized_lb": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "region_normalized_ub": [
+          0.13831618672246454,
+          0.09221079114829417,
+          0.09221079114817081,
+          0.09221079114774097,
+          0.09221079114743358
+        ],
+        "relative_volume": 9.999999999999975e-06,
+        "per_dim_widths": [
+          0.13831618672249912,
+          0.09221079114832491,
+          0.09221079114826303,
+          0.09221079114804834,
+          0.09221079114789464
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.02499999999999377,
+        "anchor_close_fraction": 0.03125,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.022368411446035998,
+        "anchor_mean_ei": 0.0007156886955143357,
+        "anchor_weight_max": 0.31549812124365006,
+        "anchor_weight_entropy": 2.4602847950042595,
+        "anchor_consistency": 0.43196668809111816,
+        "anchor_novelty_mean": 0.11563680138968722,
+        "lambda_t": 0.16666666666666669,
+        "kernel_norm_sq": 0.0005072696861996045,
+        "anneal_t": 0.8333333333333334,
+        "region_reliability": 0.2570201794142153,
+        "positive_kernel_fraction": 0.5671214788732394,
+        "corr_at_plain": 0.21585558118817488,
+        "max_corr": 0.9962086141747118,
+        "max_shift_z": 0.04267428612486188,
+        "mean_shift_z": 0.010593641417307932,
+        "lift_idx": 141,
+        "sigma_unchanged": true,
+        "accepted": false,
+        "selected_index_before": 141,
+        "selected_score_before": 0.14080776063649647,
+        "selected_index_after": 141,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.1,
+            "I2": 2.0,
+            "I3": 2.0,
+            "dSOC1": 0.1,
+            "dSOC2": 0.1
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.85,
+          "preference_type": "fast_charge",
+          "reason": "Lowest scalarized objective with feasible dSOC1+dSOC2 below hard limit and good safety margin",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.1,
+              "I2": 2.0,
+              "I3": 2.0,
+              "dSOC1": 0.1,
+              "dSOC2": 0.1
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.85,
+            "preference_type": "fast_charge",
+            "reason": "Lowest scalarized objective with feasible dSOC1+dSOC2 below hard limit and good safety margin",
+            "risk_flags": []
+          },
+          "raw_response_hash": "23a209ac055e821c",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "same_as_plain",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.0
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 32
+      }
+    },
+    {
+      "iteration": 4,
+      "n_total": 10,
+      "n_feasible": 10,
+      "pareto_size": 8,
+      "hypervolume": 0.722062052813465,
+      "display_hv": 0.722062052813465,
+      "canonical_hv": 0.28882482112538604,
+      "hypervolume_canonical": 0.28882482112538604,
+      "hypervolume_raw": 8.49868477510647,
+      "best_time_s": 3428.0,
+      "best_temp_K": 1.5285791733729015,
+      "best_aging_pct": 0.6272259883381847,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 3,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.87,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "42aafe321b89aecd",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 154,
+        "plain_log_ei_surrogate_at_plain": -0.40627219446957563,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          5.73086830475639,
+          4.017499136294295,
+          2.355372045431469,
+          0.3087109136294792,
+          0.1381996090863379
+        ],
+        "region_raw_ub": [
+          5.999999999999999,
+          4.348740863705705,
+          2.4657859545685312,
+          0.34183508637052074,
+          0.16028239091366214
+        ],
+        "region_normalized_lb": [
+          0.9327170761888643,
+          0.6724997120978741,
+          0.35537204543111345,
+          0.6957030454292783,
+          0.19099804543073454
+        ],
+        "region_normalized_ub": [
+          0.9999999999997498,
+          0.7829136212349739,
+          0.4657859545680654,
+          0.8061169545657153,
+          0.30141195456680364
+        ],
+        "relative_volume": 9.999999999999997e-06,
+        "per_dim_widths": [
+          0.06728292381090228,
+          0.11041390913713656,
+          0.1104139091370624,
+          0.11041390913680503,
+          0.11041390913662118
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.022704552869539433,
+        "anchor_close_fraction": 0.0625,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.042520467540285406,
+        "anchor_mean_ei": 0.009464178788998922,
+        "anchor_weight_max": 0.260455410839646,
+        "anchor_weight_entropy": 2.5397834458429696,
+        "anchor_consistency": 0.4208713869787337,
+        "anchor_novelty_mean": 0.06875009207770526,
+        "lambda_t": 0.15000000000000002,
+        "kernel_norm_sq": 0.0003974129250629808,
+        "anneal_t": 0.75,
+        "region_reliability": 0.26514897379660224,
+        "positive_kernel_fraction": 0.5262653374233128,
+        "corr_at_plain": 0.5753253072484791,
+        "max_corr": 0.9850734396708736,
+        "max_shift_z": 0.039178681746453205,
+        "mean_shift_z": 0.011659626783301702,
+        "lift_idx": 142,
+        "plain_log_ei_surrogate_at_lift": -0.40627219537595105,
+        "lifted_ei_at_lift": 0.6889849320237844,
+        "plain_ei_at_plain": 0.6661288261634551,
+        "plain_ei_at_lift": 0.6661288255596923,
+        "plain_ei_gap": 9.063754191629414e-10,
+        "corr_at_lift": 0.5753571716182967,
+        "lift_candidate_inside_region": false,
+        "sigma_unchanged": true,
+        "lift_sigma_z": 0.2228635825924483,
+        "plain_sigma_z": 0.22285833019989748,
+        "accepted": false,
+        "selected_index_before": 154,
+        "selected_score_before": 0.25089868751789524,
+        "selected_index_after": 154,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 5.956252,
+            "I2": 4.18312,
+            "I3": 2.410579,
+            "dSOC1": 0.325273,
+            "dSOC2": 0.149241
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "fast_charge",
+          "reason": "Best scalarized objective point with feasible dSOC sum below hard limit and strong HV improvement.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 5.956252,
+              "I2": 4.18312,
+              "I3": 2.410579,
+              "dSOC1": 0.325273,
+              "dSOC2": 0.149241
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "fast_charge",
+            "reason": "Best scalarized objective point with feasible dSOC sum below hard limit and strong HV improvement.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "42aafe321b89aecd",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "outside_region",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 1.4899473716878093
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 32
+      }
+    },
+    {
+      "iteration": 5,
+      "n_total": 11,
+      "n_feasible": 11,
+      "pareto_size": 9,
+      "hypervolume": 0.736855240385588,
+      "display_hv": 0.736855240385588,
+      "canonical_hv": 0.29474209615423524,
+      "hypervolume_canonical": 0.29474209615423524,
+      "hypervolume_raw": 8.672800888125602,
+      "best_time_s": 3360.0,
+      "best_temp_K": 1.5285791733729015,
+      "best_aging_pct": 0.6272259883381847,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 4,
+      "w_vec": [
+        0.9803921568627451,
+        0.00980392156862745,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 8.87,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "26738ad8f98be676",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 141,
+        "plain_log_ei_surrogate_at_plain": -3.702085338381272,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          5.651779774680946,
+          3.9456408310107314,
+          2.9129449436703023,
+          0.3738834831011515,
+          0.1
+        ],
+        "region_raw_ub": [
+          6.0,
+          4.467971168989269,
+          3.0,
+          0.39999999999999997,
+          0.11741101126586996
+        ],
+        "region_normalized_lb": [
+          0.9129449436700083,
+          0.6485469436700276,
+          0.9129449436693893,
+          0.9129449436674618,
+          0.0
+        ],
+        "region_normalized_ub": [
+          0.99999999999975,
+          0.8226570563294822,
+          0.9999999999989999,
+          0.9999999999966663,
+          0.0870550563289145
+        ],
+        "relative_volume": 1e-05,
+        "per_dim_widths": [
+          0.0870550563297634,
+          0.1741101126595126,
+          0.08705505632969768,
+          0.0870550563294949,
+          0.08705505632934979
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.044867098588098474,
+        "anchor_close_fraction": 0.03125,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.0004048682527615804,
+        "anchor_mean_ei": 2.7789519127101276e-05,
+        "anchor_weight_max": 0.34727953910150045,
+        "anchor_weight_entropy": 2.104969114610596,
+        "anchor_consistency": 0.5251842511508233,
+        "anchor_novelty_mean": 0.11039554587199724,
+        "lambda_t": 0.13333333333333336,
+        "kernel_norm_sq": 0.0013042463129539963,
+        "anneal_t": 0.6666666666666667,
+        "region_reliability": 0.33086607822501873,
+        "positive_kernel_fraction": 0.5277083333333333,
+        "corr_at_plain": 0.855997218717654,
+        "max_corr": 0.9987048153175769,
+        "max_shift_z": 0.04405833940647578,
+        "mean_shift_z": 0.014478803119470494,
+        "lift_idx": 141,
+        "sigma_unchanged": true,
+        "accepted": false,
+        "selected_index_before": 141,
+        "selected_score_before": 0.008483240682624016,
+        "selected_index_after": 141,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 6.0,
+            "I2": 4.206806,
+            "I3": 3.0,
+            "dSOC1": 0.4,
+            "dSOC2": 0.1
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "fast_charge",
+          "reason": "Best scalarized objective point with feasible dSOC1+dSOC2 below hard limit and highest confidence in fast charging performance.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 6.0,
+              "I2": 4.206806,
+              "I3": 3.0,
+              "dSOC1": 0.4,
+              "dSOC2": 0.1
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "fast_charge",
+            "reason": "Best scalarized objective point with feasible dSOC1+dSOC2 below hard limit and highest confidence in fast charging performance.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "26738ad8f98be676",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "same_as_plain",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.17411611301913155
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 32
+      }
+    },
+    {
+      "iteration": 6,
+      "n_total": 12,
+      "n_feasible": 12,
+      "pareto_size": 9,
+      "hypervolume": 0.736855240385588,
+      "display_hv": 0.736855240385588,
+      "canonical_hv": 0.29474209615423524,
+      "hypervolume_canonical": 0.29474209615423524,
+      "hypervolume_raw": 8.672800888125602,
+      "best_time_s": 3360.0,
+      "best_temp_K": 1.5284937316556866,
+      "best_aging_pct": 0.6272259883381847,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 5,
+      "w_vec": [
+        0.00980392156862745,
+        0.9803921568627451,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 12.31,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "ddecf48347c1c782",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 0,
+        "plain_log_ei_surrogate_at_plain": -6.621779900889442,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.0,
+          2.0,
+          2.0,
+          0.1,
+          0.1
+        ],
+        "region_raw_ub": [
+          2.5532647468899965,
+          2.2766323734449747,
+          2.092210791148263,
+          0.1276632373444145,
+          0.11844215822957893
+        ],
+        "region_normalized_lb": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "region_normalized_ub": [
+          0.13831618672246454,
+          0.09221079114829417,
+          0.09221079114817081,
+          0.09221079114774097,
+          0.09221079114743358
+        ],
+        "relative_volume": 9.999999999999975e-06,
+        "per_dim_widths": [
+          0.13831618672249912,
+          0.09221079114832491,
+          0.09221079114826303,
+          0.09221079114804834,
+          0.09221079114789464
+        ],
+        "plain_candidate_inside_region": true,
+        "anchor_min_dist_to_existing": 0.02499999999999377,
+        "anchor_close_fraction": 0.03125,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.0013310596816207205,
+        "anchor_mean_ei": 4.289024868343799e-05,
+        "anchor_weight_max": 0.16706720684056062,
+        "anchor_weight_entropy": 2.585232702665734,
+        "anchor_consistency": 0.41551052942528904,
+        "anchor_novelty_mean": 0.11563680138968722,
+        "lambda_t": 0.11666666666666665,
+        "kernel_norm_sq": 0.00014742481472646222,
+        "anneal_t": 0.5833333333333333,
+        "region_reliability": 0.24722876500804697,
+        "positive_kernel_fraction": 0.5735416666666666,
+        "corr_at_plain": -0.5772429415946015,
+        "max_corr": 0.9858017461559831,
+        "max_shift_z": 0.028433830628573988,
+        "mean_shift_z": 0.009870024572147074,
+        "lift_idx": 143,
+        "plain_log_ei_surrogate_at_lift": -6.730561146983574,
+        "lifted_ei_at_lift": 0.016724222362937382,
+        "plain_ei_at_plain": 0.0013310596816207205,
+        "plain_ei_at_lift": 0.001193862837610576,
+        "plain_ei_gap": 0.1087812460941322,
+        "corr_at_lift": 0.6776815061136274,
+        "lift_candidate_inside_region": false,
+        "sigma_unchanged": true,
+        "lift_sigma_z": 0.0058667872485368595,
+        "plain_sigma_z": 0.002944587611367914,
+        "accepted": false,
+        "selected_index_before": 0,
+        "selected_score_before": 0.0004750650475430602,
+        "selected_index_after": 0,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.1,
+            "I2": 2.0,
+            "I3": 2.0,
+            "dSOC1": 0.1,
+            "dSOC2": 0.1
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.85,
+          "preference_type": "fast_charge",
+          "reason": "Lowest scalarized objective with feasible dSOC1+dSOC2 below hard limit and soft safety margin respected.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.1,
+              "I2": 2.0,
+              "I3": 2.0,
+              "dSOC1": 0.1,
+              "dSOC2": 0.1
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.85,
+            "preference_type": "fast_charge",
+            "reason": "Lowest scalarized objective with feasible dSOC1+dSOC2 below hard limit and soft safety margin respected.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "ddecf48347c1c782",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "outside_region",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.0
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 32
+      }
+    },
+    {
+      "iteration": 7,
+      "n_total": 13,
+      "n_feasible": 13,
+      "pareto_size": 10,
+      "hypervolume": 0.7368566672808639,
+      "display_hv": 0.7368566672808639,
+      "canonical_hv": 0.2947426669123456,
+      "hypervolume_canonical": 0.2947426669123456,
+      "hypervolume_raw": 8.672817682711482,
+      "best_time_s": 3360.0,
+      "best_temp_K": 1.5284937316556866,
+      "best_aging_pct": 0.6272259883381847,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 6,
+      "w_vec": [
+        0.00980392156862745,
+        0.9803921568627451,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 10.36,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "7f066eeadd5f9b59",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 142,
+        "plain_log_ei_surrogate_at_plain": -7.452896597083408,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.0,
+          2.0,
+          2.0,
+          0.1,
+          0.1
+        ],
+        "region_raw_ub": [
+          2.5532647468899965,
+          2.2766323734449747,
+          2.092210791148263,
+          0.1276632373444145,
+          0.11844215822957893
+        ],
+        "region_normalized_lb": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "region_normalized_ub": [
+          0.13831618672246454,
+          0.09221079114829417,
+          0.09221079114817081,
+          0.09221079114774097,
+          0.09221079114743358
+        ],
+        "relative_volume": 9.999999999999975e-06,
+        "per_dim_widths": [
+          0.13831618672249912,
+          0.09221079114832491,
+          0.09221079114826303,
+          0.09221079114804834,
+          0.09221079114789464
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.0,
+        "anchor_close_fraction": 0.03125,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.000301832949630109,
+        "anchor_mean_ei": 9.876772193373538e-06,
+        "anchor_weight_max": 0.1623311262869517,
+        "anchor_weight_entropy": 2.551510251788047,
+        "anchor_consistency": 0.4156328413951174,
+        "anchor_novelty_mean": 0.11479115156066094,
+        "lambda_t": 0.1,
+        "kernel_norm_sq": 0.00012399234224926974,
+        "anneal_t": 0.5,
+        "region_reliability": 0.24730154063009485,
+        "positive_kernel_fraction": 0.6108333333333333,
+        "corr_at_plain": 0.24170601133446357,
+        "max_corr": 0.9743618952460811,
+        "max_shift_z": 0.024096119782561497,
+        "mean_shift_z": 0.007663997337955941,
+        "lift_idx": 36,
+        "plain_log_ei_surrogate_at_lift": -8.225678874979689,
+        "lifted_ei_at_lift": 0.007096543821292963,
+        "plain_ei_at_plain": 0.0005797598469896685,
+        "plain_ei_at_lift": 0.00026769055904556153,
+        "plain_ei_gap": 0.7727822778962814,
+        "corr_at_lift": 0.3985077203947492,
+        "lift_candidate_inside_region": true,
+        "sigma_unchanged": true,
+        "lift_sigma_z": 0.0029158644988865824,
+        "plain_sigma_z": 0.0015789366766049459,
+        "accepted": false,
+        "selected_index_before": 142,
+        "selected_score_before": 0.00020974188802382846,
+        "selected_index_after": 142,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.1,
+            "I2": 2.0,
+            "I3": 2.0,
+            "dSOC1": 0.1,
+            "dSOC2": 0.1
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.85,
+          "preference_type": "balanced",
+          "reason": "Lowest scalarized objective with feasible dSOC sum below hard limit and soft safety margin respected.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.1,
+              "I2": 2.0,
+              "I3": 2.0,
+              "dSOC1": 0.1,
+              "dSOC2": 0.1
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.85,
+            "preference_type": "balanced",
+            "reason": "Lowest scalarized objective with feasible dSOC sum below hard limit and soft safety margin respected.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "7f066eeadd5f9b59",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "plain_ei_gap",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 1.679458588021987e-05
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 32
+      }
+    },
+    {
+      "iteration": 8,
+      "n_total": 14,
+      "n_feasible": 14,
+      "pareto_size": 11,
+      "hypervolume": 0.7372205930864417,
+      "display_hv": 0.7372205930864417,
+      "canonical_hv": 0.2948882372345767,
+      "hypervolume_canonical": 0.2948882372345767,
+      "hypervolume_raw": 8.677101096707663,
+      "best_time_s": 3360.0,
+      "best_temp_K": 1.5284937316556866,
+      "best_aging_pct": 0.6198639038308469,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 7,
+      "w_vec": [
+        0.00980392156862745,
+        0.00980392156862745,
+        0.9803921568627451
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 12.72,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "159854f400c20346",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 141,
+        "plain_log_ei_surrogate_at_plain": -4.688144374777682,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.0,
+          2.0,
+          2.1547376044612907,
+          0.14547638133843327,
+          0.11443092089231083
+        ],
+        "region_raw_ub": [
+          2.263901582155037,
+          2.1979261866162605,
+          2.2866883955387096,
+          0.18506161866156673,
+          0.14082107910768912
+        ],
+        "region_normalized_lb": [
+          0.0,
+          0.0,
+          0.15473760446113594,
+          0.15158793779427224,
+          0.07215460446119334
+        ],
+        "region_normalized_ub": [
+          0.0659753955387427,
+          0.06597539553873151,
+          0.2866883955384229,
+          0.28353872887094395,
+          0.20410539553742507
+        ],
+        "relative_volume": 1.0000000000000011e-05,
+        "per_dim_widths": [
+          0.0659753955387592,
+          0.06597539553875349,
+          0.13195079107741892,
+          0.13195079107711152,
+          0.13195079107689148
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.03767954379594609,
+        "anchor_close_fraction": 0.09375,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.00912958856221072,
+        "anchor_mean_ei": 0.00036146802967281405,
+        "anchor_weight_max": 0.3062955285806242,
+        "anchor_weight_entropy": 2.1376416548135087,
+        "anchor_consistency": 0.5180567204088937,
+        "anchor_novelty_mean": 0.08231566304975521,
+        "lambda_t": 0.08333333333333333,
+        "kernel_norm_sq": 3.991700117406655e-05,
+        "anneal_t": 0.41666666666666663,
+        "region_reliability": 0.32637573385760305,
+        "positive_kernel_fraction": 0.587890625,
+        "corr_at_plain": 0.6269510071770569,
+        "max_corr": 0.7359553813052211,
+        "max_shift_z": 0.020016498138328634,
+        "mean_shift_z": 0.006680984722461021,
+        "lift_idx": 0,
+        "plain_log_ei_surrogate_at_lift": -4.696234649770677,
+        "lifted_ei_at_lift": 0.020517905146871324,
+        "plain_ei_at_plain": 0.009203749029038158,
+        "plain_ei_at_lift": 0.00912958856221072,
+        "plain_ei_gap": 0.00809027499299475,
+        "corr_at_lift": 0.6214391092800428,
+        "lift_candidate_inside_region": true,
+        "sigma_unchanged": true,
+        "lift_sigma_z": 0.02116727706981917,
+        "plain_sigma_z": 0.02207792195681255,
+        "sigma_ratio_vs_plain": 0.9587531431275675,
+        "accepted": false,
+        "selected_index_before": 141,
+        "selected_score_before": 0.0035328130339419847,
+        "selected_index_after": 141,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.0,
+            "I2": 2.0,
+            "I3": 2.220713,
+            "dSOC1": 0.165269,
+            "dSOC2": 0.127626
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "balanced",
+          "reason": "Best scalarized objective point with feasible dSOC sum below 0.70 and good trade-off in objectives.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.0,
+              "I2": 2.0,
+              "I3": 2.220713,
+              "dSOC1": 0.165269,
+              "dSOC2": 0.127626
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "balanced",
+            "reason": "Best scalarized objective point with feasible dSOC sum below 0.70 and good trade-off in objectives.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "159854f400c20346",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "lifted",
+        "diagnostic_fallback_reason": null,
+        "diagnostic_override_candidate_available": true,
+        "hv_gain_raw": 0.004283413996180485
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 32
+      }
+    },
+    {
+      "iteration": 9,
+      "n_total": 15,
+      "n_feasible": 15,
+      "pareto_size": 11,
+      "hypervolume": 0.7372205930864417,
+      "display_hv": 0.7372205930864417,
+      "canonical_hv": 0.2948882372345767,
+      "hypervolume_canonical": 0.2948882372345767,
+      "hypervolume_raw": 8.677101096707663,
+      "best_time_s": 3360.0,
+      "best_temp_K": 1.5284937316556866,
+      "best_aging_pct": 0.6198639038308469,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 8,
+      "w_vec": [
+        0.00980392156862745,
+        0.9803921568627451,
+        0.00980392156862745
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 10.35,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "991de0c44ca989eb",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 149,
+        "plain_log_ei_surrogate_at_plain": -2.4871531070328508,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.0,
+          2.0,
+          2.0,
+          0.1,
+          0.28158066197305265
+        ],
+        "region_raw_ub": [
+          2.5560116634854806,
+          2.2762900704054987,
+          2.092096690135105,
+          0.127629007040467,
+          0.3
+        ],
+        "region_normalized_lb": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.9079033098607238
+        ],
+        "region_normalized_ub": [
+          0.1390029158713354,
+          0.09209669013513552,
+          0.09209669013501269,
+          0.092096690134583,
+          0.999999999995
+        ],
+        "relative_volume": 1.0000000000000036e-05,
+        "per_dim_widths": [
+          0.13900291587137015,
+          0.09209669013516623,
+          0.0920966901351048,
+          0.09209669013489,
+          0.09209669013473672
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.04626588345520041,
+        "anchor_close_fraction": 0.03125,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 0.02486998082217127,
+        "anchor_mean_ei": 0.0009014922484044941,
+        "anchor_weight_max": 0.3345133299955025,
+        "anchor_weight_entropy": 2.3381391728377303,
+        "anchor_consistency": 0.476162823817013,
+        "anchor_novelty_mean": 0.11687797834422536,
+        "lambda_t": 0.06666666666666668,
+        "kernel_norm_sq": 0.0002127303803853101,
+        "anneal_t": 0.33333333333333337,
+        "region_reliability": 0.2833168801711227,
+        "positive_kernel_fraction": 0.6322916666666667,
+        "corr_at_plain": 0.39411105275966535,
+        "max_corr": 0.9934258380779065,
+        "max_shift_z": 0.018763620608374363,
+        "mean_shift_z": 0.00553396729779989,
+        "lift_idx": 144,
+        "plain_log_ei_surrogate_at_lift": -2.4871531263385807,
+        "lifted_ei_at_lift": 0.09050599741739537,
+        "plain_ei_at_plain": 0.08314633867931691,
+        "plain_ei_at_lift": 0.08314633707411616,
+        "plain_ei_gap": 1.9305729903607016e-08,
+        "corr_at_lift": 0.3941201319750857,
+        "lift_candidate_inside_region": false,
+        "sigma_unchanged": true,
+        "lift_sigma_z": 0.037973428261382516,
+        "plain_sigma_z": 0.037972493769485444,
+        "accepted": false,
+        "selected_index_before": 149,
+        "selected_score_before": 0.02986403583332476,
+        "selected_index_after": 149,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.101863,
+            "I2": 2.0,
+            "I3": 2.0,
+            "dSOC1": 0.1,
+            "dSOC2": 0.3
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.85,
+          "preference_type": "balanced",
+          "reason": "Lowest scalarized objective point with feasible dSOC1+dSOC2 below hard limit and balanced trade-off.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.101863,
+              "I2": 2.0,
+              "I3": 2.0,
+              "dSOC1": 0.1,
+              "dSOC2": 0.3
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.85,
+            "preference_type": "balanced",
+            "reason": "Lowest scalarized objective point with feasible dSOC1+dSOC2 below hard limit and balanced trade-off.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "991de0c44ca989eb",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "outside_region",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.0
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 32
+      }
+    },
+    {
+      "iteration": 10,
+      "n_total": 16,
+      "n_feasible": 16,
+      "pareto_size": 12,
+      "hypervolume": 0.7615338113748258,
+      "display_hv": 0.7615338113748258,
+      "canonical_hv": 0.30461352454993035,
+      "hypervolume_canonical": 0.30461352454993035,
+      "hypervolume_raw": 8.963268161291946,
+      "best_time_s": 3360.0,
+      "best_temp_K": 1.5284937316556866,
+      "best_aging_pct": 0.5713232081177111,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 9,
+      "w_vec": [
+        0.00980392156862745,
+        0.00980392156862745,
+        0.9803921568627451
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 10.25,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": "5d2075c952d376fc",
+        "parser_status": "ok",
+        "selected_source": "plain_ei",
+        "fallback_reason": "override_disabled",
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_not_lifted",
+        "plain_idx": 141,
+        "plain_log_ei_surrogate_at_plain": -2.894787974615366,
+        "region_lift_log_ei_eps": 1e-12,
+        "region_raw_lb": [
+          2.0,
+          2.0,
+          2.172379171674406,
+          0.1213912515023747,
+          0.2848428343349417
+        ],
+        "region_raw_ub": [
+          2.3031433133026056,
+          2.2273574849769346,
+          2.3239508283255943,
+          0.1668627484976253,
+          0.29999999999999993
+        ],
+        "region_normalized_lb": [
+          0.0,
+          0.0,
+          0.1723791716742337,
+          0.07130417167434464,
+          0.9242141716700873
+        ],
+        "region_normalized_ub": [
+          0.07578582832563245,
+          0.07578582832561961,
+          0.32395082832527033,
+          0.22287582832467473,
+          0.9999999999949997
+        ],
+        "relative_volume": 9.999999999999975e-06,
+        "per_dim_widths": [
+          0.0757858283256514,
+          0.07578582832564489,
+          0.1515716566511882,
+          0.15157165665083533,
+          0.0757858283252913
+        ],
+        "plain_candidate_inside_region": false,
+        "anchor_min_dist_to_existing": 0.04102073135153065,
+        "anchor_close_fraction": 0.03125,
+        "feasible_anchor_ratio": 1.0,
+        "anchor_weighting_mode": "ei_softmax",
+        "anchor_best_ei": 1.6648298726484913e-08,
+        "anchor_mean_ei": 5.381663951670945e-10,
+        "anchor_weight_max": 0.574696403533951,
+        "anchor_weight_entropy": 1.494273695130771,
+        "anchor_consistency": 0.5482443654146378,
+        "anchor_novelty_mean": 0.09503728222508862,
+        "lambda_t": 0.05,
+        "kernel_norm_sq": 7.460592555723262e-05,
+        "anneal_t": 0.25,
+        "region_reliability": 0.3453939502112218,
+        "positive_kernel_fraction": 0.5969827586206896,
+        "corr_at_plain": -0.24512505036414814,
+        "max_corr": 0.9621994666415475,
+        "max_shift_z": 0.016616893733722743,
+        "mean_shift_z": 0.004205631078633309,
+        "lift_idx": 141,
+        "sigma_unchanged": true,
+        "accepted": false,
+        "selected_index_before": 141,
+        "selected_score_before": 0.02093620744014223,
+        "selected_index_after": 141,
+        "override_enabled": false,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 2.0,
+            "I2": 2.0,
+            "I3": 2.248165,
+            "dSOC1": 0.144127,
+            "dSOC2": 0.3
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.9,
+          "preference_type": "balanced",
+          "reason": "Best scalarized objective point with feasible dSOC1+dSOC2=0.444 > 0.7 limit, good trade-off in objectives, and no recent failures.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 2.0,
+              "I2": 2.0,
+              "I3": 2.248165,
+              "dSOC1": 0.144127,
+              "dSOC2": 0.3
+            },
+            "lb": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "ub": {
+              "I1": null,
+              "I2": null,
+              "I3": null,
+              "dSOC1": null,
+              "dSOC2": null
+            },
+            "confidence": 0.9,
+            "preference_type": "balanced",
+            "reason": "Best scalarized objective point with feasible dSOC1+dSOC2=0.444 > 0.7 limit, good trade-off in objectives, and no recent failures.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "5d2075c952d376fc",
+          "parser_status": "ok"
+        },
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "same_as_plain",
+        "diagnostic_override_candidate_available": false,
+        "hv_gain_raw": 0.28616706458428354
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {
+        "region": 32
+      }
+    }
+  ],
+  "improvement_window": [
+    true,
+    false
+  ],
+  "saved_at": "2026-04-30T20:23:44.676881"
+}
