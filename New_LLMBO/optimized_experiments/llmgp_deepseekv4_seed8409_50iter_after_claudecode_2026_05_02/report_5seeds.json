@@ -1,0 +1,104 @@
+{
+  "meta": {
+    "iterations": 50,
+    "seeds": [
+      8409
+    ],
+    "variants": [
+      "warmstart_region_lifted_gp_force_pool_tuned"
+    ],
+    "output_root": "optimized_experiments\\llmgp_deepseekv4_seed8409_50iter_after_claudecode_2026_05_02",
+    "api_base": "https://api.deepseek.com",
+    "model": "deepseek-v4-flash",
+    "model_display": "Deepseek-V4"
+  },
+  "records": [
+    {
+      "seed": 8409,
+      "variant": "warmstart_region_lifted_gp_force_pool_tuned",
+      "status": "ok",
+      "summary_path": "optimized_experiments\\llmgp_deepseekv4_seed8409_50iter_after_claudecode_2026_05_02\\seed8409\\warmstart_region_lifted_gp_force_pool_tuned\\summary.json",
+      "display_hv": 0.8909063341968679,
+      "canonical_hv": 0.3563625336787472,
+      "hypervolume_raw": 10.485985337386012,
+      "hv_violations": 0,
+      "pareto_size": 35,
+      "n_total": 56,
+      "n_feasible": 56,
+      "lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "region_pool_influenced_acquisition_count": 16,
+      "region_influence_gate_pass_count": 0,
+      "inactive_window_skipped_count": 34,
+      "zero_shift_accept_count": 0,
+      "fallback_distribution": {
+        "same_as_plain": 6,
+        "parse_fail": 8,
+        "outside_region": 2,
+        "inactive_window_skipped": 34
+      }
+    }
+  ],
+  "aggregates": {
+    "warmstart_region_lifted_gp_force_pool_tuned": {
+      "n_runs": 1,
+      "mean_canonical_hv": 0.3563625336787472,
+      "median_canonical_hv": 0.3563625336787472,
+      "worst_quartile_canonical_hv": 0.3563625336787472,
+      "variance_canonical_hv": 0.0,
+      "mean_display_hv": 0.8909063341968679,
+      "mean_raw_hv": 10.485985337386012,
+      "hv_violations_total": 0,
+      "mean_lift_accept_rate": 0.0,
+      "mean_effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count_total": 0,
+      "plain_candidate_inside_region_count_total": 0,
+      "diagnostic_override_candidate_count_total": 0,
+      "region_pool_influenced_acquisition_count_total": 16,
+      "region_influence_gate_pass_count_total": 0,
+      "inactive_window_skipped_count_total": 34,
+      "zero_shift_accept_count_total": 0,
+      "fallback_distribution": {
+        "same_as_plain": 6,
+        "parse_fail": 8,
+        "outside_region": 2,
+        "inactive_window_skipped": 34
+      },
+      "runs": [
+        {
+          "seed": 8409,
+          "variant": "warmstart_region_lifted_gp_force_pool_tuned",
+          "status": "ok",
+          "summary_path": "optimized_experiments\\llmgp_deepseekv4_seed8409_50iter_after_claudecode_2026_05_02\\seed8409\\warmstart_region_lifted_gp_force_pool_tuned\\summary.json",
+          "display_hv": 0.8909063341968679,
+          "canonical_hv": 0.3563625336787472,
+          "hypervolume_raw": 10.485985337386012,
+          "hv_violations": 0,
+          "pareto_size": 35,
+          "n_total": 56,
+          "n_feasible": 56,
+          "lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "region_pool_influenced_acquisition_count": 16,
+          "region_influence_gate_pass_count": 0,
+          "inactive_window_skipped_count": 34,
+          "zero_shift_accept_count": 0,
+          "fallback_distribution": {
+            "same_as_plain": 6,
+            "parse_fail": 8,
+            "outside_region": 2,
+            "inactive_window_skipped": 34
+          }
+        }
+      ],
+      "missing_runs": []
+    }
+  },
+  "comparisons": {}
+}
