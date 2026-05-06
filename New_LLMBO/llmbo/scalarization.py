@@ -61,6 +61,16 @@ def normalize_objectives(
     return (np.asarray(Y_tilde, dtype=float) - np.asarray(y_min, dtype=float)) / denom
 
 
+def normalize_objectives_raw(
+    Y_raw: np.ndarray,
+    y_min: np.ndarray,
+    y_max: np.ndarray,
+) -> np.ndarray:
+    denom = np.asarray(y_max, dtype=float) - np.asarray(y_min, dtype=float)
+    denom = np.where(denom < 1e-12, 1.0, denom)
+    return (np.asarray(Y_raw, dtype=float) - np.asarray(y_min, dtype=float)) / denom
+
+
 def compute_tchebycheff(
     Y_bar: np.ndarray,
     w_vec: np.ndarray,
@@ -98,6 +108,34 @@ def compute_tchebycheff_from_raw_with_ideal(
     denom = np.where(denom < 1e-12, 1.0, denom)
     Y_gap = np.abs(Y_tilde - ideal_tilde[np.newaxis, :]) / denom[np.newaxis, :]
     return compute_tchebycheff(Y_gap, w_vec, eta=eta)
+
+
+def prepare_parego_reference_weights(
+    w_vec: np.ndarray,
+    eps_min: float = 1e-6,
+    invert: bool = True,
+) -> np.ndarray:
+    w = np.asarray(w_vec, dtype=float).ravel()
+    w = np.maximum(w, float(eps_min))
+    if invert:
+        return 1.0 / w
+    return w
+
+
+def compute_parego_reference_from_raw(
+    Y_raw: np.ndarray,
+    w_vec: np.ndarray,
+    eta: float = 0.05,
+    eps_min: float = 1e-6,
+    invert_weights: bool = True,
+) -> np.ndarray:
+    """Classic ParEGO scalarization on raw objectives with per-iteration min-max scaling."""
+    Y_raw = np.atleast_2d(np.asarray(Y_raw, dtype=float))
+    y_min = Y_raw.min(axis=0)
+    y_max = Y_raw.max(axis=0)
+    Y_bar = normalize_objectives_raw(Y_raw, y_min, y_max)
+    w_eff = prepare_parego_reference_weights(w_vec, eps_min=eps_min, invert=invert_weights)
+    return compute_tchebycheff(Y_bar, w_eff, eta=eta)
 
 
 def canonical_hv_from_raw(hv_raw: float, hv_max: float) -> float:

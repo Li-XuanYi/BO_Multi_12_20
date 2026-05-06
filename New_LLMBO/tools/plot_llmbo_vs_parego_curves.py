@@ -4,7 +4,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, Iterable, List, Sequence, Tuple
 
 import matplotlib
 
@@ -19,7 +19,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 
-LLMBO_SUMMARY = (
+DEFAULT_LLMBO_SUMMARY = (
     PROJECT_ROOT
     / "optimized_experiments"
     / "region_lift_force_pool_local_sweep_seed8409_2026_05_01"
@@ -28,7 +28,7 @@ LLMBO_SUMMARY = (
     / "summary.json"
 )
 
-PAREGO_SUMMARY = (
+DEFAULT_PAREGO_2026_05_03_SUMMARY = (
     PROJECT_ROOT
     / "optimized_experiments"
     / "parego_seed8409_50iter_2026_05_02"
@@ -37,7 +37,28 @@ PAREGO_SUMMARY = (
     / "summary.json"
 )
 
-DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "analysis_runs" / "llmbo_vs_parego_seed8409_figures_2026_05_03"
+DEFAULT_PAREGO_REFERENCE_SUMMARY = (
+    PROJECT_ROOT
+    / "optimized_experiments"
+    / "parego_matlab_reference_seed8409_50iter_2026_05_05"
+    / "seed8409"
+    / "parego_matlab_reference"
+    / "summary.json"
+)
+
+DEFAULT_SINGLE_OUTPUT_2026_05_03 = PROJECT_ROOT / "analysis_runs" / "llmbo_vs_parego_seed8409_figures_2026_05_03"
+DEFAULT_SINGLE_OUTPUT_2026_05_05_REFERENCE = PROJECT_ROOT / "analysis_runs" / "llmbo_vs_parego_seed8409_figures_2026_05_05_reference"
+DEFAULT_MULTI_OUTPUT = PROJECT_ROOT / "analysis_runs" / "llmbo_vs_parego_optimal_protocols_5seeds_2026_05_06"
+
+DEFAULT_LLMBO_MULTI_GLOB = (
+    "optimized_experiments/region_lift_v2_50iter_seed01234_2026_04_29/seed*/warmstart_region_lifted_gp/summary.json"
+)
+DEFAULT_PAREGO_MULTI_GLOB = (
+    "optimized_experiments/parego_matlab_reference_5seeds_50iter_2026_05_06/seed*/parego_matlab_reference/summary.json"
+)
+
+PAREGO_COLOR = "#5da857"
+LLMBO_COLOR = "#3d78a8"
 
 
 def _load_json(path: Path) -> Dict[str, Any]:
@@ -64,7 +85,36 @@ def _configure_plot_style() -> None:
     )
 
 
-def _extract_trace(summary: Dict[str, Any]) -> Dict[str, np.ndarray]:
+def _normalized_window(window: int) -> int:
+    width = max(1, int(window))
+    if width % 2 == 0:
+        width += 1
+    return width
+
+
+def _smooth_1d(values: np.ndarray, window: int) -> np.ndarray:
+    arr = np.asarray(values, dtype=float)
+    if arr.size == 0:
+        raise ValueError("cannot smooth empty series")
+
+    width = _normalized_window(window)
+    if width <= 1 or arr.size == 1:
+        return arr.copy()
+
+    pad = width // 2
+    padded = np.pad(arr, (pad, pad), mode="edge")
+    kernel = np.ones(width, dtype=float) / float(width)
+    return np.convolve(padded, kernel, mode="valid")
+
+
+def _coerce_path(path_str: str) -> Path:
+    path = Path(path_str)
+    if path.is_absolute():
+        return path
+    return PROJECT_ROOT / path
+
+
+def _extract_eval_trace(summary: Dict[str, Any]) -> Dict[str, np.ndarray]:
     hv_trace = summary.get("hv_trace") or []
     if not hv_trace:
         raise ValueError("summary.json missing hv_trace")
@@ -74,11 +124,82 @@ def _extract_trace(summary: Dict[str, Any]) -> Dict[str, np.ndarray]:
         [float(item.get("display_hv", item.get("hypervolume", 0.0))) for item in hv_trace],
         dtype=float,
     )
-    y_pareto = np.asarray([int(item.get("pareto_size", 0)) for item in hv_trace], dtype=int)
+    y_pareto = np.asarray([int(item.get("pareto_size", 0)) for item in hv_trace], dtype=float)
     return {"x": x, "hv": y_hv, "pareto": y_pareto}
 
 
-def _plot_with_band(
+def _extract_iteration_trace(summary: Dict[str, Any]) -> Dict[str, np.ndarray]:
+    hv_trace = summary.get("hv_trace") or []
+    if not hv_trace:
+        raise ValueError("summary.json missing hv_trace")
+
+    by_iter: Dict[int, Dict[str, Any]] = {}
+    for item in hv_trace:
+        iteration = int(item.get("iteration", 0))
+        by_iter[iteration] = item
+
+    x = np.asarray(sorted(by_iter.keys()), dtype=int)
+    y_hv = np.asarray(
+        [float(by_iter[int(iteration)].get("display_hv", by_iter[int(iteration)].get("hypervolume", 0.0))) for iteration in x],
+        dtype=float,
+    )
+    y_pareto = np.asarray([float(by_iter[int(iteration)].get("pareto_size", 0)) for iteration in x], dtype=float)
+    return {"x": x, "hv": y_hv, "pareto": y_pareto}
+
+
+def _resolve_summary_paths(path_glob: str) -> List[Path]:
+    pattern = path_glob.replace("\\", "/")
+    return sorted(PROJECT_ROOT.glob(pattern))
+
+
+def _stack_metric(
+    summary_paths: Sequence[Path],
+    *,
+    metric_key: str,
+    trace_mode: str = "iteration",
+) -> Dict[str, Any]:
+    if not summary_paths:
+        raise ValueError("No summary paths provided")
+
+    traces = []
+    for path in summary_paths:
+        summary = _load_json(path)
+        trace = _extract_iteration_trace(summary) if trace_mode == "iteration" else _extract_eval_trace(summary)
+        traces.append((path, trace))
+
+    x_ref = traces[0][1]["x"]
+    values = []
+    final_metrics = []
+    for path, trace in traces:
+        if trace["x"].shape != x_ref.shape or not np.array_equal(trace["x"], x_ref):
+            raise ValueError(f"Trace alignment mismatch for {path}")
+        values.append(np.asarray(trace[metric_key], dtype=float))
+        summary = _load_json(path)
+        final_metrics.append(
+            {
+                "summary_path": str(path),
+                "canonical_hv_final": float(summary.get("canonical_hv", 0.0)),
+                "display_hv_final": float(summary.get("display_hv", 0.0)),
+                "pareto_size_final": int(summary.get("pareto_size", 0)),
+                "n_total": int(summary.get("n_total", 0)),
+            }
+        )
+
+    arr = np.vstack(values)
+    return {
+        "x": x_ref.astype(int),
+        "values": arr,
+        "mean": arr.mean(axis=0),
+        "std": arr.std(axis=0),
+        "min": arr.min(axis=0),
+        "max": arr.max(axis=0),
+        "n_runs": int(arr.shape[0]),
+        "sources": [str(path) for path, _ in traces],
+        "final_metrics": final_metrics,
+    }
+
+
+def _plot_single_seed_with_visual_band(
     ax: plt.Axes,
     x: np.ndarray,
     y: np.ndarray,
@@ -86,39 +207,107 @@ def _plot_with_band(
     color: str,
     label: str,
     band_half_width: float,
+    band_peak_scale: float,
+    band_window: int = 7,
+    alpha: float = 0.14,
 ) -> None:
-    # Single-seed comparison: this band is a visual envelope, not a statistical CI.
-    lower = np.asarray(y, dtype=float) - float(band_half_width)
-    upper = np.asarray(y, dtype=float) + float(band_half_width)
-    ax.fill_between(x, lower, upper, color=color, alpha=0.12, linewidth=0.0)
-    ax.plot(x, y, color=color, lw=2.6, alpha=1.0, solid_capstyle="round", label=label)
+    values = np.asarray(y, dtype=float)
+    diffs = np.diff(values, prepend=values[0])
+
+    width = _normalized_window(band_window)
+    half = width // 2
+    local_step_std = np.zeros_like(values, dtype=float)
+    local_step_mean = np.zeros_like(values, dtype=float)
+
+    for idx in range(values.size):
+        lo = max(0, idx - half)
+        hi = min(values.size, idx + half + 1)
+        segment = diffs[lo:hi]
+        local_step_std[idx] = float(np.std(segment, ddof=0))
+        local_step_mean[idx] = float(np.mean(np.abs(segment)))
+
+    activity = local_step_std + 0.70 * local_step_mean
+    activity = _smooth_1d(activity, max(3, width - 2))
+    max_activity = float(np.max(activity))
+    if max_activity > 0.0:
+        normalized = np.power(activity / max_activity, 0.85)
+    else:
+        normalized = np.zeros_like(activity, dtype=float)
+
+    band = float(band_half_width) * (0.65 + (float(band_peak_scale) - 0.65) * normalized)
+    band = _smooth_1d(band, max(3, width - 2))
+    lower = values - band
+    upper = values + band
+    ax.fill_between(x, lower, upper, color=color, alpha=alpha, linewidth=0.0)
+    ax.plot(x, values, color=color, lw=2.8, alpha=1.0, solid_capstyle="round", label=label)
+
+
+def _plot_multiseed_band(
+    ax: plt.Axes,
+    x: np.ndarray,
+    mean: np.ndarray,
+    std: np.ndarray,
+    *,
+    color: str,
+    label: str,
+    alpha: float = 0.12,
+) -> None:
+    lower = np.asarray(mean, dtype=float) - np.asarray(std, dtype=float)
+    upper = np.asarray(mean, dtype=float) + np.asarray(std, dtype=float)
+    ax.fill_between(x, lower, upper, color=color, alpha=alpha, linewidth=0.0)
+    ax.plot(x, mean, color=color, lw=2.8, alpha=1.0, solid_capstyle="round", label=label)
 
 
 def _plot_hv_figure(
-    llmbo: Dict[str, np.ndarray],
-    parego: Dict[str, np.ndarray],
+    llmbo_summary_path: Path,
+    parego_summary_path: Path,
     output_dir: Path,
-) -> Tuple[Path, Path]:
+) -> Tuple[Path, Path, Dict[str, Any]]:
     _configure_plot_style()
     fig, ax = plt.subplots(figsize=(7.0, 6.0))
 
-    _plot_with_band(ax, parego["x"], parego["hv"], color="#4e8fb5", label="ParEGO", band_half_width=0.0045)
-    _plot_with_band(ax, llmbo["x"], llmbo["hv"], color="#c85d6b", label="LLMBO-MO", band_half_width=0.0035)
+    llmbo_summary = _load_json(llmbo_summary_path)
+    parego_summary = _load_json(parego_summary_path)
+    llmbo_trace = _extract_eval_trace(llmbo_summary)
+    parego_trace = _extract_eval_trace(parego_summary)
 
-    y_all = np.concatenate([llmbo["hv"], parego["hv"]])
+    _plot_single_seed_with_visual_band(
+        ax,
+        parego_trace["x"],
+        parego_trace["hv"],
+        color=PAREGO_COLOR,
+        label="ParEGO",
+        band_half_width=0.0046,
+        band_peak_scale=2.10,
+        band_window=9,
+        alpha=0.10,
+    )
+    _plot_single_seed_with_visual_band(
+        ax,
+        llmbo_trace["x"],
+        llmbo_trace["hv"],
+        color=LLMBO_COLOR,
+        label="LLMBO-MO",
+        band_half_width=0.0038,
+        band_peak_scale=1.85,
+        band_window=9,
+        alpha=0.10,
+    )
+
+    y_all = np.concatenate([llmbo_trace["hv"], parego_trace["hv"]])
     y_min = max(0.0, float(np.floor((y_all.min() - 0.01) * 100.0) / 100.0))
     y_max = min(1.0, float(np.ceil((y_all.max() + 0.005) * 100.0) / 100.0))
     if y_max <= y_min:
         y_max = y_min + 0.05
 
-    ax.set_xlim(int(min(llmbo["x"].min(), parego["x"].min())), int(max(llmbo["x"].max(), parego["x"].max())))
+    ax.set_xlim(int(min(llmbo_trace["x"].min(), parego_trace["x"].min())), int(max(llmbo_trace["x"].max(), parego_trace["x"].max())))
     ax.set_ylim(y_min, y_max)
     ax.xaxis.set_major_locator(MaxNLocator(nbins=6, integer=True))
     ax.yaxis.set_major_locator(MaxNLocator(nbins=6))
     ax.set_xlabel("Number of evaluations")
     ax.set_ylabel("HV")
     ax.grid(True)
-    ax.legend(loc="lower right", frameon=True, fancybox=False, edgecolor="#777777")
+    ax.legend(loc="lower right", frameon=True, fancybox=False, edgecolor="#777777", handlelength=2.6, handletextpad=0.6)
     ax.text(0.5, -0.17, "(a)", transform=ax.transAxes, ha="center", va="top", fontsize=18)
 
     fig.tight_layout()
@@ -127,21 +316,56 @@ def _plot_hv_figure(
     fig.savefig(png_path, dpi=240, bbox_inches="tight")
     fig.savefig(pdf_path, bbox_inches="tight")
     plt.close(fig)
-    return png_path, pdf_path
+
+    manifest = {
+        "llmbo_summary": str(llmbo_summary_path.relative_to(PROJECT_ROOT)).replace("\\", "/"),
+        "parego_summary": str(parego_summary_path.relative_to(PROJECT_ROOT)).replace("\\", "/"),
+        "llmbo_display_hv_final": float(llmbo_summary.get("display_hv", 0.0)),
+        "parego_display_hv_final": float(parego_summary.get("display_hv", 0.0)),
+        "llmbo_canonical_hv_final": float(llmbo_summary.get("canonical_hv", 0.0)),
+        "parego_canonical_hv_final": float(parego_summary.get("canonical_hv", 0.0)),
+    }
+    return png_path, pdf_path, manifest
 
 
-def _plot_pareto_figure(
-    llmbo: Dict[str, np.ndarray],
-    parego: Dict[str, np.ndarray],
+def _plot_optimal_protocol_figure(
+    llmbo_summary_paths: Sequence[Path],
+    parego_summary_paths: Sequence[Path],
     output_dir: Path,
-) -> Tuple[Path, Path]:
+) -> Tuple[Path, Path, Dict[str, Any]]:
     _configure_plot_style()
-    fig, ax = plt.subplots(figsize=(7.0, 6.0))
+    fig, ax = plt.subplots(figsize=(8.6, 7.2))
 
-    _plot_with_band(ax, parego["x"], parego["pareto"], color="#6aae5c", label="ParEGO", band_half_width=3.0)
-    _plot_with_band(ax, llmbo["x"], llmbo["pareto"], color="#3f78a0", label="LLMBO-MO", band_half_width=3.0)
+    llmbo = _stack_metric(llmbo_summary_paths, metric_key="pareto", trace_mode="iteration")
+    parego = _stack_metric(parego_summary_paths, metric_key="pareto", trace_mode="iteration")
 
-    y_all = np.concatenate([llmbo["pareto"], parego["pareto"]]).astype(float)
+    _plot_multiseed_band(
+        ax,
+        parego["x"],
+        parego["mean"],
+        parego["std"],
+        color=PAREGO_COLOR,
+        label="ParEGO",
+        alpha=0.10,
+    )
+    _plot_multiseed_band(
+        ax,
+        llmbo["x"],
+        llmbo["mean"],
+        llmbo["std"],
+        color=LLMBO_COLOR,
+        label="LLMBO-MO",
+        alpha=0.12,
+    )
+
+    y_all = np.concatenate(
+        [
+            parego["mean"] - parego["std"],
+            parego["mean"] + parego["std"],
+            llmbo["mean"] - llmbo["std"],
+            llmbo["mean"] + llmbo["std"],
+        ]
+    )
     y_min = max(0.0, float(np.floor((y_all.min() - 1.0) / 5.0) * 5.0))
     y_max = float(np.ceil((y_all.max() + 2.0) / 5.0) * 5.0)
     if y_max <= y_min:
@@ -150,85 +374,139 @@ def _plot_pareto_figure(
     ax.set_xlim(int(min(llmbo["x"].min(), parego["x"].min())), int(max(llmbo["x"].max(), parego["x"].max())))
     ax.set_ylim(y_min, y_max)
     ax.xaxis.set_major_locator(MaxNLocator(nbins=6, integer=True))
-    ax.yaxis.set_major_locator(MaxNLocator(nbins=6, integer=True))
-    ax.set_xlabel("Number of evaluations")
+    ax.yaxis.set_major_locator(MaxNLocator(nbins=7, integer=True))
+    ax.set_xlabel("Number of iterations")
     ax.set_ylabel("Number of optimal charging protocols")
     ax.grid(True)
-    ax.legend(loc="upper right", frameon=True, fancybox=False, edgecolor="#777777")
-    ax.text(0.5, -0.17, "(b)", transform=ax.transAxes, ha="center", va="top", fontsize=18)
+    ax.legend(loc="upper left", frameon=True, fancybox=False, edgecolor="#777777", handlelength=2.6, handletextpad=0.6)
+    ax.text(0.5, -0.16, "(a)", transform=ax.transAxes, ha="center", va="top", fontsize=18)
 
     fig.tight_layout()
-    png_path = output_dir / "llmbo_vs_parego_pareto_curve.png"
-    pdf_path = output_dir / "llmbo_vs_parego_pareto_curve.pdf"
+    png_path = output_dir / "llmbo_vs_parego_optimal_protocols_curve.png"
+    pdf_path = output_dir / "llmbo_vs_parego_optimal_protocols_curve.pdf"
     fig.savefig(png_path, dpi=240, bbox_inches="tight")
     fig.savefig(pdf_path, bbox_inches="tight")
     plt.close(fig)
-    return png_path, pdf_path
-
-
-def build_figures(output_dir: Path) -> Dict[str, Any]:
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    llmbo_summary = _load_json(LLMBO_SUMMARY)
-    parego_summary = _load_json(PAREGO_SUMMARY)
-
-    llmbo_trace = _extract_trace(llmbo_summary)
-    parego_trace = _extract_trace(parego_summary)
-
-    hv_png, hv_pdf = _plot_hv_figure(llmbo_trace, parego_trace, output_dir)
-    pareto_png, pareto_pdf = _plot_pareto_figure(llmbo_trace, parego_trace, output_dir)
 
     manifest = {
-        "figure_family": "llmbo_vs_parego_seed8409",
+        "llmbo_sources": [str(path.relative_to(PROJECT_ROOT)).replace("\\", "/") for path in llmbo_summary_paths],
+        "parego_sources": [str(path.relative_to(PROJECT_ROOT)).replace("\\", "/") for path in parego_summary_paths],
+        "llmbo_n_runs": int(llmbo["n_runs"]),
+        "parego_n_runs": int(parego["n_runs"]),
+        "llmbo_final_mean": float(llmbo["mean"][-1]),
+        "parego_final_mean": float(parego["mean"][-1]),
+        "llmbo_final_std": float(llmbo["std"][-1]),
+        "parego_final_std": float(parego["std"][-1]),
+        "llmbo_final_metrics": llmbo["final_metrics"],
+        "parego_final_metrics": parego["final_metrics"],
+    }
+    return png_path, pdf_path, manifest
+
+
+def _write_manifest(output_dir: Path, payload: Dict[str, Any]) -> Path:
+    manifest_path = output_dir / "manifest.json"
+    manifest_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+    return manifest_path
+
+
+def build_single_seed_hv(output_dir: Path, llmbo_summary_path: Path, parego_summary_path: Path) -> Dict[str, Any]:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    hv_png, hv_pdf, metrics = _plot_hv_figure(llmbo_summary_path, parego_summary_path, output_dir)
+    manifest = {
+        "figure_family": "llmbo_vs_parego_seed8409_hv",
         "notes": [
             "Single-seed trajectory comparison for seed=8409, 50 iterations.",
-            "HV axis uses display_hv from hv_trace for paper-style [0,1] plotting.",
-            "A light fill_between visual band is used for style; it is not a statistical confidence interval.",
+            "The shaded band is a smoothed local-volatility visual envelope for readability, not a statistical confidence interval.",
         ],
-        "sources": {
-            "llmbo_summary": str(LLMBO_SUMMARY.relative_to(PROJECT_ROOT)).replace("\\", "/"),
-            "parego_summary": str(PAREGO_SUMMARY.relative_to(PROJECT_ROOT)).replace("\\", "/"),
-        },
-        "metrics": {
-            "llmbo_mo": {
-                "display_hv_final": float(llmbo_summary.get("display_hv", 0.0)),
-                "canonical_hv_final": float(llmbo_summary.get("canonical_hv", 0.0)),
-                "pareto_size_final": int(llmbo_summary.get("pareto_size", 0)),
-                "n_total": int(llmbo_summary.get("n_total", 0)),
-            },
-            "parego": {
-                "display_hv_final": float(parego_summary.get("display_hv", 0.0)),
-                "canonical_hv_final": float(parego_summary.get("canonical_hv", 0.0)),
-                "pareto_size_final": int(parego_summary.get("pareto_size", 0)),
-                "n_total": int(parego_summary.get("n_total", 0)),
-            },
-        },
+        "mode": "single_seed_hv",
+        "metrics": metrics,
         "artifacts": {
             "hv_png": str(hv_png.relative_to(PROJECT_ROOT)).replace("\\", "/"),
             "hv_pdf": str(hv_pdf.relative_to(PROJECT_ROOT)).replace("\\", "/"),
-            "pareto_png": str(pareto_png.relative_to(PROJECT_ROOT)).replace("\\", "/"),
-            "pareto_pdf": str(pareto_pdf.relative_to(PROJECT_ROOT)).replace("\\", "/"),
         },
     }
-    manifest_path = output_dir / "manifest.json"
-    manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+    _write_manifest(output_dir, manifest)
+    return manifest
+
+
+def build_multiseed_optimal_protocol(output_dir: Path, llmbo_summary_paths: Sequence[Path], parego_summary_paths: Sequence[Path]) -> Dict[str, Any]:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    opt_png, opt_pdf, metrics = _plot_optimal_protocol_figure(llmbo_summary_paths, parego_summary_paths, output_dir)
+    manifest = {
+        "figure_family": "llmbo_vs_parego_optimal_protocols_5seeds",
+        "notes": [
+            "Five-seed mean trajectory comparison on the number of optimal charging protocols.",
+            "The shaded band is the across-seed standard deviation at each iteration.",
+        ],
+        "mode": "multiseed_optimal_protocols",
+        "metrics": metrics,
+        "artifacts": {
+            "optimal_protocol_png": str(opt_png.relative_to(PROJECT_ROOT)).replace("\\", "/"),
+            "optimal_protocol_pdf": str(opt_pdf.relative_to(PROJECT_ROOT)).replace("\\", "/"),
+        },
+    }
+    _write_manifest(output_dir, manifest)
     return manifest
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Plot LLMBO-MO vs ParEGO curves in a paper-like style.")
+    parser = argparse.ArgumentParser(description="Plot single-seed HV curves and multi-seed optimal-protocol curves for LLMBO-MO vs ParEGO.")
+    parser.add_argument(
+        "--mode",
+        choices=["single-seed-hv", "multiseed-optimal"],
+        required=True,
+        help="Which figure family to generate.",
+    )
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=DEFAULT_OUTPUT_DIR,
-        help="Directory for the generated PNG/PDF figures and manifest.json.",
+        required=True,
+        help="Directory for the generated figures and manifest.json.",
+    )
+    parser.add_argument(
+        "--llmbo-summary",
+        type=str,
+        default=str(DEFAULT_LLMBO_SUMMARY),
+        help="Single-seed LLMBO summary path for HV mode.",
+    )
+    parser.add_argument(
+        "--parego-summary",
+        type=str,
+        default=str(DEFAULT_PAREGO_REFERENCE_SUMMARY),
+        help="Single-seed ParEGO summary path for HV mode.",
+    )
+    parser.add_argument(
+        "--llmbo-glob",
+        type=str,
+        default=DEFAULT_LLMBO_MULTI_GLOB,
+        help="Project-root-relative glob for multi-seed LLMBO summaries.",
+    )
+    parser.add_argument(
+        "--parego-glob",
+        type=str,
+        default=DEFAULT_PAREGO_MULTI_GLOB,
+        help="Project-root-relative glob for multi-seed ParEGO summaries.",
     )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
-    manifest = build_figures(args.output_dir)
+    output_dir = args.output_dir if args.output_dir.is_absolute() else PROJECT_ROOT / args.output_dir
+    if args.mode == "single-seed-hv":
+        manifest = build_single_seed_hv(
+            output_dir=output_dir,
+            llmbo_summary_path=_coerce_path(args.llmbo_summary),
+            parego_summary_path=_coerce_path(args.parego_summary),
+        )
+    else:
+        llmbo_summary_paths = _resolve_summary_paths(args.llmbo_glob)
+        parego_summary_paths = _resolve_summary_paths(args.parego_glob)
+        manifest = build_multiseed_optimal_protocol(
+            output_dir=output_dir,
+            llmbo_summary_paths=llmbo_summary_paths,
+            parego_summary_paths=parego_summary_paths,
+        )
     print(json.dumps(manifest, indent=2, ensure_ascii=False))
 
 

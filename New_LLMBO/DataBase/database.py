@@ -21,6 +21,7 @@ import numpy as np
 from llmbo.scalarization import (
     apply_min_range_floor,
     canonical_hv_from_raw,
+    compute_parego_reference_from_raw,
     compute_tchebycheff_from_raw,
     compute_tchebycheff_from_raw_with_ideal,
 )
@@ -209,6 +210,8 @@ class ObservationDB:
         self._y_max:   np.ndarray = np.ones(NUM_OBJECTIVES)
         self._ideal_point_raw: Optional[np.ndarray] = None
         self._eta:     float      = 0.05
+        self._scalarization_mode: str = "log_ideal_gap"
+        self._parego_invert_weights: bool = False
         self._f_min:   float      = float("inf")
         self._prev_f_min: float   = float("inf")
         self._theta_best: Optional[np.ndarray] = None
@@ -946,10 +949,14 @@ class ObservationDB:
         y_max:  Optional[np.ndarray] = None,
         ideal_point_raw: Optional[np.ndarray] = None,
         eta:    float                = 0.05,
+        scalarization_mode: str      = "log_ideal_gap",
+        parego_invert_weights: bool  = False,
     ) -> None:
         """每迭代由 optimizer.py 调用，注入当前 Tchebycheff 权重和动态 min/max。"""
         self._w_vec = np.asarray(w_vec, dtype=float).ravel()
         self._eta   = float(eta)
+        self._scalarization_mode = str(scalarization_mode or "log_ideal_gap").lower()
+        self._parego_invert_weights = bool(parego_invert_weights)
         if y_min is not None:
             self._y_min = np.asarray(y_min, dtype=float).ravel()
         if y_max is not None:
@@ -967,6 +974,36 @@ class ObservationDB:
             return
 
         Y_raw = np.array([o.objectives for o in feasible], dtype=float)
+
+        if self._scalarization_mode == "parego_reference":
+            F_tch = compute_parego_reference_from_raw(
+                Y_raw,
+                self._w_vec,
+                eta=self._eta,
+                eps_min=1e-6,
+                invert_weights=self._parego_invert_weights,
+            )
+            best_idx = int(np.argmin(F_tch))
+            self._prev_f_min = self._f_min
+            self._f_min = float(F_tch[best_idx])
+            self._theta_best = feasible[best_idx].theta.copy()
+
+            if update_stagnation:
+                current_hv = self.compute_hypervolume()
+                current_pareto_size = self.pareto_size
+                hv_improvement = current_hv - self._prev_hv_for_stagnation
+                pf_grew = current_pareto_size > self._prev_pareto_size
+                improved = (hv_improvement > 1e-3) or pf_grew
+                self._improvement_window.append(improved)
+
+                if len(self._improvement_window) == 2 and not any(self._improvement_window):
+                    self._stagnation_count += 1
+                elif improved:
+                    self._stagnation_count = 0
+
+                self._prev_hv_for_stagnation = current_hv
+                self._prev_pareto_size = current_pareto_size
+            return
 
         # log₁₀ 变换
         Y_tilde = Y_raw.copy()

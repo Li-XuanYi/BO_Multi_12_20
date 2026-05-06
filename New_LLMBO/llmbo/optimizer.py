@@ -38,6 +38,7 @@ from llmbo.scalarization import (
     apply_min_range_floor,
     canonical_hv_from_raw,
     compute_dynamic_bounds,
+    compute_parego_reference_from_raw,
     compute_tchebycheff_from_raw_with_ideal,
     log_transform_objectives,
 )
@@ -115,10 +116,15 @@ DEFAULT_CONFIG = {
     "weight_strategy": "riesz_relaxed_cycle",
     "weight_simplex_divisions": 10,
     "weight_count": 30,
+    "weight_eps_min": 0.01,
+    "weight_sampling_mode": "cycle_without_replacement",
+    "scalarization_mode": "log_ideal_gap",
     "acquisition_strategy": "ei_lbfgsb",
     "parego_lcb_variance_weight": 0.5,
     "parego_de_population": 30,
     "parego_de_maxiter": 200,
+    "parego_invert_weights": False,
+    "parego_use_model_standardized_lcb": False,
     "w_sample_seed": 0,
     "init_seed": 2026,
     "eta": 0.05,
@@ -272,6 +278,28 @@ EXPERIMENT_PRESETS = {
         "parego_lcb_variance_weight": 0.5,
         "parego_de_population": 30,
         "parego_de_maxiter": 200,
+    },
+    "parego_matlab_reference": {
+        "n_warmstart": 0,
+        "n_random_init": 6,
+        "enable_iterative_guidance": False,
+        "enable_gp_llm_coupling": False,
+        "enable_acq_prior_coupling": False,
+        "enable_proposal_sampler": False,
+        "enable_llm_rerank": False,
+        "enable_region_lifted_gp": False,
+        "target_transform_mode": "none",
+        "weight_strategy": "parego_das_dennis_cycle",
+        "weight_simplex_divisions": 30,
+        "weight_eps_min": 1e-6,
+        "weight_sampling_mode": "random_with_replacement",
+        "scalarization_mode": "parego_reference",
+        "acquisition_strategy": "parego_lcb_de",
+        "parego_lcb_variance_weight": 0.5,
+        "parego_de_population": 30,
+        "parego_de_maxiter": 200,
+        "parego_invert_weights": True,
+        "parego_use_model_standardized_lcb": True,
     },
     "warmstart_safe_tiebreak": {
         "n_warmstart": 3,
@@ -636,6 +664,7 @@ class BayesOptimizer:
             parego_lcb_variance_weight=self.cfg.get("parego_lcb_variance_weight", 0.5),
             parego_de_population=self.cfg.get("parego_de_population", 30),
             parego_de_maxiter=self.cfg.get("parego_de_maxiter", 200),
+            parego_use_model_standardized_lcb=self.cfg.get("parego_use_model_standardized_lcb", False),
         )
 
         if bool(self.cfg.get("enable_proposal_sampler", False)):
@@ -649,19 +678,20 @@ class BayesOptimizer:
             self.proposal = None
 
         weight_strategy = str(self.cfg.get("weight_strategy", "riesz_relaxed_cycle")).lower()
+        weight_eps_min = float(self.cfg.get("weight_eps_min", 0.01))
         if weight_strategy == "parego_reference_cycle":
             self._weight_set = generate_reference_parego_weight_set(
                 n_obj=3,
                 n_weights=int(self.cfg.get("weight_count", 30)),
                 seed=int(self.cfg.get("riesz_seed", 42)),
-                eps_min=0.01,
+                eps_min=weight_eps_min,
             )
             logger.info("Reference ParEGO weight set ready: shape=%s", self._weight_set.shape)
         elif weight_strategy == "parego_das_dennis_cycle":
             self._weight_set = generate_das_dennis_weight_set(
                 n_obj=3,
                 n_div=int(self.cfg.get("weight_simplex_divisions", 10)),
-                eps_min=0.01,
+                eps_min=weight_eps_min,
             )
             logger.info("ParEGO Das-Dennis weight set ready: shape=%s", self._weight_set.shape)
         elif weight_strategy == "riesz_relaxed_cycle":
@@ -803,6 +833,8 @@ class BayesOptimizer:
             y_max=self._y_tilde_max,
             ideal_point_raw=ideal_point_raw,
             eta=float(self.cfg["eta"]),
+            scalarization_mode=str(self.cfg.get("scalarization_mode", "log_ideal_gap")),
+            parego_invert_weights=bool(self.cfg.get("parego_invert_weights", False)),
         )
         self.af.initialize(self.database, llm_prior=self.llm)
 
@@ -841,14 +873,13 @@ class BayesOptimizer:
                 y_max=self._y_tilde_max,
                 ideal_point_raw=ideal_point_raw,
                 eta=float(self.cfg["eta"]),
+                scalarization_mode=str(self.cfg.get("scalarization_mode", "log_ideal_gap")),
+                parego_invert_weights=bool(self.cfg.get("parego_invert_weights", False)),
             )
-            scalar_y = compute_tchebycheff_from_raw_with_ideal(
+            scalar_y = self._compute_scalarized_targets(
                 Y_raw=Y_raw,
                 w_vec=w_vec,
                 ideal_point_raw=ideal_point_raw,
-                y_min=self._y_tilde_min,
-                y_max=self._y_tilde_max,
-                eta=float(self.cfg["eta"]),
             )
             self.gp.fit(X_train, scalar_y, w_vec=w_vec, t=t)
 
@@ -1764,7 +1795,36 @@ class BayesOptimizer:
             min_fraction=0.05,
         )
 
+    def _compute_scalarized_targets(
+        self,
+        *,
+        Y_raw: np.ndarray,
+        w_vec: np.ndarray,
+        ideal_point_raw: np.ndarray,
+    ) -> np.ndarray:
+        mode = str(self.cfg.get("scalarization_mode", "log_ideal_gap") or "log_ideal_gap").lower()
+        if mode == "parego_reference":
+            return compute_parego_reference_from_raw(
+                Y_raw=Y_raw,
+                w_vec=w_vec,
+                eta=float(self.cfg.get("eta", 0.05)),
+                eps_min=1e-6,
+                invert_weights=bool(self.cfg.get("parego_invert_weights", False)),
+            )
+        return compute_tchebycheff_from_raw_with_ideal(
+            Y_raw=Y_raw,
+            w_vec=w_vec,
+            ideal_point_raw=ideal_point_raw,
+            y_min=self._y_tilde_min,
+            y_max=self._y_tilde_max,
+            eta=float(self.cfg.get("eta", 0.05)),
+        )
+
     def _next_weight(self) -> np.ndarray:
+        sampling_mode = str(self.cfg.get("weight_sampling_mode", "cycle_without_replacement") or "cycle_without_replacement").lower()
+        if sampling_mode == "random_with_replacement":
+            idx = int(self._rng.integers(0, len(self._weight_set)))
+            return self._weight_set[idx]
         if not self._weight_order:
             order = self._rng.permutation(len(self._weight_set))
             self._weight_order = order.tolist()

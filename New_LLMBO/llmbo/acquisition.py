@@ -521,6 +521,7 @@ class SimpleParEGOAcquisitionFunction(AcquisitionFunction):
         lcb_variance_weight: float = 0.5,
         de_population: int = 30,
         de_maxiter: int = 200,
+        use_standardized_model_space: bool = False,
     ) -> None:
         super().__init__(
             gp=gp,
@@ -534,6 +535,7 @@ class SimpleParEGOAcquisitionFunction(AcquisitionFunction):
         self.lcb_variance_weight = float(lcb_variance_weight)
         self.de_population = max(int(de_population), len(PARAM_KEYS))
         self.de_maxiter = max(int(de_maxiter), 1)
+        self.use_standardized_model_space = bool(use_standardized_model_space)
 
     def step(
         self,
@@ -564,7 +566,10 @@ class SimpleParEGOAcquisitionFunction(AcquisitionFunction):
 
         best_theta = self._optimize_with_de()
         candidate_pool = np.vstack([best_theta])
-        mean, std = self.gp.predict(candidate_pool)
+        if self.use_standardized_model_space:
+            mean, std = self.gp.predict_standardized(candidate_pool)
+        else:
+            mean, std = self.gp.predict(candidate_pool)
         variance = np.square(std)
         lcb = mean - float(self.lcb_variance_weight) * variance
         score = -lcb
@@ -585,6 +590,7 @@ class SimpleParEGOAcquisitionFunction(AcquisitionFunction):
                 "lcb_variance_weight": float(self.lcb_variance_weight),
                 "de_population": int(self.de_population),
                 "de_maxiter": int(self.de_maxiter),
+                "use_standardized_model_space": bool(self.use_standardized_model_space),
                 "best_lcb": float(lcb[0]),
                 "stagnation_count": stagnation_count,
             },
@@ -600,7 +606,10 @@ class SimpleParEGOAcquisitionFunction(AcquisitionFunction):
 
         def objective(x: np.ndarray) -> float:
             x = self._repair_theta(x)
-            mean, std = self.gp.predict(x[None, :])
+            if self.use_standardized_model_space:
+                mean, std = self.gp.predict_standardized(x[None, :])
+            else:
+                mean, std = self.gp.predict(x[None, :])
             variance = float(std[0]) ** 2
             return float(mean[0]) - float(self.lcb_variance_weight) * variance
 
@@ -714,6 +723,7 @@ def build_acquisition_function(
     parego_lcb_variance_weight: float = 0.5,
     parego_de_population: int = 30,
     parego_de_maxiter: int = 200,
+    parego_use_model_standardized_lcb: bool = False,
     **_: Any,
 ) -> AcquisitionFunction:
     strategy = str(acquisition_strategy or "ei_lbfgsb").lower()
@@ -726,6 +736,7 @@ def build_acquisition_function(
             lcb_variance_weight=parego_lcb_variance_weight,
             de_population=parego_de_population,
             de_maxiter=parego_de_maxiter,
+            use_standardized_model_space=parego_use_model_standardized_lcb,
         )
     return AcquisitionFunction(
         gp=gp,
