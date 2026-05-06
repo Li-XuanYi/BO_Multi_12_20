@@ -4,7 +4,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Sequence, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
 import matplotlib
 
@@ -56,9 +56,17 @@ DEFAULT_LLMBO_MULTI_GLOB = (
 DEFAULT_PAREGO_MULTI_GLOB = (
     "optimized_experiments/parego_matlab_reference_5seeds_50iter_2026_05_06/seed*/parego_matlab_reference/summary.json"
 )
+DEFAULT_LLMBO_HV_BAND_GLOB = (
+    "optimized_experiments/region_lift_50iter_seed01234_2026_04_29/seed*/warmstart_region_lifted_gp/summary.json"
+)
+DEFAULT_PAREGO_HV_BAND_GLOB = (
+    "optimized_experiments/parego_matlab_reference_5seeds_50iter_2026_05_06/seed*/parego_matlab_reference/summary.json"
+)
 
 PAREGO_COLOR = "#5da857"
 LLMBO_COLOR = "#3d78a8"
+PAREGO_HV_COLOR = "#4e8fb5"
+LLMBO_HV_COLOR = "#c85d6b"
 
 
 def _load_json(path: Path) -> Dict[str, Any]:
@@ -199,6 +207,44 @@ def _stack_metric(
     }
 
 
+def _build_uniform_band_from_multiseed(
+    summary_paths: Sequence[Path],
+    *,
+    metric_key: str = "hv",
+    trace_mode: str = "eval",
+    smooth_window: int = 9,
+    lower_quantile: float = 0.20,
+    upper_quantile: float = 0.80,
+    blend_with_median: float = 0.40,
+) -> Dict[str, Any]:
+    stacked = _stack_metric(summary_paths, metric_key=metric_key, trace_mode=trace_mode)
+    values = np.asarray(stacked["values"], dtype=float)
+    step_values = np.diff(values, axis=1, prepend=values[:, :1])
+    raw_std = values.std(axis=0)
+    step_std = step_values.std(axis=0)
+
+    smoothed_step_std = _smooth_1d(step_std, smooth_window)
+    q_low = float(np.quantile(smoothed_step_std, lower_quantile))
+    q_high = float(np.quantile(smoothed_step_std, upper_quantile))
+    clipped = np.clip(smoothed_step_std, q_low, q_high)
+    median = float(np.median(clipped))
+    band = (1.0 - float(blend_with_median)) * clipped + float(blend_with_median) * median
+
+    return {
+        "x": stacked["x"],
+        "band": np.asarray(band, dtype=float),
+        "n_runs": int(stacked["n_runs"]),
+        "sources": stacked["sources"],
+        "raw_std": np.asarray(raw_std, dtype=float),
+        "step_std": np.asarray(step_std, dtype=float),
+        "smoothed_step_std": np.asarray(smoothed_step_std, dtype=float),
+        "lower_quantile": float(lower_quantile),
+        "upper_quantile": float(upper_quantile),
+        "blend_with_median": float(blend_with_median),
+        "smooth_window": int(_normalized_window(smooth_window)),
+    }
+
+
 def _plot_single_seed_with_visual_band(
     ax: plt.Axes,
     x: np.ndarray,
@@ -210,32 +256,38 @@ def _plot_single_seed_with_visual_band(
     band_peak_scale: float,
     band_window: int = 7,
     alpha: float = 0.14,
+    band_half_widths: Optional[np.ndarray] = None,
 ) -> None:
     values = np.asarray(y, dtype=float)
-    diffs = np.diff(values, prepend=values[0])
-
-    width = _normalized_window(band_window)
-    half = width // 2
-    local_step_std = np.zeros_like(values, dtype=float)
-    local_step_mean = np.zeros_like(values, dtype=float)
-
-    for idx in range(values.size):
-        lo = max(0, idx - half)
-        hi = min(values.size, idx + half + 1)
-        segment = diffs[lo:hi]
-        local_step_std[idx] = float(np.std(segment, ddof=0))
-        local_step_mean[idx] = float(np.mean(np.abs(segment)))
-
-    activity = local_step_std + 0.70 * local_step_mean
-    activity = _smooth_1d(activity, max(3, width - 2))
-    max_activity = float(np.max(activity))
-    if max_activity > 0.0:
-        normalized = np.power(activity / max_activity, 0.85)
+    if band_half_widths is not None:
+        band = np.asarray(band_half_widths, dtype=float)
+        if band.shape != values.shape:
+            raise ValueError("band_half_widths shape mismatch")
     else:
-        normalized = np.zeros_like(activity, dtype=float)
+        diffs = np.diff(values, prepend=values[0])
 
-    band = float(band_half_width) * (0.65 + (float(band_peak_scale) - 0.65) * normalized)
-    band = _smooth_1d(band, max(3, width - 2))
+        width = _normalized_window(band_window)
+        half = width // 2
+        local_step_std = np.zeros_like(values, dtype=float)
+        local_step_mean = np.zeros_like(values, dtype=float)
+
+        for idx in range(values.size):
+            lo = max(0, idx - half)
+            hi = min(values.size, idx + half + 1)
+            segment = diffs[lo:hi]
+            local_step_std[idx] = float(np.std(segment, ddof=0))
+            local_step_mean[idx] = float(np.mean(np.abs(segment)))
+
+        activity = local_step_std + 0.70 * local_step_mean
+        activity = _smooth_1d(activity, max(3, width - 2))
+        max_activity = float(np.max(activity))
+        if max_activity > 0.0:
+            normalized = np.power(activity / max_activity, 0.85)
+        else:
+            normalized = np.zeros_like(activity, dtype=float)
+
+        band = float(band_half_width) * (0.65 + (float(band_peak_scale) - 0.65) * normalized)
+        band = _smooth_1d(band, max(3, width - 2))
     lower = values - band
     upper = values + band
     ax.fill_between(x, lower, upper, color=color, alpha=alpha, linewidth=0.0)
@@ -262,6 +314,9 @@ def _plot_hv_figure(
     llmbo_summary_path: Path,
     parego_summary_path: Path,
     output_dir: Path,
+    *,
+    llmbo_band_profile: Optional[Dict[str, Any]] = None,
+    parego_band_profile: Optional[Dict[str, Any]] = None,
 ) -> Tuple[Path, Path, Dict[str, Any]]:
     _configure_plot_style()
     fig, ax = plt.subplots(figsize=(7.0, 6.0))
@@ -271,27 +326,41 @@ def _plot_hv_figure(
     llmbo_trace = _extract_eval_trace(llmbo_summary)
     parego_trace = _extract_eval_trace(parego_summary)
 
+    llmbo_band = None
+    if llmbo_band_profile is not None:
+        if not np.array_equal(np.asarray(llmbo_band_profile["x"], dtype=int), llmbo_trace["x"]):
+            raise ValueError("LLMBO band profile x-axis mismatch")
+        llmbo_band = np.asarray(llmbo_band_profile["band"], dtype=float)
+
+    parego_band = None
+    if parego_band_profile is not None:
+        if not np.array_equal(np.asarray(parego_band_profile["x"], dtype=int), parego_trace["x"]):
+            raise ValueError("ParEGO band profile x-axis mismatch")
+        parego_band = np.asarray(parego_band_profile["band"], dtype=float)
+
     _plot_single_seed_with_visual_band(
         ax,
         parego_trace["x"],
         parego_trace["hv"],
-        color=PAREGO_COLOR,
+        color=PAREGO_HV_COLOR,
         label="ParEGO",
         band_half_width=0.0046,
         band_peak_scale=2.10,
         band_window=9,
         alpha=0.10,
+        band_half_widths=parego_band,
     )
     _plot_single_seed_with_visual_band(
         ax,
         llmbo_trace["x"],
         llmbo_trace["hv"],
-        color=LLMBO_COLOR,
+        color=LLMBO_HV_COLOR,
         label="LLMBO-MO",
         band_half_width=0.0038,
         band_peak_scale=1.85,
         band_window=9,
         alpha=0.10,
+        band_half_widths=llmbo_band,
     )
 
     y_all = np.concatenate([llmbo_trace["hv"], parego_trace["hv"]])
@@ -324,6 +393,26 @@ def _plot_hv_figure(
         "parego_display_hv_final": float(parego_summary.get("display_hv", 0.0)),
         "llmbo_canonical_hv_final": float(llmbo_summary.get("canonical_hv", 0.0)),
         "parego_canonical_hv_final": float(parego_summary.get("canonical_hv", 0.0)),
+        "llmbo_band_profile": None
+        if llmbo_band_profile is None
+        else {
+            "n_runs": int(llmbo_band_profile["n_runs"]),
+            "sources": [str(Path(path).relative_to(PROJECT_ROOT)).replace("\\", "/") for path in llmbo_band_profile["sources"]],
+            "smooth_window": int(llmbo_band_profile["smooth_window"]),
+            "lower_quantile": float(llmbo_band_profile["lower_quantile"]),
+            "upper_quantile": float(llmbo_band_profile["upper_quantile"]),
+            "blend_with_median": float(llmbo_band_profile["blend_with_median"]),
+        },
+        "parego_band_profile": None
+        if parego_band_profile is None
+        else {
+            "n_runs": int(parego_band_profile["n_runs"]),
+            "sources": [str(Path(path).relative_to(PROJECT_ROOT)).replace("\\", "/") for path in parego_band_profile["sources"]],
+            "smooth_window": int(parego_band_profile["smooth_window"]),
+            "lower_quantile": float(parego_band_profile["lower_quantile"]),
+            "upper_quantile": float(parego_band_profile["upper_quantile"]),
+            "blend_with_median": float(parego_band_profile["blend_with_median"]),
+        },
     }
     return png_path, pdf_path, manifest
 
@@ -409,15 +498,58 @@ def _write_manifest(output_dir: Path, payload: Dict[str, Any]) -> Path:
     return manifest_path
 
 
-def build_single_seed_hv(output_dir: Path, llmbo_summary_path: Path, parego_summary_path: Path) -> Dict[str, Any]:
+def build_single_seed_hv(
+    output_dir: Path,
+    llmbo_summary_path: Path,
+    parego_summary_path: Path,
+    *,
+    llmbo_band_glob: Optional[str] = None,
+    parego_band_glob: Optional[str] = None,
+) -> Dict[str, Any]:
     output_dir.mkdir(parents=True, exist_ok=True)
-    hv_png, hv_pdf, metrics = _plot_hv_figure(llmbo_summary_path, parego_summary_path, output_dir)
+    llmbo_band_profile = None
+    if llmbo_band_glob:
+        llmbo_band_paths = _resolve_summary_paths(llmbo_band_glob)
+        if llmbo_band_paths:
+            llmbo_band_profile = _build_uniform_band_from_multiseed(
+                llmbo_band_paths,
+                metric_key="hv",
+                trace_mode="eval",
+            )
+
+    parego_band_profile = None
+    if parego_band_glob:
+        parego_band_paths = _resolve_summary_paths(parego_band_glob)
+        if parego_band_paths:
+            parego_band_profile = _build_uniform_band_from_multiseed(
+                parego_band_paths,
+                metric_key="hv",
+                trace_mode="eval",
+            )
+
+    hv_png, hv_pdf, metrics = _plot_hv_figure(
+        llmbo_summary_path,
+        parego_summary_path,
+        output_dir,
+        llmbo_band_profile=llmbo_band_profile,
+        parego_band_profile=parego_band_profile,
+    )
+
+    notes = ["Single-seed trajectory comparison for seed=8409, 50 iterations."]
+    if llmbo_band_profile is not None or parego_band_profile is not None:
+        notes.append(
+            "The shaded band uses cross-seed step std from proxy 5-seed runs, then smooths and clips it for a more uniform visual width."
+        )
+        if parego_band_glob and "parego_matlab_reference_5seeds_50iter_2026_05_06" in parego_band_glob and "parego_matlab_reference" not in str(parego_summary_path):
+            notes.append(
+                "ParEGO's band uses the nearest available 5-seed matlab-reference proxy because no multi-seed baseline ParEGO directory was found."
+            )
+    else:
+        notes.append("The shaded band is a smoothed local-volatility visual envelope for readability, not a statistical confidence interval.")
+
     manifest = {
         "figure_family": "llmbo_vs_parego_seed8409_hv",
-        "notes": [
-            "Single-seed trajectory comparison for seed=8409, 50 iterations.",
-            "The shaded band is a smoothed local-volatility visual envelope for readability, not a statistical confidence interval.",
-        ],
+        "notes": notes,
         "mode": "single_seed_hv",
         "metrics": metrics,
         "artifacts": {
@@ -476,6 +608,18 @@ def parse_args() -> argparse.Namespace:
         help="Single-seed ParEGO summary path for HV mode.",
     )
     parser.add_argument(
+        "--llmbo-band-glob",
+        type=str,
+        default=DEFAULT_LLMBO_HV_BAND_GLOB,
+        help="Project-root-relative glob for proxy multi-seed LLMBO summaries used to build the HV band.",
+    )
+    parser.add_argument(
+        "--parego-band-glob",
+        type=str,
+        default=DEFAULT_PAREGO_HV_BAND_GLOB,
+        help="Project-root-relative glob for proxy multi-seed ParEGO summaries used to build the HV band.",
+    )
+    parser.add_argument(
         "--llmbo-glob",
         type=str,
         default=DEFAULT_LLMBO_MULTI_GLOB,
@@ -498,6 +642,8 @@ def main() -> None:
             output_dir=output_dir,
             llmbo_summary_path=_coerce_path(args.llmbo_summary),
             parego_summary_path=_coerce_path(args.parego_summary),
+            llmbo_band_glob=args.llmbo_band_glob,
+            parego_band_glob=args.parego_band_glob,
         )
     else:
         llmbo_summary_paths = _resolve_summary_paths(args.llmbo_glob)
