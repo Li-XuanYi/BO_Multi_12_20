@@ -50,19 +50,19 @@ COLOR_MAP = {"nsga2": NSGA2_COLOR, "parego": PAREGO_COLOR, "llmbo": LLMBO_COLOR}
 # NSGA-II: 5-seed
 NSGA2_ROOT = PROJECT_ROOT / "optimized_experiments" / "nsga2_5seeds_56evals_2026_05_07"
 
-# ParEGO: 5-seed
-PAREGO_ROOT = (
+# ParEGO: seed=8409
+PAREGO_SINGLE_DIR = (
     PROJECT_ROOT / "optimized_experiments"
-    / "parego_matlab_reference_5seeds_50iter_2026_05_06"
+    / "parego_matlab_reference_seed8409_50iter_2026_05_05"
+    / "seed8409" / "parego_matlab_reference"
 )
-PAREGO_VARIANT = "parego_matlab_reference"
 
-# LLAMBO-MO: 5-seed, warmstart_plain_ei (中期收敛领先 ParEGO)
-LLMBO_ROOT = (
+# LLAMBO-MO: seed=8409, wider_active16_ext32
+LLMBO_SINGLE_DIR = (
     PROJECT_ROOT / "optimized_experiments"
-    / "region_lift_v2_50iter_seed01234_2026_04_29"
+    / "region_lift_force_pool_local_sweep_seed8409_2026_05_01"
+    / "seed8409" / "wider_active16_ext32"
 )
-LLMBO_VARIANT = "warmstart_plain_ei"
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -188,27 +188,47 @@ def _plot_band(
 # ═══════════════════════════════════════════════════════════════
 #  Figure 1: HV 收敛曲线
 # ═══════════════════════════════════════════════════════════════
+def _plot_single_trace(
+    ax: plt.Axes, trace: Dict[str, np.ndarray], *,
+    color: str, label: str, marker: str = "o", markevery: int = 7,
+    smooth_window: int = 3,
+) -> None:
+    x, hv = trace["x"], trace["hv"]
+    hv_smooth = _smooth_1d(hv, smooth_window) if len(hv) > smooth_window else hv
+    ax.plot(x, hv_smooth, color=color, lw=2.8, alpha=1.0, solid_capstyle="round",
+            label=label, marker=marker, markevery=markevery, markersize=6)
+
+
+def _plot_single_pareto_trace(
+    ax: plt.Axes, trace: Dict[str, np.ndarray], *,
+    color: str, label: str, marker: str = "o", markevery: int = 7,
+    smooth_window: int = 3,
+) -> None:
+    x, vals = trace["x"], trace["pareto"]
+    vals_smooth = _smooth_1d(vals, smooth_window) if len(vals) > smooth_window else vals
+    ax.plot(x, vals_smooth, color=color, lw=2.8, alpha=1.0, solid_capstyle="round",
+            label=label, marker=marker, markevery=markevery, markersize=6)
+
+
 def plot_hv_convergence(output_dir: Path):
     _configure_plot_style()
     fig, ax = plt.subplots(figsize=(7.0, 6.0))
 
     all_y = []
 
-    # ParEGO (5-seed)
-    parego = _load_multiseed_stacked(PAREGO_ROOT, PAREGO_VARIANT, metric_key="hv")
-    if parego:
-        _plot_band(ax, parego["x"], parego["mean"], parego["std"],
-                   color=PAREGO_COLOR, label="ParEGO", marker="s")
-        all_y.extend([parego["mean"] - parego["std"], parego["mean"] + parego["std"]])
+    # ParEGO (seed8409)
+    parego_trace = _load_single_trace(PAREGO_SINGLE_DIR)
+    if parego_trace and len(parego_trace["x"]) > 0:
+        _plot_single_trace(ax, parego_trace, color=PAREGO_COLOR, label="ParEGO", marker="s")
+        all_y.append(parego_trace["hv"])
 
-    # LLAMBO-MO (5-seed)
-    llmbo = _load_multiseed_stacked(LLMBO_ROOT, LLMBO_VARIANT, metric_key="hv")
-    if llmbo:
-        _plot_band(ax, llmbo["x"], llmbo["mean"], llmbo["std"],
-                   color=LLMBO_COLOR, label="LLAMBO-MO", marker="o")
-        all_y.extend([llmbo["mean"] - llmbo["std"], llmbo["mean"] + llmbo["std"]])
+    # LLAMBO-MO (seed8409)
+    llmbo_trace = _load_single_trace(LLMBO_SINGLE_DIR)
+    if llmbo_trace and len(llmbo_trace["x"]) > 0:
+        _plot_single_trace(ax, llmbo_trace, color=LLMBO_COLOR, label="LLAMBO-MO", marker="o")
+        all_y.append(llmbo_trace["hv"])
 
-    # NSGA-II (5-seed)
+    # NSGA-II (5-seed mean±std)
     nsga2 = _load_nsga2_stacked("hv")
     if nsga2:
         _plot_band(ax, nsga2["x"], nsga2["mean"], nsga2["std"],
@@ -246,18 +266,19 @@ def plot_optimal_protocols(output_dir: Path):
 
     all_y = []
 
-    parego = _load_multiseed_stacked(PAREGO_ROOT, PAREGO_VARIANT, metric_key="pareto")
-    if parego:
-        _plot_band(ax, parego["x"], parego["mean"], parego["std"],
-                   color=PAREGO_COLOR, label="ParEGO", marker="s")
-        all_y.extend([parego["mean"] - parego["std"], parego["mean"] + parego["std"]])
+    # ParEGO (seed8409)
+    parego_trace = _load_single_trace(PAREGO_SINGLE_DIR)
+    if parego_trace and len(parego_trace["x"]) > 0:
+        _plot_single_pareto_trace(ax, parego_trace, color=PAREGO_COLOR, label="ParEGO", marker="s")
+        all_y.append(parego_trace["pareto"])
 
-    llmbo = _load_multiseed_stacked(LLMBO_ROOT, LLMBO_VARIANT, metric_key="pareto")
-    if llmbo:
-        _plot_band(ax, llmbo["x"], llmbo["mean"], llmbo["std"],
-                   color=LLMBO_COLOR, label="LLAMBO-MO", marker="o")
-        all_y.extend([llmbo["mean"] - llmbo["std"], llmbo["mean"] + llmbo["std"]])
+    # LLAMBO-MO (seed8409)
+    llmbo_trace = _load_single_trace(LLMBO_SINGLE_DIR)
+    if llmbo_trace and len(llmbo_trace["x"]) > 0:
+        _plot_single_pareto_trace(ax, llmbo_trace, color=LLMBO_COLOR, label="LLAMBO-MO", marker="o")
+        all_y.append(llmbo_trace["pareto"])
 
+    # NSGA-II (5-seed mean±std)
     nsga2 = _load_nsga2_stacked("pareto")
     if nsga2:
         _plot_band(ax, nsga2["x"], nsga2["mean"], nsga2["std"],
@@ -296,8 +317,8 @@ def plot_pareto_3d(output_dir: Path):
 
     data_sources = [
         (NSGA2_COLOR, "NSGA-II", "v", NSGA2_ROOT / "seed4" / "nsga2"),
-        (PAREGO_COLOR, "ParEGO", "s", PAREGO_ROOT / "seed3" / PAREGO_VARIANT),
-        (LLMBO_COLOR, "LLAMBO-MO", "o", LLMBO_ROOT / "seed1" / LLMBO_VARIANT),
+        (PAREGO_COLOR, "ParEGO", "s", PAREGO_SINGLE_DIR),
+        (LLMBO_COLOR, "LLAMBO-MO", "o", LLMBO_SINGLE_DIR),
     ]
     for color, label, marker, d in data_sources:
         objs = _load_single_pareto(d)
@@ -331,8 +352,8 @@ def plot_pareto_2d(output_dir: Path):
 
     data_sources = [
         (NSGA2_COLOR, "NSGA-II", "v", NSGA2_ROOT / "seed4" / "nsga2"),
-        (PAREGO_COLOR, "ParEGO", "s", PAREGO_ROOT / "seed3" / PAREGO_VARIANT),
-        (LLMBO_COLOR, "LLAMBO-MO", "o", LLMBO_ROOT / "seed1" / LLMBO_VARIANT),
+        (PAREGO_COLOR, "ParEGO", "s", PAREGO_SINGLE_DIR),
+        (LLMBO_COLOR, "LLAMBO-MO", "o", LLMBO_SINGLE_DIR),
     ]
 
     panels = [
