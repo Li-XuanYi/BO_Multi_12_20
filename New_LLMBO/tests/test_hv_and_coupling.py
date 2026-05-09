@@ -15,7 +15,12 @@ from llmbo.constraint_policy import ConstraintPolicy
 from llm.llm_interface import PhysicsHeuristicFallback, ResponseParser
 from llmbo.gp_model import MaternGPModel
 from llmbo.optimizer import BayesOptimizer
-from llmbo.scalarization import compute_tchebycheff_from_raw_with_ideal
+from llmbo.scalarization import (
+    compute_objective_preprocess_context,
+    compute_tchebycheff,
+    compute_tchebycheff_from_raw_with_ideal,
+    log_transform_objectives,
+)
 from utils.constants import (
     DEFAULT_BOUNDS,
     DSOC_SUM_MAX,
@@ -111,6 +116,121 @@ def test_database_scalarization_matches_shared_module() -> None:
     assert np.isclose(db.get_f_min(), float(np.min(shared_scores)))
 
 
+def test_minmax_preprocess_matches_legacy_scalarization_default() -> None:
+    Y_raw = np.array(
+        [
+            [4200.0, 4.2, 0.80],
+            [3600.0, 4.0, 0.70],
+            [5000.0, 3.6, 0.60],
+        ],
+        dtype=float,
+    )
+    w_vec = np.array([0.55, 0.25, 0.20], dtype=float)
+    y_min = np.array([3.2, 0.0, -1.0], dtype=float)
+    y_max = np.array([4.0, 40.0, 1.0], dtype=float)
+    ideal = np.array([1800.0, 0.0, 0.3], dtype=float)
+
+    default_scores = compute_tchebycheff_from_raw_with_ideal(Y_raw, w_vec, ideal, y_min, y_max, eta=0.05)
+    explicit_scores = compute_tchebycheff_from_raw_with_ideal(
+        Y_raw,
+        w_vec,
+        ideal,
+        y_min,
+        y_max,
+        eta=0.05,
+        preprocess_mode="minmax",
+    )
+
+    assert np.allclose(explicit_scores, default_scores)
+
+
+def test_zscore_and_none_preprocess_are_reproducible() -> None:
+    Y_raw = np.array(
+        [
+            [4200.0, 4.2, 0.80],
+            [3600.0, 4.0, 0.70],
+            [5000.0, 3.6, 0.60],
+        ],
+        dtype=float,
+    )
+    w_vec = np.array([0.4, 0.35, 0.25], dtype=float)
+    ideal = np.array([1800.0, 0.0, 0.3], dtype=float)
+    ref = np.array([7200.0, 60.0, 2.0], dtype=float)
+    Y_tilde = log_transform_objectives(Y_raw)
+    ideal_tilde = log_transform_objectives(ideal[None, :])[0]
+
+    z_center, z_upper = compute_objective_preprocess_context(Y_tilde, ideal, ref, preprocess_mode="zscore")
+    z_scale = z_upper - z_center
+    expected_z = compute_tchebycheff(np.abs(Y_tilde - ideal_tilde[None, :]) / z_scale[None, :], w_vec, eta=0.05)
+    actual_z = compute_tchebycheff_from_raw_with_ideal(
+        Y_raw,
+        w_vec,
+        ideal,
+        z_center,
+        z_upper,
+        eta=0.05,
+        preprocess_mode="zscore",
+    )
+
+    none_center, none_upper = compute_objective_preprocess_context(Y_tilde, ideal, ref, preprocess_mode="none")
+    expected_none = compute_tchebycheff(np.abs(Y_tilde - ideal_tilde[None, :]), w_vec, eta=0.05)
+    actual_none = compute_tchebycheff_from_raw_with_ideal(
+        Y_raw,
+        w_vec,
+        ideal,
+        none_center,
+        none_upper,
+        eta=0.05,
+        preprocess_mode="none",
+    )
+
+    assert np.allclose(actual_z, expected_z)
+    assert np.allclose(actual_none, expected_none)
+
+
+def test_database_scalarization_matches_shared_module_for_all_preprocess_modes() -> None:
+    observations = [
+        (np.array([4.0, 3.5, 2.5, 0.25, 0.20]), np.array([4200.0, 4.2, 0.80])),
+        (np.array([5.0, 4.0, 2.8, 0.20, 0.18]), np.array([3600.0, 4.0, 0.70])),
+        (np.array([3.6, 3.1, 2.2, 0.30, 0.20]), np.array([5000.0, 3.6, 0.60])),
+    ]
+    Y_raw = np.array([obj for _, obj in observations], dtype=float)
+    w_vec = np.array([0.55, 0.25, 0.20], dtype=float)
+    ideal = np.array([1800.0, 0.0, 0.3], dtype=float)
+    ref = np.array([7200.0, 60.0, 2.0], dtype=float)
+    Y_tilde = log_transform_objectives(Y_raw)
+
+    for preprocess_mode in ("minmax", "zscore", "none"):
+        db = ObservationDB(ref_point=ref, ideal_point=ideal)
+        for theta, objectives in observations:
+            db.add_observation(theta=theta, objectives=objectives, feasible=True, source="test")
+        y_min, y_max = compute_objective_preprocess_context(
+            Y_tilde,
+            ideal,
+            ref,
+            preprocess_mode=preprocess_mode,
+        )
+        db.update_tchebycheff_context(
+            w_vec=w_vec,
+            y_min=y_min,
+            y_max=y_max,
+            ideal_point_raw=ideal,
+            eta=0.05,
+            objective_preprocess_mode=preprocess_mode,
+        )
+        shared_scores = compute_tchebycheff_from_raw_with_ideal(
+            Y_raw,
+            w_vec,
+            ideal,
+            y_min,
+            y_max,
+            eta=0.05,
+            preprocess_mode=preprocess_mode,
+        )
+
+        assert np.isclose(db.get_f_min(), float(np.min(shared_scores)))
+
+
 def test_warmstart_plain_ei_preset_disables_research_branches() -> None:
     bo = BayesOptimizer(config={"experiment_preset": "warmstart_plain_ei"})
 
@@ -122,6 +242,13 @@ def test_warmstart_plain_ei_preset_disables_research_branches() -> None:
     assert bo.cfg["enable_proposal_sampler"] is False
     assert bo.cfg["enable_llm_rerank"] is False
     assert bo.cfg["target_transform_mode"] == "none"
+    assert bo.cfg["objective_preprocess_mode"] == "minmax"
+
+
+def test_bayes_optimizer_accepts_objective_preprocess_mode_alias() -> None:
+    bo = BayesOptimizer(config={"experiment_preset": "warmstart_plain_ei", "objective_preprocess_mode": "z-score"})
+
+    assert bo.cfg["objective_preprocess_mode"] == "zscore"
 
 
 def test_constraint_policy_keeps_hard_and_soft_semantics_separate() -> None:

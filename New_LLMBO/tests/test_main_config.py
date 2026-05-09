@@ -25,6 +25,7 @@ def test_build_optimizer_config_mainline_defaults_are_explicit() -> None:
     assert flat["enable_llm_rerank"] is False
     assert flat["llm_rerank_mode"] == "none"
     assert flat["target_transform_mode"] == "none"
+    assert flat["objective_preprocess_mode"] == "minmax"
 
 
 def test_build_optimizer_config_risk_veto_preset_enables_safe_rerank() -> None:
@@ -63,6 +64,7 @@ def test_build_optimizer_config_region_lifted_preset_enables_region_lift() -> No
 
     assert flat["enable_region_lifted_gp"] is True
     assert flat["target_transform_mode"] == "none"
+    assert flat["objective_preprocess_mode"] == "minmax"
     assert flat["region_lift_external_influence_mode"] == "diagnostic_only"
     assert flat["region_lift_active_until"] >= 10
     assert flat["region_lift_anchor_weighting"] == "ei_softmax"

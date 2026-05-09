@@ -4,6 +4,22 @@ from typing import Tuple
 
 import numpy as np
 
+OBJECTIVE_PREPROCESS_MODES = ("minmax", "zscore", "none")
+
+
+def canonicalize_objective_preprocess_mode(mode: str | None) -> str:
+    normalized = str(mode or "minmax").lower().replace("-", "_")
+    if normalized in {"min_max", "minmax"}:
+        return "minmax"
+    if normalized in {"z", "zscore", "z_score", "standard", "standardize", "standardized"}:
+        return "zscore"
+    if normalized in {"none", "raw", "identity", "no"}:
+        return "none"
+    raise ValueError(
+        f"Unknown objective_preprocess_mode: {mode}. "
+        f"Expected one of {OBJECTIVE_PREPROCESS_MODES}."
+    )
+
 
 def log_transform_objectives(Y_raw: np.ndarray) -> np.ndarray:
     """Transform objectives to the HV/scalarization space.
@@ -51,6 +67,46 @@ def apply_min_range_floor(
     return y_min, y_max
 
 
+def compute_objective_preprocess_context(
+    Y_tilde: np.ndarray,
+    ideal_point_raw: np.ndarray,
+    ref_point_raw: np.ndarray,
+    preprocess_mode: str = "minmax",
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Return location/upper context for log-space objective preprocessing.
+
+    The returned pair is intentionally compatible with the historical
+    ``y_min``/``y_max`` contract: downstream code uses ``y_max - y_min`` as
+    the scale. For min-max this is literal bounds; for z-score it is
+    mean/mean+std; for none it is zeros/ones.
+    """
+    Y_tilde = np.atleast_2d(np.asarray(Y_tilde, dtype=float))
+    mode = canonicalize_objective_preprocess_mode(preprocess_mode)
+
+    if mode == "minmax":
+        y_min, y_max = compute_dynamic_bounds(Y_tilde)
+        return apply_min_range_floor(
+            y_min,
+            y_max,
+            ideal_point_raw,
+            ref_point_raw,
+            min_fraction=0.05,
+        )
+
+    if mode == "zscore":
+        center = np.mean(Y_tilde, axis=0)
+        scale = np.std(Y_tilde, axis=0)
+        global_min, global_max = compute_log_space_global_bounds(ideal_point_raw, ref_point_raw)
+        fallback_scale = np.maximum(global_max - global_min, 1.0)
+        bad_scale = (~np.isfinite(scale)) | (scale <= 1e-12)
+        scale = np.where(bad_scale, fallback_scale, scale)
+        return center, center + scale
+
+    zeros = np.zeros(Y_tilde.shape[1], dtype=float)
+    ones = np.ones(Y_tilde.shape[1], dtype=float)
+    return zeros, ones
+
+
 def normalize_objectives(
     Y_tilde: np.ndarray,
     y_min: np.ndarray,
@@ -88,9 +144,14 @@ def compute_tchebycheff_from_raw(
     y_min: np.ndarray,
     y_max: np.ndarray,
     eta: float = 0.05,
+    preprocess_mode: str = "minmax",
 ) -> np.ndarray:
     Y_tilde = log_transform_objectives(Y_raw)
-    Y_bar = normalize_objectives(Y_tilde, y_min, y_max)
+    mode = canonicalize_objective_preprocess_mode(preprocess_mode)
+    if mode == "none":
+        Y_bar = Y_tilde
+    else:
+        Y_bar = normalize_objectives(Y_tilde, y_min, y_max)
     return compute_tchebycheff(Y_bar, w_vec, eta=eta)
 
 
@@ -101,12 +162,17 @@ def compute_tchebycheff_from_raw_with_ideal(
     y_min: np.ndarray,
     y_max: np.ndarray,
     eta: float = 0.05,
+    preprocess_mode: str = "minmax",
 ) -> np.ndarray:
     Y_tilde = log_transform_objectives(Y_raw)
     ideal_tilde = log_transform_objectives(np.asarray(ideal_point_raw, dtype=float)[None, :])[0]
-    denom = np.asarray(y_max, dtype=float) - np.asarray(y_min, dtype=float)
-    denom = np.where(denom < 1e-12, 1.0, denom)
-    Y_gap = np.abs(Y_tilde - ideal_tilde[np.newaxis, :]) / denom[np.newaxis, :]
+    mode = canonicalize_objective_preprocess_mode(preprocess_mode)
+    if mode == "none":
+        Y_gap = np.abs(Y_tilde - ideal_tilde[np.newaxis, :])
+    else:
+        denom = np.asarray(y_max, dtype=float) - np.asarray(y_min, dtype=float)
+        denom = np.where(denom < 1e-12, 1.0, denom)
+        Y_gap = np.abs(Y_tilde - ideal_tilde[np.newaxis, :]) / denom[np.newaxis, :]
     return compute_tchebycheff(Y_gap, w_vec, eta=eta)
 
 
