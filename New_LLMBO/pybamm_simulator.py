@@ -42,8 +42,44 @@ logger = logging.getLogger(__name__)
 SOC_START = 0.0
 SOC_END   = 0.8
 SOC_SPAN  = SOC_END - SOC_START   # 0.8
-DEFAULT_BATTERY_NAME = "LG INR21700-M50"
+
+# ---- 支持的电池参数集 ----
+SUPPORTED_PARAM_SETS = ["Chen2020", "Ecker2015", "ORegan2022"]
 DEFAULT_PARAM_SET = "Chen2020"
+
+# ---- 各参数集的电池元数据 ----
+_PARAM_SET_METADATA = {
+    "Chen2020": {
+        "battery_name": "LG INR21700-M50",
+        "nominal_capacity_Ah": 5.0,
+        "voltage_max_V": 4.4,
+        "voltage_min_V": 2.5,
+        "temp_max_K": 328.15,  # 55°C
+        "temp_init_K": 298.15,  # 25°C
+        "negative_electrode": "graphite",
+        "positive_electrode": "NMC811",
+    },
+    "Ecker2015": {
+        "battery_name": "Ecker et al. (2015) LFP",
+        "nominal_capacity_Ah": 7.4,  # 18650 LFP cell
+        "voltage_max_V": 3.6,  # LFP typical max voltage
+        "voltage_min_V": 2.0,
+        "temp_max_K": 333.15,  # 60°C for LFP
+        "temp_init_K": 298.15,
+        "negative_electrode": "graphite",
+        "positive_electrode": "LFP",
+    },
+    "ORegan2022": {
+        "battery_name": "O'Regan et al. (2022) NMC",
+        "nominal_capacity_Ah": 4.85,  # 21700 NMC
+        "voltage_max_V": 4.2,
+        "voltage_min_V": 2.5,
+        "temp_max_K": 323.15,  # 50°C
+        "temp_init_K": 298.15,
+        "negative_electrode": "graphite",
+        "positive_electrode": "NMC",
+    },
+}
 
 # ---- Chen2020 负极浓度 → SOC 映射 (与 SPMe.py cal_soc "ours" 分支完全一致) ----
 _SOC_C_MIN = 872.9651389896292      # mol/m³  (≈ 0% SOC)
@@ -137,28 +173,30 @@ class PyBaMMSimulator:
 
     def __init__(
         self,
-        Q_nom:      float = 5.0,
+        Q_nom:      float = None,        # None → 使用 param_set 默认值
         SOH:        float = 1.0,
-        T_init:     float = 298.15,
+        T_init:     float = None,        # None → 使用 param_set 默认值
         V_init:     float = 2.8,
-        T_max:      float = 328.15,
-        V_max:      float = 4.4,
+        T_max:      float = None,        # None → 使用 param_set 默认值
+        V_max:      float = None,        # None → 使用 param_set 默认值
         use_crate:  bool  = False,
         aging_mode: str   = "empirical",   # "empirical" | "physical" | "both"
+        param_set:  str   = "Chen2020",    # "Chen2020" | "Ecker2015" | "ORegan2022"
     ) -> None:
         """
         Parameters
         ----------
-        Q_nom      : 额定容量 [Ah]（SOH=1 时）
+        Q_nom      : 额定容量 [Ah]（SOH=1 时）。None → 使用 param_set 的标称容量
         SOH        : 健康状态 (0, 1]，缩放有效容量与最大负极浓度
-        T_init     : 初始温度 [K]
+        T_init     : 初始温度 [K]。None → 使用 param_set 的默认值（通常 298.15K）
         V_init     : 初始电压 [V]
-        T_max      : 温度约束上限 [K]（默认 55°C）
-        V_max      : 电压约束上限 [V]
+        T_max      : 温度约束上限 [K]。None → 使用 param_set 的默认值
+        V_max      : 电压约束上限 [V]。None → 使用 param_set 的默认值
         use_crate  : True → 输入 I 为 C 倍率；False → 输入 I 为绝对 A
         aging_mode : "empirical" — 与 utils_fun.py calCap() 一致
                      "physical"  — SEI + 析锂 Li 损失（更精确但量纲不同）
                      "both"      — raw_objectives 用 empirical，额外返回 physical
+        param_set  : PyBaMM 参数集名称。支持: "Chen2020", "Ecker2015", "ORegan2022"
         """
         if not PYBAMM_AVAILABLE:
             raise ImportError("PyBaMM 未安装: pip install pybamm")
@@ -166,14 +204,22 @@ class PyBaMMSimulator:
         assert 0 < SOH <= 1.0, "SOH 必须在 (0, 1]"
         assert aging_mode in ("empirical", "physical", "both"), \
             "aging_mode 须为 'empirical' / 'physical' / 'both'"
+        assert param_set in SUPPORTED_PARAM_SETS, \
+            f"参数集 '{param_set}' 不支持。可用: {SUPPORTED_PARAM_SETS}"
 
-        self.Q_nom      = Q_nom
+        # 加载参数集元数据
+        self.param_set = param_set
+        meta = _PARAM_SET_METADATA[param_set]
+        self.battery_name = meta["battery_name"]
+
+        # 使用参数集默认值或用户指定值
+        self.Q_nom      = Q_nom if Q_nom is not None else meta["nominal_capacity_Ah"]
         self.SOH        = SOH
-        self.Q_eff      = Q_nom * SOH          # 有效容量，与 utils_fun.py bat_cap*SOH 一致
-        self.T_init     = T_init
+        self.Q_eff      = self.Q_nom * SOH
+        self.T_init     = T_init if T_init is not None else meta["temp_init_K"]
         self.V_init     = V_init
-        self.T_max      = T_max
-        self.V_max      = V_max
+        self.T_max      = T_max if T_max is not None else meta["temp_max_K"]
+        self.V_max      = V_max if V_max is not None else meta["voltage_max_V"]
         self.use_crate  = use_crate
         self.aging_mode = aging_mode
         self.param_bounds = {
@@ -182,8 +228,6 @@ class PyBaMMSimulator:
         self.soc_start = SOC_START
         self.soc_end = SOC_END
         self.dsoc_sum_max = DSOC_SUM_MAX
-        self.battery_name = DEFAULT_BATTERY_NAME
-        self.param_set = DEFAULT_PARAM_SET
 
     # ------------------------------------------------------------------
     #  公共接口
@@ -275,7 +319,7 @@ class PyBaMMSimulator:
             model = pybamm.lithium_ion.SPMe(options={"thermal": "lumped"})
 
         # 参数集
-        param = pybamm.ParameterValues("Chen2020")
+        param = pybamm.ParameterValues(self.param_set)
         param.update({"Current function [A]": "[input]"}, check_already_exists=True)
         param.update(_IDENTIFIED_PARAMS, check_already_exists=True)
         if self.aging_mode in ("physical", "both"):

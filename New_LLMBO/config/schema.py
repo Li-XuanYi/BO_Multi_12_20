@@ -38,7 +38,8 @@ class BatteryConfig(BaseModel):
 
     param_set: str = Field(
         default="Chen2020",
-        description="PyBaMM 模型参数集"
+        description="PyBaMM 模型参数集",
+        pattern="^(Chen2020|Ecker2015|ORegan2022)$"
     )
 
     init_voltage: float = Field(
