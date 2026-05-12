@@ -60,19 +60,19 @@ _PARAM_SET_METADATA = {
         "positive_electrode": "NMC811",
     },
     "Ecker2015": {
-        "battery_name": "Ecker et al. (2015) LFP",
-        "nominal_capacity_Ah": 7.4,  # 18650 LFP cell
-        "voltage_max_V": 3.6,  # LFP typical max voltage
-        "voltage_min_V": 2.0,
-        "temp_max_K": 333.15,  # 60°C for LFP
+        "battery_name": "Kokam SLPB 75106100",
+        "nominal_capacity_Ah": 0.15625,
+        "voltage_max_V": 4.2,
+        "voltage_min_V": 2.5,
+        "temp_max_K": 333.15,  # 60°C safety limit
         "temp_init_K": 298.15,
         "negative_electrode": "graphite",
-        "positive_electrode": "LFP",
+        "positive_electrode": "NCO",
     },
     "ORegan2022": {
-        "battery_name": "O'Regan et al. (2022) NMC",
-        "nominal_capacity_Ah": 4.85,  # 21700 NMC
-        "voltage_max_V": 4.2,
+        "battery_name": "LG M50",
+        "nominal_capacity_Ah": 5.0,
+        "voltage_max_V": 4.4,
         "voltage_min_V": 2.5,
         "temp_max_K": 323.15,  # 50°C
         "temp_init_K": 298.15,

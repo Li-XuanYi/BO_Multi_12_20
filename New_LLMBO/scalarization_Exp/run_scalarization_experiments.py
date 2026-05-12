@@ -20,7 +20,7 @@ from utils.model_labels import canonical_model_label
 
 DEFAULT_SEEDS = [8409, 8410, 8411, 8412, 8413]
 DEFAULT_MODES = ["minmax", "zscore", "none"]
-MODEL_NAME = "gpt-4.1-nano"
+MODEL_NAME = "deepseek-v3-thinking"
 
 
 def _default_output_root() -> Path:
@@ -39,6 +39,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--iterations", type=int, default=50)
     parser.add_argument("--seeds", type=int, nargs="+", default=DEFAULT_SEEDS)
     parser.add_argument("--modes", type=str, nargs="+", default=DEFAULT_MODES, choices=OBJECTIVE_PREPROCESS_MODES)
+    parser.add_argument("--param-set", type=str, default="Chen2020", choices=["Chen2020", "Ecker2015", "ORegan2022"])
     parser.add_argument("--skip-existing", action="store_true")
     parser.add_argument("--summarize-only", action="store_true")
     parser.add_argument(
@@ -73,6 +74,7 @@ def _build_config(
     seed: int,
     mode: str,
     iterations: int,
+    param_set: str,
     api_key: str,
     api_base: str,
     shared_random_init_cache: Path,
@@ -88,6 +90,7 @@ def _build_config(
         "w_sample_seed": int(seed),
         "init_seed": 2026 + int(seed),
         "objective_preprocess_mode": canonicalize_objective_preprocess_mode(mode),
+        "battery_param_set": param_set,
         "llm_backend": "openai",
         "llm_model": MODEL_NAME,
         "llm_api_base": api_base,
@@ -248,6 +251,7 @@ def main() -> int:
                     seed=seed,
                     mode=mode,
                     iterations=int(args.iterations),
+                    param_set=args.param_set,
                     api_key=api_key,
                     api_base=str(args.api_base),
                     shared_random_init_cache=shared_random,

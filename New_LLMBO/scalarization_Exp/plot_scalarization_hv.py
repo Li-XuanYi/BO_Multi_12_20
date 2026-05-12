@@ -21,9 +21,9 @@ from llmbo.scalarization import OBJECTIVE_PREPROCESS_MODES, canonicalize_objecti
 
 
 COLORS = {
-    "minmax": "#c85d6b",
-    "zscore": "#4e8fb5",
-    "none": "#7b4fb3",
+    "minmax": "#e41a1c",  # 红色
+    "zscore": "#377eb8",  # 蓝色
+    "none": "#984ea3",    # 紫色
 }
 LABELS = {
     "minmax": "Min-max",
@@ -157,7 +157,7 @@ def _plot_band(ax: plt.Axes, mode: str, data: Dict[str, Any]) -> None:
         marker=MARKERS[mode],
         markevery=max(1, len(x) // 8),
         markersize=5.5,
-        label=f"{LABELS[mode]} (n={int(data['n_runs'])})",
+        label=f"{LABELS[mode]}",
     )
 
 

@@ -1,0 +1,72 @@
+{
+  "meta": {
+    "experiment": "scalarization_objective_preprocess",
+    "iterations": 2,
+    "seeds": [
+      8409
+    ],
+    "modes": [
+      "minmax"
+    ],
+    "output_root": "scalarization_Exp\\experiment_records\\smoke_test",
+    "model": "gpt-4.1-nano",
+    "model_display": "GPT-4.1-nano",
+    "api_base": "https://api.nuwaapi.com/v1",
+    "hv_metric": "canonical_hv"
+  },
+  "records": [
+    {
+      "seed": 8409,
+      "mode": "minmax",
+      "status": "ok",
+      "summary_path": "scalarization_Exp\\experiment_records\\smoke_test\\seed8409\\minmax\\summary.json",
+      "canonical_hv": 0.24396711549658448,
+      "display_hv": 0.6099177887414612,
+      "hypervolume_raw": 7.178744548403442,
+      "pareto_size": 7,
+      "n_total": 8,
+      "n_feasible": 8,
+      "objective_preprocess_mode": "minmax"
+    }
+  ],
+  "aggregates": {
+    "minmax": {
+      "n_runs": 1,
+      "canonical_hv": {
+        "mean": 0.24396711549658448,
+        "std": 0.0,
+        "min": 0.24396711549658448,
+        "max": 0.24396711549658448
+      },
+      "display_hv": {
+        "mean": 0.6099177887414612,
+        "std": 0.0
+      },
+      "hypervolume_raw": {
+        "mean": 7.178744548403442,
+        "std": 0.0
+      },
+      "pareto_size": {
+        "mean": 7.0,
+        "std": 0.0
+      },
+      "runs": [
+        {
+          "seed": 8409,
+          "mode": "minmax",
+          "status": "ok",
+          "summary_path": "scalarization_Exp\\experiment_records\\smoke_test\\seed8409\\minmax\\summary.json",
+          "canonical_hv": 0.24396711549658448,
+          "display_hv": 0.6099177887414612,
+          "hypervolume_raw": 7.178744548403442,
+          "pareto_size": 7,
+          "n_total": 8,
+          "n_feasible": 8,
+          "objective_preprocess_mode": "minmax"
+        }
+      ],
+      "missing_runs": []
+    }
+  },
+  "comparisons": {}
+}

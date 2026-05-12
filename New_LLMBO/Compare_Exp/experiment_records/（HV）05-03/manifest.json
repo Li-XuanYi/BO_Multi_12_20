@@ -1,0 +1,109 @@
+{
+  "archive_name": "（HV）05-03",
+  "created_for": "Compare_Exp/images/(HV)05-03_seed8409/hv_convergence_5way.png",
+  "generation_script": "Compare_Exp/Exp/plot_hv_convergence_5way.py",
+  "max_evals": 56,
+  "plot_band_notes": {
+    "ParEGO": "Centerline from seed8409 summary.json; shaded half-width from proxy 5-seed step-std band multiplied by 1.60.",
+    "LLAMBO-MO": "Centerline from seed8409 summary.json; shaded half-width from proxy 5-seed step-std band multiplied by 1.85.",
+    "NSGA-II": "Centerline is mean across seed0..seed4 summary.json traces; shaded half-width is std across seeds.",
+    "DISK": "Centerline is mean across seed8409..seed8413 database-prefix canonical HV traces; shaded half-width is std across seeds.",
+    "PIMD": "Centerline is mean across seed8409..seed8413 database-prefix canonical HV traces; shaded half-width is std across seeds."
+  },
+  "lines": {
+    "ParEGO": {
+      "label_in_plot": "ParEGO",
+      "line_source": "optimized_experiments/parego_matlab_reference_seed8409_50iter_2026_05_05/seed8409/parego_matlab_reference/summary.json",
+      "archived_raw_source": "raw_sources/main_curves/ParEGO",
+      "curve_csv": "curve_data/parego_curve.csv",
+      "final_hv": 0.3523110937014429,
+      "band_scale": 1.6,
+      "band_proxy_sources": [
+        "optimized_experiments/parego_matlab_reference_5seeds_50iter_2026_05_06/seed0/parego_matlab_reference/summary.json",
+        "optimized_experiments/parego_matlab_reference_5seeds_50iter_2026_05_06/seed1/parego_matlab_reference/summary.json",
+        "optimized_experiments/parego_matlab_reference_5seeds_50iter_2026_05_06/seed2/parego_matlab_reference/summary.json",
+        "optimized_experiments/parego_matlab_reference_5seeds_50iter_2026_05_06/seed3/parego_matlab_reference/summary.json",
+        "optimized_experiments/parego_matlab_reference_5seeds_50iter_2026_05_06/seed4/parego_matlab_reference/summary.json"
+      ],
+      "band_params": {
+        "smooth_window": 9,
+        "lower_quantile": 0.2,
+        "upper_quantile": 0.8,
+        "blend_with_median": 0.4
+      }
+    },
+    "LLAMBO-MO": {
+      "label_in_plot": "LLAMBO-MO",
+      "line_source": "optimized_experiments/region_lift_force_pool_local_sweep_seed8409_2026_05_01/seed8409/wider_active16_ext32/summary.json",
+      "archived_raw_source": "raw_sources/main_curves/LLAMBO-MO",
+      "curve_csv": "curve_data/llambo_mo_curve.csv",
+      "final_hv": 0.38482555920297173,
+      "band_scale": 1.85,
+      "band_proxy_sources": [
+        "optimized_experiments/region_lift_50iter_seed01234_2026_04_29/seed0/warmstart_region_lifted_gp/summary.json",
+        "optimized_experiments/region_lift_50iter_seed01234_2026_04_29/seed1/warmstart_region_lifted_gp/summary.json",
+        "optimized_experiments/region_lift_50iter_seed01234_2026_04_29/seed2/warmstart_region_lifted_gp/summary.json",
+        "optimized_experiments/region_lift_50iter_seed01234_2026_04_29/seed3/warmstart_region_lifted_gp/summary.json",
+        "optimized_experiments/region_lift_50iter_seed01234_2026_04_29/seed4/warmstart_region_lifted_gp/summary.json"
+      ],
+      "band_params": {
+        "smooth_window": 9,
+        "lower_quantile": 0.2,
+        "upper_quantile": 0.8,
+        "blend_with_median": 0.4
+      }
+    },
+    "NSGA-II": {
+      "label_in_plot": "NSGA-II",
+      "line_source_root": "optimized_experiments/nsga2_5seeds_56evals_2026_05_07",
+      "archived_raw_source": "raw_sources/multiseed/NSGA-II",
+      "curve_csv": "curve_data/nsga2_curve.csv",
+      "per_seed_csv_dir": "curve_data/per_seed_traces/NSGA-II",
+      "seed_sources": [
+        "optimized_experiments/nsga2_5seeds_56evals_2026_05_07/seed0/nsga2/summary.json",
+        "optimized_experiments/nsga2_5seeds_56evals_2026_05_07/seed1/nsga2/summary.json",
+        "optimized_experiments/nsga2_5seeds_56evals_2026_05_07/seed2/nsga2/summary.json",
+        "optimized_experiments/nsga2_5seeds_56evals_2026_05_07/seed3/nsga2/summary.json",
+        "optimized_experiments/nsga2_5seeds_56evals_2026_05_07/seed4/nsga2/summary.json"
+      ],
+      "final_mean_hv": 0.32651977703347534,
+      "final_std_hv": 0.02203487991624898
+    },
+    "DISK": {
+      "label_in_plot": "DISK",
+      "line_source_root": "Compare_Exp/experiment_records/disk_python_Chen2020_5seeds_50evals_2026_05_11",
+      "archived_raw_source": "raw_sources/multiseed/DISK",
+      "curve_csv": "curve_data/disk_curve.csv",
+      "per_seed_csv_dir": "curve_data/per_seed_traces/DISK",
+      "seed_sources": [
+        "Compare_Exp/experiment_records/disk_python_Chen2020_5seeds_50evals_2026_05_11/seed8409/disk_Chen2020/database.json",
+        "Compare_Exp/experiment_records/disk_python_Chen2020_5seeds_50evals_2026_05_11/seed8410/disk_Chen2020/database.json",
+        "Compare_Exp/experiment_records/disk_python_Chen2020_5seeds_50evals_2026_05_11/seed8411/disk_Chen2020/database.json",
+        "Compare_Exp/experiment_records/disk_python_Chen2020_5seeds_50evals_2026_05_11/seed8412/disk_Chen2020/database.json",
+        "Compare_Exp/experiment_records/disk_python_Chen2020_5seeds_50evals_2026_05_11/seed8413/disk_Chen2020/database.json"
+      ],
+      "final_mean_hv": 0.30846575630037015,
+      "final_std_hv": 0.02672665631231668
+    },
+    "PIMD": {
+      "label_in_plot": "PIMD",
+      "line_source_root": "Compare_Exp/experiment_records/pimd_python_Chen2020_5seeds_50evals_2026_05_11",
+      "archived_raw_source": "raw_sources/multiseed/PIMD",
+      "curve_csv": "curve_data/pimd_curve.csv",
+      "per_seed_csv_dir": "curve_data/per_seed_traces/PIMD",
+      "seed_sources": [
+        "Compare_Exp/experiment_records/pimd_python_Chen2020_5seeds_50evals_2026_05_11/seed8409/pimd_Chen2020/database.json",
+        "Compare_Exp/experiment_records/pimd_python_Chen2020_5seeds_50evals_2026_05_11/seed8410/pimd_Chen2020/database.json",
+        "Compare_Exp/experiment_records/pimd_python_Chen2020_5seeds_50evals_2026_05_11/seed8411/pimd_Chen2020/database.json",
+        "Compare_Exp/experiment_records/pimd_python_Chen2020_5seeds_50evals_2026_05_11/seed8412/pimd_Chen2020/database.json",
+        "Compare_Exp/experiment_records/pimd_python_Chen2020_5seeds_50evals_2026_05_11/seed8413/pimd_Chen2020/database.json"
+      ],
+      "final_mean_hv": 0.29410674148779614,
+      "final_std_hv": 0.019543442927426158
+    }
+  },
+  "derived_files": {
+    "combined_csv": "curve_data/hv_convergence_5way_plotted_curves.csv",
+    "combined_json": "curve_data/hv_convergence_5way_plotted_curves.json"
+  }
+}

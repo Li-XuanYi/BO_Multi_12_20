@@ -10,6 +10,7 @@ if str(ROOT) not in sys.path:
 
 from config.schema import create_minimal_config
 from main import build_optimizer_config
+from utils.constants import DEFAULT_BOUNDS
 
 
 def test_build_optimizer_config_mainline_defaults_are_explicit() -> None:
@@ -107,3 +108,35 @@ def test_build_optimizer_config_region_lifted_force_pool_tuned_preset_uses_tight
     assert flat["region_lift_max_volume"] == 0.08
     assert flat["region_lift_close_distance"] == 0.03
     assert flat["region_lift_dsoc_margin"] == 0.01
+
+
+def test_bayes_optimizer_setup_passes_requested_battery_param_set(monkeypatch, tmp_path) -> None:
+    import llmbo.optimizer as optimizer_module
+
+    seen_param_sets = []
+
+    class DummySimulator:
+        def __init__(self, param_set: str = "Chen2020"):
+            seen_param_sets.append(param_set)
+            self.param_set = param_set
+            self.battery_name = f"DummyCell-{param_set}"
+            self.param_bounds = {key: tuple(value) for key, value in DEFAULT_BOUNDS.items()}
+            self.soc_start = 0.0
+            self.soc_end = 0.8
+            self.dsoc_sum_max = 0.7
+
+    monkeypatch.setattr(optimizer_module, "PyBaMMSimulator", DummySimulator)
+
+    opt = optimizer_module.BayesOptimizer(
+        config={
+            "battery_param_set": "ORegan2022",
+            "llm_backend": "mock",
+            "checkpoint_dir": str(tmp_path / "checkpoints"),
+        }
+    )
+    opt.setup()
+
+    assert seen_param_sets == ["ORegan2022"]
+    assert opt.simulator.param_set == "ORegan2022"
+    assert opt.cfg["battery_param_set"] == "ORegan2022"
+    assert opt.cfg["battery_model"] == "DummyCell-ORegan2022 (ORegan2022)"

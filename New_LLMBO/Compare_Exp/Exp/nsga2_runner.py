@@ -139,11 +139,12 @@ class HVTraceCallback(Callback):
 class NSGA2Runner:
     """Run NSGA-II on the battery charging problem with output compatible to LLMBO experiments."""
 
-    def __init__(self, seed: int = 0, n_evals: int = 56, pop_size: int = 20):
+    def __init__(self, seed: int = 0, n_evals: int = 56, pop_size: int = 20, param_set: str = "Chen2020"):
         self.seed = seed
         self.n_evals = n_evals
         self.pop_size = min(pop_size, n_evals)
-        self.simulator = PyBaMMSimulator()
+        self.param_set = param_set
+        self.simulator = PyBaMMSimulator(param_set=param_set)
         self.db = make_observation_db()
         self.hv_trace: List[Dict] = []
         self._result_summary: Optional[Dict] = None
@@ -192,6 +193,7 @@ class NSGA2Runner:
             "seed": self.seed,
             "n_evals": self.n_evals,
             "pop_size": self.pop_size,
+            "param_set": self.param_set,
             "n_total": self.db.size,
             "n_feasible": self.db.n_feasible,
             "pareto_size": self.db.pareto_size,

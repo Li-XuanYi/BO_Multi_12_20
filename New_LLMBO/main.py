@@ -253,6 +253,7 @@ def build_optimizer_config(config: Config, args: argparse.Namespace, output_dir:
         "llm_rerank_top_m": 5,
         "llm_rerank_parse_fail_open": True,
         "target_transform_mode": "none",
+        "objective_preprocess_mode": "minmax",
         "weight_strategy": "riesz_relaxed_cycle",
         "weight_simplex_divisions": 10,
         "weight_count": 30,

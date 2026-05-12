@@ -77,7 +77,7 @@ def load_or_generate_riesz(
     W : (N, n_obj)  N 个权重向量，每行满足 Σ=1
     """
     # 延迟导入，避免循环依赖
-    from llmbo.optimizer import generate_riesz_weight_set
+    from llmbo.optimizer import generate_riesz_weight_set, is_usable_simplex_weight_set
 
     cache_key  = _make_cache_key(n_obj, n_div, s, n_iter, lr, seed)
     cache_path = Path(cache_dir) / f"riesz_{cache_key}.pkl"
@@ -87,14 +87,19 @@ def load_or_generate_riesz(
         try:
             with open(cache_path, "rb") as f:
                 W = pickle.load(f)
-            if isinstance(W, np.ndarray) and W.ndim == 2 and W.shape[1] == n_obj:
+            if (
+                isinstance(W, np.ndarray)
+                and W.ndim == 2
+                and W.shape[1] == n_obj
+                and is_usable_simplex_weight_set(W, n_obj=n_obj)
+            ):
                 logger.info(
                     "Riesz 权重集合从缓存加载: %s  shape=%s",
                     cache_path, W.shape
                 )
                 return W
             else:
-                logger.warning("Riesz 缓存文件格式异常，重新生成: %s", cache_path)
+                logger.warning("Riesz 缓存文件格式异常或退化，重新生成: %s", cache_path)
         except Exception as exc:
             logger.warning("Riesz 缓存加载失败 (%s)，重新生成", exc)
 

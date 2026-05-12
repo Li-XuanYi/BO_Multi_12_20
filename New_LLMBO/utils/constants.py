@@ -19,6 +19,10 @@ REF_POINT = np.array([7200.0, 40.0, 5.0], dtype=float)
 IDEAL_POINT = np.array([1800.0, 0.0, 0.3], dtype=float)
 FAILURE_PENALTY = REF_POINT.copy()
 
+# Ecker2015-specific reference points (LFP battery has different objective ranges)
+ECKER2015_REF_POINT = np.array([7000.0, 35.0, 4.5], dtype=float)
+ECKER2015_IDEAL_POINT = np.array([2500.0, 0.0, 0.2], dtype=float)
+
 DSOC_SUM_MAX = 0.70
 DSOC3_MIN = 0.10
 LLM_SAFE_DSOC_SUM_MAX = 0.65

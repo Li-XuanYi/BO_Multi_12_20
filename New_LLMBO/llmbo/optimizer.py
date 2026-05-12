@@ -35,9 +35,9 @@ from llmbo.rerank import (
     rerank_topm_with_llm,
 )
 from llmbo.scalarization import (
-    apply_min_range_floor,
     canonical_hv_from_raw,
-    compute_dynamic_bounds,
+    canonicalize_objective_preprocess_mode,
+    compute_objective_preprocess_context,
     compute_parego_reference_from_raw,
     compute_tchebycheff_from_raw_with_ideal,
     log_transform_objectives,
@@ -48,6 +48,8 @@ from utils.constants import (
     IDEAL_POINT,
     LLM_SAFE_DSOC_SUM_MAX,
     REF_POINT,
+    ECKER2015_REF_POINT,
+    ECKER2015_IDEAL_POINT,
 )
 from utils.model_labels import canonical_model_label
 
@@ -119,6 +121,7 @@ DEFAULT_CONFIG = {
     "weight_eps_min": 0.01,
     "weight_sampling_mode": "cycle_without_replacement",
     "scalarization_mode": "log_ideal_gap",
+    "objective_preprocess_mode": "minmax",
     "acquisition_strategy": "ei_lbfgsb",
     "parego_lcb_variance_weight": 0.5,
     "parego_de_population": 30,
@@ -493,6 +496,40 @@ def generate_reference_parego_weight_set(
     return base[chosen]
 
 
+def is_usable_simplex_weight_set(
+    W: np.ndarray,
+    *,
+    n_obj: Optional[int] = None,
+    min_unique_fraction: float = 0.5,
+) -> bool:
+    """Return True when a weight set has non-degenerate simplex coverage."""
+    W = np.asarray(W, dtype=float)
+    if W.ndim != 2 or W.shape[0] == 0:
+        return False
+    if n_obj is not None and W.shape[1] != int(n_obj):
+        return False
+    if not np.all(np.isfinite(W)):
+        return False
+    if np.any(W < -1e-12):
+        return False
+    if not np.allclose(W.sum(axis=1), 1.0, atol=1e-6):
+        return False
+
+    unique_count = int(np.unique(np.round(W, 8), axis=0).shape[0])
+    min_unique = min(
+        W.shape[0],
+        max(W.shape[1], int(np.ceil(float(min_unique_fraction) * W.shape[0]))),
+    )
+    if unique_count < min_unique:
+        return False
+
+    if W.shape[0] >= 2 * W.shape[1]:
+        span = np.ptp(W, axis=0)
+        if np.any(span < 0.2):
+            return False
+    return True
+
+
 def generate_riesz_weight_set(
     n_obj: int = 3,
     n_div: int = 10,
@@ -509,11 +546,15 @@ def generate_riesz_weight_set(
     the Riesz energy to spread the weights more evenly across the simplex.
     """
 
-    W = generate_das_dennis_weight_set(
+    base = generate_das_dennis_weight_set(
         n_obj=n_obj,
         n_div=n_div,
         eps_min=eps_min,
     )
+    W = base.copy()
+
+    if int(n_iter) <= 0:
+        return W
 
     for _ in range(int(n_iter)):
         grad = np.zeros_like(W)
@@ -525,11 +566,23 @@ def generate_riesz_weight_set(
             factor[i] = 0.0
             grad[i] = np.sum(factor[:, None] * diff, axis=0)
 
-        W = W + float(lr) * grad
+        step = float(lr) * grad
+        step_norm = np.linalg.norm(step, axis=1, keepdims=True)
+        max_step = min(0.05, 0.05 / max(float(n_div), 1.0))
+        step_scale = np.minimum(1.0, max_step / np.maximum(step_norm, 1e-15))
+        W = W + step * step_scale
         for i in range(len(W)):
             W[i] = _project_to_simplex(W[i])
         W = np.maximum(W, eps_min)
         W = W / W.sum(axis=1, keepdims=True)
+
+    if not is_usable_simplex_weight_set(W, n_obj=n_obj):
+        logger.warning(
+            "Riesz relaxation collapsed to a degenerate weight set; "
+            "falling back to Das-Dennis weights (shape=%s)",
+            base.shape,
+        )
+        return base
 
     return W
 
@@ -546,6 +599,9 @@ class BayesOptimizer:
             cfg.update(EXPERIMENT_PRESETS[str(preset_name)])
         cfg.update(user_cfg)
         cfg["experiment_preset"] = preset_name
+        cfg["objective_preprocess_mode"] = canonicalize_objective_preprocess_mode(
+            cfg.get("objective_preprocess_mode", "minmax")
+        )
         self.cfg = cfg
         if "enable_gp_llm_coupling" not in user_cfg and "enable_region_lift" in user_cfg:
             self.cfg["enable_gp_llm_coupling"] = bool(user_cfg["enable_region_lift"])
@@ -590,15 +646,31 @@ class BayesOptimizer:
         logger.info("Setting up 5D GP-LLM-coupled MOBO optimizer")
         logger.info("=" * 60)
 
-        self.simulator = PyBaMMSimulator()
+        battery_param_set = str(self.cfg.get("battery_param_set", "Chen2020"))
+        self.simulator = PyBaMMSimulator(param_set=battery_param_set)
+        self.cfg["battery_param_set"] = getattr(self.simulator, "param_set", battery_param_set)
+        self.cfg["battery_model"] = (
+            f"{getattr(self.simulator, 'battery_name', self.cfg.get('battery_model', 'battery'))} "
+            f"({self.cfg['battery_param_set']})"
+        )
+        logger.info("Battery simulator parameter set: %s", self.cfg["battery_param_set"])
         self.param_bounds = {
             key: tuple(bounds) for key, bounds in getattr(self.simulator, "param_bounds", DEFAULT_BOUNDS).items()
         }
 
+        # Select reference points based on battery parameter set
+        battery_param_set = self.cfg.get("battery_param_set", "Chen2020")
+        if battery_param_set == "Ecker2015":
+            ref_point = ECKER2015_REF_POINT.copy()
+            ideal_point = ECKER2015_IDEAL_POINT.copy()
+        else:
+            ref_point = REF_POINT.copy()
+            ideal_point = IDEAL_POINT.copy()
+
         self.database = ObservationDB(
             param_bounds=self.param_bounds,
-            ref_point=REF_POINT.copy(),
-            ideal_point=IDEAL_POINT.copy(),
+            ref_point=ref_point,
+            ideal_point=ideal_point,
             normalize=True,
         )
 
@@ -834,6 +906,7 @@ class BayesOptimizer:
             ideal_point_raw=ideal_point_raw,
             eta=float(self.cfg["eta"]),
             scalarization_mode=str(self.cfg.get("scalarization_mode", "log_ideal_gap")),
+            objective_preprocess_mode=str(self.cfg.get("objective_preprocess_mode", "minmax")),
             parego_invert_weights=bool(self.cfg.get("parego_invert_weights", False)),
         )
         self.af.initialize(self.database, llm_prior=self.llm)
@@ -874,6 +947,7 @@ class BayesOptimizer:
                 ideal_point_raw=ideal_point_raw,
                 eta=float(self.cfg["eta"]),
                 scalarization_mode=str(self.cfg.get("scalarization_mode", "log_ideal_gap")),
+                objective_preprocess_mode=str(self.cfg.get("objective_preprocess_mode", "minmax")),
                 parego_invert_weights=bool(self.cfg.get("parego_invert_weights", False)),
             )
             scalar_y = self._compute_scalarized_targets(
@@ -1615,6 +1689,7 @@ class BayesOptimizer:
             "iteration": int(t),
             "w_vec": np.asarray(w_vec, dtype=float).round(6).tolist(),
             "ideal_point_raw": np.asarray(ideal_point_raw, dtype=float).round(6).tolist(),
+            "objective_preprocess_mode": str(self.cfg.get("objective_preprocess_mode", "minmax")),
             "y_min": np.asarray(self._y_tilde_min, dtype=float).round(6).tolist(),
             "y_max": np.asarray(self._y_tilde_max, dtype=float).round(6).tolist(),
             "eta": float(self.cfg.get("eta", 0.05)),
@@ -1786,13 +1861,11 @@ class BayesOptimizer:
 
         Y_raw = np.array([obs.objectives for obs in feasible], dtype=float)
         Y_tilde = log_transform_objectives(Y_raw)
-        self._y_tilde_min, self._y_tilde_max = compute_dynamic_bounds(Y_tilde)
-        self._y_tilde_min, self._y_tilde_max = apply_min_range_floor(
-            self._y_tilde_min,
-            self._y_tilde_max,
+        self._y_tilde_min, self._y_tilde_max = compute_objective_preprocess_context(
+            Y_tilde,
             self.database.ideal_point,
             self.database.ref_point,
-            min_fraction=0.05,
+            preprocess_mode=str(self.cfg.get("objective_preprocess_mode", "minmax")),
         )
 
     def _compute_scalarized_targets(
@@ -1818,6 +1891,7 @@ class BayesOptimizer:
             y_min=self._y_tilde_min,
             y_max=self._y_tilde_max,
             eta=float(self.cfg.get("eta", 0.05)),
+            preprocess_mode=str(self.cfg.get("objective_preprocess_mode", "minmax")),
         )
 
     def _next_weight(self) -> np.ndarray:
@@ -1916,6 +1990,7 @@ class BayesOptimizer:
             "eta": float(self.cfg.get("eta", 0.05)),
             "mu": self.database.get_theta_best().tolist(),
             "sigma": self._estimate_search_sigma().tolist(),
+            "objective_preprocess_mode": str(self.cfg.get("objective_preprocess_mode", "minmax")),
             "y_min": np.asarray(self._y_tilde_min, dtype=float).tolist(),
             "y_max": np.asarray(self._y_tilde_max, dtype=float).tolist(),
             "stagnation_count": int(self.database.get_stagnation_count()),
@@ -2636,11 +2711,12 @@ class BayesOptimizer:
 
     def _build_scalarization_formula_text(self) -> str:
         eta = float(self.cfg.get("eta", 0.05))
+        preprocess_mode = str(self.cfg.get("objective_preprocess_mode", "minmax"))
         return (
-            "Transform objectives with log10(time) and log10(aging), then compute normalized "
-            "gaps to the current ideal point, and minimize "
+            "Transform objectives with log10(time) and log10(aging), then apply "
+            f"{preprocess_mode} preprocessing to gaps from the current ideal point, and minimize "
             f"f_w = max_i(w_i * gap_i) + {eta:.3f} * sum_i(w_i * gap_i). "
-            "Lower f_w is better under the current weight and normalization context."
+            "Lower f_w is better under the current weight and preprocessing context."
         )
 
     def _build_top_scalar_protocols_summary(

@@ -1,0 +1,72 @@
+{
+  "meta": {
+    "experiment": "scalarization_objective_preprocess",
+    "iterations": 50,
+    "seeds": [
+      8413
+    ],
+    "modes": [
+      "minmax"
+    ],
+    "output_root": "scalarization_Exp\\experiment_records\\oregan_llmbo_5seeds_50iter_2026_05_11",
+    "model": "deepseek-v3-thinking",
+    "model_display": "deepseek-v3-thinking",
+    "api_base": "https://api.chat.csu.edu.cn/v1",
+    "hv_metric": "canonical_hv"
+  },
+  "records": [
+    {
+      "seed": 8413,
+      "mode": "minmax",
+      "status": "ok",
+      "summary_path": "scalarization_Exp\\experiment_records\\oregan_llmbo_5seeds_50iter_2026_05_11\\seed8413\\minmax\\summary.json",
+      "canonical_hv": 0.3654548466085831,
+      "display_hv": 0.9136371165214576,
+      "hypervolume_raw": 10.753527099088528,
+      "pareto_size": 41,
+      "n_total": 56,
+      "n_feasible": 56,
+      "objective_preprocess_mode": "minmax"
+    }
+  ],
+  "aggregates": {
+    "minmax": {
+      "n_runs": 1,
+      "canonical_hv": {
+        "mean": 0.3654548466085831,
+        "std": 0.0,
+        "min": 0.3654548466085831,
+        "max": 0.3654548466085831
+      },
+      "display_hv": {
+        "mean": 0.9136371165214576,
+        "std": 0.0
+      },
+      "hypervolume_raw": {
+        "mean": 10.753527099088528,
+        "std": 0.0
+      },
+      "pareto_size": {
+        "mean": 41.0,
+        "std": 0.0
+      },
+      "runs": [
+        {
+          "seed": 8413,
+          "mode": "minmax",
+          "status": "ok",
+          "summary_path": "scalarization_Exp\\experiment_records\\oregan_llmbo_5seeds_50iter_2026_05_11\\seed8413\\minmax\\summary.json",
+          "canonical_hv": 0.3654548466085831,
+          "display_hv": 0.9136371165214576,
+          "hypervolume_raw": 10.753527099088528,
+          "pareto_size": 41,
+          "n_total": 56,
+          "n_feasible": 56,
+          "objective_preprocess_mode": "minmax"
+        }
+      ],
+      "missing_runs": []
+    }
+  },
+  "comparisons": {}
+}

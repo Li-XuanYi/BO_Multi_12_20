@@ -32,25 +32,26 @@ python Compare_Exp/Exp/run_parego_experiments.py --seeds 0 1 2 3 4 --n-evals 56 
 python Compare_Exp/Exp/run_parego_experiments.py --seeds 0 1 2 3 4 --n-evals 56 --variant baseline
 ```
 
-### PlatEMO DISK / PIMD
+### DISK / PIMD (Python Native Implementation)
 
-- `platemo_runner.py`: Python adapter for the MATLAB PlatEMO DISK/PIMD algorithms
-- `platemo_eval_helper.py`: Python-side PyBaMM evaluator called from MATLAB
-- `platemo_bridge/`: MATLAB bridge files used by `platemo_runner.py`
-- `run_platemo_experiments.py`: Multi-seed experiment launcher
+- `disk_pimd_algorithms.py`: Python native implementation of DISK and PIMD algorithms
+- `run_disk_python.py`: DISK experiment runner
+- `run_pimd_python.py`: PIMD experiment runner
 
-The runner keeps the official MATLAB algorithm implementation and converts only
-the interface layer. It writes the same `summary.json`, `database.json`, and
-`pareto_front.json` files as the other baselines.
+These are pure Python implementations of the DISK (Dynamic Island Single-objective Kriging)
+and PIMD (Pareto-based Infilling with Maximum Diversity) algorithms, using Kriging surrogate
+models and Tchebycheff scalarization. No MATLAB or PlatEMO required.
 
 Usage:
 ```bash
-# Uses PLATEMO_ROOT if set; otherwise tries the sibling PlatEMO path from this workspace.
-python Compare_Exp/Exp/run_platemo_experiments.py --algorithm DISK --seeds 8409 --n-evals 56
-python Compare_Exp/Exp/run_platemo_experiments.py --algorithm PIMD --seeds 8409 --n-evals 56
+# Run DISK experiments (5 seeds, 50 evals)
+python Compare_Exp/run_disk_python.py --seeds 8409 8410 8411 8412 8413 --n-evals 50
 
-# Explicit PlatEMO root / MATLAB command
-python Compare_Exp/Exp/run_platemo_experiments.py --algorithm DISK --platemo-root "D:/path/to/PlatEMO/PlatEMO" --matlab-command matlab
+# Run PIMD experiments
+python Compare_Exp/run_pimd_python.py --seeds 8409 8410 8411 8412 8413 --n-evals 50
+
+# Custom parameter set
+python Compare_Exp/run_disk_python.py --param-set Ecker2015 --n-evals 56
 ```
 
 ## Output Format
@@ -67,4 +68,9 @@ These runners depend on the main project modules:
 - `DataBase.database`: ObservationDB
 - `pybamm_simulator`: Battery simulation
 - `utils.constants`: Parameter bounds and constants
-- MATLAB + PlatEMO for `PlatEMORunner`
+
+## Additional Tools
+
+### Plotting Scripts
+
+- `plot_disk_pimd_hv.py`: HV convergence plot for DISK vs PIMD comparison

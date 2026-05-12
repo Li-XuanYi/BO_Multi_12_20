@@ -1,0 +1,50 @@
+{
+  "metric": "display_hv",
+  "plot": {
+    "title": "",
+    "y_label": "HV",
+    "figure_size": [
+      4.8,
+      4.0
+    ],
+    "dpi": 300,
+    "x_rotation": 28,
+    "jitter": 0.055,
+    "point_size": 38,
+    "box_width": 0.36,
+    "y_min": 0.68,
+    "y_max": 0.76,
+    "y_ticks": [
+      0.68,
+      0.7,
+      0.72,
+      0.74,
+      0.76
+    ]
+  },
+  "groups": [
+    {
+      "label": "EIMO",
+      "path": "demo_data/eimo_report.json",
+      "color": "#D45162"
+    },
+    {
+      "label": "ParEGO",
+      "path": "demo_data/parego_report.json",
+      "color": "#2E8BC8"
+    },
+    {
+      "label": "DISK",
+      "path": "demo_data/disk_report.json",
+      "color": "#8A52CC"
+    },
+    {
+      "label": "PIMD",
+      "path": "demo_data/pimd_report.json",
+      "color": "#5C9E45"
+    }
+  ],
+  "output": {
+    "basename": "hv_box_reference"
+  }
+}

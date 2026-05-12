@@ -19,8 +19,8 @@ from typing import Dict, List, Optional, Tuple, Any
 
 import numpy as np
 from llmbo.scalarization import (
-    apply_min_range_floor,
     canonical_hv_from_raw,
+    canonicalize_objective_preprocess_mode,
     compute_parego_reference_from_raw,
     compute_tchebycheff_from_raw,
     compute_tchebycheff_from_raw_with_ideal,
@@ -32,6 +32,8 @@ from utils.constants import (
     LLM_SAFE_DSOC_SUM_MAX,
     PARAM_NAMES as CANONICAL_PARAM_NAMES,
     REF_POINT as CANONICAL_REF_POINT,
+    ECKER2015_REF_POINT,
+    ECKER2015_IDEAL_POINT,
 )
 
 logger = logging.getLogger(__name__)
@@ -75,12 +77,25 @@ HV_DISPLAY_DIVISOR = 0.4
 DEFAULT_BOUNDS = copy.deepcopy(CANONICAL_DEFAULT_BOUNDS)
 
 
-def make_observation_db(param_bounds: Optional[Dict] = None, **kwargs) -> "ObservationDB":
-    """工厂函数：创建使用全局统一 ref/ideal/hv_max 的 ObservationDB 实例。"""
+def make_observation_db(param_bounds: Optional[Dict] = None, param_set: str = "Chen2020", **kwargs) -> "ObservationDB":
+    """工厂函数：创建使用全局统一 ref/ideal/hv_max 的 ObservationDB 实例。
+
+    Args:
+        param_bounds: 参数边界，默认使用DEFAULT_BOUNDS
+        param_set: 参数集名称，"Chen2020"或"Ecker2015"，影响reference points
+        **kwargs: 其他传递给ObservationDB的参数
+    """
+    if param_set == "Ecker2015":
+        ref_point = ECKER2015_REF_POINT.copy()
+        ideal_point = ECKER2015_IDEAL_POINT.copy()
+    else:
+        ref_point = DEFAULT_REF_POINT.copy()
+        ideal_point = DEFAULT_IDEAL_POINT.copy()
+
     return ObservationDB(
         param_bounds=param_bounds or copy.deepcopy(DEFAULT_BOUNDS),
-        ref_point=DEFAULT_REF_POINT.copy(),
-        ideal_point=DEFAULT_IDEAL_POINT.copy(),
+        ref_point=ref_point,
+        ideal_point=ideal_point,
         normalize=True,
         **kwargs,
     )
@@ -211,6 +226,7 @@ class ObservationDB:
         self._ideal_point_raw: Optional[np.ndarray] = None
         self._eta:     float      = 0.05
         self._scalarization_mode: str = "log_ideal_gap"
+        self._objective_preprocess_mode: str = "minmax"
         self._parego_invert_weights: bool = False
         self._f_min:   float      = float("inf")
         self._prev_f_min: float   = float("inf")
@@ -950,12 +966,14 @@ class ObservationDB:
         ideal_point_raw: Optional[np.ndarray] = None,
         eta:    float                = 0.05,
         scalarization_mode: str      = "log_ideal_gap",
+        objective_preprocess_mode: str = "minmax",
         parego_invert_weights: bool  = False,
     ) -> None:
         """每迭代由 optimizer.py 调用，注入当前 Tchebycheff 权重和动态 min/max。"""
         self._w_vec = np.asarray(w_vec, dtype=float).ravel()
         self._eta   = float(eta)
         self._scalarization_mode = str(scalarization_mode or "log_ideal_gap").lower()
+        self._objective_preprocess_mode = canonicalize_objective_preprocess_mode(objective_preprocess_mode)
         self._parego_invert_weights = bool(parego_invert_weights)
         if y_min is not None:
             self._y_min = np.asarray(y_min, dtype=float).ravel()
@@ -1005,59 +1023,26 @@ class ObservationDB:
                 self._prev_pareto_size = current_pareto_size
             return
 
-        # log₁₀ 变换
-        Y_tilde = Y_raw.copy()
-        Y_tilde[:, 0] = np.log10(np.maximum(Y_raw[:, 0], 1.0))
-        Y_tilde[:, 2] = np.log10(np.maximum(Y_raw[:, 2], 1e-12))
-
-        # 动态归一化（分母过小时用全局范围兜底）
-        global_range = np.array([
-            np.log10(DEFAULT_REF_POINT[0]) - np.log10(DEFAULT_IDEAL_POINT[0]),
-            DEFAULT_REF_POINT[1] - DEFAULT_IDEAL_POINT[1],
-            np.log10(DEFAULT_REF_POINT[2]) - np.log10(DEFAULT_IDEAL_POINT[2]),
-        ])
-        denom = self._y_max - self._y_min
-        for i in range(3):
-            if denom[i] < 0.05 * global_range[i]:
-                denom[i] = global_range[i]
-        if self._ideal_point_raw is not None:
-            ideal_tilde = self._ideal_point_raw[np.newaxis, :].copy()
-            ideal_tilde[:, 0] = np.log10(np.maximum(ideal_tilde[:, 0], 1.0))
-            ideal_tilde[:, 2] = np.log10(np.maximum(ideal_tilde[:, 2], 1e-12))
-            Y_bar = np.abs(Y_tilde - ideal_tilde[0]) / denom
-        else:
-            Y_bar = (Y_tilde - self._y_min) / denom
-
-        # Tchebycheff + η tiebreaker
-        w  = self._w_vec
-        Wf = w[np.newaxis, :] * Y_bar
-        F_tch = Wf.max(axis=1) + self._eta * Wf.sum(axis=1)
-
         # Final scalarization is delegated to the shared module so optimizer,
         # database, and prompts use the same context-dependent f_w semantics.
-        y_min, y_max = apply_min_range_floor(
-            self._y_min,
-            self._y_max,
-            self.ideal_point,
-            self.ref_point,
-            min_fraction=0.05,
-        )
         if self._ideal_point_raw is not None:
             F_tch = compute_tchebycheff_from_raw_with_ideal(
                 Y_raw,
                 self._w_vec,
                 self._ideal_point_raw,
-                y_min,
-                y_max,
+                self._y_min,
+                self._y_max,
                 eta=self._eta,
+                preprocess_mode=self._objective_preprocess_mode,
             )
         else:
             F_tch = compute_tchebycheff_from_raw(
                 Y_raw,
                 self._w_vec,
-                y_min,
-                y_max,
+                self._y_min,
+                self._y_max,
                 eta=self._eta,
+                preprocess_mode=self._objective_preprocess_mode,
             )
 
         best_idx = int(np.argmin(F_tch))

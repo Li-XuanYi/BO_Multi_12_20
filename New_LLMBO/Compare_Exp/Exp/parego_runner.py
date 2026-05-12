@@ -151,7 +151,7 @@ class ParEGORunner:
         # Build hv_trace from database observations
         hv_trace = []
         eval_count = 0
-        for obs in self.db.observations:
+        for obs in self.db.get_all():
             eval_count += 1
             hv_trace.append({
                 "eval_index": eval_count,
