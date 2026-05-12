@@ -29,8 +29,10 @@ from __future__ import annotations
 import dataclasses
 import json
 import logging
+import os
 import re
 import time
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Tuple
 
@@ -114,6 +116,55 @@ _DSOC_SUM_MAX = DEFAULT_DSOC_SUM_MAX
 # ════════════════════════════════════════════════════════════════
 # §A  LLM 配置
 # ════════════════════════════════════════════════════════════════
+# ════════════════════════════════════════════════════════════════════════
+# §A  LLM 配置（从环境变量 / .env 加载）
+# ════════════════════════════════════════════════════════════════════════
+
+@lru_cache(maxsize=1)
+def _get_default_llm_api_key() -> str:
+    """从环境变量或 .env 文件加载默认 API key。"""
+    try:
+        from dotenv import load_dotenv
+        _dotenv_path = Path(__file__).resolve().parent.parent / ".env"
+        if _dotenv_path.exists():
+            load_dotenv(_dotenv_path)
+        else:
+            load_dotenv()
+    except ImportError:
+        pass
+    return os.environ.get("LLM_API_KEY") or os.environ.get("OPENAI_API_KEY") or ""
+
+
+@lru_cache(maxsize=1)
+def _get_default_llm_api_base() -> str:
+    """从环境变量或 .env 文件加载默认 API base URL。"""
+    try:
+        from dotenv import load_dotenv
+        _dotenv_path = Path(__file__).resolve().parent.parent / ".env"
+        if _dotenv_path.exists():
+            load_dotenv(_dotenv_path)
+        else:
+            load_dotenv()
+    except ImportError:
+        pass
+    return os.environ.get("LLM_API_BASE") or os.environ.get("OPENAI_BASE_URL") or "https://api.minimax.chat/v1"
+
+
+@lru_cache(maxsize=1)
+def _get_default_llm_model() -> str:
+    """从环境变量或 .env 文件加载默认模型名。"""
+    try:
+        from dotenv import load_dotenv
+        _dotenv_path = Path(__file__).resolve().parent.parent / ".env"
+        if _dotenv_path.exists():
+            load_dotenv(_dotenv_path)
+        else:
+            load_dotenv()
+    except ImportError:
+        pass
+    return os.environ.get("LLM_MODEL") or "minimax-4o-mini"
+
+
 
 class LLMConfig:
     """LLM 后端配置，支持 openai / anthropic / mock。"""
@@ -121,9 +172,9 @@ class LLMConfig:
     def __init__(
         self,
         backend:     str   = "openai",
-        model:       str   = "gpt-4.1-mini",
-        api_base:    str   = "https://api.nuwaapi.com/v1",
-        api_key:     str   = "",
+        model:       str   = _get_default_llm_model(),
+        api_base:    str   = _get_default_llm_api_base(),
+        api_key:     str   = _get_default_llm_api_key(),
         temperature: float = 0.7,
         n_samples:   int   = 3,
         timeout:     int   = 120,
@@ -433,28 +484,48 @@ class ResponseParser:
         )
 
     @staticmethod
+    def _strip_thinking_tags(text: str) -> str:
+        """去除 <think>...</think> 推理标签（如 MiniMax-M2.7 等思考模型会输出）。"""
+        return re.sub(r"<think[\s\S]*?</think", "", text).strip()
+
+    @staticmethod
     def extract_json(text: str) -> Optional[Any]:
-        """从 LLM 响应文本中提取 JSON，容错处理。"""
+        """从 LLM 响应文本中提取 JSON，容错处理。
+
+        支持:
+          - 裸 JSON
+          - markdown ```json ... ``` 包裹
+          - <think>...</think> 推理标签包裹的 JSON（思考型模型）
+          - 混有推理标签的 markdown JSON 块
+        """
         if not text or not text.strip():
             return None
-        text = text.strip()
 
-        # 直接解析
+        # 步骤 1: 去除 <think>...</think> 推理标签（支持思考型模型）
+        text = re.sub(r"<think[\s\S]*?</think", "", text).strip()
+        if not text:
+            return None
+
+        # 步骤 2: 直接解析
         try:
             return json.loads(text)
         except json.JSONDecodeError:
             pass
 
-        # markdown 代码块
-        m = re.search(r'```(?:json)?\s*([\s\S]*?)\s*```', text)
-        if m:
-            try:
-                return json.loads(m.group(1))
-            except json.JSONDecodeError:
-                pass
+        # 步骤 3: markdown 代码块（json 或无语言标识）
+        for pattern in [r"```(?:json)?\s*([\s\S]*?)\s*```", r"```([\s\S]*?)```"]:
+            m = re.search(pattern, text)
+            if m:
+                inner = m.group(1).strip()
+                # 去除代码块内的推理标签
+                inner = re.sub(r"<think[\s\S]*?</think", "", inner).strip()
+                try:
+                    return json.loads(inner)
+                except json.JSONDecodeError:
+                    pass
 
-        # 提取第一个 JSON 数组或对象
-        for pattern in [r'(\[[\s\S]*\])', r'(\{[\s\S]*\})']:
+        # 步骤 4: 提取第一个 JSON 数组或对象
+        for pattern in [r"(\{[\s\S]*?\})", r"(\[[\s\S]*?\])"]:
             m = re.search(pattern, text)
             if m:
                 try:
@@ -1753,9 +1824,9 @@ class LLMInterface:
 def build_llm_interface(
     param_bounds:  Dict[str, Tuple[float, float]],
     backend:       str   = "openai",
-    model:         str   = "gpt-4.1-mini",
-    api_base:      str   = "https://api.nuwaapi.com/v1",
-    api_key:       str   = "",
+    model:         str   = _get_default_llm_model(),
+    api_base:      str   = _get_default_llm_api_base(),
+    api_key:       str   = _get_default_llm_api_key(),
     n_samples:     int   = 3,
     temperature:   float = 0.7,
     battery_model: Optional[str] = None,
