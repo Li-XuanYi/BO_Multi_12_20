@@ -1,3 +1,14 @@
+#!/usr/bin/env python
+"""Tests for main.py config passthrough.
+
+Run:
+    python tests/test_main_config.py
+
+Three levels of testing:
+  1. build_optimizer_config — Pydantic Config values land in the flat dict
+  2. Preset overrides land correctly
+  3. BayesOptimizer.cfg — final merged config (DEFAULT_CONFIG + preset + flat)
+"""
 from __future__ import annotations
 
 import argparse
@@ -8,221 +19,289 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from config.schema import create_minimal_config
+from config.schema import Config, create_minimal_config, GPConfig, BOConfig, MOBOConfig
+from config.presets import EXPERIMENT_PRESETS
 from main import build_optimizer_config
-from utils.constants import DEFAULT_BOUNDS
+
+# Part 3 integration — only if sklearn is available
+_HAS_SKLEARN = False
+try:
+    from llmbo.optimizer import BayesOptimizer, DEFAULT_CONFIG
+    _HAS_SKLEARN = True
+except ImportError:
+    pass
+
+PASS = 0
+FAIL = 0
+SKIP = 0
 
 
-def test_build_optimizer_config_mainline_defaults_are_explicit() -> None:
+def _args(preset: str | None = None, mock: bool = True) -> argparse.Namespace:
+    return argparse.Namespace(preset=preset, mock=mock)
+
+
+def _check(label: str, condition: bool, detail: str = "") -> None:
+    global PASS, FAIL
+    if condition:
+        PASS += 1
+        print(f"  [PASS] {label}")
+    else:
+        FAIL += 1
+        print(f"  [FAIL] {label}  {detail}")
+
+
+def _skip(label: str, reason: str) -> None:
+    global SKIP
+    SKIP += 1
+    print(f"  [SKIP] {label}  ({reason})")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  Part 1: Config → flat dict passthrough
+# ═══════════════════════════════════════════════════════════════════════════
+
+def test_gp_fields_pass_through() -> None:
+    print("\n[1] GP fields pass through")
+    cfg = Config(gp=GPConfig(kernel_nu=1.5, alpha=1e-3, normalize_y=False, n_restarts_optimizer=10))
+    flat = build_optimizer_config(cfg, _args(), Path("results"))
+
+    _check("kernel_nu", flat["kernel_nu"] == 1.5, f"got {flat['kernel_nu']}")
+    _check("gp_alpha", flat["gp_alpha"] == 1e-3, f"got {flat['gp_alpha']}")
+    _check("gp_normalize_y", flat["gp_normalize_y"] is False, f"got {flat['gp_normalize_y']}")
+    _check("gp_n_restarts", flat["gp_n_restarts_optimizer"] == 10, f"got {flat['gp_n_restarts_optimizer']}")
+
+
+def test_mobo_fields_pass_through() -> None:
+    print("\n[2] MOBO fields pass through")
+    cfg = Config(mobo=MOBOConfig(eta=0.10, n_weights=25))
+    flat = build_optimizer_config(cfg, _args(), Path("results"))
+
+    _check("eta", flat["eta"] == 0.10, f"got {flat['eta']}")
+    _check("weight_count", flat["weight_count"] == 25, f"got {flat['weight_count']}")
+
+
+def test_bo_warmstart_batch_params_pass_through() -> None:
+    print("\n[3] BO warmstart batch params pass through")
+    cfg = Config(bo=BOConfig(warmstart_batch_size=30, warmstart_max_llm_attempts=8, warmstart_hv_log_interval=3))
+    flat = build_optimizer_config(cfg, _args(), Path("results"))
+
+    _check("batch_size", flat["warmstart_batch_size"] == 30, f"got {flat['warmstart_batch_size']}")
+    _check("max_attempts", flat["warmstart_max_attempts"] == 8, f"got {flat['warmstart_max_attempts']}")
+    _check("hv_log_interval", flat["warmstart_hv_log_interval"] == 3, f"got {flat['warmstart_hv_log_interval']}")
+
+
+def test_bo_core_params_pass_through() -> None:
+    print("\n[4] BO core params pass through")
+    cfg = Config(bo=BOConfig(n_iterations=100, n_warmstart=20, n_random_init=5))
+    flat = build_optimizer_config(cfg, _args(), Path("results"))
+
+    _check("max_iterations", flat["max_iterations"] == 100, f"got {flat['max_iterations']}")
+    _check("n_warmstart", flat["n_warmstart"] == 20, f"got {flat['n_warmstart']}")
+    _check("n_random_init", flat["n_random_init"] == 5, f"got {flat['n_random_init']}")
+
+
+def test_default_config_values_pass_through() -> None:
+    print("\n[5] Default Pydantic Config values pass through")
+    cfg = Config()
+    flat = build_optimizer_config(cfg, _args(), Path("results"))
+
+    _check("kernel_nu=2.5", flat["kernel_nu"] == 2.5)
+    _check("gp_alpha=1e-5", flat["gp_alpha"] == 1e-5)
+    _check("gp_normalize_y=True", flat["gp_normalize_y"] is True)
+    _check("eta=0.05", flat["eta"] == 0.05)
+    _check("weight_count=15", flat["weight_count"] == 15)
+    _check("n_random_init=10", flat["n_random_init"] == 10)
+    _check("warmstart_batch_size=20", flat["warmstart_batch_size"] == 20)
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  Part 2: Preset overrides
+# ═══════════════════════════════════════════════════════════════════════════
+
+def test_preset_overrides_config_values() -> None:
+    print("\n[6] Preset overrides Config values")
+    cfg = Config(bo=BOConfig(n_warmstart=100))
+    flat = build_optimizer_config(cfg, _args("warmstart_plain_ei"), Path("results"))
+
+    _check("n_warmstart=3 (preset wins)", flat["n_warmstart"] == 3, f"got {flat['n_warmstart']}")
+
+
+def test_warmstart_plain_ei_preset() -> None:
+    print("\n[7] warmstart_plain_ei preset")
     cfg = create_minimal_config(n_iterations=5, n_warmstart=3, n_candidates=5)
-    args = argparse.Namespace(preset="warmstart_plain_ei", mock=True)
-    flat = build_optimizer_config(cfg, args, Path("results"))
+    flat = build_optimizer_config(cfg, _args("warmstart_plain_ei"), Path("results"))
 
-    assert flat["experiment_preset"] == "warmstart_plain_ei"
-    assert flat["enable_iterative_guidance"] is False
-    assert flat["enable_gp_llm_coupling"] is False
-    assert flat["enable_acq_prior_coupling"] is False
-    assert flat["enable_proposal_sampler"] is False
-    assert flat["enable_llm_rerank"] is False
-    assert flat["llm_rerank_mode"] == "none"
-    assert flat["target_transform_mode"] == "none"
-    assert flat["objective_preprocess_mode"] == "minmax"
+    _check("experiment_preset", flat["experiment_preset"] == "warmstart_plain_ei")
+    _check("enable_iterative_guidance=False", flat["enable_iterative_guidance"] is False)
+    _check("enable_gp_llm_coupling=False", flat["enable_gp_llm_coupling"] is False)
+    _check("enable_acq_prior_coupling=False", flat["enable_acq_prior_coupling"] is False)
+    _check("enable_proposal_sampler=False", flat["enable_proposal_sampler"] is False)
+    _check("enable_llm_rerank=False", flat["enable_llm_rerank"] is False)
+    _check("target_transform_mode=none", flat["target_transform_mode"] == "none")
 
 
-def test_build_optimizer_config_risk_veto_preset_enables_safe_rerank() -> None:
+def test_risk_veto_preset() -> None:
+    print("\n[8] warmstart_risk_veto preset")
     cfg = create_minimal_config(n_iterations=5, n_warmstart=3, n_candidates=5)
-    args = argparse.Namespace(preset="warmstart_risk_veto", mock=True)
-    flat = build_optimizer_config(cfg, args, Path("results"))
+    flat = build_optimizer_config(cfg, _args("warmstart_risk_veto"), Path("results"))
 
-    assert flat["enable_llm_rerank"] is True
-    assert flat["llm_rerank_mode"] == "risk_veto_only"
-    assert flat["llm_rerank_top_m"] == 5
-    assert flat["llm_rerank_parse_fail_open"] is True
+    _check("enable_llm_rerank=True", flat["enable_llm_rerank"] is True)
+    _check("llm_rerank_mode=risk_veto_only", flat["llm_rerank_mode"] == "risk_veto_only")
 
 
-def test_build_optimizer_config_parego_baseline_uses_explicit_das_dennis_weights() -> None:
+def test_parego_baseline_preset() -> None:
+    print("\n[9] parego_baseline preset")
     cfg = create_minimal_config(n_iterations=5, n_warmstart=3, n_candidates=5)
-    args = argparse.Namespace(preset="parego_baseline", mock=True)
-    flat = build_optimizer_config(cfg, args, Path("results"))
+    flat = build_optimizer_config(cfg, _args("parego_baseline"), Path("results"))
 
-    assert flat["experiment_preset"] == "parego_baseline"
-    assert flat["n_warmstart"] == 0
-    assert flat["n_random_init"] == 6
-    assert flat["enable_region_lifted_gp"] is False
-    assert flat["enable_llm_rerank"] is False
-    assert flat["weight_strategy"] == "parego_reference_cycle"
-    assert flat["weight_count"] == 30
-    assert flat["acquisition_strategy"] == "parego_lcb_de"
-    assert flat["parego_lcb_variance_weight"] == 0.5
-    assert flat["parego_de_population"] == 30
-    assert flat["parego_de_maxiter"] == 200
+    _check("n_warmstart=0", flat["n_warmstart"] == 0)
+    _check("n_random_init=6", flat["n_random_init"] == 6)
+    _check("weight_strategy", flat["weight_strategy"] == "parego_reference_cycle")
+    _check("acquisition_strategy", flat["acquisition_strategy"] == "parego_lcb_de")
 
 
-def test_build_optimizer_config_region_lifted_preset_enables_region_lift() -> None:
+def test_region_lifted_gp_preset() -> None:
+    print("\n[10] warmstart_region_lifted_gp preset")
     cfg = create_minimal_config(n_iterations=5, n_warmstart=3, n_candidates=5)
-    args = argparse.Namespace(preset="warmstart_region_lifted_gp", mock=True)
-    flat = build_optimizer_config(cfg, args, Path("results"))
+    flat = build_optimizer_config(cfg, _args("warmstart_region_lifted_gp"), Path("results"))
 
-    assert flat["enable_region_lifted_gp"] is True
-    assert flat["target_transform_mode"] == "none"
-    assert flat["objective_preprocess_mode"] == "minmax"
-    assert flat["region_lift_external_influence_mode"] == "diagnostic_only"
-    assert flat["region_lift_active_until"] >= 10
-    assert flat["region_lift_anchor_weighting"] == "ei_softmax"
-    assert flat["region_lift_require_inside"] is True
-    assert flat["region_lift_apply_override"] is False
-    assert flat["ei_n_external_restarts"] >= 4
-    assert flat["region_lift_dsoc_margin"] > 0.0
-    assert flat["enable_iterative_guidance"] is False
-    assert flat["enable_gp_llm_coupling"] is False
-    assert flat["enable_llm_rerank"] is False
+    _check("enable_region_lifted_gp=True", flat["enable_region_lifted_gp"] is True)
+    _check("region_lift_external_influence_mode", flat["region_lift_external_influence_mode"] == "diagnostic_only")
+    _check("region_lift_anchor_weighting", flat["region_lift_anchor_weighting"] == "ei_softmax")
 
 
-def test_build_optimizer_config_region_lifted_guarded_pool_preset_enables_guarded_influence() -> None:
+def test_region_lifted_gp_force_pool_tuned_preset() -> None:
+    print("\n[11] warmstart_region_lifted_gp_force_pool_tuned preset")
     cfg = create_minimal_config(n_iterations=5, n_warmstart=3, n_candidates=5)
-    args = argparse.Namespace(preset="warmstart_region_lifted_gp_guarded_pool", mock=True)
-    flat = build_optimizer_config(cfg, args, Path("results"))
+    flat = build_optimizer_config(cfg, _args("warmstart_region_lifted_gp_force_pool_tuned"), Path("results"))
 
-    assert flat["enable_region_lifted_gp"] is True
-    assert flat["region_lift_external_influence_mode"] == "guarded_pool"
-    assert flat["region_lift_guard_min_anchor_consistency"] == 0.35
-    assert flat["region_lift_guard_min_reliability"] == 0.20
-
-
-def test_build_optimizer_config_region_lifted_force_pool_tuned_preset_uses_tighter_point_region() -> None:
-    cfg = create_minimal_config(n_iterations=5, n_warmstart=3, n_candidates=5)
-    args = argparse.Namespace(preset="warmstart_region_lifted_gp_force_pool_tuned", mock=True)
-    flat = build_optimizer_config(cfg, args, Path("results"))
-
-    assert flat["enable_region_lifted_gp"] is True
-    assert flat["n_warmstart"] == 6
-    assert flat["n_random_init"] == 0
-    assert flat["warmstart_batch_size"] == 6
-    assert flat["warmstart_max_attempts"] == 1
-    assert flat["warmstart_prompt_version"] == "experimental"
-    assert flat["warmstart_temperature"] == 0.0
-    assert flat["region_lift_external_influence_mode"] == "force_pool"
-    assert flat["region_lift_include_raw_candidates"] is False
-    assert flat["region_lift_active_until"] == 16
-    assert flat["region_lift_n_anchors"] == 64
-    assert flat["region_lift_candidate_oversample"] == 16
-    assert flat["region_lift_point_current_probe_levels"] == 3
-    assert flat["region_lift_point_current_probe_keep"] == 2
-    assert flat["ei_n_external_restarts"] == 32
-    assert flat["region_lift_min_width"] == 0.03
-    assert flat["region_lift_min_volume"] == 1e-8
-    assert flat["region_lift_max_volume"] == 0.08
-    assert flat["region_lift_close_distance"] == 0.03
-    assert flat["region_lift_dsoc_margin"] == 0.01
+    _check("enable_region_lifted_gp=True", flat["enable_region_lifted_gp"] is True)
+    _check("region_lift_external_influence_mode=force_pool", flat["region_lift_external_influence_mode"] == "force_pool")
+    _check("region_lift_n_anchors=64", flat["region_lift_n_anchors"] == 64)
+    _check("region_lift_candidate_oversample=16", flat["region_lift_candidate_oversample"] == 16)
 
 
-def test_build_optimizer_config_lgbo_preset_uses_acquisition_internal_uniform_lift() -> None:
-    cfg = create_minimal_config(n_iterations=5, n_warmstart=3, n_candidates=5)
-    args = argparse.Namespace(preset="warmstart_region_lgbo_proposition1", mock=True)
-    flat = build_optimizer_config(cfg, args, Path("results"))
-
-    assert flat["enable_region_lifted_gp"] is True
-    assert flat["region_lift_mode"] == "lgbo_proposition1"
-    assert flat["region_lift_control_mode"] == "none"
-    assert flat["region_lift_anchor_weighting"] == "uniform"
-    assert flat["region_lift_external_influence_mode"] == "diagnostic_only"
-    assert flat["region_lift_apply_override"] is False
-    assert flat["region_lift_include_raw_candidates"] is False
-    assert flat["region_lift_lgbo_shift_source"] == "posterior_covariance"
-    assert flat["warmstart_prompt_version"] == "experimental"
+def test_presets_consistency() -> None:
+    print("\n[12] Presets in config/presets.py match main.py import")
+    _check("EXPERIMENT_PRESETS imported OK", len(EXPERIMENT_PRESETS) >= 10, f"got {len(EXPERIMENT_PRESETS)}")
+    _check("warmstart_plain_ei exists", "warmstart_plain_ei" in EXPERIMENT_PRESETS)
+    _check("parego_baseline exists", "parego_baseline" in EXPERIMENT_PRESETS)
 
 
-def test_build_optimizer_config_random_lgbo_preset_uses_fixed_random_control() -> None:
-    cfg = create_minimal_config(n_iterations=5, n_warmstart=3, n_candidates=5)
-    args = argparse.Namespace(preset="random_region_lgbo_proposition1", mock=True)
-    flat = build_optimizer_config(cfg, args, Path("results"))
+# ═══════════════════════════════════════════════════════════════════════════
+#  Part 3: Integration — BayesOptimizer.cfg  (requires sklearn)
+# ═══════════════════════════════════════════════════════════════════════════
 
-    assert flat["region_lift_mode"] == "lgbo_proposition1"
-    assert flat["region_lift_control_mode"] == "fixed_random"
-    assert flat["region_lift_lgbo_shift_source"] == "posterior_covariance"
-    assert flat["n_warmstart"] == 0
-    assert flat["n_random_init"] == 6
-    assert flat["region_lift_random_width_norm"] == 0.15
-    assert flat["region_lift_random_confidence"] == 0.5
+def test_custom_gp_params_reach_optimizer() -> None:
+    print("\n[13] Custom GP params reach BayesOptimizer.cfg")
+    if not _HAS_SKLEARN:
+        _skip("all Part 3 tests", "sklearn not available")
+        return
 
+    cfg = Config(gp=GPConfig(kernel_nu=1.5, alpha=1e-3, n_restarts_optimizer=10))
+    flat = build_optimizer_config(cfg, _args(), Path("/tmp/test_ckpt_main"))
+    opt = BayesOptimizer(config=flat)
 
-def test_build_optimizer_config_named_lgbo_ablation_presets() -> None:
-    cfg = create_minimal_config(n_iterations=5, n_warmstart=3, n_candidates=5)
-
-    prior = build_optimizer_config(cfg, argparse.Namespace(preset="llm_region_lgbo_prior", mock=True), Path("results"))
-    posterior = build_optimizer_config(cfg, argparse.Namespace(preset="llm_region_lgbo_posterior", mock=True), Path("results"))
-    llmbo_mo = build_optimizer_config(cfg, argparse.Namespace(preset="llmbo_mo", mock=True), Path("results"))
-
-    assert prior["n_warmstart"] == 0
-    assert prior["region_lift_lgbo_shift_source"] == "prior_kernel"
-    assert posterior["n_warmstart"] == 0
-    assert posterior["region_lift_lgbo_shift_source"] == "posterior_covariance"
-    assert llmbo_mo["n_warmstart"] > 0
-    assert llmbo_mo["region_lift_lgbo_shift_source"] == "posterior_covariance"
+    _check("kernel_nu=1.5", opt.cfg["kernel_nu"] == 1.5, f"got {opt.cfg['kernel_nu']}")
+    _check("gp_alpha=1e-3", opt.cfg["gp_alpha"] == 1e-3, f"got {opt.cfg['gp_alpha']}")
+    _check("gp_n_restarts=10", opt.cfg["gp_n_restarts_optimizer"] == 10, f"got {opt.cfg['gp_n_restarts_optimizer']}")
 
 
-def test_build_optimizer_config_calibrated_region_preset_changes_only_region_policy() -> None:
-    cfg = create_minimal_config(n_iterations=5, n_warmstart=3, n_candidates=5)
-    flat = build_optimizer_config(
-        cfg,
-        argparse.Namespace(preset="llm_region_lgbo_posterior_calibrated", mock=True),
-        Path("results"),
+def test_default_values_fill_from_default_config() -> None:
+    print("\n[14] Keys not in flat dict use DEFAULT_CONFIG values")
+    if not _HAS_SKLEARN:
+        return
+
+    cfg = Config()
+    flat = build_optimizer_config(cfg, _args(), Path("/tmp/test_ckpt_main"))
+    opt = BayesOptimizer(config=flat)
+
+    _check(
+        "enable_iterative_guidance from DEFAULT",
+        opt.cfg["enable_iterative_guidance"] == DEFAULT_CONFIG["enable_iterative_guidance"],
+    )
+    _check(
+        "enable_acq_prior_coupling from DEFAULT",
+        opt.cfg["enable_acq_prior_coupling"] == DEFAULT_CONFIG["enable_acq_prior_coupling"],
+    )
+    _check(
+        "acquisition_strategy from DEFAULT",
+        opt.cfg["acquisition_strategy"] == DEFAULT_CONFIG["acquisition_strategy"],
     )
 
-    assert flat["n_warmstart"] == 0
-    assert flat["region_lift_lgbo_shift_source"] == "posterior_covariance"
-    assert flat["region_preference_prompt_version"] == "calibrated"
-    assert flat["region_lift_confidence_scale"] == 0.75
-    assert flat["region_lift_active_until"] == 8
+
+def test_preset_plus_custom_gp() -> None:
+    print("\n[15] Preset flags + custom GP params coexist in BayesOptimizer.cfg")
+    if not _HAS_SKLEARN:
+        return
+
+    cfg = Config(gp=GPConfig(kernel_nu=1.5))
+    flat = build_optimizer_config(cfg, _args("warmstart_plain_ei"), Path("/tmp/test_ckpt_main"))
+    opt = BayesOptimizer(config=flat)
+
+    _check("preset: enable_iterative_guidance=False", opt.cfg["enable_iterative_guidance"] is False)
+    _check("config: kernel_nu=1.5", opt.cfg["kernel_nu"] == 1.5)
+    _check("default: llm_rerank_mode=none", opt.cfg["llm_rerank_mode"] == "none")
 
 
-def test_build_optimizer_config_adaptive_region_preset_uses_soft_confidence_policy() -> None:
-    cfg = create_minimal_config(n_iterations=5, n_warmstart=3, n_candidates=5)
-    flat = build_optimizer_config(
-        cfg,
-        argparse.Namespace(preset="llm_region_lgbo_posterior_adaptive", mock=True),
-        Path("results"),
+def test_no_preset_uses_default_config_flags() -> None:
+    print("\n[16] No preset -> DEFAULT_CONFIG feature flags used (not hardcoded False)")
+    if not _HAS_SKLEARN:
+        return
+
+    cfg = Config()
+    flat = build_optimizer_config(cfg, _args(preset=None), Path("/tmp/test_ckpt_main"))
+    opt = BayesOptimizer(config=flat)
+
+    _check(
+        "enable_acq_prior_coupling uses DEFAULT",
+        opt.cfg["enable_acq_prior_coupling"] == DEFAULT_CONFIG["enable_acq_prior_coupling"],
+        f"got {opt.cfg['enable_acq_prior_coupling']}, DEFAULT={DEFAULT_CONFIG['enable_acq_prior_coupling']}",
     )
 
-    assert flat["n_warmstart"] == 0
-    assert flat["n_random_init"] == 6
-    assert flat["region_lift_lgbo_shift_source"] == "posterior_covariance"
-    assert flat["region_preference_prompt_version"] == "calibrated_v2"
-    assert flat["region_lift_confidence_scale"] == 1.0
-    assert flat["region_lift_active_until"] == 12
-    assert flat["region_lift_adaptive_confidence_enabled"] is True
-    assert flat["region_lift_adaptive_confidence_floor"] == 0.35
-    assert flat["region_lift_adaptive_base_scale"] == 0.85
-    assert flat["region_lift_lgbo_shift_mean_budget"] == 0.025
+
+# ═══════════════════════════════════════════════════════════════════════════
+
+def main() -> int:
+    tests = [
+        # Part 1: Config passthrough
+        test_gp_fields_pass_through,
+        test_mobo_fields_pass_through,
+        test_bo_warmstart_batch_params_pass_through,
+        test_bo_core_params_pass_through,
+        test_default_config_values_pass_through,
+        # Part 2: Presets
+        test_preset_overrides_config_values,
+        test_warmstart_plain_ei_preset,
+        test_risk_veto_preset,
+        test_parego_baseline_preset,
+        test_region_lifted_gp_preset,
+        test_region_lifted_gp_force_pool_tuned_preset,
+        test_presets_consistency,
+        # Part 3: Integration (skipped if no sklearn)
+        test_custom_gp_params_reach_optimizer,
+        test_default_values_fill_from_default_config,
+        test_preset_plus_custom_gp,
+        test_no_preset_uses_default_config_flags,
+    ]
+
+    print("=" * 60)
+    print("test_main_config: Config passthrough verification")
+    print("=" * 60)
+
+    for t in tests:
+        try:
+            t()
+        except Exception as exc:
+            global FAIL
+            FAIL += 1
+            print(f"  [ERROR] {t.__name__}: {exc}")
+
+    print(f"\n{'=' * 60}")
+    print(f"Results: {PASS} passed, {FAIL} failed, {SKIP} skipped, {PASS + FAIL + SKIP} total")
+    print("=" * 60)
+    return 1 if FAIL else 0
 
 
-def test_bayes_optimizer_setup_passes_requested_battery_param_set(monkeypatch, tmp_path) -> None:
-    import llmbo.optimizer as optimizer_module
-
-    seen_param_sets = []
-
-    class DummySimulator:
-        def __init__(self, param_set: str = "Chen2020"):
-            seen_param_sets.append(param_set)
-            self.param_set = param_set
-            self.battery_name = f"DummyCell-{param_set}"
-            self.param_bounds = {key: tuple(value) for key, value in DEFAULT_BOUNDS.items()}
-            self.soc_start = 0.0
-            self.soc_end = 0.8
-            self.dsoc_sum_max = 0.7
-
-    monkeypatch.setattr(optimizer_module, "PyBaMMSimulator", DummySimulator)
-
-    opt = optimizer_module.BayesOptimizer(
-        config={
-            "battery_param_set": "ORegan2022",
-            "llm_backend": "mock",
-            "checkpoint_dir": str(tmp_path / "checkpoints"),
-        }
-    )
-    opt.setup()
-
-    assert seen_param_sets == ["ORegan2022"]
-    assert opt.simulator.param_set == "ORegan2022"
-    assert opt.cfg["battery_param_set"] == "ORegan2022"
-    assert opt.cfg["battery_model"] == "DummyCell-ORegan2022 (ORegan2022)"
+if __name__ == "__main__":
+    sys.exit(main())

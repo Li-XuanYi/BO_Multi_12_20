@@ -10,6 +10,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parent
 OUT_DIR = ROOT / "images" / "summary_compare_style"
+EXP_RECORDS = ROOT.parent / "experiment_records"
 ADAPTIVE_REPORT = ROOT / "source_reports" / "adaptive4_5seeds_50iter_report.json"
 PAIRED_REPORT = ROOT / "source_reports" / "warmstart_vs_llmbo_paired_5seeds_50iter_report.json"
 
@@ -19,7 +20,7 @@ GROUPS = [
         "label": "Baseline",
         "source": "adaptive",
         "variant": "baseline",
-        "color": "#4C566A",
+        "color": "#4e8fb5",
         "marker": "o",
     },
     {
@@ -27,7 +28,7 @@ GROUPS = [
         "label": "WarmStart",
         "source": "adaptive",
         "variant": "baseline_warmstart",
-        "color": "#2E86AB",
+        "color": "#2ecc71",
         "marker": "s",
     },
     {
@@ -35,7 +36,7 @@ GROUPS = [
         "label": "LLM_Region",
         "source": "adaptive",
         "variant": "baseline_llm_region",
-        "color": "#F0A33A",
+        "color": "#e67e22",
         "marker": "^",
     },
     {
@@ -43,7 +44,7 @@ GROUPS = [
         "label": "LLMBO",
         "source": "paired",
         "variant": "llmbo_mo",
-        "color": "#D45162",
+        "color": "#c85d6b",
         "marker": "D",
     },
 ]
@@ -305,11 +306,31 @@ def _extract_trace(summary: Mapping[str, Any]) -> np.ndarray:
     return np.asarray([float(final_value)], dtype=float)
 
 
+def _resolve_summary_path(path_text: str) -> Path | None:
+    """Resolve a summary path to work on both Linux and Windows.
+
+    The report may contain Windows paths (D:\\Users\\...). We extract the
+    relative suffix after ``experiment_records`` and resolve it locally.
+    """
+    path = Path(path_text)
+    if path.exists():
+        return path
+    # Normalize separators and find 'experiment_records' anchor
+    parts = Path(path_text.replace("\\", "/")).parts
+    for i, part in enumerate(parts):
+        if part == "experiment_records" and i + 1 < len(parts):
+            rel = Path(*parts[i + 1:])
+            local = EXP_RECORDS / rel
+            if local.exists():
+                return local
+    return None
+
+
 def _load_group_traces(row: Mapping[str, Any]) -> List[np.ndarray]:
     traces: List[np.ndarray] = []
     for path_text in row.get("summary_paths", []):
-        path = Path(str(path_text))
-        if not path.exists():
+        path = _resolve_summary_path(str(path_text))
+        if path is None:
             continue
         traces.append(_extract_trace(_load_json(path)))
     return traces
