@@ -1,0 +1,268 @@
+{
+  "meta": {
+    "experiment": "computational_time_comparison",
+    "date": "2026-05-12",
+    "iterations": 50,
+    "seeds": [
+      8409,
+      8410,
+      8411,
+      8412,
+      8413
+    ],
+    "algorithms": [
+      "parego",
+      "nsga2",
+      "llmbo_mo"
+    ],
+    "param_set": "Chen2020",
+    "output_root": "Compare_Exp\\experiment_records\\computational_time_3algo_5seeds_50iter_2026_05_12",
+    "api_base": "https://api.chat.csu.edu.cn/v1",
+    "llm_model": "deepseek-v3",
+    "api_key": "<redacted>",
+    "timing_scope": "wall time per seed, including optimizer.run and save_results",
+    "budget_note": "ParEGO and NSGA-II use iterations + parego_random_init total simulator evaluations; LLMBO-MO uses iterations BO steps plus llm_warmstart and llm_random_init initialization points."
+  },
+  "config": {
+    "parego_variant": "matlab_reference",
+    "parego_random_init": 6,
+    "nsga2_pop_size": 20,
+    "nsga2_evals": 56,
+    "llmbo_preset": "warmstart_region_lifted_gp_force_pool_tuned",
+    "llm_warmstart": 3,
+    "llm_random_init": 3,
+    "llm_candidates": 15,
+    "llm_temperature": 0.0,
+    "llm_samples": 1
+  },
+  "records": {
+    "parego": [
+      {
+        "seed": 8409,
+        "algorithm": "parego",
+        "runtime_s": 268.2579434,
+        "canonical_hv": 0.3896163891164726,
+        "display_hv": 0.9740409727911815,
+        "pareto_size": 46,
+        "n_total": 56,
+        "n_feasible": 56,
+        "summary_path": "Compare_Exp\\experiment_records\\computational_time_3algo_5seeds_50iter_2026_05_12\\seed8409\\parego\\summary.json"
+      },
+      {
+        "seed": 8410,
+        "algorithm": "parego",
+        "runtime_s": 267.4309606,
+        "canonical_hv": 0.37609783087818255,
+        "display_hv": 0.9402445771954563,
+        "pareto_size": 46,
+        "n_total": 56,
+        "n_feasible": 56,
+        "summary_path": "Compare_Exp\\experiment_records\\computational_time_3algo_5seeds_50iter_2026_05_12\\seed8410\\parego\\summary.json"
+      },
+      {
+        "seed": 8411,
+        "algorithm": "parego",
+        "runtime_s": 258.51708869999993,
+        "canonical_hv": 0.3994554477734361,
+        "display_hv": 0.9986386194335902,
+        "pareto_size": 48,
+        "n_total": 56,
+        "n_feasible": 56,
+        "summary_path": "Compare_Exp\\experiment_records\\computational_time_3algo_5seeds_50iter_2026_05_12\\seed8411\\parego\\summary.json"
+      },
+      {
+        "seed": 8412,
+        "algorithm": "parego",
+        "runtime_s": 238.54146149999997,
+        "canonical_hv": 0.37929761034100756,
+        "display_hv": 0.9482440258525189,
+        "pareto_size": 43,
+        "n_total": 56,
+        "n_feasible": 56,
+        "summary_path": "Compare_Exp\\experiment_records\\computational_time_3algo_5seeds_50iter_2026_05_12\\seed8412\\parego\\summary.json"
+      },
+      {
+        "seed": 8413,
+        "algorithm": "parego",
+        "runtime_s": 229.17910919999986,
+        "canonical_hv": 0.3820582167849328,
+        "display_hv": 0.9551455419623319,
+        "pareto_size": 48,
+        "n_total": 56,
+        "n_feasible": 56,
+        "summary_path": "Compare_Exp\\experiment_records\\computational_time_3algo_5seeds_50iter_2026_05_12\\seed8413\\parego\\summary.json"
+      }
+    ],
+    "nsga2": [
+      {
+        "seed": 8409,
+        "algorithm": "nsga2",
+        "runtime_s": 197.40201679999996,
+        "canonical_hv": 0.31556325472781743,
+        "display_hv": 0.7889081368195435,
+        "pareto_size": 24,
+        "n_total": 60,
+        "n_feasible": 60,
+        "summary_path": "Compare_Exp\\experiment_records\\computational_time_3algo_5seeds_50iter_2026_05_12\\seed8409\\nsga2\\summary.json"
+      },
+      {
+        "seed": 8410,
+        "algorithm": "nsga2",
+        "runtime_s": 186.60181110000008,
+        "canonical_hv": 0.33914913465722324,
+        "display_hv": 0.847872836643058,
+        "pareto_size": 27,
+        "n_total": 60,
+        "n_feasible": 60,
+        "summary_path": "Compare_Exp\\experiment_records\\computational_time_3algo_5seeds_50iter_2026_05_12\\seed8410\\nsga2\\summary.json"
+      },
+      {
+        "seed": 8411,
+        "algorithm": "nsga2",
+        "runtime_s": 212.303132,
+        "canonical_hv": 0.2863048165754076,
+        "display_hv": 0.7157620414385188,
+        "pareto_size": 27,
+        "n_total": 60,
+        "n_feasible": 60,
+        "summary_path": "Compare_Exp\\experiment_records\\computational_time_3algo_5seeds_50iter_2026_05_12\\seed8411\\nsga2\\summary.json"
+      },
+      {
+        "seed": 8412,
+        "algorithm": "nsga2",
+        "runtime_s": 193.39876079999976,
+        "canonical_hv": 0.3485427051794974,
+        "display_hv": 0.8713567629487435,
+        "pareto_size": 24,
+        "n_total": 60,
+        "n_feasible": 60,
+        "summary_path": "Compare_Exp\\experiment_records\\computational_time_3algo_5seeds_50iter_2026_05_12\\seed8412\\nsga2\\summary.json"
+      },
+      {
+        "seed": 8413,
+        "algorithm": "nsga2",
+        "runtime_s": 181.59210369999983,
+        "canonical_hv": 0.3233314631957524,
+        "display_hv": 0.8083286579893809,
+        "pareto_size": 24,
+        "n_total": 60,
+        "n_feasible": 60,
+        "summary_path": "Compare_Exp\\experiment_records\\computational_time_3algo_5seeds_50iter_2026_05_12\\seed8413\\nsga2\\summary.json"
+      }
+    ],
+    "llmbo_mo": [
+      {
+        "seed": 8409,
+        "algorithm": "llmbo_mo",
+        "runtime_s": 493.3399887,
+        "canonical_hv": 0.3783176737685224,
+        "display_hv": 0.9457941844213059,
+        "pareto_size": 40,
+        "n_total": 56,
+        "n_feasible": 56,
+        "summary_path": "Compare_Exp\\experiment_records\\computational_time_3algo_5seeds_50iter_2026_05_12\\seed8409\\llmbo_mo\\summary.json"
+      },
+      {
+        "seed": 8410,
+        "algorithm": "llmbo_mo",
+        "runtime_s": 440.92342529999985,
+        "canonical_hv": 0.382604888270038,
+        "display_hv": 0.956512220675095,
+        "pareto_size": 41,
+        "n_total": 56,
+        "n_feasible": 56,
+        "summary_path": "Compare_Exp\\experiment_records\\computational_time_3algo_5seeds_50iter_2026_05_12\\seed8410\\llmbo_mo\\summary.json"
+      },
+      {
+        "seed": 8411,
+        "algorithm": "llmbo_mo",
+        "runtime_s": 419.30464949999987,
+        "canonical_hv": 0.39391512431537407,
+        "display_hv": 0.9847878107884351,
+        "pareto_size": 47,
+        "n_total": 56,
+        "n_feasible": 56,
+        "summary_path": "Compare_Exp\\experiment_records\\computational_time_3algo_5seeds_50iter_2026_05_12\\seed8411\\llmbo_mo\\summary.json"
+      },
+      {
+        "seed": 8412,
+        "algorithm": "llmbo_mo",
+        "runtime_s": 415.6342055,
+        "canonical_hv": 0.3886212393270976,
+        "display_hv": 0.971553098317744,
+        "pareto_size": 44,
+        "n_total": 56,
+        "n_feasible": 56,
+        "summary_path": "Compare_Exp\\experiment_records\\computational_time_3algo_5seeds_50iter_2026_05_12\\seed8412\\llmbo_mo\\summary.json"
+      },
+      {
+        "seed": 8413,
+        "algorithm": "llmbo_mo",
+        "runtime_s": 432.4879973999996,
+        "canonical_hv": 0.3741890250159762,
+        "display_hv": 0.9354725625399404,
+        "pareto_size": 42,
+        "n_total": 56,
+        "n_feasible": 56,
+        "summary_path": "Compare_Exp\\experiment_records\\computational_time_3algo_5seeds_50iter_2026_05_12\\seed8413\\llmbo_mo\\summary.json"
+      }
+    ]
+  },
+  "aggregates": {
+    "parego": {
+      "n_runs": 5,
+      "runtime_s": {
+        "mean": 252.38531267999997,
+        "std": 17.650004956902226,
+        "min": 229.17910919999986,
+        "max": 268.2579434
+      },
+      "canonical_hv": {
+        "mean": 0.3853050989788063,
+        "std": 0.009357156930015625
+      },
+      "pareto_size": {
+        "mean": 46.2,
+        "std": 2.04939015319192
+      }
+    },
+    "nsga2": {
+      "n_runs": 5,
+      "runtime_s": {
+        "mean": 194.2595648799999,
+        "std": 11.782317979174517,
+        "min": 181.59210369999983,
+        "max": 212.303132
+      },
+      "canonical_hv": {
+        "mean": 0.32257827486713964,
+        "std": 0.02405351643878382
+      },
+      "pareto_size": {
+        "mean": 25.2,
+        "std": 1.6431676725154984
+      }
+    },
+    "llmbo_mo": {
+      "n_runs": 5,
+      "runtime_s": {
+        "mean": 440.3380532799999,
+        "std": 31.320342294173255,
+        "min": 415.6342055,
+        "max": 493.3399887
+      },
+      "canonical_hv": {
+        "mean": 0.3835295901394017,
+        "std": 0.007890651338768746
+      },
+      "pareto_size": {
+        "mean": 42.8,
+        "std": 2.7748873851023217
+      }
+    }
+  },
+  "image_paths": {
+    "png": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Compare_Exp\\images\\computational_time_3algo_5seeds_50iter_2026_05_12\\computational_time_table.png",
+    "pdf": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Compare_Exp\\images\\computational_time_3algo_5seeds_50iter_2026_05_12\\computational_time_table.pdf"
+  }
+}

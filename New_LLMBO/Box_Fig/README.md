@@ -16,7 +16,7 @@ It supports two input styles:
 
 ## Quick start
 
-Generate the bundled reference-style demo figure:
+Generate the bundled real-data reference-style figure:
 
 ```powershell
 python Box_Fig\plot_hv_box.py --make-demo
@@ -37,6 +37,9 @@ python Box_Fig\plot_hv_box.py --config Box_Fig\demo_config.json
 
 ## Notes
 
-- The demo values are synthetic so the picture stays close to your reference image.
-- For real runs, replace each group `path` with your own Python-generated `report*.json`.
+- The default figure points to real Ecker2015 experiment reports, not synthetic placeholders.
+- The plotted HV values are `canonical_hv * 0.2`; the y-axis is labeled `HV`.
+- LLMBO-MO and ParEGO are 5-seed Ecker2015 runs with `n_total=56`.
+- NSGA-II, DISK, and PIMD are 5-seed Ecker2015 external baselines with `n_total=60`; keep this caveat in the paper text.
+- For new runs, replace each group `path` with your own Python-generated `report*.json`.
 - If one algorithm has no ready report yet, you can temporarily use `values` in the config.

@@ -21,7 +21,7 @@ DEFAULT_CONFIG_PATH = BOX_FIG_ROOT / "demo_config.json"
 DEFAULT_OUTPUT_DIR = BOX_FIG_ROOT / "output"
 DEFAULT_DEMO_DATA_DIR = BOX_FIG_ROOT / "demo_data"
 
-DEFAULT_COLORS = ["#D45162", "#2E8BC8", "#8A52CC", "#5C9E45"]
+DEFAULT_COLORS = ["#D45162", "#2E8BC8", "#F0A33A", "#5C9E45", "#8A52CC"]
 
 
 @dataclass
@@ -29,6 +29,7 @@ class GroupSpec:
     label: str
     color: str
     metric: str
+    value_scale: float = 1.0
     path: Optional[Path] = None
     values: Optional[np.ndarray] = None
     variant: Optional[str] = None
@@ -134,6 +135,9 @@ def _load_group_specs(config: Mapping[str, Any], config_dir: Path) -> List[Group
         label = str(item.get("label", f"Group {idx + 1}"))
         color = str(item.get("color", DEFAULT_COLORS[idx % len(DEFAULT_COLORS)]))
         metric = str(item.get("metric", config.get("metric", "display_hv")))
+        value_scale = _to_float(item.get("value_scale", config.get("value_scale", 1.0)))
+        if value_scale is None:
+            raise ValueError(f"Group '{label}' has an invalid 'value_scale'.")
         variant = item.get("variant")
         values = item.get("values")
         path_text = item.get("path")
@@ -143,6 +147,7 @@ def _load_group_specs(config: Mapping[str, Any], config_dir: Path) -> List[Group
                 label=label,
                 color=color,
                 metric=metric,
+                value_scale=value_scale,
                 values=_as_float_array(values),
                 variant=str(variant) if variant is not None else None,
             )
@@ -151,6 +156,7 @@ def _load_group_specs(config: Mapping[str, Any], config_dir: Path) -> List[Group
                 label=label,
                 color=color,
                 metric=metric,
+                value_scale=value_scale,
                 path=_resolve_path(str(path_text), config_dir),
                 variant=str(variant) if variant is not None else None,
             )
@@ -171,11 +177,13 @@ def _load_group_values(spec: GroupSpec) -> Dict[str, Any]:
 
     if values.size == 0:
         raise ValueError(f"Group '{spec.label}' does not contain any HV values.")
+    values = values * spec.value_scale
 
     return {
         "label": spec.label,
         "color": spec.color,
         "metric": spec.metric,
+        "value_scale": spec.value_scale,
         "variant": spec.variant,
         "values": values,
         "path": spec.path,
@@ -291,74 +299,55 @@ def _plot_box(config: Mapping[str, Any], groups: Sequence[Mapping[str, Any]], ou
 
 
 def _write_demo_assets() -> Dict[str, Path]:
-    demo_payloads = {
-        "eimo_report.json": {
-            "algorithm": "eimo",
-            "records": [
-                {"seed": 0, "display_hv": 0.7421},
-                {"seed": 1, "display_hv": 0.7428},
-                {"seed": 2, "display_hv": 0.7430},
-                {"seed": 3, "display_hv": 0.7425},
-                {"seed": 4, "display_hv": 0.7422},
-            ],
-        },
-        "parego_report.json": {
-            "algorithm": "parego",
-            "records": [
-                {"seed": 0, "display_hv": 0.7387},
-                {"seed": 1, "display_hv": 0.7398},
-                {"seed": 2, "display_hv": 0.7414},
-                {"seed": 3, "display_hv": 0.7427},
-                {"seed": 4, "display_hv": 0.7442},
-            ],
-        },
-        "disk_report.json": {
-            "algorithm": "disk",
-            "records": [
-                {"seed": 0, "display_hv": 0.6920},
-                {"seed": 1, "display_hv": 0.7340},
-                {"seed": 2, "display_hv": 0.7360},
-                {"seed": 3, "display_hv": 0.7395},
-                {"seed": 4, "display_hv": 0.7445},
-            ],
-        },
-        "pimd_report.json": {
-            "algorithm": "pimd",
-            "records": [
-                {"seed": 0, "display_hv": 0.6830},
-                {"seed": 1, "display_hv": 0.7020},
-                {"seed": 2, "display_hv": 0.7040},
-                {"seed": 3, "display_hv": 0.7070},
-                {"seed": 4, "display_hv": 0.7080},
-            ],
-        },
-    }
-
-    for filename, payload in demo_payloads.items():
-        _write_json(DEFAULT_DEMO_DATA_DIR / filename, payload)
-
     demo_config = {
-        "metric": "display_hv",
+        "metric": "canonical_hv",
+        "value_scale": 0.2,
+        "source_notes": [
+            "Ecker2015 figure values are canonical_hv multiplied by 0.2.",
+            "LLMBO-MO and ParEGO are 5-seed Ecker2015 runs with n_total=56.",
+            "NSGA-II, PIMD, and DISK are 5-seed Ecker2015 external baselines with n_total=60.",
+        ],
         "plot": {
             "title": "",
             "y_label": "HV",
-            "figure_size": [4.8, 4.0],
+            "figure_size": [5.9, 4.0],
             "dpi": 300,
             "x_rotation": 28,
             "jitter": 0.055,
             "point_size": 38,
             "box_width": 0.36,
-            "y_min": 0.68,
-            "y_max": 0.76,
-            "y_ticks": [0.68, 0.70, 0.72, 0.74, 0.76],
+            "y_min": 0.18,
+            "y_max": 0.39,
+            "y_ticks": [0.18, 0.22, 0.26, 0.30, 0.34, 0.38],
         },
         "groups": [
-            {"label": "EIMO", "path": "demo_data/eimo_report.json", "color": "#D45162"},
-            {"label": "ParEGO", "path": "demo_data/parego_report.json", "color": "#2E8BC8"},
-            {"label": "DISK", "path": "demo_data/disk_report.json", "color": "#8A52CC"},
-            {"label": "PIMD", "path": "demo_data/pimd_report.json", "color": "#5C9E45"},
+            {
+                "label": "LLMBO-MO",
+                "path": "../scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/report_5seeds.json",
+                "color": "#D45162",
+            },
+            {
+                "label": "ParEGO",
+                "path": "../optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/report.json",
+                "color": "#2E8BC8",
+            },
+            {
+                "label": "NSGA-II",
+                "path": "../optimized_experiments/nsga2_ecker_5seeds_50evals_2026_05_13/report.json",
+                "color": "#F0A33A",
+            },
+            {
+                "label": "PIMD",
+                "path": "../optimized_experiments/pimd_ecker_5seeds_50evals_2026_05_13/report_5seeds.json",
+                "color": "#5C9E45",
+            },
+            {
+                "label": "DISK",
+                "path": "../optimized_experiments/disk_ecker_5seeds_50evals_2026_05_13/report_5seeds.json",
+                "color": "#8A52CC",
+            },
         ],
-        "output": {"basename": "hv_box_reference"},
+        "output": {"basename": "hv_box_ecker2015_scaled"},
     }
     _write_json(DEFAULT_CONFIG_PATH, demo_config)
 

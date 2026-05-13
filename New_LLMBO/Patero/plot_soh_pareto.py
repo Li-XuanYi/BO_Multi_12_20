@@ -7,11 +7,12 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence
 
 import matplotlib
-
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.lines import Line2D
 from matplotlib.colors import to_rgba
+from mpl_toolkits.mplot3d import proj3d
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -48,6 +49,19 @@ def _resolve_path(path_text: str, base_dir: Path) -> Path:
 
 
 def _as_objective_row(value: Any) -> Optional[np.ndarray]:
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+        if len(value) < 3:
+            return None
+        try:
+            row = np.asarray(value[:3], dtype=float)
+        except (TypeError, ValueError):
+            return None
+        if row.shape == (3,):
+            return row
+    return None
+
+
+def _as_float_triplet(value: Any) -> Optional[np.ndarray]:
     if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
         if len(value) < 3:
             return None
@@ -120,6 +134,16 @@ def _unique_rows(points: np.ndarray, decimals: int = 10) -> np.ndarray:
     rounded = np.round(np.asarray(points, dtype=float), decimals=decimals)
     _, indices = np.unique(rounded, axis=0, return_index=True)
     return np.sort(indices)
+
+
+def _mask_matching_rows(points: np.ndarray, targets: np.ndarray, atol: float = 1e-10) -> np.ndarray:
+    if len(points) == 0 or len(targets) == 0:
+        return np.ones(len(points), dtype=bool)
+    mask = np.ones(len(points), dtype=bool)
+    for idx, row in enumerate(points):
+        if np.any(np.all(np.isclose(targets, row, atol=atol, rtol=0.0), axis=1)):
+            mask[idx] = False
+    return mask
 
 
 def _filter_pareto(points: np.ndarray) -> np.ndarray:
@@ -211,6 +235,11 @@ def _resolve_highlights(
                     "label": str(item.get("label", "")),
                     "group": str(item.get("group", "")),
                     "objectives": row.tolist(),
+                    "offset": (
+                        _as_float_triplet(item.get("offset")).tolist()
+                        if _as_float_triplet(item.get("offset")) is not None
+                        else None
+                    ),
                 }
             )
         if output:
@@ -243,67 +272,225 @@ def _plot_3d(
     output_dir: Path,
 ) -> Dict[str, str]:
     plot_cfg = config.get("plot", {})
+    scatter_cfg = config.get("scatter", {})
     title = str(plot_cfg.get("title", "")).strip()
     x_label = str(plot_cfg.get("x_label", "Charging Time/s"))
     y_label = str(plot_cfg.get("y_label", "Temperature Rise/K"))
     z_label = str(plot_cfg.get("z_label", "Capacity loss/%"))
+    z_label_2d = bool(plot_cfg.get("z_label_2d", True))
+    z_label_2d_x = float(plot_cfg.get("z_label_2d_x", -0.055))
+    z_label_2d_y = float(plot_cfg.get("z_label_2d_y", 0.69))
+    z_label_2d_rotation = float(plot_cfg.get("z_label_2d_rotation", 90.0))
     x_scale = float(plot_cfg.get("x_scale", 1.0))
     y_scale = float(plot_cfg.get("y_scale", 1.0))
     z_scale = float(plot_cfg.get("z_scale", 1.0))
     elev = float(plot_cfg.get("elev", 18.0))
     azim = float(plot_cfg.get("azim", -122.0))
+    show_all_points = bool(scatter_cfg.get("show_all_points", False))
+    show_pareto_points = bool(scatter_cfg.get("show_pareto_points", True))
+    depthshade = bool(scatter_cfg.get("depthshade", True))
+    hide_points_under_highlights = bool(scatter_cfg.get("hide_points_under_highlights", False))
+    highlight_overlay_2d = bool(scatter_cfg.get("highlight_overlay_2d", False))
+    all_point_size = float(scatter_cfg.get("all_point_size", 18.0))
+    all_point_face_alpha = float(scatter_cfg.get("all_point_face_alpha", 0.06))
+    all_point_edge_alpha = float(scatter_cfg.get("all_point_edge_alpha", 0.22))
+    all_point_linewidth = float(scatter_cfg.get("all_point_linewidth", 0.75))
+    pareto_point_size = float(scatter_cfg.get("pareto_point_size", 26.0))
+    pareto_point_face_alpha = float(scatter_cfg.get("pareto_point_face_alpha", 0.16))
+    pareto_point_edge_alpha = float(scatter_cfg.get("pareto_point_edge_alpha", 0.72))
+    pareto_point_linewidth = float(scatter_cfg.get("pareto_point_linewidth", 1.1))
+    star_size = float(scatter_cfg.get("star_size", 320.0))
+    star_underlay_size = float(scatter_cfg.get("star_underlay_size", max(star_size * 0.34, 92.0)))
+    star_underlay_color = str(scatter_cfg.get("star_underlay_color", "#FFFFFF"))
+    star_underlay_alpha = float(scatter_cfg.get("star_underlay_alpha", 1.0))
+    label_fontsize = float(scatter_cfg.get("label_fontsize", 16.0))
+    default_offset = _as_float_triplet(scatter_cfg.get("default_label_offset"))
+    if default_offset is None:
+        default_offset = np.asarray([75.0, 0.1, 0.03], dtype=float)
 
     _configure_plot_style()
     fig = plt.figure(figsize=(10.8, 6.8))
     ax = fig.add_subplot(111, projection="3d")
 
+    highlight_targets: Dict[str, np.ndarray] = {}
+    for item in highlights:
+        group_label = str(item.get("group", "")).strip()
+        row = _as_objective_row(item.get("objectives"))
+        if not group_label or row is None:
+            continue
+        highlight_targets.setdefault(group_label, []).append(row)
+    highlight_targets = {
+        key: np.vstack(rows) for key, rows in highlight_targets.items() if rows
+    }
+
     for payload in group_payloads:
+        all_points = np.asarray(payload["all_points"], dtype=float)
         front = np.asarray(payload["pareto_points"], dtype=float)
-        if len(front) == 0:
+        point_label = str(payload["label"])
+        if hide_points_under_highlights and point_label in highlight_targets:
+            targets = highlight_targets[point_label]
+            all_points = all_points[_mask_matching_rows(all_points, targets)]
+            front = front[_mask_matching_rows(front, targets)]
+        if len(front) == 0 and (not show_all_points or len(all_points) == 0):
             continue
         point_color = str(payload["color"])
-        ax.scatter(
-            front[:, 0] * x_scale,
-            front[:, 1] * y_scale,
-            front[:, 2] * z_scale,
-            s=22,
-            facecolors=[to_rgba(point_color, alpha=0.18)],
-            edgecolors=[to_rgba(point_color, alpha=0.72)],
-            linewidths=1.1,
-            label=str(payload["label"]),
-        )
+        if show_all_points and len(all_points) > 0:
+            ax.scatter(
+                all_points[:, 0] * x_scale,
+                all_points[:, 1] * y_scale,
+                all_points[:, 2] * z_scale,
+                s=all_point_size,
+                facecolors=[to_rgba(point_color, alpha=all_point_face_alpha)],
+                edgecolors=[to_rgba(point_color, alpha=all_point_edge_alpha)],
+                linewidths=all_point_linewidth,
+                label=point_label if not show_pareto_points else None,
+                depthshade=depthshade,
+            )
+        if show_pareto_points and len(front) > 0:
+            ax.scatter(
+                front[:, 0] * x_scale,
+                front[:, 1] * y_scale,
+                front[:, 2] * z_scale,
+                s=pareto_point_size,
+                facecolors=[to_rgba(point_color, alpha=pareto_point_face_alpha)],
+                edgecolors=[to_rgba(point_color, alpha=pareto_point_edge_alpha)],
+                linewidths=pareto_point_linewidth,
+                label=point_label,
+                depthshade=depthshade,
+            )
 
-    for item in highlights:
-        row = np.asarray(item["objectives"], dtype=float)
-        x_val = row[0] * x_scale
-        y_val = row[1] * y_scale
-        z_val = row[2] * z_scale
-        ax.scatter(
-            [x_val],
-            [y_val],
-            [z_val],
-            s=340,
-            marker="*",
-            c=STAR_COLOR,
-            edgecolors=STAR_COLOR,
-            linewidths=1.2,
-            alpha=0.98,
-        )
-        label = str(item.get("label", "")).strip()
-        if label:
-            ax.text(x_val + 75, y_val + 0.1, z_val + 0.03, label, fontsize=16, color="black")
+    if not highlight_overlay_2d:
+        for item in highlights:
+            row = np.asarray(item["objectives"], dtype=float)
+            x_val = row[0] * x_scale
+            y_val = row[1] * y_scale
+            z_val = row[2] * z_scale
+            if star_underlay_size > 0:
+                ax.scatter(
+                    [x_val],
+                    [y_val],
+                    [z_val],
+                    s=star_underlay_size,
+                    marker="o",
+                    c=star_underlay_color,
+                    edgecolors=star_underlay_color,
+                    linewidths=0.0,
+                    alpha=star_underlay_alpha,
+                    depthshade=depthshade,
+                )
+            ax.scatter(
+                [x_val],
+                [y_val],
+                [z_val],
+                s=star_size,
+                marker="*",
+                c=STAR_COLOR,
+                edgecolors=STAR_COLOR,
+                linewidths=1.2,
+                alpha=0.98,
+                depthshade=depthshade,
+            )
+            label = str(item.get("label", "")).strip()
+            if label:
+                offset = _as_float_triplet(item.get("offset"))
+                if offset is None:
+                    offset = default_offset
+                ax.text(
+                    x_val + offset[0] * x_scale,
+                    y_val + offset[1] * y_scale,
+                    z_val + offset[2] * z_scale,
+                    label,
+                    fontsize=label_fontsize,
+                    color="black",
+                )
 
     ax.set_xlabel(x_label, labelpad=18)
     ax.set_ylabel(y_label, labelpad=22)
-    ax.set_zlabel(z_label, labelpad=12)
+    ax.set_zlabel("" if z_label_2d else z_label, labelpad=12)
     if title:
         ax.set_title(title, pad=18)
-    ax.text2D(0.015, 0.72, z_label, transform=ax.transAxes, rotation=90, va="center")
+    if z_label_2d:
+        ax.text2D(
+            z_label_2d_x,
+            z_label_2d_y,
+            z_label,
+            transform=ax.transAxes,
+            rotation=z_label_2d_rotation,
+            va="center",
+            ha="center",
+            clip_on=False,
+        )
     ax.view_init(elev=elev, azim=azim)
     ax.legend(loc="upper right", frameon=True, fancybox=False, edgecolor="#666666")
     ax.xaxis.pane.set_alpha(0.05)
     ax.yaxis.pane.set_alpha(0.05)
     ax.zaxis.pane.set_alpha(0.05)
+
+    if highlight_overlay_2d:
+        projection = ax.get_proj()
+        for item in highlights:
+            row = np.asarray(item["objectives"], dtype=float)
+            x_val = row[0] * x_scale
+            y_val = row[1] * y_scale
+            z_val = row[2] * z_scale
+            x_proj, y_proj, _ = proj3d.proj_transform(x_val, y_val, z_val, projection)
+            if star_underlay_size > 0:
+                ax.add_line(
+                    Line2D(
+                        [x_proj],
+                        [y_proj],
+                        marker="*",
+                        markersize=float(np.sqrt(star_underlay_size)),
+                        markerfacecolor=star_underlay_color,
+                        markeredgecolor=star_underlay_color,
+                        markeredgewidth=0.0,
+                        linestyle="None",
+                        alpha=star_underlay_alpha,
+                        transform=ax.transData,
+                        zorder=10000,
+                        clip_on=False,
+                    )
+                )
+            ax.add_line(
+                Line2D(
+                    [x_proj],
+                    [y_proj],
+                    marker="*",
+                    markersize=float(np.sqrt(star_size)),
+                    markerfacecolor=STAR_COLOR,
+                    markeredgecolor=STAR_COLOR,
+                    markeredgewidth=1.0,
+                    linestyle="None",
+                    alpha=0.98,
+                    transform=ax.transData,
+                    zorder=10001,
+                    clip_on=False,
+                )
+            )
+            label = str(item.get("label", "")).strip()
+            if label:
+                offset = _as_float_triplet(item.get("offset"))
+                if offset is None:
+                    offset = default_offset
+                label_x = x_val + offset[0] * x_scale
+                label_y = y_val + offset[1] * y_scale
+                label_z = z_val + offset[2] * z_scale
+                label_x_proj, label_y_proj, _ = proj3d.proj_transform(
+                    label_x,
+                    label_y,
+                    label_z,
+                    projection,
+                )
+                ax.text2D(
+                    label_x_proj,
+                    label_y_proj,
+                    label,
+                    transform=ax.transData,
+                    fontsize=label_fontsize,
+                    color="black",
+                    zorder=10002,
+                    clip_on=False,
+                )
     fig.tight_layout()
 
     output_dir.mkdir(parents=True, exist_ok=True)

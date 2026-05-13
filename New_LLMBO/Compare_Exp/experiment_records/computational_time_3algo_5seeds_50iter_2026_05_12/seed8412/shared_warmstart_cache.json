@@ -1,0 +1,265 @@
+{
+  "version": 1,
+  "backend": "openai",
+  "model": "deepseek-v3",
+  "temperature": 0.0,
+  "target_pool": 16,
+  "candidate_pool": [
+    [
+      3.8,
+      3.2,
+      2.1,
+      0.3,
+      0.2
+    ],
+    [
+      5.7,
+      4.2,
+      2.5,
+      0.18,
+      0.2
+    ],
+    [
+      3.4,
+      2.9,
+      2.0,
+      0.24,
+      0.22
+    ],
+    [
+      5.2,
+      3.8,
+      2.3,
+      0.22,
+      0.18
+    ],
+    [
+      4.5,
+      3.5,
+      2.2,
+      0.28,
+      0.21
+    ],
+    [
+      3.0,
+      2.5,
+      2.0,
+      0.32,
+      0.24
+    ],
+    [
+      5.9,
+      4.5,
+      2.8,
+      0.15,
+      0.15
+    ],
+    [
+      4.8,
+      3.3,
+      2.1,
+      0.26,
+      0.19
+    ],
+    [
+      3.6,
+      3.0,
+      2.0,
+      0.35,
+      0.25
+    ],
+    [
+      5.4,
+      4.0,
+      2.4,
+      0.2,
+      0.17
+    ],
+    [
+      4.2,
+      3.6,
+      2.4,
+      0.26,
+      0.22
+    ],
+    [
+      3.2,
+      2.7,
+      2.0,
+      0.38,
+      0.26
+    ],
+    [
+      5.0,
+      3.7,
+      2.2,
+      0.24,
+      0.2
+    ],
+    [
+      4.0,
+      3.4,
+      2.3,
+      0.3,
+      0.23
+    ],
+    [
+      3.8,
+      3.1,
+      2.1,
+      0.33,
+      0.24
+    ],
+    [
+      5.6,
+      4.3,
+      2.6,
+      0.17,
+      0.16
+    ]
+  ],
+  "final_selected": [
+    [
+      3.8,
+      3.2,
+      2.1,
+      0.3,
+      0.2
+    ],
+    [
+      5.9,
+      4.5,
+      2.8,
+      0.15,
+      0.15
+    ],
+    [
+      5.2,
+      3.8,
+      2.3,
+      0.22,
+      0.18
+    ]
+  ],
+  "summary": {
+    "input_count": 16,
+    "valid_count": 16,
+    "filtered": {
+      "non_finite": 0,
+      "shape": 0,
+      "bounds": 0,
+      "hard_dsoc": 0,
+      "duplicate": 0
+    },
+    "requested": 3,
+    "selected_count": 3,
+    "selected": [
+      {
+        "theta": [
+          3.8,
+          3.2,
+          2.1,
+          0.3,
+          0.2
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 0,
+        "quality": 0.58,
+        "diversity": 0.0,
+        "archive_bonus": 0.0,
+        "score": 0.58,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.5,
+        "monotone": true
+      },
+      {
+        "theta": [
+          5.9,
+          4.5,
+          2.8,
+          0.15,
+          0.15
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 6,
+        "quality": 0.58,
+        "diversity": 1.1251234500168315,
+        "archive_bonus": 0.0,
+        "score": 1.0863055525075742,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.3,
+        "monotone": true
+      },
+      {
+        "theta": [
+          5.2,
+          3.8,
+          2.3,
+          0.22,
+          0.18
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 3,
+        "quality": 0.58,
+        "diversity": 0.5325515102890152,
+        "archive_bonus": 0.0,
+        "score": 0.8196481796300568,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.4,
+        "monotone": true
+      }
+    ],
+    "boundary_selected": 0,
+    "method": "portfolio_selector",
+    "config": {
+      "hard_dsoc_sum_max": 0.7,
+      "soft_dsoc_sum_max": 0.65,
+      "diversity_weight": 0.45,
+      "soft_penalty_weight": 0.65,
+      "monotone_bonus": 0.08,
+      "archive_bonus_weight": 0.0,
+      "boundary_probe_limit": 1
+    },
+    "enabled": true,
+    "pool_target": 16,
+    "pool_collected": 16,
+    "disk_cache": "miss",
+    "cache_path": "Compare_Exp\\experiment_records\\computational_time_3algo_5seeds_50iter_2026_05_12\\seed8412\\shared_warmstart_cache.json",
+    "final_selected_count": 3,
+    "final_selected": [
+      [
+        3.8,
+        3.2,
+        2.1,
+        0.3,
+        0.2
+      ],
+      [
+        5.9,
+        4.5,
+        2.8,
+        0.15,
+        0.15
+      ],
+      [
+        5.2,
+        3.8,
+        2.3,
+        0.22,
+        0.18
+      ]
+    ]
+  }
+}
