@@ -1,0 +1,1637 @@
+{
+  "meta": {
+    "experiment": "ablation_4way",
+    "iterations": 20,
+    "seeds": [
+      8409,
+      8410,
+      8411,
+      8412,
+      8413
+    ],
+    "output_root": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14",
+    "api_base": "https://api.chat.csu.edu.cn/v1",
+    "model": "deepseek-v3",
+    "model_display": "deepseek-v3",
+    "hv_metric": "canonical_hv",
+    "created_at": "2026-05-14T13:42:44.183666"
+  },
+  "variants": [
+    {
+      "key": "baseline",
+      "label": "Baseline",
+      "preset": "strict_baseline",
+      "needs_llm": false,
+      "overrides": {
+        "n_warmstart": 0,
+        "n_random_init": 6
+      }
+    },
+    {
+      "key": "baseline_warmstart",
+      "label": "Baseline+WarmStart",
+      "preset": "warmstart_plain_ei",
+      "needs_llm": true,
+      "overrides": {
+        "n_warmstart": 3,
+        "n_random_init": 3
+      }
+    },
+    {
+      "key": "baseline_llm_region",
+      "label": "Baseline+LLM_Region",
+      "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+      "needs_llm": true,
+      "overrides": {
+        "n_warmstart": 0,
+        "n_random_init": 6,
+        "region_lift_active_until": 16
+      }
+    },
+    {
+      "key": "llmbo_mo",
+      "label": "LLMBO-MO",
+      "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+      "needs_llm": true,
+      "overrides": {
+        "n_warmstart": 3,
+        "n_random_init": 3,
+        "region_lift_active_until": 16
+      }
+    }
+  ],
+  "records": [
+    {
+      "seed": 8409,
+      "variant": "baseline",
+      "label": "Baseline",
+      "preset": "strict_baseline",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8409\\baseline\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8409\\baseline",
+      "status": "ok",
+      "display_hv": 0.6440024769845502,
+      "canonical_hv": 0.2576009907938201,
+      "hypervolume_raw": 7.57992200940848,
+      "pareto_size": 20,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 8410,
+      "variant": "baseline",
+      "label": "Baseline",
+      "preset": "strict_baseline",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8410\\baseline\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8410\\baseline",
+      "status": "ok",
+      "display_hv": 0.900620164559873,
+      "canonical_hv": 0.36024806582394925,
+      "hypervolume_raw": 10.600317314661883,
+      "pareto_size": 23,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 8411,
+      "variant": "baseline",
+      "label": "Baseline",
+      "preset": "strict_baseline",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8411\\baseline\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8411\\baseline",
+      "status": "ok",
+      "display_hv": 0.715682455111415,
+      "canonical_hv": 0.286272982044566,
+      "hypervolume_raw": 8.423596782806557,
+      "pareto_size": 21,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 8412,
+      "variant": "baseline",
+      "label": "Baseline",
+      "preset": "strict_baseline",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8412\\baseline\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8412\\baseline",
+      "status": "ok",
+      "display_hv": 0.8952288120189457,
+      "canonical_hv": 0.3580915248075783,
+      "hypervolume_raw": 10.536860987635308,
+      "pareto_size": 21,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 8413,
+      "variant": "baseline",
+      "label": "Baseline",
+      "preset": "strict_baseline",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8413\\baseline\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8413\\baseline",
+      "status": "ok",
+      "display_hv": 0.8943875603848944,
+      "canonical_hv": 0.35775502415395777,
+      "hypervolume_raw": 10.526959439109822,
+      "pareto_size": 21,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 8409,
+      "variant": "baseline_warmstart",
+      "label": "Baseline+WarmStart",
+      "preset": "warmstart_plain_ei",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8409\\baseline_warmstart\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8409\\baseline_warmstart",
+      "status": "ok",
+      "display_hv": 0.6440045406443842,
+      "canonical_hv": 0.2576018162577537,
+      "hypervolume_raw": 7.57994629872592,
+      "pareto_size": 20,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 8410,
+      "variant": "baseline_warmstart",
+      "label": "Baseline+WarmStart",
+      "preset": "warmstart_plain_ei",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8410\\baseline_warmstart\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8410\\baseline_warmstart",
+      "status": "ok",
+      "display_hv": 0.8817869061646497,
+      "canonical_hv": 0.3527147624658599,
+      "hypervolume_raw": 10.378649487408705,
+      "pareto_size": 14,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 8411,
+      "variant": "baseline_warmstart",
+      "label": "Baseline+WarmStart",
+      "preset": "warmstart_plain_ei",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8411\\baseline_warmstart\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8411\\baseline_warmstart",
+      "status": "ok",
+      "display_hv": 0.9462362798365564,
+      "canonical_hv": 0.3784945119346226,
+      "hypervolume_raw": 11.13721990203771,
+      "pareto_size": 20,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 8412,
+      "variant": "baseline_warmstart",
+      "label": "Baseline+WarmStart",
+      "preset": "warmstart_plain_ei",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8412\\baseline_warmstart\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8412\\baseline_warmstart",
+      "status": "ok",
+      "display_hv": 0.9232269810888911,
+      "canonical_hv": 0.36929079243555646,
+      "hypervolume_raw": 10.86639999647597,
+      "pareto_size": 21,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 8413,
+      "variant": "baseline_warmstart",
+      "label": "Baseline+WarmStart",
+      "preset": "warmstart_plain_ei",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8413\\baseline_warmstart\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8413\\baseline_warmstart",
+      "status": "ok",
+      "display_hv": 0.9221864240226575,
+      "canonical_hv": 0.368874569609063,
+      "hypervolume_raw": 10.854152619035247,
+      "pareto_size": 21,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 8409,
+      "variant": "baseline_llm_region",
+      "label": "Baseline+LLM_Region",
+      "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8409\\baseline_llm_region\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8409\\baseline_llm_region",
+      "status": "ok",
+      "display_hv": 0.6906291862519071,
+      "canonical_hv": 0.2762516745007628,
+      "hypervolume_raw": 8.128719308227575,
+      "pareto_size": 19,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 16,
+      "plain_candidate_inside_region_count": 1,
+      "diagnostic_override_candidate_count": 1,
+      "fallback_distribution": {
+        "too_close_to_existing": 6,
+        "same_as_plain": 3,
+        "outside_region": 6,
+        "override_disabled": 1,
+        "inactive_window_skipped": 4
+      }
+    },
+    {
+      "seed": 8410,
+      "variant": "baseline_llm_region",
+      "label": "Baseline+LLM_Region",
+      "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8410\\baseline_llm_region\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8410\\baseline_llm_region",
+      "status": "ok",
+      "display_hv": 0.900621191941412,
+      "canonical_hv": 0.3602484767765648,
+      "hypervolume_raw": 10.600329406963104,
+      "pareto_size": 23,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 16,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {
+        "same_as_plain": 6,
+        "outside_region": 5,
+        "parse_fail": 4,
+        "too_close_to_existing": 1,
+        "inactive_window_skipped": 4
+      }
+    },
+    {
+      "seed": 8411,
+      "variant": "baseline_llm_region",
+      "label": "Baseline+LLM_Region",
+      "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8411\\baseline_llm_region\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8411\\baseline_llm_region",
+      "status": "ok",
+      "display_hv": 0.9317360957861415,
+      "canonical_hv": 0.3726944383144566,
+      "hypervolume_raw": 10.966552446317891,
+      "pareto_size": 22,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 16,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 1,
+      "fallback_distribution": {
+        "too_close_to_existing": 4,
+        "same_as_plain": 7,
+        "override_disabled": 1,
+        "outside_region": 4,
+        "inactive_window_skipped": 4
+      }
+    },
+    {
+      "seed": 8412,
+      "variant": "baseline_llm_region",
+      "label": "Baseline+LLM_Region",
+      "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8412\\baseline_llm_region\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8412\\baseline_llm_region",
+      "status": "ok",
+      "display_hv": 0.9186648978934555,
+      "canonical_hv": 0.3674659591573822,
+      "hypervolume_raw": 10.812704186199351,
+      "pareto_size": 20,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 16,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {
+        "same_as_plain": 11,
+        "too_close_to_existing": 1,
+        "outside_region": 4,
+        "inactive_window_skipped": 4
+      }
+    },
+    {
+      "seed": 8413,
+      "variant": "baseline_llm_region",
+      "label": "Baseline+LLM_Region",
+      "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8413\\baseline_llm_region\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8413\\baseline_llm_region",
+      "status": "ok",
+      "display_hv": 0.9660137275306332,
+      "canonical_hv": 0.3864054910122533,
+      "hypervolume_raw": 11.370000856185895,
+      "pareto_size": 19,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 16,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 1,
+      "fallback_distribution": {
+        "same_as_plain": 7,
+        "too_close_to_existing": 1,
+        "outside_region": 6,
+        "plain_ei_gap": 1,
+        "override_disabled": 1,
+        "inactive_window_skipped": 4
+      }
+    },
+    {
+      "seed": 8409,
+      "variant": "llmbo_mo",
+      "label": "LLMBO-MO",
+      "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8409\\llmbo_mo\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8409\\llmbo_mo",
+      "status": "ok",
+      "display_hv": 0.6894863263007595,
+      "canonical_hv": 0.2757945305203038,
+      "hypervolume_raw": 8.11526782378929,
+      "pareto_size": 19,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 16,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {
+        "too_close_to_existing": 3,
+        "outside_region": 9,
+        "same_as_plain": 4,
+        "inactive_window_skipped": 4
+      }
+    },
+    {
+      "seed": 8410,
+      "variant": "llmbo_mo",
+      "label": "LLMBO-MO",
+      "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8410\\llmbo_mo\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8410\\llmbo_mo",
+      "status": "ok",
+      "display_hv": 0.8861907950209288,
+      "canonical_hv": 0.35447631800837154,
+      "hypervolume_raw": 10.430483347155644,
+      "pareto_size": 14,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 16,
+      "plain_candidate_inside_region_count": 1,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {
+        "too_close_to_existing": 6,
+        "same_as_plain": 7,
+        "outside_region": 3,
+        "inactive_window_skipped": 4
+      }
+    },
+    {
+      "seed": 8411,
+      "variant": "llmbo_mo",
+      "label": "LLMBO-MO",
+      "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8411\\llmbo_mo\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8411\\llmbo_mo",
+      "status": "ok",
+      "display_hv": 0.7348385475460536,
+      "canonical_hv": 0.29393541901842146,
+      "hypervolume_raw": 8.649064373147928,
+      "pareto_size": 21,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 16,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 2,
+      "fallback_distribution": {
+        "outside_region": 5,
+        "too_close_to_existing": 3,
+        "same_as_plain": 6,
+        "override_disabled": 2,
+        "inactive_window_skipped": 4
+      }
+    },
+    {
+      "seed": 8412,
+      "variant": "llmbo_mo",
+      "label": "LLMBO-MO",
+      "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8412\\llmbo_mo\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8412\\llmbo_mo",
+      "status": "ok",
+      "display_hv": 0.9333265150142644,
+      "canonical_hv": 0.3733306060057058,
+      "hypervolume_raw": 10.985271712380163,
+      "pareto_size": 19,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 16,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {
+        "too_close_to_existing": 3,
+        "outside_region": 5,
+        "same_as_plain": 8,
+        "inactive_window_skipped": 4
+      }
+    },
+    {
+      "seed": 8413,
+      "variant": "llmbo_mo",
+      "label": "LLMBO-MO",
+      "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8413\\llmbo_mo\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8413\\llmbo_mo",
+      "status": "ok",
+      "display_hv": 0.8911203739518173,
+      "canonical_hv": 0.35644814958072696,
+      "hypervolume_raw": 10.488504589574335,
+      "pareto_size": 20,
+      "n_total": 26,
+      "n_feasible": 26,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 16,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 1,
+      "fallback_distribution": {
+        "override_disabled": 1,
+        "outside_region": 2,
+        "same_as_plain": 6,
+        "too_close_to_existing": 7,
+        "inactive_window_skipped": 4
+      }
+    }
+  ],
+  "aggregates": {
+    "baseline": {
+      "n_runs": 5,
+      "n_missing_or_failed": 0,
+      "canonical_hv": {
+        "mean": 0.3239937175247743,
+        "std": 0.04859967105172082,
+        "median": 0.35775502415395777,
+        "min": 0.2576009907938201,
+        "max": 0.36024806582394925,
+        "values": [
+          0.2576009907938201,
+          0.36024806582394925,
+          0.286272982044566,
+          0.3580915248075783,
+          0.35775502415395777
+        ]
+      },
+      "display_hv": {
+        "mean": 0.8099842938119357,
+        "std": 0.12149917762930205,
+        "values": [
+          0.6440024769845502,
+          0.900620164559873,
+          0.715682455111415,
+          0.8952288120189457,
+          0.8943875603848944
+        ]
+      },
+      "hypervolume_raw": {
+        "mean": 9.53353130672441,
+        "std": 1.4300477460111858,
+        "values": [
+          7.57992200940848,
+          10.600317314661883,
+          8.423596782806557,
+          10.536860987635308,
+          10.526959439109822
+        ]
+      },
+      "pareto_size": {
+        "mean": 21.2,
+        "std": 1.0954451150103321,
+        "values": [
+          20.0,
+          23.0,
+          21.0,
+          21.0,
+          21.0
+        ]
+      },
+      "n_feasible": {
+        "mean": 26.0,
+        "std": 0.0,
+        "values": [
+          26.0,
+          26.0,
+          26.0,
+          26.0,
+          26.0
+        ]
+      },
+      "hv_violations_total": 0,
+      "region_lift_accept_rate_mean": 0.0,
+      "effective_lift_accept_rate_mean": 0.0,
+      "effective_lift_accept_count_total": 0,
+      "region_pool_influenced_acquisition_count_total": 0,
+      "plain_candidate_inside_region_count_total": 0,
+      "diagnostic_override_candidate_count_total": 0,
+      "fallback_distribution": {},
+      "runs": [
+        {
+          "seed": 8409,
+          "variant": "baseline",
+          "label": "Baseline",
+          "preset": "strict_baseline",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8409\\baseline\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8409\\baseline",
+          "status": "ok",
+          "display_hv": 0.6440024769845502,
+          "canonical_hv": 0.2576009907938201,
+          "hypervolume_raw": 7.57992200940848,
+          "pareto_size": 20,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {}
+        },
+        {
+          "seed": 8410,
+          "variant": "baseline",
+          "label": "Baseline",
+          "preset": "strict_baseline",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8410\\baseline\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8410\\baseline",
+          "status": "ok",
+          "display_hv": 0.900620164559873,
+          "canonical_hv": 0.36024806582394925,
+          "hypervolume_raw": 10.600317314661883,
+          "pareto_size": 23,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {}
+        },
+        {
+          "seed": 8411,
+          "variant": "baseline",
+          "label": "Baseline",
+          "preset": "strict_baseline",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8411\\baseline\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8411\\baseline",
+          "status": "ok",
+          "display_hv": 0.715682455111415,
+          "canonical_hv": 0.286272982044566,
+          "hypervolume_raw": 8.423596782806557,
+          "pareto_size": 21,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {}
+        },
+        {
+          "seed": 8412,
+          "variant": "baseline",
+          "label": "Baseline",
+          "preset": "strict_baseline",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8412\\baseline\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8412\\baseline",
+          "status": "ok",
+          "display_hv": 0.8952288120189457,
+          "canonical_hv": 0.3580915248075783,
+          "hypervolume_raw": 10.536860987635308,
+          "pareto_size": 21,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {}
+        },
+        {
+          "seed": 8413,
+          "variant": "baseline",
+          "label": "Baseline",
+          "preset": "strict_baseline",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8413\\baseline\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8413\\baseline",
+          "status": "ok",
+          "display_hv": 0.8943875603848944,
+          "canonical_hv": 0.35775502415395777,
+          "hypervolume_raw": 10.526959439109822,
+          "pareto_size": 21,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {}
+        }
+      ],
+      "missing_or_failed_runs": []
+    },
+    "baseline_warmstart": {
+      "n_runs": 5,
+      "n_missing_or_failed": 0,
+      "canonical_hv": {
+        "mean": 0.34539529054057116,
+        "std": 0.04994771969067912,
+        "median": 0.368874569609063,
+        "min": 0.2576018162577537,
+        "max": 0.3784945119346226,
+        "values": [
+          0.2576018162577537,
+          0.3527147624658599,
+          0.3784945119346226,
+          0.36929079243555646,
+          0.368874569609063
+        ]
+      },
+      "display_hv": {
+        "mean": 0.8634882263514279,
+        "std": 0.12486929922669782,
+        "values": [
+          0.6440045406443842,
+          0.8817869061646497,
+          0.9462362798365564,
+          0.9232269810888911,
+          0.9221864240226575
+        ]
+      },
+      "hypervolume_raw": {
+        "mean": 10.16327366073671,
+        "std": 1.4697141444854513,
+        "values": [
+          7.57994629872592,
+          10.378649487408705,
+          11.13721990203771,
+          10.86639999647597,
+          10.854152619035247
+        ]
+      },
+      "pareto_size": {
+        "mean": 19.2,
+        "std": 2.949576240750525,
+        "values": [
+          20.0,
+          14.0,
+          20.0,
+          21.0,
+          21.0
+        ]
+      },
+      "n_feasible": {
+        "mean": 26.0,
+        "std": 0.0,
+        "values": [
+          26.0,
+          26.0,
+          26.0,
+          26.0,
+          26.0
+        ]
+      },
+      "hv_violations_total": 0,
+      "region_lift_accept_rate_mean": 0.0,
+      "effective_lift_accept_rate_mean": 0.0,
+      "effective_lift_accept_count_total": 0,
+      "region_pool_influenced_acquisition_count_total": 0,
+      "plain_candidate_inside_region_count_total": 0,
+      "diagnostic_override_candidate_count_total": 0,
+      "fallback_distribution": {},
+      "runs": [
+        {
+          "seed": 8409,
+          "variant": "baseline_warmstart",
+          "label": "Baseline+WarmStart",
+          "preset": "warmstart_plain_ei",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8409\\baseline_warmstart\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8409\\baseline_warmstart",
+          "status": "ok",
+          "display_hv": 0.6440045406443842,
+          "canonical_hv": 0.2576018162577537,
+          "hypervolume_raw": 7.57994629872592,
+          "pareto_size": 20,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {}
+        },
+        {
+          "seed": 8410,
+          "variant": "baseline_warmstart",
+          "label": "Baseline+WarmStart",
+          "preset": "warmstart_plain_ei",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8410\\baseline_warmstart\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8410\\baseline_warmstart",
+          "status": "ok",
+          "display_hv": 0.8817869061646497,
+          "canonical_hv": 0.3527147624658599,
+          "hypervolume_raw": 10.378649487408705,
+          "pareto_size": 14,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {}
+        },
+        {
+          "seed": 8411,
+          "variant": "baseline_warmstart",
+          "label": "Baseline+WarmStart",
+          "preset": "warmstart_plain_ei",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8411\\baseline_warmstart\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8411\\baseline_warmstart",
+          "status": "ok",
+          "display_hv": 0.9462362798365564,
+          "canonical_hv": 0.3784945119346226,
+          "hypervolume_raw": 11.13721990203771,
+          "pareto_size": 20,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {}
+        },
+        {
+          "seed": 8412,
+          "variant": "baseline_warmstart",
+          "label": "Baseline+WarmStart",
+          "preset": "warmstart_plain_ei",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8412\\baseline_warmstart\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8412\\baseline_warmstart",
+          "status": "ok",
+          "display_hv": 0.9232269810888911,
+          "canonical_hv": 0.36929079243555646,
+          "hypervolume_raw": 10.86639999647597,
+          "pareto_size": 21,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {}
+        },
+        {
+          "seed": 8413,
+          "variant": "baseline_warmstart",
+          "label": "Baseline+WarmStart",
+          "preset": "warmstart_plain_ei",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8413\\baseline_warmstart\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8413\\baseline_warmstart",
+          "status": "ok",
+          "display_hv": 0.9221864240226575,
+          "canonical_hv": 0.368874569609063,
+          "hypervolume_raw": 10.854152619035247,
+          "pareto_size": 21,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {}
+        }
+      ],
+      "missing_or_failed_runs": []
+    },
+    "baseline_llm_region": {
+      "n_runs": 5,
+      "n_missing_or_failed": 0,
+      "canonical_hv": {
+        "mean": 0.35261320795228396,
+        "std": 0.04374688430823131,
+        "median": 0.3674659591573822,
+        "min": 0.2762516745007628,
+        "max": 0.3864054910122533,
+        "values": [
+          0.2762516745007628,
+          0.3602484767765648,
+          0.3726944383144566,
+          0.3674659591573822,
+          0.3864054910122533
+        ]
+      },
+      "display_hv": {
+        "mean": 0.8815330198807099,
+        "std": 0.10936721077057826,
+        "values": [
+          0.6906291862519071,
+          0.900621191941412,
+          0.9317360957861415,
+          0.9186648978934555,
+          0.9660137275306332
+        ]
+      },
+      "hypervolume_raw": {
+        "mean": 10.375661240778763,
+        "std": 1.2872542539109058,
+        "values": [
+          8.128719308227575,
+          10.600329406963104,
+          10.966552446317891,
+          10.812704186199351,
+          11.370000856185895
+        ]
+      },
+      "pareto_size": {
+        "mean": 20.6,
+        "std": 1.8165902124584952,
+        "values": [
+          19.0,
+          23.0,
+          22.0,
+          20.0,
+          19.0
+        ]
+      },
+      "n_feasible": {
+        "mean": 26.0,
+        "std": 0.0,
+        "values": [
+          26.0,
+          26.0,
+          26.0,
+          26.0,
+          26.0
+        ]
+      },
+      "hv_violations_total": 0,
+      "region_lift_accept_rate_mean": 0.0,
+      "effective_lift_accept_rate_mean": 0.0,
+      "effective_lift_accept_count_total": 0,
+      "region_pool_influenced_acquisition_count_total": 80,
+      "plain_candidate_inside_region_count_total": 1,
+      "diagnostic_override_candidate_count_total": 3,
+      "fallback_distribution": {
+        "too_close_to_existing": 13,
+        "same_as_plain": 34,
+        "outside_region": 25,
+        "override_disabled": 3,
+        "inactive_window_skipped": 20,
+        "parse_fail": 4,
+        "plain_ei_gap": 1
+      },
+      "runs": [
+        {
+          "seed": 8409,
+          "variant": "baseline_llm_region",
+          "label": "Baseline+LLM_Region",
+          "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8409\\baseline_llm_region\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8409\\baseline_llm_region",
+          "status": "ok",
+          "display_hv": 0.6906291862519071,
+          "canonical_hv": 0.2762516745007628,
+          "hypervolume_raw": 8.128719308227575,
+          "pareto_size": 19,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 16,
+          "plain_candidate_inside_region_count": 1,
+          "diagnostic_override_candidate_count": 1,
+          "fallback_distribution": {
+            "too_close_to_existing": 6,
+            "same_as_plain": 3,
+            "outside_region": 6,
+            "override_disabled": 1,
+            "inactive_window_skipped": 4
+          }
+        },
+        {
+          "seed": 8410,
+          "variant": "baseline_llm_region",
+          "label": "Baseline+LLM_Region",
+          "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8410\\baseline_llm_region\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8410\\baseline_llm_region",
+          "status": "ok",
+          "display_hv": 0.900621191941412,
+          "canonical_hv": 0.3602484767765648,
+          "hypervolume_raw": 10.600329406963104,
+          "pareto_size": 23,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 16,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {
+            "same_as_plain": 6,
+            "outside_region": 5,
+            "parse_fail": 4,
+            "too_close_to_existing": 1,
+            "inactive_window_skipped": 4
+          }
+        },
+        {
+          "seed": 8411,
+          "variant": "baseline_llm_region",
+          "label": "Baseline+LLM_Region",
+          "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8411\\baseline_llm_region\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8411\\baseline_llm_region",
+          "status": "ok",
+          "display_hv": 0.9317360957861415,
+          "canonical_hv": 0.3726944383144566,
+          "hypervolume_raw": 10.966552446317891,
+          "pareto_size": 22,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 16,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 1,
+          "fallback_distribution": {
+            "too_close_to_existing": 4,
+            "same_as_plain": 7,
+            "override_disabled": 1,
+            "outside_region": 4,
+            "inactive_window_skipped": 4
+          }
+        },
+        {
+          "seed": 8412,
+          "variant": "baseline_llm_region",
+          "label": "Baseline+LLM_Region",
+          "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8412\\baseline_llm_region\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8412\\baseline_llm_region",
+          "status": "ok",
+          "display_hv": 0.9186648978934555,
+          "canonical_hv": 0.3674659591573822,
+          "hypervolume_raw": 10.812704186199351,
+          "pareto_size": 20,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 16,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {
+            "same_as_plain": 11,
+            "too_close_to_existing": 1,
+            "outside_region": 4,
+            "inactive_window_skipped": 4
+          }
+        },
+        {
+          "seed": 8413,
+          "variant": "baseline_llm_region",
+          "label": "Baseline+LLM_Region",
+          "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8413\\baseline_llm_region\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8413\\baseline_llm_region",
+          "status": "ok",
+          "display_hv": 0.9660137275306332,
+          "canonical_hv": 0.3864054910122533,
+          "hypervolume_raw": 11.370000856185895,
+          "pareto_size": 19,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 16,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 1,
+          "fallback_distribution": {
+            "same_as_plain": 7,
+            "too_close_to_existing": 1,
+            "outside_region": 6,
+            "plain_ei_gap": 1,
+            "override_disabled": 1,
+            "inactive_window_skipped": 4
+          }
+        }
+      ],
+      "missing_or_failed_runs": []
+    },
+    "llmbo_mo": {
+      "n_runs": 5,
+      "n_missing_or_failed": 0,
+      "canonical_hv": {
+        "mean": 0.3307970046267059,
+        "std": 0.043046042260959684,
+        "median": 0.35447631800837154,
+        "min": 0.2757945305203038,
+        "max": 0.3733306060057058,
+        "values": [
+          0.2757945305203038,
+          0.35447631800837154,
+          0.29393541901842146,
+          0.3733306060057058,
+          0.35644814958072696
+        ]
+      },
+      "display_hv": {
+        "mean": 0.8269925115667647,
+        "std": 0.10761510565239919,
+        "values": [
+          0.6894863263007595,
+          0.8861907950209288,
+          0.7348385475460536,
+          0.9333265150142644,
+          0.8911203739518173
+        ]
+      },
+      "hypervolume_raw": {
+        "mean": 9.733718369209473,
+        "std": 1.2666319416951692,
+        "values": [
+          8.11526782378929,
+          10.430483347155644,
+          8.649064373147928,
+          10.985271712380163,
+          10.488504589574335
+        ]
+      },
+      "pareto_size": {
+        "mean": 18.6,
+        "std": 2.701851217221259,
+        "values": [
+          19.0,
+          14.0,
+          21.0,
+          19.0,
+          20.0
+        ]
+      },
+      "n_feasible": {
+        "mean": 26.0,
+        "std": 0.0,
+        "values": [
+          26.0,
+          26.0,
+          26.0,
+          26.0,
+          26.0
+        ]
+      },
+      "hv_violations_total": 0,
+      "region_lift_accept_rate_mean": 0.0,
+      "effective_lift_accept_rate_mean": 0.0,
+      "effective_lift_accept_count_total": 0,
+      "region_pool_influenced_acquisition_count_total": 80,
+      "plain_candidate_inside_region_count_total": 1,
+      "diagnostic_override_candidate_count_total": 3,
+      "fallback_distribution": {
+        "too_close_to_existing": 22,
+        "outside_region": 24,
+        "same_as_plain": 31,
+        "inactive_window_skipped": 20,
+        "override_disabled": 3
+      },
+      "runs": [
+        {
+          "seed": 8409,
+          "variant": "llmbo_mo",
+          "label": "LLMBO-MO",
+          "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8409\\llmbo_mo\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8409\\llmbo_mo",
+          "status": "ok",
+          "display_hv": 0.6894863263007595,
+          "canonical_hv": 0.2757945305203038,
+          "hypervolume_raw": 8.11526782378929,
+          "pareto_size": 19,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 16,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {
+            "too_close_to_existing": 3,
+            "outside_region": 9,
+            "same_as_plain": 4,
+            "inactive_window_skipped": 4
+          }
+        },
+        {
+          "seed": 8410,
+          "variant": "llmbo_mo",
+          "label": "LLMBO-MO",
+          "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8410\\llmbo_mo\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8410\\llmbo_mo",
+          "status": "ok",
+          "display_hv": 0.8861907950209288,
+          "canonical_hv": 0.35447631800837154,
+          "hypervolume_raw": 10.430483347155644,
+          "pareto_size": 14,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 16,
+          "plain_candidate_inside_region_count": 1,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {
+            "too_close_to_existing": 6,
+            "same_as_plain": 7,
+            "outside_region": 3,
+            "inactive_window_skipped": 4
+          }
+        },
+        {
+          "seed": 8411,
+          "variant": "llmbo_mo",
+          "label": "LLMBO-MO",
+          "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8411\\llmbo_mo\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8411\\llmbo_mo",
+          "status": "ok",
+          "display_hv": 0.7348385475460536,
+          "canonical_hv": 0.29393541901842146,
+          "hypervolume_raw": 8.649064373147928,
+          "pareto_size": 21,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 16,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 2,
+          "fallback_distribution": {
+            "outside_region": 5,
+            "too_close_to_existing": 3,
+            "same_as_plain": 6,
+            "override_disabled": 2,
+            "inactive_window_skipped": 4
+          }
+        },
+        {
+          "seed": 8412,
+          "variant": "llmbo_mo",
+          "label": "LLMBO-MO",
+          "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8412\\llmbo_mo\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8412\\llmbo_mo",
+          "status": "ok",
+          "display_hv": 0.9333265150142644,
+          "canonical_hv": 0.3733306060057058,
+          "hypervolume_raw": 10.985271712380163,
+          "pareto_size": 19,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 16,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {
+            "too_close_to_existing": 3,
+            "outside_region": 5,
+            "same_as_plain": 8,
+            "inactive_window_skipped": 4
+          }
+        },
+        {
+          "seed": 8413,
+          "variant": "llmbo_mo",
+          "label": "LLMBO-MO",
+          "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8413\\llmbo_mo\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8413\\llmbo_mo",
+          "status": "ok",
+          "display_hv": 0.8911203739518173,
+          "canonical_hv": 0.35644814958072696,
+          "hypervolume_raw": 10.488504589574335,
+          "pareto_size": 20,
+          "n_total": 26,
+          "n_feasible": 26,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 16,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 1,
+          "fallback_distribution": {
+            "override_disabled": 1,
+            "outside_region": 2,
+            "same_as_plain": 6,
+            "too_close_to_existing": 7,
+            "inactive_window_skipped": 4
+          }
+        }
+      ],
+      "missing_or_failed_runs": []
+    }
+  },
+  "comparisons": {
+    "baseline_warmstart_vs_baseline": {
+      "lhs": "Baseline+WarmStart",
+      "rhs": "Baseline",
+      "shared_seeds": [
+        8409,
+        8410,
+        8411,
+        8412,
+        8413
+      ],
+      "mean_canonical_hv_delta": 0.02140157301579685,
+      "std_canonical_hv_delta": 0.040374783232259584,
+      "mean_canonical_hv_pct_delta": 7.271870343288603,
+      "wins": 4,
+      "total": 5,
+      "per_seed_delta": [
+        {
+          "seed": 8409,
+          "delta": 8.25463933595838e-07
+        },
+        {
+          "seed": 8410,
+          "delta": -0.007533303358089327
+        },
+        {
+          "seed": 8411,
+          "delta": 0.09222152989005655
+        },
+        {
+          "seed": 8412,
+          "delta": 0.011199267627978182
+        },
+        {
+          "seed": 8413,
+          "delta": 0.01111954545510524
+        }
+      ]
+    },
+    "baseline_llm_region_vs_baseline": {
+      "lhs": "Baseline+LLM_Region",
+      "rhs": "Baseline",
+      "shared_seeds": [
+        8409,
+        8410,
+        8411,
+        8412,
+        8413
+      ],
+      "mean_canonical_hv_delta": 0.028619490427509664,
+      "std_canonical_hv_delta": 0.03402157115581009,
+      "mean_canonical_hv_pct_delta": 9.611005614798769,
+      "wins": 5,
+      "total": 5,
+      "per_seed_delta": [
+        {
+          "seed": 8409,
+          "delta": 0.018650683706942728
+        },
+        {
+          "seed": 8410,
+          "delta": 4.1095261554824347e-07
+        },
+        {
+          "seed": 8411,
+          "delta": 0.08642145626989056
+        },
+        {
+          "seed": 8412,
+          "delta": 0.00937443434980395
+        },
+        {
+          "seed": 8413,
+          "delta": 0.02865046685829553
+        }
+      ]
+    },
+    "llmbo_mo_vs_baseline": {
+      "lhs": "LLMBO-MO",
+      "rhs": "Baseline",
+      "shared_seeds": [
+        8409,
+        8410,
+        8411,
+        8412,
+        8413
+      ],
+      "mean_canonical_hv_delta": 0.006803287101931621,
+      "std_canonical_hv_delta": 0.010314369114987202,
+      "mean_canonical_hv_pct_delta": 2.4054963872687942,
+      "wins": 3,
+      "total": 5,
+      "per_seed_delta": [
+        {
+          "seed": 8409,
+          "delta": 0.018193539726483687
+        },
+        {
+          "seed": 8410,
+          "delta": -0.00577174781557771
+        },
+        {
+          "seed": 8411,
+          "delta": 0.007662436973855435
+        },
+        {
+          "seed": 8412,
+          "delta": 0.015239081198127502
+        },
+        {
+          "seed": 8413,
+          "delta": -0.0013068745732308096
+        }
+      ]
+    },
+    "llmbo_mo_vs_baseline_warmstart": {
+      "lhs": "LLMBO-MO",
+      "rhs": "Baseline+WarmStart",
+      "shared_seeds": [
+        8409,
+        8410,
+        8411,
+        8412,
+        8413
+      ],
+      "mean_canonical_hv_delta": -0.014598285913865227,
+      "std_canonical_hv_delta": 0.040587881120065554,
+      "mean_canonical_hv_pct_delta": -3.4107872985575893,
+      "wins": 3,
+      "total": 5,
+      "per_seed_delta": [
+        {
+          "seed": 8409,
+          "delta": 0.01819271426255009
+        },
+        {
+          "seed": 8410,
+          "delta": 0.001761555542511617
+        },
+        {
+          "seed": 8411,
+          "delta": -0.08455909291620112
+        },
+        {
+          "seed": 8412,
+          "delta": 0.00403981357014932
+        },
+        {
+          "seed": 8413,
+          "delta": -0.01242642002833605
+        }
+      ]
+    },
+    "llmbo_mo_vs_baseline_llm_region": {
+      "lhs": "LLMBO-MO",
+      "rhs": "Baseline+LLM_Region",
+      "shared_seeds": [
+        8409,
+        8410,
+        8411,
+        8412,
+        8413
+      ],
+      "mean_canonical_hv_delta": -0.021816203325578043,
+      "std_canonical_hv_delta": 0.034599901258974414,
+      "mean_canonical_hv_pct_delta": -5.811387514354445,
+      "wins": 1,
+      "total": 5,
+      "per_seed_delta": [
+        {
+          "seed": 8409,
+          "delta": -0.0004571439804590405
+        },
+        {
+          "seed": 8410,
+          "delta": -0.0057721587681932585
+        },
+        {
+          "seed": 8411,
+          "delta": -0.07875901929603513
+        },
+        {
+          "seed": 8412,
+          "delta": 0.005864646848323551
+        },
+        {
+          "seed": 8413,
+          "delta": -0.02995734143152634
+        }
+      ]
+    },
+    "baseline_llm_region_vs_baseline_warmstart": {
+      "lhs": "Baseline+LLM_Region",
+      "rhs": "Baseline+WarmStart",
+      "shared_seeds": [
+        8409,
+        8410,
+        8411,
+        8412,
+        8413
+      ],
+      "mean_canonical_hv_delta": 0.007217917411712816,
+      "std_canonical_hv_delta": 0.011049733941654805,
+      "mean_canonical_hv_pct_delta": 2.420342885776217,
+      "wins": 3,
+      "total": 5,
+      "per_seed_delta": [
+        {
+          "seed": 8409,
+          "delta": 0.018649858243009132
+        },
+        {
+          "seed": 8410,
+          "delta": 0.007533714310704875
+        },
+        {
+          "seed": 8411,
+          "delta": -0.005800073620165991
+        },
+        {
+          "seed": 8412,
+          "delta": -0.0018248332781742316
+        },
+        {
+          "seed": 8413,
+          "delta": 0.01753092140319029
+        }
+      ]
+    }
+  }
+}

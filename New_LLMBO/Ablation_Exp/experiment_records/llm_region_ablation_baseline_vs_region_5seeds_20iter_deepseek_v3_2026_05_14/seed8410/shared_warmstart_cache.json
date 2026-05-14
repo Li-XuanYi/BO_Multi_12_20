@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "backend": "openai",
+  "model": "deepseek-v3",
+  "temperature": 0.0,
+  "target_pool": 6,
+  "candidate_pool": [
+    [
+      5.85,
+      4.15,
+      2.1,
+      0.185,
+      0.195
+    ],
+    [
+      3.1,
+      2.8,
+      2.0,
+      0.25,
+      0.22
+    ],
+    [
+      4.6,
+      3.4,
+      2.3,
+      0.28,
+      0.18
+    ],
+    [
+      5.4,
+      3.9,
+      2.4,
+      0.15,
+      0.21
+    ],
+    [
+      3.75,
+      3.25,
+      2.2,
+      0.31,
+      0.19
+    ],
+    [
+      4.9,
+      3.6,
+      2.2,
+      0.22,
+      0.16
+    ]
+  ],
+  "final_selected": [
+    [
+      5.85,
+      4.15,
+      2.1,
+      0.185,
+      0.195
+    ],
+    [
+      3.1,
+      2.8,
+      2.0,
+      0.25,
+      0.22
+    ],
+    [
+      4.6,
+      3.4,
+      2.3,
+      0.28,
+      0.18
+    ]
+  ],
+  "summary": {
+    "input_count": 6,
+    "valid_count": 6,
+    "filtered": {
+      "non_finite": 0,
+      "shape": 0,
+      "bounds": 0,
+      "hard_dsoc": 0,
+      "duplicate": 0
+    },
+    "requested": 3,
+    "selected_count": 3,
+    "selected": [
+      {
+        "theta": [
+          5.85,
+          4.15,
+          2.1,
+          0.185,
+          0.195
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 0,
+        "quality": 0.58,
+        "diversity": 0.0,
+        "archive_bonus": 0.0,
+        "score": 0.58,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.38,
+        "monotone": true
+      },
+      {
+        "theta": [
+          3.1,
+          2.8,
+          2.0,
+          0.25,
+          0.22
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 1,
+        "quality": 0.58,
+        "diversity": 0.8647113359060609,
+        "archive_bonus": 0.0,
+        "score": 0.9691201011577273,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.47,
+        "monotone": true
+      },
+      {
+        "theta": [
+          4.6,
+          3.4,
+          2.3,
+          0.28,
+          0.18
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 2,
+        "quality": 0.58,
+        "diversity": 0.5532260187100547,
+        "archive_bonus": 0.0,
+        "score": 0.8289517084195246,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.46,
+        "monotone": true
+      }
+    ],
+    "boundary_selected": 0,
+    "method": "portfolio_selector",
+    "config": {
+      "hard_dsoc_sum_max": 0.7,
+      "soft_dsoc_sum_max": 0.65,
+      "diversity_weight": 0.45,
+      "soft_penalty_weight": 0.65,
+      "monotone_bonus": 0.08,
+      "archive_bonus_weight": 0.0,
+      "boundary_probe_limit": 1
+    },
+    "enabled": true,
+    "pool_target": 6,
+    "pool_collected": 6,
+    "disk_cache": "miss",
+    "cache_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14\\seed8410\\shared_warmstart_cache.json",
+    "final_selected_count": 3,
+    "final_selected": [
+      [
+        5.85,
+        4.15,
+        2.1,
+        0.185,
+        0.195
+      ],
+      [
+        3.1,
+        2.8,
+        2.0,
+        0.25,
+        0.22
+      ],
+      [
+        4.6,
+        3.4,
+        2.3,
+        0.28,
+        0.18
+      ]
+    ]
+  }
+}

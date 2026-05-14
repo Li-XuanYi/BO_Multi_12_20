@@ -100,6 +100,7 @@ DEFAULT_CONFIG = {
     "battery_param_set": "Chen2020",
     "warmstart_context_level": "full",
     "warmstart_max_tokens": 2500,
+    "region_preference_max_tokens": 4096,
     "warmstart_max_retries": 3,
     "warmstart_temperature": None,
     "kernel_nu": 2.5,
@@ -184,6 +185,7 @@ DEFAULT_CONFIG = {
     "llm_rerank_fail_open_to_plain_ei": True,
     "enable_region_lifted_gp": False,
     "region_lift_apply_override": False,
+    "region_lift_override_uses_diagnostic_pool": False,
     "region_lift_external_influence_mode": "diagnostic_only",
     "region_lift_include_raw_candidates": True,
     "region_lift_lambda_max": 0.25,
@@ -695,6 +697,7 @@ class BayesOptimizer:
             ),
             warmstart_context_level=str(self.cfg.get("warmstart_context_level", "full")),
             warmstart_max_tokens=int(self.cfg.get("warmstart_max_tokens", 2500)),
+            region_preference_max_tokens=int(self.cfg.get("region_preference_max_tokens", 4096)),
             warmstart_max_retries=int(self.cfg.get("warmstart_max_retries", 3)),
             warmstart_temperature=self.cfg.get("warmstart_temperature"),
             soc_start=float(self.cfg.get("soc_start", getattr(self.simulator, "soc_start", 0.0))),
@@ -1310,9 +1313,13 @@ class BayesOptimizer:
             return acq_result
         region_preference = preference or LLMRegionPreference.none("missing_preference")
         override_enabled = bool(self.cfg.get("region_lift_apply_override", False))
+        override_uses_diagnostic_pool = bool(
+            self.cfg.get("region_lift_override_uses_diagnostic_pool", False)
+        )
         plain_index_before = int(plain_selected_indices[0]) if plain_selected_indices else None
         summary_base = {
             "override_enabled": override_enabled,
+            "override_uses_diagnostic_pool": override_uses_diagnostic_pool,
             "preference": region_preference.to_dict(),
             "region_pool_influenced_acquisition": bool(region_pool_influenced_acquisition),
             "region_influence_mode": region_influence_mode,
@@ -1354,14 +1361,17 @@ class BayesOptimizer:
             if acq_result.selected_thetas else candidate_pool[0].copy()
         )
         diagnostic_pool = candidate_pool
+        selection_pool = candidate_pool
         plain_index_override = plain_index_before
-        if not override_enabled:
+        if (not override_enabled) or override_uses_diagnostic_pool:
             diagnostic_pool, plain_index_override = self._build_region_diagnostic_pool(
                 candidate_pool=candidate_pool,
                 plain_selected_theta=selected_theta_before,
                 plain_selected_index=plain_index_before,
                 diagnostic_region_candidates=diagnostic_region_candidates,
             )
+            if override_enabled and override_uses_diagnostic_pool:
+                selection_pool = diagnostic_pool
         result = evaluate_region_lift_on_pool(
             gp=self.gp,
             candidate_pool=diagnostic_pool,
@@ -1383,6 +1393,7 @@ class BayesOptimizer:
                 "selected_index_after": int(result.selected_index),
                 "diagnostic_candidate_pool_size": int(diagnostic_pool.shape[0]),
                 "acquisition_candidate_pool_size": int(candidate_pool.shape[0]),
+                "selection_candidate_pool_size": int(selection_pool.shape[0]),
                 **summary_base,
             }
         )
@@ -1400,9 +1411,20 @@ class BayesOptimizer:
         self._last_region_lift_summary = summary
         if override_enabled and result.accepted:
             idx = int(result.selected_index)
+            if idx < 0 or idx >= len(selection_pool):
+                summary["accepted"] = False
+                summary["selected_source"] = "plain_ei"
+                summary["fallback_reason"] = "override_index_out_of_range"
+                self._last_region_lift_summary = summary
+                return acq_result
             acq_result.selected_indices = [idx]
-            acq_result.selected_thetas = [candidate_pool[idx].copy()]
-            score = float(summary.get("lifted_ei_at_lift", acq_result.all_ei[idx]))
+            acq_result.selected_thetas = [selection_pool[idx].copy()]
+            fallback_score = (
+                float(acq_result.all_ei[idx])
+                if idx < len(np.asarray(acq_result.all_ei).ravel())
+                else float(plain_selected_scores[0]) if len(plain_selected_scores) else 0.0
+            )
+            score = float(summary.get("lifted_ei_at_lift", fallback_score))
             acq_result.selected_scores = np.asarray([score], dtype=float)
             acq_result.lift_summary = summary
         return acq_result

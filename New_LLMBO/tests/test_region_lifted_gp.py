@@ -25,6 +25,35 @@ from llmbo.region_lifted_gp import (
 from utils.constants import DEFAULT_BOUNDS, DSOC_SUM_MAX
 
 
+def test_parse_region_preference_accepts_nested_region_bounds_and_array_points() -> None:
+    pref = parse_region_preference_payload(
+        {
+            "kind": "region",
+            "region": {
+                "lower": [3.0, 2.5, 2.1, 0.15, 0.12],
+                "upper": [4.0, 3.2, 2.8, 0.25, 0.20],
+            },
+            "confidence": 0.8,
+        }
+    )
+
+    assert pref.kind == "region"
+    assert pref.parser_status == "ok"
+    assert pref.lb == {"I1": 3.0, "I2": 2.5, "I3": 2.1, "dSOC1": 0.15, "dSOC2": 0.12}
+    assert pref.ub == {"I1": 4.0, "I2": 3.2, "I3": 2.8, "dSOC1": 0.25, "dSOC2": 0.20}
+
+    point_pref = parse_region_preference_payload(
+        {
+            "kind": "point",
+            "point": [4.5, 3.5, 2.5, 0.2, 0.2],
+            "confidence": 0.75,
+        }
+    )
+
+    assert point_pref.kind == "point"
+    assert point_pref.point == {"I1": 4.5, "I2": 3.5, "I3": 2.5, "dSOC1": 0.2, "dSOC2": 0.2}
+
+
 def _fit_gp() -> MaternGPModel:
     X = np.array(
         [
@@ -917,6 +946,82 @@ def test_region_lift_override_disabled_keeps_plain_selection(monkeypatch) -> Non
     assert bo._last_region_lift_summary["selected_source"] == "plain_ei"
     assert bo._last_region_lift_summary["fallback_reason"] == "override_disabled"
     assert bo._last_region_lift_summary["diagnostic_override_candidate_available"] is True
+
+
+def test_region_lift_override_can_select_diagnostic_region_candidate(monkeypatch) -> None:
+    bo = BayesOptimizer(
+        config={
+            "experiment_preset": "warmstart_region_lifted_gp",
+            "region_lift_apply_override": True,
+            "region_lift_override_uses_diagnostic_pool": True,
+        }
+    )
+    bo.database = SimpleNamespace(size=0, get_all=lambda: [], get_f_min=lambda: 1.0)
+    bo.gp = object()
+    pref = _preference()
+    X = np.array(
+        [
+            [3.5, 3.1, 2.4, 0.23, 0.18],
+            [3.7, 3.2, 2.45, 0.24, 0.18],
+        ],
+        dtype=float,
+    )
+    region_candidate = np.array([[4.2, 3.4, 2.55, 0.22, 0.16]], dtype=float)
+    acq_result = AcquisitionResult(
+        selected_thetas=[X[0].copy()],
+        selected_indices=[0],
+        selected_scores=np.array([1.0], dtype=float),
+        all_alpha=np.array([1.0, 0.9], dtype=float),
+        all_ei=np.array([1.0, 0.9], dtype=float),
+        all_wcharge=np.ones(2, dtype=float),
+        all_mean=np.zeros(2, dtype=float),
+        all_std=np.ones(2, dtype=float),
+        state=SimpleNamespace(),
+        debug={},
+        all_mean_base=np.zeros(2, dtype=float),
+        candidate_pool=X.copy(),
+    )
+
+    def fake_region_lift(**kwargs):
+        pool = kwargs["candidate_pool"]
+        assert pool.shape[0] == 3
+        assert np.allclose(pool[2], region_candidate[0])
+        return RegionLiftResult(
+            selected_index=2,
+            selected_source="lifted",
+            accepted=True,
+            fallback_reason=None,
+            telemetry={
+                "active": True,
+                "selected_source": "lifted",
+                "fallback_reason": None,
+                "lifted_ei_at_lift": 1.25,
+                "plain_candidate_inside_region": False,
+            },
+        )
+
+    monkeypatch.setattr(optimizer_module, "evaluate_region_lift_on_pool", fake_region_lift)
+
+    out = bo._maybe_apply_region_lifted_gp(
+        t=0,
+        w_vec=np.array([1.0, 0.0, 0.0], dtype=float),
+        scalar_y=np.array([1.0], dtype=float),
+        ideal_point_raw=np.zeros(3, dtype=float),
+        acq_result=acq_result,
+        plain_selected_indices=[0],
+        plain_selected_scores=np.array([1.0], dtype=float),
+        preference=pref,
+        diagnostic_region_candidates=region_candidate,
+        region_pool_influenced_acquisition=False,
+        region_influence_mode="diagnostic_only",
+    )
+
+    assert out.selected_indices == [2]
+    assert np.allclose(out.selected_thetas[0], region_candidate[0])
+    assert np.allclose(out.selected_scores, np.array([1.25]))
+    assert bo._last_region_lift_summary["accepted"] is True
+    assert bo._last_region_lift_summary["override_uses_diagnostic_pool"] is True
+    assert bo._last_region_lift_summary["selection_candidate_pool_size"] == 3
 
 
 def test_region_lift_inactive_window_skips_region_sampling(monkeypatch) -> None:

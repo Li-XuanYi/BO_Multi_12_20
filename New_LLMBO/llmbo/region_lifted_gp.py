@@ -29,6 +29,8 @@ class LLMRegionPreference:
     risk_flags: List[str] = dataclasses.field(default_factory=list)
     raw_response: Optional[Dict[str, Any]] = None
     raw_response_hash: Optional[str] = None
+    raw_text_preview: str = ""
+    llm_call_diagnostics: List[Dict[str, Any]] = dataclasses.field(default_factory=list)
     parser_status: str = "ok"
 
     @classmethod
@@ -116,23 +118,52 @@ def _coerce_param_dict(value: Any) -> Optional[Dict[str, float]]:
             except Exception:
                 return None
         return out
+    if isinstance(value, (list, tuple)) and len(value) == len(PARAM_KEYS):
+        out = {}
+        for key, raw in zip(PARAM_KEYS, value):
+            if raw is None:
+                return None
+            try:
+                out[key] = float(raw)
+            except Exception:
+                return None
+        return out
     return None
+
+
+def _extract_region_bounds(payload: Mapping[str, Any]) -> Tuple[Any, Any]:
+    lb = payload.get("lb") or payload.get("lower") or payload.get("lower_bounds")
+    ub = payload.get("ub") or payload.get("upper") or payload.get("upper_bounds")
+    region = payload.get("region") or payload.get("bounds") or payload.get("box")
+    if (lb is not None or ub is not None) or region is None:
+        return lb, ub
+    if isinstance(region, Mapping):
+        return (
+            region.get("lb") or region.get("lower") or region.get("lower_bounds"),
+            region.get("ub") or region.get("upper") or region.get("upper_bounds"),
+        )
+    if isinstance(region, (list, tuple)) and len(region) == 2:
+        return region[0], region[1]
+    return lb, ub
 
 
 def parse_region_preference_payload(payload: Any) -> LLMRegionPreference:
     if not isinstance(payload, Mapping):
         return LLMRegionPreference.none("invalid_json")
-    kind = str(payload.get("kind", payload.get("type", "none"))).lower()
+    kind = str(payload.get("kind", payload.get("type", payload.get("mode", "none")))).lower()
+    if kind in {"box", "bounds"}:
+        kind = "region"
     if kind not in {"point", "region", "none"}:
         return LLMRegionPreference.none("invalid_kind")
     raw_hash = _hash_payload(payload)
+    lb_raw, ub_raw = _extract_region_bounds(payload)
     pref = LLMRegionPreference(
         kind=kind,
         coordinate_space=str(payload.get("coordinate_space", "raw")).lower(),
         preference_direction=str(payload.get("preference_direction", "promising")).lower(),
-        point=_coerce_param_dict(payload.get("point")),
-        lb=_coerce_param_dict(payload.get("lb") or payload.get("lower")),
-        ub=_coerce_param_dict(payload.get("ub") or payload.get("upper")),
+        point=_coerce_param_dict(payload.get("point") or payload.get("theta") or payload.get("x")),
+        lb=_coerce_param_dict(lb_raw),
+        ub=_coerce_param_dict(ub_raw),
         confidence=float(payload.get("confidence", 0.0) or 0.0),
         preference_type=str(payload.get("preference_type", "unspecified")),
         reason=str(payload.get("reason", payload.get("rationale", ""))),

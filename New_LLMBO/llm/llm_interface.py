@@ -32,7 +32,7 @@ import logging
 import re
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 import numpy as np
 from llmbo.rerank import CandidateInfo, RerankOutput, RerankState
@@ -150,6 +150,7 @@ class LLMCaller:
 
     def __init__(self, config: LLMConfig):
         self._cfg = config
+        self.last_call_diagnostics: List[Dict[str, Any]] = []
 
     def call(
         self,
@@ -161,8 +162,13 @@ class LLMCaller:
     ) -> List[str]:
         n = n or self._cfg.n_samples
         backend = self._cfg.backend.lower()
+        self.last_call_diagnostics = []
 
         if backend == "mock":
+            self.last_call_diagnostics = [
+                {"backend": "mock", "model": self._cfg.model, "content_length": 0}
+                for _ in range(n)
+            ]
             return [""] * n
         elif backend in ("openai", "ollama"):
             return self._openai_call(
@@ -181,6 +187,97 @@ class LLMCaller:
         else:
             logger.warning("不支持的后端 %s，退回 mock", backend)
             return [""] * n
+
+    @staticmethod
+    def _coerce_text_part(value: Any) -> str:
+        if value is None:
+            return ""
+        if isinstance(value, str):
+            return value
+        if isinstance(value, Mapping):
+            pieces: List[str] = []
+            for key in ("text", "content", "value"):
+                if key in value:
+                    text = LLMCaller._coerce_text_part(value.get(key))
+                    if text:
+                        pieces.append(text)
+            return "\n".join(pieces)
+        if isinstance(value, (list, tuple)):
+            return "\n".join(
+                text for text in (LLMCaller._coerce_text_part(item) for item in value) if text
+            )
+        text_attr = getattr(value, "text", None)
+        if text_attr is not None:
+            return LLMCaller._coerce_text_part(text_attr)
+        content_attr = getattr(value, "content", None)
+        if content_attr is not None and content_attr is not value:
+            return LLMCaller._coerce_text_part(content_attr)
+        return ""
+
+    @staticmethod
+    def _message_get(message: Any, key: str) -> Any:
+        if isinstance(message, Mapping):
+            return message.get(key)
+        value = getattr(message, key, None)
+        if value is not None:
+            return value
+        extra = getattr(message, "model_extra", None)
+        if isinstance(extra, Mapping):
+            return extra.get(key)
+        return None
+
+    @staticmethod
+    def _message_field_names(message: Any) -> List[str]:
+        names: List[str] = []
+        if isinstance(message, Mapping):
+            names.extend(str(key) for key in message.keys())
+        else:
+            try:
+                names.extend(str(key) for key in vars(message).keys())
+            except TypeError:
+                pass
+            extra = getattr(message, "model_extra", None)
+            if isinstance(extra, Mapping):
+                names.extend(str(key) for key in extra.keys())
+        return sorted(set(names))
+
+    @classmethod
+    def _extract_message_text(cls, message: Any) -> Tuple[str, str]:
+        for key in ("content", "output_text"):
+            text = cls._coerce_text_part(cls._message_get(message, key))
+            if text.strip():
+                return text.strip(), key
+        return "", "empty"
+
+    @classmethod
+    def _build_openai_diagnostic(
+        cls,
+        resp: Any,
+        choice: Any,
+        message: Any,
+        text: str,
+        source: str,
+    ) -> Dict[str, Any]:
+        content_text = cls._coerce_text_part(cls._message_get(message, "content"))
+        reasoning_text = cls._coerce_text_part(cls._message_get(message, "reasoning_content"))
+        usage = getattr(resp, "usage", None)
+        usage_dict = None
+        if usage is not None:
+            if hasattr(usage, "model_dump"):
+                usage_dict = usage.model_dump()
+            elif isinstance(usage, Mapping):
+                usage_dict = dict(usage)
+        return {
+            "backend": "openai",
+            "model": getattr(resp, "model", None),
+            "finish_reason": getattr(choice, "finish_reason", None),
+            "message_field_names": cls._message_field_names(message),
+            "content_length": len(content_text),
+            "reasoning_content_length": len(reasoning_text),
+            "extracted_text_source": source,
+            "extracted_text_length": len(text),
+            "usage": usage_dict,
+        }
 
     def _openai_call(
         self,
@@ -221,11 +318,24 @@ class LLMCaller:
                         temperature=self._cfg.temperature if temperature is None else temperature,
                         max_tokens=2000 if max_tokens is None else int(max_tokens),
                     )
-                    content = resp.choices[0].message.content or ""
+                    choice = resp.choices[0]
+                    message = choice.message
+                    content, source = self._extract_message_text(message)
+                    self.last_call_diagnostics.append(
+                        self._build_openai_diagnostic(resp, choice, message, content, source)
+                    )
                     responses.append(content.strip())
                     success = True
                     break
                 except Exception as e:
+                    self.last_call_diagnostics.append(
+                        {
+                            "backend": "openai",
+                            "model": self._cfg.model,
+                            "error_type": type(e).__name__,
+                            "error": str(e),
+                        }
+                    )
                     if attempt >= self._cfg.request_retries:
                         logger.warning("LLM 调用 %d/%d 失败: %s", i + 1, n, e)
                         break
@@ -806,6 +916,7 @@ class LLMInterface:
         warmstart_context_level: str = "full",
         enable_iteration_fewshot: bool = True,
         warmstart_max_tokens: int = 2500,
+        region_preference_max_tokens: int = 4096,
         warmstart_max_retries: int = 3,
         warmstart_temperature: Optional[float] = None,
         soc_start: float = 0.0,
@@ -830,6 +941,7 @@ class LLMInterface:
         self._warmstart_context_level = warmstart_context_level
         self._enable_iteration_fewshot = enable_iteration_fewshot
         self._warmstart_max_tokens = int(warmstart_max_tokens)
+        self._region_preference_max_tokens = int(region_preference_max_tokens)
         self._warmstart_max_retries = int(warmstart_max_retries)
         self._warmstart_temperature = (
             self._config.temperature if warmstart_temperature is None
@@ -1135,8 +1247,9 @@ class LLMInterface:
             prompt,
             n=1,
             temperature=min(float(self._config.temperature), 0.3),
-            max_tokens=1000,
+            max_tokens=self._region_preference_max_tokens,
         )
+        call_diagnostics = list(getattr(self._caller, "last_call_diagnostics", []) or [])
         for text in responses:
             parsed = self._parser.extract_json(text)
             if parsed is None:
@@ -1144,8 +1257,34 @@ class LLMInterface:
             pref = parse_region_preference_payload(parsed)
             if pref.raw_response_hash is None:
                 pref.raw_response_hash = str(abs(hash(text)))
+            pref.raw_text_preview = self._safe_text_preview(json.dumps(parsed, ensure_ascii=True, sort_keys=True))
+            pref.llm_call_diagnostics = call_diagnostics
             return pref
-        return LLMRegionPreference.none("parse_fail")
+        if not responses and call_diagnostics:
+            error_types = {
+                str(item.get("error_type", "")).strip()
+                for item in call_diagnostics
+                if isinstance(item, dict) and item.get("error_type")
+            }
+            if "PermissionDeniedError" in error_types:
+                parser_status = "query_permission_denied"
+            elif error_types:
+                parser_status = "query_exception"
+            else:
+                parser_status = "empty_response"
+        else:
+            parser_status = "parse_fail"
+        pref = LLMRegionPreference.none(parser_status)
+        pref.raw_text_preview = self._safe_text_preview("\n".join(responses))
+        pref.llm_call_diagnostics = call_diagnostics
+        return pref
+
+    @staticmethod
+    def _safe_text_preview(text: str, limit: int = 600) -> str:
+        compact = re.sub(r"\s+", " ", str(text or "")).strip()
+        if len(compact) <= limit:
+            return compact
+        return compact[:limit] + "...<truncated>"
 
     # ──────────────────────────────────────────────────────────────
     # Touchpoint 1b: Warm-Start 候选点生成
@@ -1545,6 +1684,7 @@ def build_llm_interface(
     warmstart_context_level: str = "full",
     enable_iteration_fewshot: bool = True,
     warmstart_max_tokens: int = 2500,
+    region_preference_max_tokens: int = 4096,
     warmstart_max_retries: int = 3,
     warmstart_temperature: Optional[float] = None,
     soc_start: float = 0.0,
@@ -1603,6 +1743,7 @@ def build_llm_interface(
         warmstart_context_level=warmstart_context_level,
         enable_iteration_fewshot=enable_iteration_fewshot,
         warmstart_max_tokens=warmstart_max_tokens,
+        region_preference_max_tokens=region_preference_max_tokens,
         warmstart_max_retries=warmstart_max_retries,
         warmstart_temperature=warmstart_temperature,
         soc_start=soc_start,

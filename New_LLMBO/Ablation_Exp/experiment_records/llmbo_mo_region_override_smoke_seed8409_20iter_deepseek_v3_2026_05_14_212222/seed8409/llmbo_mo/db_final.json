@@ -1,0 +1,2848 @@
+{
+  "version": "2.0",
+  "param_bounds": {
+    "I1": [
+      2.0,
+      6.0
+    ],
+    "I2": [
+      2.0,
+      5.0
+    ],
+    "I3": [
+      2.0,
+      3.0
+    ],
+    "dSOC1": [
+      0.1,
+      0.4
+    ],
+    "dSOC2": [
+      0.1,
+      0.3
+    ]
+  },
+  "ref_point": [
+    7200.0,
+    40.0,
+    5.0
+  ],
+  "ideal_point": [
+    1800.0,
+    0.0,
+    0.3
+  ],
+  "normalize": true,
+  "observations": [
+    {
+      "theta": [
+        5.5,
+        4.5,
+        2.8,
+        0.2,
+        0.2
+      ],
+      "objectives": [
+        4026.0,
+        5.246953932433207,
+        1.048777160039507
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:24:44.901762"
+    },
+    {
+      "theta": [
+        2.5,
+        2.5,
+        2.0,
+        0.35,
+        0.25
+      ],
+      "objectives": [
+        6120.0,
+        2.2137865669620456,
+        0.7265894947682922
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:24:48.681102"
+    },
+    {
+      "theta": [
+        5.8,
+        3.0,
+        2.0,
+        0.18,
+        0.22
+      ],
+      "objectives": [
+        5479.0,
+        3.9026593020090847,
+        0.9475242136181863
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:24:52.471493"
+    },
+    {
+      "theta": [
+        4.710377033204226,
+        3.965912789562095,
+        2.321883050131435,
+        0.3210206551695296,
+        0.14651774147712654
+      ],
+      "objectives": [
+        4469.0,
+        4.878526678683102,
+        1.0238196684710286
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:24:55.871585"
+    },
+    {
+      "theta": [
+        2.010139506508604,
+        4.496969595641392,
+        2.566627122343414,
+        0.11846614023286361,
+        0.1667405241212074
+      ],
+      "objectives": [
+        5338.0,
+        3.2673514369970578,
+        0.7286584008878235
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:24:59.717028"
+    },
+    {
+      "theta": [
+        3.800788060240021,
+        2.6063981414613093,
+        2.6843024290705473,
+        0.22801812210115407,
+        0.253642791207163
+      ],
+      "objectives": [
+        4967.0,
+        2.9556203043253335,
+        0.8173080880429271
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:25:03.389434"
+    },
+    {
+      "theta": [
+        3.9629514678425624,
+        2.4871158283288723,
+        2.684302336374952,
+        0.2280184164271625,
+        0.2536460265247518
+      ],
+      "objectives": [
+        5007.0,
+        3.096779661571111,
+        0.8200150874066728
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 1,
+      "acq_value": 0.010456000035627185,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.29524383917265196,
+        "mean_base": 0.29524383917265196,
+        "std": 0.053885269384298384,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:25:14.883239"
+    },
+    {
+      "theta": [
+        2.0,
+        2.9291790126412223,
+        2.276597135310008,
+        0.24340667731316984,
+        0.2453663171859422
+      ],
+      "objectives": [
+        6160.0,
+        2.4691202688677834,
+        0.6491038779362307
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 2,
+      "acq_value": 0.038076716128418724,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.02414808331579804,
+        "mean_base": 0.02414808331579804,
+        "std": 0.11176146561030145,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:25:25.106004"
+    },
+    {
+      "theta": [
+        2.549612830109406,
+        3.1976472579035615,
+        2.680472242224068,
+        0.22765312390683612,
+        0.24872353727904986
+      ],
+      "objectives": [
+        5180.0,
+        2.9555413117240508,
+        0.7170901476643473
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 3,
+      "acq_value": 0.019424682588131664,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.25228252525140615,
+        "mean_base": 0.25228252525140615,
+        "std": 0.032385342065065,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:25:36.274676"
+    },
+    {
+      "theta": [
+        2.463961933468804,
+        3.735786586512065,
+        3.0,
+        0.1537982313541462,
+        0.29455523084297097
+      ],
+      "objectives": [
+        4653.0,
+        3.6185147860187046,
+        0.7398744197908368
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 4,
+      "acq_value": 0.03658654185674315,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.19959591206316654,
+        "mean_base": 0.19959591206316654,
+        "std": 0.05194479194553951,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:25:47.395010"
+    },
+    {
+      "theta": [
+        4.586899451819288,
+        2.328325301496976,
+        2.697366974529754,
+        0.22925379086692707,
+        0.28082485579621336
+      ],
+      "objectives": [
+        5006.0,
+        3.641615100130554,
+        0.846093102522335
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 5,
+      "acq_value": 0.021553716232565856,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.16242364194601738,
+        "mean_base": 0.16242364194601738,
+        "std": 0.05138816510975423,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:25:57.232044"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.695355786957243,
+        0.19212877078354357,
+        0.2122781089388472
+      ],
+      "objectives": [
+        6282.0,
+        2.4766863065683484,
+        0.5902567635439018
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 6,
+      "acq_value": 0.04868487303382442,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.0020741818233734888,
+        "mean_base": 0.0020741818233734888,
+        "std": 0.06754783147405836,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:26:08.504983"
+    },
+    {
+      "theta": [
+        2.0,
+        2.5456546857907854,
+        2.0000337821618945,
+        0.28684207633486364,
+        0.1
+      ],
+      "objectives": [
+        7007.0,
+        1.7752497595150545,
+        0.650477665404908
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 7,
+      "acq_value": 0.037196699500580105,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.07501346607217002,
+        "mean_base": 0.07501346607217002,
+        "std": 0.03723675286267386,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:26:20.241930"
+    },
+    {
+      "theta": [
+        3.174645523620593,
+        5.0,
+        3.0,
+        0.11361268528590153,
+        0.3
+      ],
+      "objectives": [
+        4042.0,
+        5.209021127583504,
+        0.9222439032842709
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 8,
+      "acq_value": 0.13243722991994408,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.048678735007125606,
+        "mean_base": 0.048678735007125606,
+        "std": 0.04526554522169199,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:26:30.506279"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.419308468010966,
+        0.1,
+        0.1
+      ],
+      "objectives": [
+        6264.0,
+        2.1522085494019,
+        0.629617963298436
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 9,
+      "acq_value": 0.0032221069155208342,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.11527274910262186,
+        "mean_base": 0.11527274910262186,
+        "std": 0.03271743329959953,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:26:41.397680"
+    },
+    {
+      "theta": [
+        2.4685348465784975,
+        2.475999706837525,
+        2.0,
+        0.34789732048659616,
+        0.1
+      ],
+      "objectives": [
+        6433.0,
+        2.10390715006306,
+        0.7228518974931395
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 10,
+      "acq_value": 0.007195919589245374,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.022559133430096967,
+        "mean_base": 0.022559133430096967,
+        "std": 0.03078371031349248,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:26:52.978321"
+    },
+    {
+      "theta": [
+        2.0,
+        2.730802148074373,
+        2.583669891538414,
+        0.1506931234560524,
+        0.1
+      ],
+      "objectives": [
+        5842.0,
+        2.4301886012069023,
+        0.6437674260289188
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 11,
+      "acq_value": 0.021875234798044103,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.14728341846778065,
+        "mean_base": 0.14728341846778065,
+        "std": 0.009782318869251677,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:27:03.727610"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.0,
+        0.15992561286385798,
+        0.3
+      ],
+      "objectives": [
+        7200.0,
+        1.5284664659560294,
+        0.6401485519633773
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 12,
+      "acq_value": 0.006830938429066371,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.06958225308005175,
+        "mean_base": 0.06958225308005175,
+        "std": 0.0071739259714911335,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:27:15.513092"
+    },
+    {
+      "theta": [
+        4.484973526560935,
+        4.443116044919702,
+        3.0,
+        0.4,
+        0.2999967080723533
+      ],
+      "objectives": [
+        3420.0,
+        5.832301893751901,
+        0.9915226953579379
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 13,
+      "acq_value": 0.14757631480639788,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.02543096251238003,
+        "mean_base": 0.02543096251238003,
+        "std": 0.11558831211687333,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:27:27.377093"
+    },
+    {
+      "theta": [
+        3.0298191141494564,
+        2.1362760630794435,
+        2.409210736706848,
+        0.1,
+        0.3
+      ],
+      "objectives": [
+        6111.0,
+        2.1167779226295185,
+        0.6810923373333924
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 14,
+      "acq_value": 0.030365916783403453,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.14685624492049967,
+        "mean_base": 0.14685624492049967,
+        "std": 0.03346750039105294,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:27:39.275998"
+    },
+    {
+      "theta": [
+        2.6571385401270415,
+        2.500935781931352,
+        2.0,
+        0.1,
+        0.3
+      ],
+      "objectives": [
+        6436.0,
+        2.1167180623834554,
+        0.7331766598832469
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 15,
+      "acq_value": 0.040988315926688175,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.06408178351769625,
+        "mean_base": 0.06408178351769625,
+        "std": 0.021967756863945337,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:27:50.510499"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.0,
+        0.1,
+        0.3
+      ],
+      "objectives": [
+        7200.0,
+        1.5285791733729015,
+        0.6401557211840261
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 16,
+      "acq_value": 0.0033168688785987824,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.06020056786243155,
+        "mean_base": 0.06020056786243155,
+        "std": 0.002437086166357656,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:28:01.378455"
+    },
+    {
+      "theta": [
+        3.964246535852355,
+        4.566502379377955,
+        3.0,
+        0.20730979223964188,
+        0.3
+      ],
+      "objectives": [
+        3880.0,
+        5.216225241658117,
+        0.9516147090323163
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 17,
+      "acq_value": 0.02900232590546681,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.212884699681178,
+        "mean_base": 0.212884699681178,
+        "std": 0.02955891665041169,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:28:12.568927"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.1881988100118845,
+        0.10580960168037432,
+        0.1
+      ],
+      "objectives": [
+        6740.0,
+        1.7996975103505977,
+        0.6349391337718907
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 18,
+      "acq_value": 0.005132767705557426,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.06908553433689102,
+        "mean_base": 0.06908553433689102,
+        "std": 0.0044744643086591426,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:28:23.519973"
+    },
+    {
+      "theta": [
+        2.6089818598999357,
+        2.0,
+        2.561492125159898,
+        0.2049302167426121,
+        0.1
+      ],
+      "objectives": [
+        5793.0,
+        2.3717599180602122,
+        0.6794693043036665
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 19,
+      "acq_value": 0.02539273851667232,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.192355069962522,
+        "mean_base": 0.192355069962522,
+        "std": 0.015630524780189992,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:28:34.265980"
+    },
+    {
+      "theta": [
+        2.0,
+        2.5284205003166984,
+        2.5523022270186515,
+        0.14973318986646347,
+        0.1
+      ],
+      "objectives": [
+        5941.0,
+        2.3718817585697596,
+        0.6385999985945144
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 20,
+      "acq_value": 0.0007348502483824141,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.09892658036031618,
+        "mean_base": 0.09892658036031618,
+        "std": 0.002205690667832757,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-14T21:28:45.065840"
+    }
+  ],
+  "pareto_indices": [
+    3,
+    5,
+    8,
+    9,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    22,
+    23,
+    24,
+    25
+  ],
+  "iteration_stats": [
+    {
+      "iteration": 1,
+      "n_total": 7,
+      "n_feasible": 7,
+      "pareto_size": 5,
+      "hypervolume": 0.6085859886274644,
+      "display_hv": 0.6085859886274644,
+      "canonical_hv": 0.24343439545098575,
+      "hypervolume_canonical": 0.24343439545098575,
+      "hypervolume_raw": 7.163069234476878,
+      "best_time_s": 4026.0,
+      "best_temp_K": 2.2137865669620456,
+      "best_aging_pct": 0.7265894947682922,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 0,
+      "w_vec": [
+        0.4928549194689508,
+        0.009958941557833332,
+        0.4971861389732159
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.49,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.7,
+        "trust_after": 0.6649999999999999,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 133,
+        "plain_log_ei_surrogate_at_plain": -2.206285404342754,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 133,
+        "selected_score_before": 0.010456000035627185,
+        "selected_index_after": 133,
+        "diagnostic_candidate_pool_size": 145,
+        "acquisition_candidate_pool_size": 145,
+        "selection_candidate_pool_size": 145,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.0
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 2,
+      "n_total": 8,
+      "n_feasible": 8,
+      "pareto_size": 6,
+      "hypervolume": 0.6191664823704381,
+      "display_hv": 0.6191664823704381,
+      "canonical_hv": 0.24766659294817525,
+      "hypervolume_canonical": 0.24766659294817525,
+      "hypervolume_raw": 7.287601857034943,
+      "best_time_s": 4026.0,
+      "best_temp_K": 2.2137865669620456,
+      "best_aging_pct": 0.6491038779362307,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 1,
+      "w_vec": [
+        0.009962740174934004,
+        0.876874236807607,
+        0.11316302301745898
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 10.22,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.6649999999999999,
+        "trust_after": 0.6317499999999999,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 135,
+        "plain_log_ei_surrogate_at_plain": -2.084070604062206,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 135,
+        "selected_score_before": 0.038076716128418724,
+        "selected_index_after": 135,
+        "diagnostic_candidate_pool_size": 143,
+        "acquisition_candidate_pool_size": 143,
+        "selection_candidate_pool_size": 143,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.12453262255806496
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 3,
+      "n_total": 9,
+      "n_feasible": 9,
+      "pareto_size": 6,
+      "hypervolume": 0.6229281861971118,
+      "display_hv": 0.6229281861971118,
+      "canonical_hv": 0.24917127447884474,
+      "hypervolume_canonical": 0.24917127447884474,
+      "hypervolume_raw": 7.331877186164405,
+      "best_time_s": 4026.0,
+      "best_temp_K": 2.2137865669620456,
+      "best_aging_pct": 0.6491038779362307,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 2,
+      "w_vec": [
+        0.49642727887783117,
+        0.4936137858675052,
+        0.009958935254663716
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.17,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.6317499999999999,
+        "trust_after": 0.6001624999999999,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 134,
+        "plain_log_ei_surrogate_at_plain": -1.6456715045239834,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 134,
+        "selected_score_before": 0.019424682588131664,
+        "selected_index_after": 134,
+        "diagnostic_candidate_pool_size": 145,
+        "acquisition_candidate_pool_size": 145,
+        "selection_candidate_pool_size": 145,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.04427532912946219
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 4,
+      "n_total": 10,
+      "n_feasible": 10,
+      "pareto_size": 7,
+      "hypervolume": 0.6398224309350211,
+      "display_hv": 0.6398224309350211,
+      "canonical_hv": 0.25592897237400847,
+      "hypervolume_canonical": 0.25592897237400847,
+      "hypervolume_raw": 7.530722783965241,
+      "best_time_s": 4026.0,
+      "best_temp_K": 2.2137865669620456,
+      "best_aging_pct": 0.6491038779362307,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 3,
+      "w_vec": [
+        0.35247576607205006,
+        0.009959547563971854,
+        0.637564686363978
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.12,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.6001624999999999,
+        "trust_after": 0.5701543749999999,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 142,
+        "plain_log_ei_surrogate_at_plain": -1.4313959334624078,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 142,
+        "selected_score_before": 0.03658654185674315,
+        "selected_index_after": 142,
+        "diagnostic_candidate_pool_size": 145,
+        "acquisition_candidate_pool_size": 145,
+        "selection_candidate_pool_size": 145,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.19884559780083588
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 5,
+      "n_total": 11,
+      "n_feasible": 11,
+      "pareto_size": 7,
+      "hypervolume": 0.6398224309350211,
+      "display_hv": 0.6398224309350211,
+      "canonical_hv": 0.25592897237400847,
+      "hypervolume_canonical": 0.25592897237400847,
+      "hypervolume_raw": 7.530722783965241,
+      "best_time_s": 4026.0,
+      "best_temp_K": 2.2137865669620456,
+      "best_aging_pct": 0.6491038779362307,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 4,
+      "w_vec": [
+        0.29416452810530336,
+        0.42386323661763187,
+        0.2819722352770648
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 9.83,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.5701543749999999,
+        "trust_after": 0.5416466562499999,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 135,
+        "plain_log_ei_surrogate_at_plain": -1.487027569310761,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 135,
+        "selected_score_before": 0.021553716232565856,
+        "selected_index_after": 135,
+        "diagnostic_candidate_pool_size": 141,
+        "acquisition_candidate_pool_size": 141,
+        "selection_candidate_pool_size": 141,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.0
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 6,
+      "n_total": 12,
+      "n_feasible": 12,
+      "pareto_size": 8,
+      "hypervolume": 0.6476165611521201,
+      "display_hv": 0.6476165611521201,
+      "canonical_hv": 0.25904662446084803,
+      "hypervolume_canonical": 0.25904662446084803,
+      "hypervolume_raw": 7.622459852203569,
+      "best_time_s": 4026.0,
+      "best_temp_K": 2.2137865669620456,
+      "best_aging_pct": 0.5902567635439018,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 5,
+      "w_vec": [
+        0.009959023207391626,
+        0.4250905450014835,
+        0.5649504317911249
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.27,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.5416466562499999,
+        "trust_after": 0.5145643234374998,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 136,
+        "plain_log_ei_surrogate_at_plain": -1.3157906850941694,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 136,
+        "selected_score_before": 0.04868487303382442,
+        "selected_index_after": 136,
+        "diagnostic_candidate_pool_size": 143,
+        "acquisition_candidate_pool_size": 143,
+        "selection_candidate_pool_size": 143,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.09173706823832806
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 7,
+      "n_total": 13,
+      "n_feasible": 13,
+      "pareto_size": 9,
+      "hypervolume": 0.6480182937417834,
+      "display_hv": 0.6480182937417834,
+      "canonical_hv": 0.2592073174967134,
+      "hypervolume_canonical": 0.2592073174967134,
+      "hypervolume_raw": 7.62718825280312,
+      "best_time_s": 4026.0,
+      "best_temp_K": 1.7752497595150545,
+      "best_aging_pct": 0.5902567635439018,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 6,
+      "w_vec": [
+        0.10955488566289148,
+        0.8804827190765444,
+        0.00996239526056419
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.73,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.5145643234374998,
+        "trust_after": 0.48883610726562476,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 136,
+        "plain_log_ei_surrogate_at_plain": -1.927073754065795,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 136,
+        "selected_score_before": 0.037196699500580105,
+        "selected_index_after": 136,
+        "diagnostic_candidate_pool_size": 141,
+        "acquisition_candidate_pool_size": 141,
+        "selection_candidate_pool_size": 141,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.00472840059955093
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 8,
+      "n_total": 14,
+      "n_feasible": 14,
+      "pareto_size": 10,
+      "hypervolume": 0.6576624719675997,
+      "display_hv": 0.6576624719675997,
+      "canonical_hv": 0.26306498878703993,
+      "hypervolume_canonical": 0.26306498878703993,
+      "hypervolume_raw": 7.740700423033916,
+      "best_time_s": 4026.0,
+      "best_temp_K": 1.7752497595150545,
+      "best_aging_pct": 0.5902567635439018,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 7,
+      "w_vec": [
+        0.6338169667100643,
+        0.009959478225430021,
+        0.3562235550645058
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 10.26,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.48883610726562476,
+        "trust_after": 0.4643943019023435,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 135,
+        "plain_log_ei_surrogate_at_plain": 0.007815150328485487,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 135,
+        "selected_score_before": 0.13243722991994408,
+        "selected_index_after": 135,
+        "diagnostic_candidate_pool_size": 140,
+        "acquisition_candidate_pool_size": 140,
+        "selection_candidate_pool_size": 140,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.11351217023079574
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 9,
+      "n_total": 15,
+      "n_feasible": 15,
+      "pareto_size": 11,
+      "hypervolume": 0.6580149613034375,
+      "display_hv": 0.6580149613034375,
+      "canonical_hv": 0.263205984521375,
+      "hypervolume_canonical": 0.263205984521375,
+      "hypervolume_raw": 7.7448492295529645,
+      "best_time_s": 4026.0,
+      "best_temp_K": 1.7752497595150545,
+      "best_aging_pct": 0.5902567635439018,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 8,
+      "w_vec": [
+        0.1003045404408903,
+        0.09077339056608676,
+        0.808922068993023
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 10.89,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.4643943019023435,
+        "trust_after": 0.44117458680722627,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 137,
+        "plain_log_ei_surrogate_at_plain": -4.31336003182199,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 137,
+        "selected_score_before": 0.0032221069155208342,
+        "selected_index_after": 137,
+        "diagnostic_candidate_pool_size": 140,
+        "acquisition_candidate_pool_size": 140,
+        "selection_candidate_pool_size": 140,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.004148806519048698
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 10,
+      "n_total": 16,
+      "n_feasible": 16,
+      "pareto_size": 12,
+      "hypervolume": 0.6581429029625213,
+      "display_hv": 0.6581429029625213,
+      "canonical_hv": 0.2632571611850085,
+      "hypervolume_canonical": 0.2632571611850085,
+      "hypervolume_raw": 7.746355105434298,
+      "best_time_s": 4026.0,
+      "best_temp_K": 1.7752497595150545,
+      "best_aging_pct": 0.5902567635439018,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 9,
+      "w_vec": [
+        0.009958527658948207,
+        0.9800829446821036,
+        0.009958527658948207
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.58,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.44117458680722627,
+        "trust_after": 0.4191158574668649,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 135,
+        "plain_log_ei_surrogate_at_plain": -3.7769050388371093,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 135,
+        "selected_score_before": 0.007195919589245374,
+        "selected_index_after": 135,
+        "diagnostic_candidate_pool_size": 145,
+        "acquisition_candidate_pool_size": 145,
+        "selection_candidate_pool_size": 145,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.0015058758813335515
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 11,
+      "n_total": 17,
+      "n_feasible": 17,
+      "pareto_size": 12,
+      "hypervolume": 0.6624300675069759,
+      "display_hv": 0.6624300675069759,
+      "canonical_hv": 0.2649720270027904,
+      "hypervolume_canonical": 0.2649720270027904,
+      "hypervolume_raw": 7.796815117701062,
+      "best_time_s": 4026.0,
+      "best_temp_K": 1.7752497595150545,
+      "best_aging_pct": 0.5902567635439018,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 10,
+      "w_vec": [
+        0.201640091922459,
+        0.00996109485336051,
+        0.7883988132241805
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 10.75,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.4191158574668649,
+        "trust_after": 0.39816006459352166,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 134,
+        "plain_log_ei_surrogate_at_plain": -2.284647570071919,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 134,
+        "selected_score_before": 0.021875234798044103,
+        "selected_index_after": 134,
+        "diagnostic_candidate_pool_size": 138,
+        "acquisition_candidate_pool_size": 138,
+        "selection_candidate_pool_size": 138,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.050460012266763776
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 12,
+      "n_total": 18,
+      "n_feasible": 18,
+      "pareto_size": 13,
+      "hypervolume": 0.6624300675069759,
+      "display_hv": 0.6624300675069759,
+      "canonical_hv": 0.2649720270027904,
+      "hypervolume_canonical": 0.2649720270027904,
+      "hypervolume_raw": 7.796815117701062,
+      "best_time_s": 4026.0,
+      "best_temp_K": 1.5284664659560294,
+      "best_aging_pct": 0.5902567635439018,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 11,
+      "w_vec": [
+        0.00995952970868402,
+        0.35452256585349795,
+        0.635517904437818
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.78,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.39816006459352166,
+        "trust_after": 0.37825206136384554,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 134,
+        "plain_log_ei_surrogate_at_plain": -3.352324272202657,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 134,
+        "selected_score_before": 0.006830938429066371,
+        "selected_index_after": 134,
+        "diagnostic_candidate_pool_size": 138,
+        "acquisition_candidate_pool_size": 138,
+        "selection_candidate_pool_size": 138,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.0
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 13,
+      "n_total": 19,
+      "n_feasible": 19,
+      "pareto_size": 14,
+      "hypervolume": 0.8070672815915747,
+      "display_hv": 0.8070672815915747,
+      "canonical_hv": 0.3228269126366299,
+      "hypervolume_canonical": 0.3228269126366299,
+      "hypervolume_raw": 9.499198014662618,
+      "best_time_s": 3420.0,
+      "best_temp_K": 1.5284664659560294,
+      "best_aging_pct": 0.5902567635439018,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 12,
+      "w_vec": [
+        0.7863153992462809,
+        0.009960947174528128,
+        0.20372365357919092
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.86,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.37825206136384554,
+        "trust_after": 0.3593394582956532,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 139,
+        "plain_log_ei_surrogate_at_plain": -0.31698168313203695,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 139,
+        "selected_score_before": 0.14757631480639788,
+        "selected_index_after": 139,
+        "diagnostic_candidate_pool_size": 145,
+        "acquisition_candidate_pool_size": 145,
+        "selection_candidate_pool_size": 145,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 1.7023828969615558
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 14,
+      "n_total": 20,
+      "n_feasible": 20,
+      "pareto_size": 14,
+      "hypervolume": 0.8071923228816937,
+      "display_hv": 0.8071923228816937,
+      "canonical_hv": 0.3228769291526775,
+      "hypervolume_canonical": 0.3228769291526775,
+      "hypervolume_raw": 9.50066975314334,
+      "best_time_s": 3420.0,
+      "best_temp_K": 1.5284664659560294,
+      "best_aging_pct": 0.5902567635439018,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 13,
+      "w_vec": [
+        0.21878982874078262,
+        0.6674117117199764,
+        0.11379845953924109
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.89,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.3593394582956532,
+        "trust_after": 0.34137248538087056,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 142,
+        "plain_log_ei_surrogate_at_plain": -1.6905406803379457,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 142,
+        "selected_score_before": 0.030365916783403453,
+        "selected_index_after": 142,
+        "diagnostic_candidate_pool_size": 145,
+        "acquisition_candidate_pool_size": 145,
+        "selection_candidate_pool_size": 145,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.001471738480722351
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 15,
+      "n_total": 21,
+      "n_feasible": 21,
+      "pareto_size": 14,
+      "hypervolume": 0.8071923228816937,
+      "display_hv": 0.8071923228816937,
+      "canonical_hv": 0.3228769291526775,
+      "hypervolume_canonical": 0.3228769291526775,
+      "hypervolume_raw": 9.50066975314334,
+      "best_time_s": 3420.0,
+      "best_temp_K": 1.5284664659560294,
+      "best_aging_pct": 0.5902567635439018,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 14,
+      "w_vec": [
+        0.11887419078912526,
+        0.6226115588668527,
+        0.25851425034402203
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.23,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.34137248538087056,
+        "trust_after": 0.324303861111827,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 142,
+        "plain_log_ei_surrogate_at_plain": -1.4557440342217398,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 142,
+        "selected_score_before": 0.040988315926688175,
+        "selected_index_after": 142,
+        "diagnostic_candidate_pool_size": 144,
+        "acquisition_candidate_pool_size": 144,
+        "selection_candidate_pool_size": 144,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.0
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 16,
+      "n_total": 22,
+      "n_feasible": 22,
+      "pareto_size": 14,
+      "hypervolume": 0.8071923228816937,
+      "display_hv": 0.8071923228816937,
+      "canonical_hv": 0.3228769291526775,
+      "hypervolume_canonical": 0.3228769291526775,
+      "hypervolume_raw": 9.50066975314334,
+      "best_time_s": 3420.0,
+      "best_temp_K": 1.5284664659560294,
+      "best_aging_pct": 0.5902567635439018,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 15,
+      "w_vec": [
+        0.009959021201554697,
+        0.5655852699706021,
+        0.4244557088278432
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 10.86,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.324303861111827,
+        "trust_after": 0.30808866805623564,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 133,
+        "plain_log_ei_surrogate_at_plain": -3.877625837320821,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 133,
+        "selected_score_before": 0.0033168688785987824,
+        "selected_index_after": 133,
+        "diagnostic_candidate_pool_size": 134,
+        "acquisition_candidate_pool_size": 134,
+        "selection_candidate_pool_size": 134,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.0
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 17,
+      "n_total": 23,
+      "n_feasible": 23,
+      "pareto_size": 14,
+      "hypervolume": 0.8087242610461471,
+      "display_hv": 0.8087242610461471,
+      "canonical_hv": 0.32348970441845887,
+      "hypervolume_canonical": 0.32348970441845887,
+      "hypervolume_raw": 9.518700695918847,
+      "best_time_s": 3420.0,
+      "best_temp_K": 1.5284664659560294,
+      "best_aging_pct": 0.5902567635439018,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 16,
+      "w_vec": [
+        0.7073636459664887,
+        0.009960241312071632,
+        0.2826761127214396
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.18,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.30808866805623564,
+        "trust_after": 0.29268423465342386,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 139,
+        "plain_log_ei_surrogate_at_plain": -1.6814257786227151,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 139,
+        "selected_score_before": 0.02900232590546681,
+        "selected_index_after": 139,
+        "diagnostic_candidate_pool_size": 145,
+        "acquisition_candidate_pool_size": 145,
+        "selection_candidate_pool_size": 145,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.018030942775506986
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 18,
+      "n_total": 24,
+      "n_feasible": 24,
+      "pareto_size": 15,
+      "hypervolume": 0.8091213919770065,
+      "display_hv": 0.8091213919770065,
+      "canonical_hv": 0.3236485567908026,
+      "hypervolume_canonical": 0.3236485567908026,
+      "hypervolume_raw": 9.523374934902419,
+      "best_time_s": 3420.0,
+      "best_temp_K": 1.5284664659560294,
+      "best_aging_pct": 0.5902567635439018,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 17,
+      "w_vec": [
+        0.009958934656679895,
+        0.4948430861816306,
+        0.49519797916168956
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 10.95,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.29268423465342386,
+        "trust_after": 0.27805002292075265,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 138,
+        "plain_log_ei_surrogate_at_plain": -3.434688242347873,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 138,
+        "selected_score_before": 0.005132767705557426,
+        "selected_index_after": 138,
+        "diagnostic_candidate_pool_size": 140,
+        "acquisition_candidate_pool_size": 140,
+        "selection_candidate_pool_size": 140,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.00467423898357211
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 19,
+      "n_total": 25,
+      "n_feasible": 25,
+      "pareto_size": 16,
+      "hypervolume": 0.8096322925169761,
+      "display_hv": 0.8096322925169761,
+      "canonical_hv": 0.3238529170067905,
+      "hypervolume_canonical": 0.3238529170067905,
+      "hypervolume_raw": 9.529388244456237,
+      "best_time_s": 3420.0,
+      "best_temp_K": 1.5284664659560294,
+      "best_aging_pct": 0.5902567635439018,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 18,
+      "w_vec": [
+        0.2806214627455438,
+        0.009960046994512238,
+        0.7094184902599441
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 10.74,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.27805002292075265,
+        "trust_after": 0.264147521774715,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 141,
+        "plain_log_ei_surrogate_at_plain": -1.9077551616547637,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 141,
+        "selected_score_before": 0.02539273851667232,
+        "selected_index_after": 141,
+        "diagnostic_candidate_pool_size": 142,
+        "acquisition_candidate_pool_size": 142,
+        "selection_candidate_pool_size": 142,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.006013309553818402
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 20,
+      "n_total": 26,
+      "n_feasible": 26,
+      "pareto_size": 17,
+      "hypervolume": 0.80989223549595,
+      "display_hv": 0.80989223549595,
+      "canonical_hv": 0.32395689419838003,
+      "hypervolume_canonical": 0.32395689419838003,
+      "hypervolume_raw": 9.532447778507631,
+      "best_time_s": 3420.0,
+      "best_temp_K": 1.5284664659560294,
+      "best_aging_pct": 0.5902567635439018,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 19,
+      "w_vec": [
+        0.1203554755141749,
+        0.3711567154451757,
+        0.5084878090406495
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 10.79,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.264147521774715,
+        "trust_after": 0.2509401456859792,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 133,
+        "plain_log_ei_surrogate_at_plain": -5.306486043345229,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 133,
+        "selected_score_before": 0.0007348502483824141,
+        "selected_index_after": 133,
+        "diagnostic_candidate_pool_size": 138,
+        "acquisition_candidate_pool_size": 138,
+        "selection_candidate_pool_size": 138,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "PermissionDeniedError",
+              "error": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>openresty/1.27.1.2</center>\r\n</body>\r\n</html>"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.0030595340513936975
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    }
+  ],
+  "improvement_window": [
+    true,
+    true
+  ],
+  "saved_at": "2026-05-14T21:28:45.090964"
+}

@@ -2,12 +2,100 @@
 
 import sys
 sys.path.insert(0, '.')
+from types import SimpleNamespace
+
 from llm.llm_interface import (
     build_llm_interface,
     DEFAULT_BOUNDS,
+    LLMCaller,
     LLMConfig,
     _build_iteration_prompt,
 )
+
+
+def _region_state():
+    return {
+        "iteration": 0,
+        "max_iterations": 50,
+        "w_vec": [0.3, 0.4, 0.3],
+        "top_scalar_points": [],
+        "recent_points": [],
+    }
+
+
+def test_openai_message_text_extraction_ignores_reasoning_content_when_content_empty():
+    message = SimpleNamespace(content=None, model_extra={"reasoning_content": '{"kind":"none"}'})
+
+    text, source = LLMCaller._extract_message_text(message)
+
+    assert text == ""
+    assert source == "empty"
+
+
+def test_region_preference_attaches_call_diagnostics_on_success():
+    class FakeCaller:
+        def __init__(self):
+            self.last_call_diagnostics = []
+
+        def call(self, *args, **kwargs):
+            self.last_call_diagnostics = [{"finish_reason": "stop", "extracted_text_length": 196}]
+            return [
+                '{"kind":"point","coordinate_space":"raw","preference_direction":"promising",'
+                '"point":{"I1":4.5,"I2":3.5,"I3":2.5,"dSOC1":0.2,"dSOC2":0.2},'
+                '"confidence":0.8}'
+            ]
+
+    llm = build_llm_interface(DEFAULT_BOUNDS, backend="openai", api_key="test-key")
+    llm._caller = FakeCaller()
+
+    pref = llm.query_region_preference(_region_state())
+
+    assert pref.kind == "point"
+    assert pref.parser_status == "ok"
+    assert pref.llm_call_diagnostics[0]["finish_reason"] == "stop"
+    assert '"kind": "point"' in pref.raw_text_preview
+
+
+def test_region_preference_parse_fail_keeps_diagnostics_and_preview():
+    class FakeCaller:
+        def __init__(self):
+            self.last_call_diagnostics = []
+
+        def call(self, *args, **kwargs):
+            self.last_call_diagnostics = [{"finish_reason": "length", "extracted_text_length": 19}]
+            return ["not json at all"]
+
+    llm = build_llm_interface(DEFAULT_BOUNDS, backend="openai", api_key="test-key")
+    llm._caller = FakeCaller()
+
+    pref = llm.query_region_preference(_region_state())
+
+    assert pref.kind == "none"
+    assert pref.parser_status == "parse_fail"
+    assert pref.llm_call_diagnostics[0]["finish_reason"] == "length"
+    assert pref.raw_text_preview == "not json at all"
+
+
+def test_region_preference_empty_response_reports_call_error_type():
+    class FakeCaller:
+        def __init__(self):
+            self.last_call_diagnostics = []
+
+        def call(self, *args, **kwargs):
+            self.last_call_diagnostics = [
+                {"error_type": "PermissionDeniedError", "error": "403 Forbidden"}
+            ]
+            return []
+
+    llm = build_llm_interface(DEFAULT_BOUNDS, backend="openai", api_key="test-key")
+    llm._caller = FakeCaller()
+
+    pref = llm.query_region_preference(_region_state())
+
+    assert pref.kind == "none"
+    assert pref.parser_status == "query_permission_denied"
+    assert pref.llm_call_diagnostics[0]["error_type"] == "PermissionDeniedError"
+
 
 def test_basic_functionality():
     """Test basic functionality"""
