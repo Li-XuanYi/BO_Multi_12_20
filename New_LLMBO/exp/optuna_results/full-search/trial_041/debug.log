@@ -1,0 +1,706 @@
+2026-05-15 20:02:53,527 INFO llmbo.optimizer | ============================================================
+2026-05-15 20:02:53,527 INFO llmbo.optimizer | ============================================================
+2026-05-15 20:02:53,527 INFO llmbo.optimizer | Setting up 5D GP-LLM-coupled MOBO optimizer
+2026-05-15 20:02:53,527 INFO llmbo.optimizer | Setting up 5D GP-LLM-coupled MOBO optimizer
+2026-05-15 20:02:53,527 INFO llmbo.optimizer | ============================================================
+2026-05-15 20:02:53,527 INFO llmbo.optimizer | ============================================================
+2026-05-15 20:02:53,528 INFO llm.llm_interface | LLMInterface 初始化: backend=openai model=MiniMax-M2.7 warmstart_level=full param_set=Chen2020
+2026-05-15 20:02:53,528 INFO llm.llm_interface | LLMInterface 初始化: backend=openai model=MiniMax-M2.7 warmstart_level=full param_set=Chen2020
+2026-05-15 20:02:53,530 INFO llmbo.riesz_cache | Riesz 权重集合从缓存加载: .riesz_cache/riesz_21d41b81f85810f3bf242e968bc0d62f.pkl  shape=(66, 3)
+2026-05-15 20:02:53,531 INFO llmbo.optimizer | Riesz weight set ready: shape=(66, 3)
+2026-05-15 20:02:53,531 INFO llmbo.optimizer | Riesz weight set ready: shape=(66, 3)
+2026-05-15 20:02:53,531 INFO llmbo.optimizer | ============================================================
+2026-05-15 20:02:53,531 INFO llmbo.optimizer | ============================================================
+2026-05-15 20:02:53,531 INFO llmbo.optimizer | Initialization: strategy=manual warmstart=10 random_init=9
+2026-05-15 20:02:53,531 INFO llmbo.optimizer | Initialization: strategy=manual warmstart=10 random_init=9
+2026-05-15 20:02:53,531 INFO llmbo.optimizer | ============================================================
+2026-05-15 20:02:53,531 INFO llmbo.optimizer | ============================================================
+2026-05-15 20:02:53,531 INFO llm.llm_interface | === Touchpoint 1b: Warm-Start (n=10) ===
+2026-05-15 20:02:53,531 INFO llm.llm_interface | === Touchpoint 1b: Warm-Start (n=10) ===
+2026-05-15 20:02:53,532 DEBUG llm.warmstart_prompt | WarmStart prompt rendered using template 'detailed' (5242 chars)
+2026-05-15 20:02:54,461 DEBUG llm.llm_interface | LLM request 1/1 attempt 1 | model=MiniMax-M2.7 max_tokens=2500 prompt_len=5242
+2026-05-15 20:02:54,461 DEBUG llm.llm_interface | LLM request 1/1 attempt 1 | model=MiniMax-M2.7 max_tokens=2500 prompt_len=5242
+2026-05-15 20:02:54,461 DEBUG llm.llm_interface | LLM prompt (first 1000 chars): You are an expert in lithium-ion battery fast charging optimization.
+
+Task:
+Recommend diverse 3-stage constant-current charging protocols for LG INR21700-M50 from SOC 10% to SOC 80%.
+
+Battery and charging window:
+- Cell: LG INR21700-M50
+- Parameter set: Chen2020 parameter set
+- SOC window: 10% to 80%
+
+Decision variables and bounds:
+- I1 (stage-1 current): [2.00, 6.00] A
+- I2 (stage-2 current): [2.00, 5.00] A
+- I3 (stage-3 current): [2.00, 3.00] A
+- dSOC1 (stage-1 SOC span): [0.10, 0.40]
+- dSOC2 (stage-2 SOC span): [0.10, 0.30]
+
+Constraints:
+- Practical hard limit: keep dSOC1 + dSOC2 strictly below 0.70 because points at exactly 0.70 can be rejected by the simulator.
+- Safety margin: keep dSOC1 + dSOC2 <= 0.65 whenever possible.
+- Physical risk: Pushing beyond the 0.65 safety margin increases lithium plating risk, internal polarization, and thermal stress in the high-SOC region.
+- A decreasing current profile I1 >= I2 >= I3 is recommended.
+
+Optimization objectives:
+- Charging time [s]: 
+2026-05-15 20:02:54,461 DEBUG llm.llm_interface | LLM prompt (first 1000 chars): You are an expert in lithium-ion battery fast charging optimization.
+
+Task:
+Recommend diverse 3-stage constant-current charging protocols for LG INR21700-M50 from SOC 10% to SOC 80%.
+
+Battery and charging window:
+- Cell: LG INR21700-M50
+- Parameter set: Chen2020 parameter set
+- SOC window: 10% to 80%
+
+Decision variables and bounds:
+- I1 (stage-1 current): [2.00, 6.00] A
+- I2 (stage-2 current): [2.00, 5.00] A
+- I3 (stage-3 current): [2.00, 3.00] A
+- dSOC1 (stage-1 SOC span): [0.10, 0.40]
+- dSOC2 (stage-2 SOC span): [0.10, 0.30]
+
+Constraints:
+- Practical hard limit: keep dSOC1 + dSOC2 strictly below 0.70 because points at exactly 0.70 can be rejected by the simulator.
+- Safety margin: keep dSOC1 + dSOC2 <= 0.65 whenever possible.
+- Physical risk: Pushing beyond the 0.65 safety margin increases lithium plating risk, internal polarization, and thermal stress in the high-SOC region.
+- A decreasing current profile I1 >= I2 >= I3 is recommended.
+
+Optimization objectives:
+- Charging time [s]: 
+2026-05-15 20:03:52,890 DEBUG llm.llm_interface | LLM response 1/1 | content_len=6549 finish_reason=length usage=prompt=1295 completion=2500
+2026-05-15 20:03:52,890 DEBUG llm.llm_interface | LLM response 1/1 | content_len=6549 finish_reason=length usage=prompt=1295 completion=2500
+2026-05-15 20:03:52,891 DEBUG llm.llm_interface | LLM raw response: <think>
+We need to generate 20 warm-start protocols, each with I1, I2, I3, dSOC1, dSOC2. Provide diverse set across trade-off buckets: fast_charge, thermal_safe, aging_safe, balanced, front_loaded_fast, high_margin_safe. At least one per bucket, then we can start adding second, third, etc. Ensure coverage rules: At least 1 protocol per trade-off bucket before adding a second protocol to any bucket when requested count allows. Since we have 20 protocols and 6 buckets, we can assign roughly 3-4 per bucket, but must ensure coverage as many distinct buckets as possible first. Also avoid near-identical protocols.
+
+We must respect constraints: I1 in [2.00, 6.00]; I2 in [2.00,5.00]; I3 in [2.00,3.00]; dSOC1 in [0.10,0.40]; dSOC2 in [0.10,0.30]; dSOC1 + dSOC2 < 0.70 (strictly below). Also safety margin: dSOC1 + dSOC2 <= 0.65 whenever possible. So aim <=0.65. I1 >= I2 >= I3 recommended.
+
+We must produce precise values not rounded to nearest 0.1, but we can use decimals like 3.47.
+
+Now, we need to create 20 distinct protocols, covering 6 buckets, with different trade-offs.
+
+We'll design each protocol with a note describing bucket and rationale, but the final JSON only needs numeric fields. However we may include optional "note"? The prompt says respond with ONLY a JSON array and no extra text. It says output should be JSON array of objects with keys: I1, I2, I3, dSOC1, dSOC2. No notes. So just provide numeric values.
+
+Thus we need 20 objects. Ensure they satisfy constraints.
+
+Let's design.
+
+First bucket: fast_charge. This bucket wants time-first, use stronger early current while keeping late stage controlled. So high I1, I2 moderate, I3 low. dSOC1 moderate-high (maybe 0.30-0.35), dSOC2 moderate (0.15-0.20). Must ensure sum <0.70.
+
+Second bucket: thermal_safe. Temperature-first, prefer cooler interior points and lower late-stage stress. So lower currents overall, maybe I1~3.0, I2~2.5, I3~2.0, with dSOC1 moderate, dSOC2 moderate to keep sum <0.65.
+
+Third bucket: aging_safe. Prefer taper into high SOC region, meaning moderate early, low later, maybe dSOC1 smaller, dSOC2 larger? Actually taper meaning as SOC goes high, reduce current strongly. So I1~3.5, I2~2.8, I3~2.0, dSOC1 ~0.20, dSOC2 ~0.25. Sum 0.45.
+
+Fourth bucket: balanced. Balanced trade-off, interior point. Use moderate I1~4.0, I2~3.3, I3~2.2, dSOC1~0.28, dSOC2~0.20.
+
+Fifth bucket: front_loaded_fast. Aggressive early acceleration then safer tail. I1 high (~5.5), I2 moderate (~4.0), I3 low (~2.0), dSOC1 low (0.18), dSOC2 moderate (0.20) to keep sum low.
+
+Sixth bucket: high_margin_safe. Leave safety margin and stay well inside feasible region. So currents lower, dSOC1+ dSOC2 <=0.55 perhaps. Use I1~3.0, I2~2.5, I3~2.0, dSOC1~0.18, dSOC2~0.18.
+
+Now we need 20 protocols. Let's allocate roughly 3 per bucket = 18, plus 2 extra to distribute. But we must follow coverage rule: At least 1 per bucket before adding second protocol to any bucket when count allows. Since we have 20, we can give each bucket at least 3, maybe some bucket 4. We must also avoid near identical duplicates.
+
+We'll design distinct values.
+
+Let's systematically assign.
+
+Bucket mapping:
+
+- fast_charge: 4 protocols (fast1-4)
+- thermal_safe: 3 protocols (thermal1-3)
+- aging_safe: 3 protocols (aging1-3)
+- balanced: 4 protocols (balanced1-4)
+- front_loaded_fast: 3 protocols (front1-3)
+- high_margin_safe: 3 protocols (margin1-3)
+
+Total 20.
+
+Now we need each to be distinct, interior points, not edge hugging.
+
+Constraints:
+
+- I1 in [2,6]
+- I2 in [2,5]
+- I3 in [2,3]
+- dSOC1 in [0.10,0.40]
+- dSOC2 in [0.10,0.30]
+- dSOC1 + dSOC2 < 0.70 (strictly)
+- dSOC1 + dSOC2 <= 0.65 for safety margin whenever possible.
+
+- I1 >= I2 >= I3.
+
+- For fast_charge bucket: high I1, I2 moderate-high, I3 lowish.
+
+- For thermal_safe: lower currents.
+
+- For aging_safe: moderate early, low later.
+
+- For balanced: moderate.
+
+- For front_loaded_fast: high I1, moderate I2, low I3, small dSOC1.
+
+- For high_margin_safe: low currents, small dSOC spans, sum <0.55.
+
+Now generate each with precise decimals (like 3.47, 2.93, etc). Must avoid rounding to 0.1 increments.
+
+Now need to ensure dSOC1+dSOC2<0.70, best <=0.65.
+
+Now compute for each.
+
+We'll produce values.
+
+Let's start with fast_charge:
+
+fast1: I1=5.80, I2=4.50, I3=2.20. dSOC1=0.34, dSOC2=0.20 => sum=0.54 <0.65. Good. I1>=I2>=I3: 5.80>=4.50>=2.20 true.
+
+fast2: I1=5.50, I2=4.20, I3=2.10. dSOC1=0.38, dSOC2=0.15 => sum=0.53.
+
+fast3: I1=5.20, I2=4.60, I3=2.30. dSOC1=0.30, dSOC2=0.22 => sum=0.52.
+
+fast4: I1=6.00 (max), I2=4.80, I3=2.40. dSOC1=0.25, dSOC2=0.18 => sum=0.43. I1=6.00 is edge of range but not necessarily "edge hugging"? The bucket says fast charge, but we need interior? It's okay to use near max for one candidate, but avoid clustering many at edge. So this is okay as an extreme. But need to keep safety margin: sum 0.43 <0.65. I1>=I2>=I3:6.00>=4.80>=2.40 true.
+
+Now thermal_safe (temperature-first, cooler interior):
+
+thermal1: I1=3.10, I2=2.70, I3=2.00. dSOC1=0.22, dSOC2=0.20 => sum=0.42.
+
+thermal2: I1=3.30, I2=2.80, I3=2.10. dSOC1=0.25, dSOC2=0.18 => sum=0.43.
+
+thermal3: I1=2.80, I2=2.50, I3=2.00. dSOC1=0.20, dSOC2=0.22 => sum=0.42.
+
+Now aging_safe (taper):
+
+aging1: I1=3.50, I2=2.90, I3=2.00. dSOC1=0.22, dSOC2=0.25 => sum=0.47.
+
+aging2: I1=3.70, I2=2.85, I3=2.05. dSOC1=0.20, dSOC2=0.27 => sum=0.47.
+
+aging3: I1=3.60, I2=2.95, I3=2.10. dSOC1=0.24, dSOC2=0.20 => sum=0.44.
+
+Now balanced (center-of-mass anchor):
+
+balanced1: I1=4.00, I2=3.20, I3=2.10. dSOC1=0.30, dSOC2=0.20 => sum=0.50.
+
+balanced2: I1=4.30, I2=3.50, I3=2.30. dSOC1=0.28, dSOC2=0.18 => sum=0.46.
+
+balanced3: I1=3.80, I2=3.30, I3=2.20. dSOC1=0.32, dSOC2=0.20 => sum=0.52.
+
+balanced4: I1=4.50, I2=3.80, I3=2.40. dSOC1=0.26, dSOC2=0.19 => sum=0.45.
+
+Now front_loaded_fast (aggressive early then safe tail):
+
+front1: I1=5.70, I2=4.20, I3=2.50. dSOC1=0.18, dSOC2=0.20 => sum=0.38.
+
+front2: I1=5.50, I2=4.40, I3=2.60. dSOC1=0.16, dSOC2=0.18 => sum=0.34.
+
+front3: I1=5.90, I2=4.60, I3=2.70. dSOC1=0.14, dSOC2=0.15 => sum=0.29.
+
+Now high_margin_safe (safe interior, leave margin):
+
+margin1: I1=2.90, I2=2.50, I3=2.00. dSOC1=0.15, dSOC2=0.15 => sum=0.30.
+
+margin2: I1=3.00, I2=2.70, I3=2.10. dSOC1=0.12, dSOC2=0.13 => sum=0.25.
+
+margin3: I1=2.70, I2=2.40, I3=2.00. dSOC1=0.18, dSOC2=0.12 => sum=0.30.
+
+Check all constraints.
+
+Now verify each:
+
+fast1: I1=5.80 (OK <=6), I2=4.50 (<=5), I3=2.20 (<=3), dSOC1=0.34 (<=0.40), dSOC2=0.20 (<=0.30), sum=0.54 (<0.70). I1>=I2>=I3: true.
+
+fast2: I1=5.50, I2=4.20, I3=2.10: sum=0.53 <0.70, all in bounds.
+
+fast3: I1=5.20, I2
+</think>
+
+2026-05-15 20:03:52,891 DEBUG llm.llm_interface | LLM raw response: <think>
+We need to generate 20 warm-start protocols, each with I1, I2, I3, dSOC1, dSOC2. Provide diverse set across trade-off buckets: fast_charge, thermal_safe, aging_safe, balanced, front_loaded_fast, high_margin_safe. At least one per bucket, then we can start adding second, third, etc. Ensure coverage rules: At least 1 protocol per trade-off bucket before adding a second protocol to any bucket when requested count allows. Since we have 20 protocols and 6 buckets, we can assign roughly 3-4 per bucket, but must ensure coverage as many distinct buckets as possible first. Also avoid near-identical protocols.
+
+We must respect constraints: I1 in [2.00, 6.00]; I2 in [2.00,5.00]; I3 in [2.00,3.00]; dSOC1 in [0.10,0.40]; dSOC2 in [0.10,0.30]; dSOC1 + dSOC2 < 0.70 (strictly below). Also safety margin: dSOC1 + dSOC2 <= 0.65 whenever possible. So aim <=0.65. I1 >= I2 >= I3 recommended.
+
+We must produce precise values not rounded to nearest 0.1, but we can use decimals like 3.47.
+
+Now, we need to create 20 distinct protocols, covering 6 buckets, with different trade-offs.
+
+We'll design each protocol with a note describing bucket and rationale, but the final JSON only needs numeric fields. However we may include optional "note"? The prompt says respond with ONLY a JSON array and no extra text. It says output should be JSON array of objects with keys: I1, I2, I3, dSOC1, dSOC2. No notes. So just provide numeric values.
+
+Thus we need 20 objects. Ensure they satisfy constraints.
+
+Let's design.
+
+First bucket: fast_charge. This bucket wants time-first, use stronger early current while keeping late stage controlled. So high I1, I2 moderate, I3 low. dSOC1 moderate-high (maybe 0.30-0.35), dSOC2 moderate (0.15-0.20). Must ensure sum <0.70.
+
+Second bucket: thermal_safe. Temperature-first, prefer cooler interior points and lower late-stage stress. So lower currents overall, maybe I1~3.0, I2~2.5, I3~2.0, with dSOC1 moderate, dSOC2 moderate to keep sum <0.65.
+
+Third bucket: aging_safe. Prefer taper into high SOC region, meaning moderate early, low later, maybe dSOC1 smaller, dSOC2 larger? Actually taper meaning as SOC goes high, reduce current strongly. So I1~3.5, I2~2.8, I3~2.0, dSOC1 ~0.20, dSOC2 ~0.25. Sum 0.45.
+
+Fourth bucket: balanced. Balanced trade-off, interior point. Use moderate I1~4.0, I2~3.3, I3~2.2, dSOC1~0.28, dSOC2~0.20.
+
+Fifth bucket: front_loaded_fast. Aggressive early acceleration then safer tail. I1 high (~5.5), I2 moderate (~4.0), I3 low (~2.0), dSOC1 low (0.18), dSOC2 moderate (0.20) to keep sum low.
+
+Sixth bucket: high_margin_safe. Leave safety margin and stay well inside feasible region. So currents lower, dSOC1+ dSOC2 <=0.55 perhaps. Use I1~3.0, I2~2.5, I3~2.0, dSOC1~0.18, dSOC2~0.18.
+
+Now we need 20 protocols. Let's allocate roughly 3 per bucket = 18, plus 2 extra to distribute. But we must follow coverage rule: At least 1 per bucket before adding second protocol to any bucket when count allows. Since we have 20, we can give each bucket at least 3, maybe some bucket 4. We must also avoid near identical duplicates.
+
+We'll design distinct values.
+
+Let's systematically assign.
+
+Bucket mapping:
+
+- fast_charge: 4 protocols (fast1-4)
+- thermal_safe: 3 protocols (thermal1-3)
+- aging_safe: 3 protocols (aging1-3)
+- balanced: 4 protocols (balanced1-4)
+- front_loaded_fast: 3 protocols (front1-3)
+- high_margin_safe: 3 protocols (margin1-3)
+
+Total 20.
+
+Now we need each to be distinct, interior points, not edge hugging.
+
+Constraints:
+
+- I1 in [2,6]
+- I2 in [2,5]
+- I3 in [2,3]
+- dSOC1 in [0.10,0.40]
+- dSOC2 in [0.10,0.30]
+- dSOC1 + dSOC2 < 0.70 (strictly)
+- dSOC1 + dSOC2 <= 0.65 for safety margin whenever possible.
+
+- I1 >= I2 >= I3.
+
+- For fast_charge bucket: high I1, I2 moderate-high, I3 lowish.
+
+- For thermal_safe: lower currents.
+
+- For aging_safe: moderate early, low later.
+
+- For balanced: moderate.
+
+- For front_loaded_fast: high I1, moderate I2, low I3, small dSOC1.
+
+- For high_margin_safe: low currents, small dSOC spans, sum <0.55.
+
+Now generate each with precise decimals (like 3.47, 2.93, etc). Must avoid rounding to 0.1 increments.
+
+Now need to ensure dSOC1+dSOC2<0.70, best <=0.65.
+
+Now compute for each.
+
+We'll produce values.
+
+Let's start with fast_charge:
+
+fast1: I1=5.80, I2=4.50, I3=2.20. dSOC1=0.34, dSOC2=0.20 => sum=0.54 <0.65. Good. I1>=I2>=I3: 5.80>=4.50>=2.20 true.
+
+fast2: I1=5.50, I2=4.20, I3=2.10. dSOC1=0.38, dSOC2=0.15 => sum=0.53.
+
+fast3: I1=5.20, I2=4.60, I3=2.30. dSOC1=0.30, dSOC2=0.22 => sum=0.52.
+
+fast4: I1=6.00 (max), I2=4.80, I3=2.40. dSOC1=0.25, dSOC2=0.18 => sum=0.43. I1=6.00 is edge of range but not necessarily "edge hugging"? The bucket says fast charge, but we need interior? It's okay to use near max for one candidate, but avoid clustering many at edge. So this is okay as an extreme. But need to keep safety margin: sum 0.43 <0.65. I1>=I2>=I3:6.00>=4.80>=2.40 true.
+
+Now thermal_safe (temperature-first, cooler interior):
+
+thermal1: I1=3.10, I2=2.70, I3=2.00. dSOC1=0.22, dSOC2=0.20 => sum=0.42.
+
+thermal2: I1=3.30, I2=2.80, I3=2.10. dSOC1=0.25, dSOC2=0.18 => sum=0.43.
+
+thermal3: I1=2.80, I2=2.50, I3=2.00. dSOC1=0.20, dSOC2=0.22 => sum=0.42.
+
+Now aging_safe (taper):
+
+aging1: I1=3.50, I2=2.90, I3=2.00. dSOC1=0.22, dSOC2=0.25 => sum=0.47.
+
+aging2: I1=3.70, I2=2.85, I3=2.05. dSOC1=0.20, dSOC2=0.27 => sum=0.47.
+
+aging3: I1=3.60, I2=2.95, I3=2.10. dSOC1=0.24, dSOC2=0.20 => sum=0.44.
+
+Now balanced (center-of-mass anchor):
+
+balanced1: I1=4.00, I2=3.20, I3=2.10. dSOC1=0.30, dSOC2=0.20 => sum=0.50.
+
+balanced2: I1=4.30, I2=3.50, I3=2.30. dSOC1=0.28, dSOC2=0.18 => sum=0.46.
+
+balanced3: I1=3.80, I2=3.30, I3=2.20. dSOC1=0.32, dSOC2=0.20 => sum=0.52.
+
+balanced4: I1=4.50, I2=3.80, I3=2.40. dSOC1=0.26, dSOC2=0.19 => sum=0.45.
+
+Now front_loaded_fast (aggressive early then safe tail):
+
+front1: I1=5.70, I2=4.20, I3=2.50. dSOC1=0.18, dSOC2=0.20 => sum=0.38.
+
+front2: I1=5.50, I2=4.40, I3=2.60. dSOC1=0.16, dSOC2=0.18 => sum=0.34.
+
+front3: I1=5.90, I2=4.60, I3=2.70. dSOC1=0.14, dSOC2=0.15 => sum=0.29.
+
+Now high_margin_safe (safe interior, leave margin):
+
+margin1: I1=2.90, I2=2.50, I3=2.00. dSOC1=0.15, dSOC2=0.15 => sum=0.30.
+
+margin2: I1=3.00, I2=2.70, I3=2.10. dSOC1=0.12, dSOC2=0.13 => sum=0.25.
+
+margin3: I1=2.70, I2=2.40, I3=2.00. dSOC1=0.18, dSOC2=0.12 => sum=0.30.
+
+Check all constraints.
+
+Now verify each:
+
+fast1: I1=5.80 (OK <=6), I2=4.50 (<=5), I3=2.20 (<=3), dSOC1=0.34 (<=0.40), dSOC2=0.20 (<=0.30), sum=0.54 (<0.70). I1>=I2>=I3: true.
+
+fast2: I1=5.50, I2=4.20, I3=2.10: sum=0.53 <0.70, all in bounds.
+
+fast3: I1=5.20, I2
+</think>
+
+2026-05-15 20:03:52,892 INFO llm.llm_interface | ResponseParser: 共 0 个有效候选点（1 个响应）
+2026-05-15 20:03:52,892 INFO llm.llm_interface | ResponseParser: 共 0 个有效候选点（1 个响应）
+2026-05-15 20:03:52,892 INFO llm.llm_interface |   WarmStart 批次 1/5 第 1/4 次调用未产出有效候选点
+2026-05-15 20:03:52,892 INFO llm.llm_interface |   WarmStart 批次 1/5 第 1/4 次调用未产出有效候选点
+2026-05-15 20:03:52,906 DEBUG llm.llm_interface | LLM request 1/1 attempt 1 | model=MiniMax-M2.7 max_tokens=2500 prompt_len=5242
+2026-05-15 20:03:52,906 DEBUG llm.llm_interface | LLM request 1/1 attempt 1 | model=MiniMax-M2.7 max_tokens=2500 prompt_len=5242
+2026-05-15 20:03:52,907 DEBUG llm.llm_interface | LLM prompt (first 1000 chars): You are an expert in lithium-ion battery fast charging optimization.
+
+Task:
+Recommend diverse 3-stage constant-current charging protocols for LG INR21700-M50 from SOC 10% to SOC 80%.
+
+Battery and charging window:
+- Cell: LG INR21700-M50
+- Parameter set: Chen2020 parameter set
+- SOC window: 10% to 80%
+
+Decision variables and bounds:
+- I1 (stage-1 current): [2.00, 6.00] A
+- I2 (stage-2 current): [2.00, 5.00] A
+- I3 (stage-3 current): [2.00, 3.00] A
+- dSOC1 (stage-1 SOC span): [0.10, 0.40]
+- dSOC2 (stage-2 SOC span): [0.10, 0.30]
+
+Constraints:
+- Practical hard limit: keep dSOC1 + dSOC2 strictly below 0.70 because points at exactly 0.70 can be rejected by the simulator.
+- Safety margin: keep dSOC1 + dSOC2 <= 0.65 whenever possible.
+- Physical risk: Pushing beyond the 0.65 safety margin increases lithium plating risk, internal polarization, and thermal stress in the high-SOC region.
+- A decreasing current profile I1 >= I2 >= I3 is recommended.
+
+Optimization objectives:
+- Charging time [s]: 
+2026-05-15 20:03:52,907 DEBUG llm.llm_interface | LLM prompt (first 1000 chars): You are an expert in lithium-ion battery fast charging optimization.
+
+Task:
+Recommend diverse 3-stage constant-current charging protocols for LG INR21700-M50 from SOC 10% to SOC 80%.
+
+Battery and charging window:
+- Cell: LG INR21700-M50
+- Parameter set: Chen2020 parameter set
+- SOC window: 10% to 80%
+
+Decision variables and bounds:
+- I1 (stage-1 current): [2.00, 6.00] A
+- I2 (stage-2 current): [2.00, 5.00] A
+- I3 (stage-3 current): [2.00, 3.00] A
+- dSOC1 (stage-1 SOC span): [0.10, 0.40]
+- dSOC2 (stage-2 SOC span): [0.10, 0.30]
+
+Constraints:
+- Practical hard limit: keep dSOC1 + dSOC2 strictly below 0.70 because points at exactly 0.70 can be rejected by the simulator.
+- Safety margin: keep dSOC1 + dSOC2 <= 0.65 whenever possible.
+- Physical risk: Pushing beyond the 0.65 safety margin increases lithium plating risk, internal polarization, and thermal stress in the high-SOC region.
+- A decreasing current profile I1 >= I2 >= I3 is recommended.
+
+Optimization objectives:
+- Charging time [s]: 
+2026-05-15 20:04:51,139 DEBUG llm.llm_interface | LLM response 1/1 | content_len=7422 finish_reason=length usage=prompt=1295 completion=2500
+2026-05-15 20:04:51,139 DEBUG llm.llm_interface | LLM response 1/1 | content_len=7422 finish_reason=length usage=prompt=1295 completion=2500
+2026-05-15 20:04:51,140 DEBUG llm.llm_interface | LLM raw response: <think>
+We need to generate 20 warm-start protocols for multi-objective Bayesian optimization. We need to propose diverse 3-stage constant-current charging protocols for LG INR21700-M50 from SOC 10% to 80%. The parameters: I1 (2-6 A), I2 (2-5 A), I3 (2-3 A), dSOC1 (0.1-0.4), dSOC2 (0.1-0.3). Must keep dSOC1 + dSOC2 < 0.70 (strictly less). And preferably <= 0.65 (safety margin). Must have I1 >= I2 >= I3.
+
+We need to produce 20 protocols covering trade-off buckets: fast_charge, thermal_safe, aging_safe, balanced, front_loaded_fast, high_margin_safe. At least 1 per bucket, then more.
+
+We need to avoid multiple candidates on same edge or corner. Avoid near-identical protocols. Prefer interior points, unless bucket calls for edge-seeking. Use curated pattern examples as directional anchors: Balanced interior starter (theta=[3.80,3.20,2.10,0.300,0.200]), front-loaded fast prototype ([5.70,4.20,2.50,0.180,0.200]), aging-aware taper ([3.40,2.90,2.00,0.240,0.220]). Should incorporate these.
+
+Also need to avoid patterns: edge-hugging aggressive corner (6.00,5.00,3.00,0.400,0.290) and mid-cluster duplicate (4.20,3.60,2.40,0.260,0.220). So we must not produce similar.
+
+Now we must produce 20 protocols, each with a JSON object: I1, I2, I3, dSOC1, dSOC2. Not including dSOC3 as implied. Provide a JSON array only.
+
+We must ensure each protocol satisfies constraints: I1 >= I2 >= I3, I1 in [2,6], I2 in [2,5], I3 in [2,3], dSOC1 in [0.1,0.4], dSOC2 in [0.1,0.3], dSOC1 + dSOC2 < 0.70, ideally <=0.65 (we may try to keep <=0.65 for safety but some may be slightly above 0.65? The instruction says safety margin: keep <=0.65 whenever possible. So we can aim <=0.65, but may have some near 0.65 for front_loaded_fast maybe.
+
+Also need to ensure I1 >= I2 >= I3.
+
+Now we need to assign trade-off buckets for each protocol.
+
+Buckets:
+
+1. fast_charge: time-first; use stronger early current while keeping the late stage controlled
+
+2. thermal_safe: temperature-first; prefer cooler interior points and lower late-stage stress
+
+3. aging_safe: aging-first; taper meaningfully into the high-SOC region
+
+4. balanced: balanced trade-off; avoid extreme current or SOC-span choices
+
+5. front_loaded_fast: aggressive early acceleration followed by a clearly safer tail
+
+6. high_margin_safe: leave obvious dSOC safety margin and stay well inside feasible region
+
+We need at least 1 protocol per bucket. Then we need to allocate remaining 14 protocols across buckets, ensuring coverage. We should not cluster many in same bucket.
+
+We need to avoid similar protocols across buckets. Also avoid edge hugging.
+
+We need to generate interior points for most, and for some maybe near edges but not too many.
+
+We also need to ensure variety: we can vary currents and SOC spans. Use precise values (not round to 0.05 increments). Use values like 3.78, 3.12, etc.
+
+We should produce 20 distinct protocols.
+
+Let's systematically design.
+
+First, we need to consider constraints on dSOC1+dSOC2 < 0.70. Also safety margin <=0.65. So dSOC1+dSOC2 maybe between 0.30 and 0.65.
+
+Now design each bucket.
+
+Bucket definitions and sample protocols:
+
+- balanced: Balanced interior starter: [3.80,3.20,2.10,0.300,0.200] => sum = 0.5 <=0.65. Good.
+
+- front_loaded_fast: front-loaded fast prototype: [5.70,4.20,2.50,0.180,0.200] => sum = 0.38 <=0.65. Good.
+
+- aging_safe: aging-aware taper: [3.40,2.90,2.00,0.240,0.220] => sum = 0.46 <=0.65.
+
+- thermal_safe: temperature-first; prefer cooler interior points and lower late-stage stress. So use moderate currents, lower I3 maybe 2.0, moderate dSOC1 small, dSOC2 moderate, keep sum small.
+
+- fast_charge: time-first; use strong early current, but keep late stage controlled. So high I1, I2 moderate, I3 low maybe 2.0, and moderate dSOC1, small dSOC2. Use sum maybe ~0.5-0.6.
+
+- high_margin_safe: leave obvious margin, stay well inside feasible region. So use low currents (I1 near 2-3), low dSOC1 and dSOC2 sum small (<0.4). Use interior points with safety margin.
+
+Now we need 20 protocols. We can allocate roughly 3-4 per bucket. But need to cover at least 1 per bucket. And then fill others.
+
+Better allocate like:
+
+Bucket assignments:
+
+1. balanced (anchor)
+2. front_loaded_fast (anchor)
+3. aging_safe (anchor)
+4. thermal_safe (new)
+5. fast_charge (new)
+6. high_margin_safe (new)
+
+Now need additional 14 protocols. We can add a second protocol for each bucket, maybe 2-3 each, but maintain diversity.
+
+Let's think about the trade-offs and coverage:
+
+- For fast_charge, we want aggressive early current but safe tail. Could have I1 near 5.5, I2 near 4.5, I3 near 2.2, dSOC1 moderate ~0.35, dSOC2 small ~0.20 (sum=0.55). Another variant maybe I1 near 5.0, I2 near 4.0, I3 near 2.0, dSOC1 ~0.30, dSOC2 ~0.20 (sum=0.50). Another maybe I1 near 6.0 (max), I2=5.0, I3=2.5, dSOC1=0.40, dSOC2=0.20 (sum=0.60). But need to avoid edge hugging too much: the edge-hugging aggressive corner [6.00,5.00,3.00,0.400,0.290] is to avoid. So we cannot use [6.00,5.00,3.00,0.400,0.30] because that's too many edges at once. But we can have a less extreme: [5.80,4.80,2.60,0.38,0.22] maybe.
+
+- For thermal_safe: want cooler interior points. Could be I1 around 3.0, I2=2.8, I3=2.0, dSOC1=0.15, dSOC2=0.15 (sum=0.30). Another maybe I1=3.5, I2=3.0, I3=2.2, dSOC1=0.20, dSOC2=0.15 (sum=0.35). Keep currents low, dSOC sum low.
+
+- For aging_safe: taper meaningfully into high-SOC region. So lower I3, maybe 2.0, and higher dSOC3 (implied). Use moderate I1, I2, and dSOC1 moderate, dSOC2 moderate. Could have I1=3.20, I2=2.80, I3=2.00, dSOC1=0.30, dSOC2=0.25 (sum=0.55). Another maybe I1=3.00, I2=2.60, I3=2.00, dSOC1=0.28, dSOC2=0.23 (sum=0.51). Another could be I1=3.60, I2=3.00, I3=2.10, dSOC1=0.25, dSOC2=0.20 (sum=0.45).
+
+- For high_margin_safe: leave obvious safety margin. So low currents, small dSOC spans. Eg I1=2.50, I2=2.30, I3=2.10, dSOC1=0.12, dSOC2=0.10 (sum=0.22). Another maybe I1=2.80, I2=2.60, I3=2.20, dSOC1=0.15, dSOC2=0.12 (sum=0.27). Another maybe I1=3.00, I2=2.80, I3=2.30, dSOC1=0.18, dSOC2=0.14 (sum=0.32).
+
+- For balanced: we have anchor. Add more balanced but different interior. Eg I1=3.90, I2=3.30, I3=2.20, dSOC1=0.28, dSOC2=0.20 (sum=0.48). Another maybe I1=4.10, I2=3.50, I3=2.30, dSOC1=0.30, dSOC2=0.22 (sum=0.52). Another maybe I1=3.70, I2=3.20, I3=2.15, dSOC1=0.26, dSOC2=0.18 (sum=0.44).
+
+- For front_loaded_fast: anchor. Add a second front_loaded_fast: I1=5.50, I2=4.00, I3=2.30, dSOC1=0.20, dSOC2=0.22 (sum=0.42). Another maybe I1=5.80, I2=4.50, I3=2.60, dSOC1=0.25, dSOC2=0.20 (sum=0.45). Another maybe I1=5.60, I2=4.30, I3=2.50, dSOC1=0.22, dSOC2=0.18 (sum=0.40).
+
+We need to ensure each protocol has I1>=I2>=I3. Also keep dSOC1+dSOC2 < 0.70. We'll target <=0.65 for safety.
+
+Now need to list 20 distinct protocols.
+
+Let's systematically assign IDs 1-20.
+
+We'll need to include at least one from each bucket:
+
+Bucket assignments:
+
+1. balanced (anchor)
+2. front_loaded_fast (anchor)
+3. aging_safe (anchor)
+4. thermal_safe (new)
+5. fast_charge (new)
+6. high_margin_safe (new)
+
+Now additional 14 protocols: we can add multiple per bucket, but ensure coverage and diversity.
+
+We should avoid near-identical protocols. So we must differentiate by values.
+
+Let's outline the 20 protocols with bucket label and values:
+
+We'll produce a list with fields: I1, I2, I3, dSOC1, dSOC2.
+
+We'll also include bucket label maybe optional but not required. The output only JSON array of objects with those
+</think>
+
+2026-05-15 20:04:51,140 DEBUG llm.llm_interface | LLM raw response: <think>
+We need to generate 20 warm-start protocols for multi-objective Bayesian optimization. We need to propose diverse 3-stage constant-current charging protocols for LG INR21700-M50 from SOC 10% to 80%. The parameters: I1 (2-6 A), I2 (2-5 A), I3 (2-3 A), dSOC1 (0.1-0.4), dSOC2 (0.1-0.3). Must keep dSOC1 + dSOC2 < 0.70 (strictly less). And preferably <= 0.65 (safety margin). Must have I1 >= I2 >= I3.
+
+We need to produce 20 protocols covering trade-off buckets: fast_charge, thermal_safe, aging_safe, balanced, front_loaded_fast, high_margin_safe. At least 1 per bucket, then more.
+
+We need to avoid multiple candidates on same edge or corner. Avoid near-identical protocols. Prefer interior points, unless bucket calls for edge-seeking. Use curated pattern examples as directional anchors: Balanced interior starter (theta=[3.80,3.20,2.10,0.300,0.200]), front-loaded fast prototype ([5.70,4.20,2.50,0.180,0.200]), aging-aware taper ([3.40,2.90,2.00,0.240,0.220]). Should incorporate these.
+
+Also need to avoid patterns: edge-hugging aggressive corner (6.00,5.00,3.00,0.400,0.290) and mid-cluster duplicate (4.20,3.60,2.40,0.260,0.220). So we must not produce similar.
+
+Now we must produce 20 protocols, each with a JSON object: I1, I2, I3, dSOC1, dSOC2. Not including dSOC3 as implied. Provide a JSON array only.
+
+We must ensure each protocol satisfies constraints: I1 >= I2 >= I3, I1 in [2,6], I2 in [2,5], I3 in [2,3], dSOC1 in [0.1,0.4], dSOC2 in [0.1,0.3], dSOC1 + dSOC2 < 0.70, ideally <=0.65 (we may try to keep <=0.65 for safety but some may be slightly above 0.65? The instruction says safety margin: keep <=0.65 whenever possible. So we can aim <=0.65, but may have some near 0.65 for front_loaded_fast maybe.
+
+Also need to ensure I1 >= I2 >= I3.
+
+Now we need to assign trade-off buckets for each protocol.
+
+Buckets:
+
+1. fast_charge: time-first; use stronger early current while keeping the late stage controlled
+
+2. thermal_safe: temperature-first; prefer cooler interior points and lower late-stage stress
+
+3. aging_safe: aging-first; taper meaningfully into the high-SOC region
+
+4. balanced: balanced trade-off; avoid extreme current or SOC-span choices
+
+5. front_loaded_fast: aggressive early acceleration followed by a clearly safer tail
+
+6. high_margin_safe: leave obvious dSOC safety margin and stay well inside feasible region
+
+We need at least 1 protocol per bucket. Then we need to allocate remaining 14 protocols across buckets, ensuring coverage. We should not cluster many in same bucket.
+
+We need to avoid similar protocols across buckets. Also avoid edge hugging.
+
+We need to generate interior points for most, and for some maybe near edges but not too many.
+
+We also need to ensure variety: we can vary currents and SOC spans. Use precise values (not round to 0.05 increments). Use values like 3.78, 3.12, etc.
+
+We should produce 20 distinct protocols.
+
+Let's systematically design.
+
+First, we need to consider constraints on dSOC1+dSOC2 < 0.70. Also safety margin <=0.65. So dSOC1+dSOC2 maybe between 0.30 and 0.65.
+
+Now design each bucket.
+
+Bucket definitions and sample protocols:
+
+- balanced: Balanced interior starter: [3.80,3.20,2.10,0.300,0.200] => sum = 0.5 <=0.65. Good.
+
+- front_loaded_fast: front-loaded fast prototype: [5.70,4.20,2.50,0.180,0.200] => sum = 0.38 <=0.65. Good.
+
+- aging_safe: aging-aware taper: [3.40,2.90,2.00,0.240,0.220] => sum = 0.46 <=0.65.
+
+- thermal_safe: temperature-first; prefer cooler interior points and lower late-stage stress. So use moderate currents, lower I3 maybe 2.0, moderate dSOC1 small, dSOC2 moderate, keep sum small.
+
+- fast_charge: time-first; use strong early current, but keep late stage controlled. So high I1, I2 moderate, I3 low maybe 2.0, and moderate dSOC1, small dSOC2. Use sum maybe ~0.5-0.6.
+
+- high_margin_safe: leave obvious margin, stay well inside feasible region. So use low currents (I1 near 2-3), low dSOC1 and dSOC2 sum small (<0.4). Use interior points with safety margin.
+
+Now we need 20 protocols. We can allocate roughly 3-4 per bucket. But need to cover at least 1 per bucket. And then fill others.
+
+Better allocate like:
+
+Bucket assignments:
+
+1. balanced (anchor)
+2. front_loaded_fast (anchor)
+3. aging_safe (anchor)
+4. thermal_safe (new)
+5. fast_charge (new)
+6. high_margin_safe (new)
+
+Now need additional 14 protocols. We can add a second protocol for each bucket, maybe 2-3 each, but maintain diversity.
+
+Let's think about the trade-offs and coverage:
+
+- For fast_charge, we want aggressive early current but safe tail. Could have I1 near 5.5, I2 near 4.5, I3 near 2.2, dSOC1 moderate ~0.35, dSOC2 small ~0.20 (sum=0.55). Another variant maybe I1 near 5.0, I2 near 4.0, I3 near 2.0, dSOC1 ~0.30, dSOC2 ~0.20 (sum=0.50). Another maybe I1 near 6.0 (max), I2=5.0, I3=2.5, dSOC1=0.40, dSOC2=0.20 (sum=0.60). But need to avoid edge hugging too much: the edge-hugging aggressive corner [6.00,5.00,3.00,0.400,0.290] is to avoid. So we cannot use [6.00,5.00,3.00,0.400,0.30] because that's too many edges at once. But we can have a less extreme: [5.80,4.80,2.60,0.38,0.22] maybe.
+
+- For thermal_safe: want cooler interior points. Could be I1 around 3.0, I2=2.8, I3=2.0, dSOC1=0.15, dSOC2=0.15 (sum=0.30). Another maybe I1=3.5, I2=3.0, I3=2.2, dSOC1=0.20, dSOC2=0.15 (sum=0.35). Keep currents low, dSOC sum low.
+
+- For aging_safe: taper meaningfully into high-SOC region. So lower I3, maybe 2.0, and higher dSOC3 (implied). Use moderate I1, I2, and dSOC1 moderate, dSOC2 moderate. Could have I1=3.20, I2=2.80, I3=2.00, dSOC1=0.30, dSOC2=0.25 (sum=0.55). Another maybe I1=3.00, I2=2.60, I3=2.00, dSOC1=0.28, dSOC2=0.23 (sum=0.51). Another could be I1=3.60, I2=3.00, I3=2.10, dSOC1=0.25, dSOC2=0.20 (sum=0.45).
+
+- For high_margin_safe: leave obvious safety margin. So low currents, small dSOC spans. Eg I1=2.50, I2=2.30, I3=2.10, dSOC1=0.12, dSOC2=0.10 (sum=0.22). Another maybe I1=2.80, I2=2.60, I3=2.20, dSOC1=0.15, dSOC2=0.12 (sum=0.27). Another maybe I1=3.00, I2=2.80, I3=2.30, dSOC1=0.18, dSOC2=0.14 (sum=0.32).
+
+- For balanced: we have anchor. Add more balanced but different interior. Eg I1=3.90, I2=3.30, I3=2.20, dSOC1=0.28, dSOC2=0.20 (sum=0.48). Another maybe I1=4.10, I2=3.50, I3=2.30, dSOC1=0.30, dSOC2=0.22 (sum=0.52). Another maybe I1=3.70, I2=3.20, I3=2.15, dSOC1=0.26, dSOC2=0.18 (sum=0.44).
+
+- For front_loaded_fast: anchor. Add a second front_loaded_fast: I1=5.50, I2=4.00, I3=2.30, dSOC1=0.20, dSOC2=0.22 (sum=0.42). Another maybe I1=5.80, I2=4.50, I3=2.60, dSOC1=0.25, dSOC2=0.20 (sum=0.45). Another maybe I1=5.60, I2=4.30, I3=2.50, dSOC1=0.22, dSOC2=0.18 (sum=0.40).
+
+We need to ensure each protocol has I1>=I2>=I3. Also keep dSOC1+dSOC2 < 0.70. We'll target <=0.65 for safety.
+
+Now need to list 20 distinct protocols.
+
+Let's systematically assign IDs 1-20.
+
+We'll need to include at least one from each bucket:
+
+Bucket assignments:
+
+1. balanced (anchor)
+2. front_loaded_fast (anchor)
+3. aging_safe (anchor)
+4. thermal_safe (new)
+5. fast_charge (new)
+6. high_margin_safe (new)
+
+Now additional 14 protocols: we can add multiple per bucket, but ensure coverage and diversity.
+
+We should avoid near-identical protocols. So we must differentiate by values.
+
+Let's outline the 20 protocols with bucket label and values:
+
+We'll produce a list with fields: I1, I2, I3, dSOC1, dSOC2.
+
+We'll also include bucket label maybe optional but not required. The output only JSON array of objects with those
+</think>
+
+2026-05-15 20:04:51,141 INFO llm.llm_interface | ResponseParser: 共 0 个有效候选点（1 个响应）
+2026-05-15 20:04:51,141 INFO llm.llm_interface | ResponseParser: 共 0 个有效候选点（1 个响应）
+2026-05-15 20:04:51,141 INFO llm.llm_interface |   WarmStart 批次 1/5 第 2/4 次调用未产出有效候选点
+2026-05-15 20:04:51,141 INFO llm.llm_interface |   WarmStart 批次 1/5 第 2/4 次调用未产出有效候选点
+2026-05-15 20:04:51,158 DEBUG llm.llm_interface | LLM request 1/1 attempt 1 | model=MiniMax-M2.7 max_tokens=2500 prompt_len=5242
+2026-05-15 20:04:51,158 DEBUG llm.llm_interface | LLM request 1/1 attempt 1 | model=MiniMax-M2.7 max_tokens=2500 prompt_len=5242
+2026-05-15 20:04:51,159 DEBUG llm.llm_interface | LLM prompt (first 1000 chars): You are an expert in lithium-ion battery fast charging optimization.
+
+Task:
+Recommend diverse 3-stage constant-current charging protocols for LG INR21700-M50 from SOC 10% to SOC 80%.
+
+Battery and charging window:
+- Cell: LG INR21700-M50
+- Parameter set: Chen2020 parameter set
+- SOC window: 10% to 80%
+
+Decision variables and bounds:
+- I1 (stage-1 current): [2.00, 6.00] A
+- I2 (stage-2 current): [2.00, 5.00] A
+- I3 (stage-3 current): [2.00, 3.00] A
+- dSOC1 (stage-1 SOC span): [0.10, 0.40]
+- dSOC2 (stage-2 SOC span): [0.10, 0.30]
+
+Constraints:
+- Practical hard limit: keep dSOC1 + dSOC2 strictly below 0.70 because points at exactly 0.70 can be rejected by the simulator.
+- Safety margin: keep dSOC1 + dSOC2 <= 0.65 whenever possible.
+- Physical risk: Pushing beyond the 0.65 safety margin increases lithium plating risk, internal polarization, and thermal stress in the high-SOC region.
+- A decreasing current profile I1 >= I2 >= I3 is recommended.
+
+Optimization objectives:
+- Charging time [s]: 
+2026-05-15 20:04:51,159 DEBUG llm.llm_interface | LLM prompt (first 1000 chars): You are an expert in lithium-ion battery fast charging optimization.
+
+Task:
+Recommend diverse 3-stage constant-current charging protocols for LG INR21700-M50 from SOC 10% to SOC 80%.
+
+Battery and charging window:
+- Cell: LG INR21700-M50
+- Parameter set: Chen2020 parameter set
+- SOC window: 10% to 80%
+
+Decision variables and bounds:
+- I1 (stage-1 current): [2.00, 6.00] A
+- I2 (stage-2 current): [2.00, 5.00] A
+- I3 (stage-3 current): [2.00, 3.00] A
+- dSOC1 (stage-1 SOC span): [0.10, 0.40]
+- dSOC2 (stage-2 SOC span): [0.10, 0.30]
+
+Constraints:
+- Practical hard limit: keep dSOC1 + dSOC2 strictly below 0.70 because points at exactly 0.70 can be rejected by the simulator.
+- Safety margin: keep dSOC1 + dSOC2 <= 0.65 whenever possible.
+- Physical risk: Pushing beyond the 0.65 safety margin increases lithium plating risk, internal polarization, and thermal stress in the high-SOC region.
+- A decreasing current profile I1 >= I2 >= I3 is recommended.
+
+Optimization objectives:
+- Charging time [s]: 

@@ -23,15 +23,18 @@ pybamm_simulator.py — 三段恒流充电仿真器（改进版）
 
 from __future__ import annotations
 
+import logging
+import warnings
+
+import numpy as np
+
 try:
     import pybamm
     PYBAMM_AVAILABLE = True
+    warnings.filterwarnings("ignore", message="No value provided for input.*Current function")
 except ImportError:
     pybamm = None
     PYBAMM_AVAILABLE = False
-
-import logging
-import numpy as np
 from typing import Dict, List, Optional
 
 from utils.constants import DEFAULT_BOUNDS, DSOC3_MIN, DSOC_SUM_MAX, FAILURE_PENALTY

@@ -558,7 +558,7 @@ class LLMWarmStartConfig(BaseModel):
     )
 
     max_tokens: int = Field(
-        default=2500,
+        default=8096,
         description="最大 token 数",
         ge=1
     )
@@ -770,14 +770,14 @@ class LLMConfig(BaseModel):
 
     base_url: str = Field(
         default_factory=lambda: os.getenv(
-            'LLM_BASE_URL',
-            os.getenv('OPENAI_BASE_URL', 'https://api.nuwaapi.com/v1')
+            'LLM_API_BASE',
+            os.getenv('OPENAI_BASE_URL', 'https://api.minimax.chat/v1')
         ),
         description="API 基础 URL"
     )
 
     model: str = Field(
-        default_factory=lambda: os.getenv('LLM_MODEL', 'gpt-4.1-mini'),
+        default_factory=lambda: os.getenv('LLM_MODEL', 'MiniMax-M2.7'),
         description="模型名称"
     )
 
@@ -985,22 +985,24 @@ class Config(BaseModel):
                 f"BO_CONFIG={gamma_bo}, Kernel={gamma_kernel}"
             )
 
-        # 检查 3: n_cand 一致性
+        # 检查 3: n_cand 一致性 (debug 级别：LLMAcquisitionConfig 当前未被消费)
         n_cand_acq = self.acquisition.n_cand
         n_cand_llm = self.llm.acquisition.n_cand
         if n_cand_acq != n_cand_llm:
-            errors.append(
-                f"Warning: n_cand 不一致："
-                f"Acquisition={n_cand_acq}, LLM={n_cand_llm}"
+            import logging as _log
+            _log.getLogger(__name__).debug(
+                "n_cand 不一致：Acquisition=%d, LLM=%d (LLMAcquisitionConfig 未被消费)",
+                n_cand_acq, n_cand_llm,
             )
 
         # 检查 4: n_select 一致性
         n_select_acq = self.acquisition.n_select
         n_select_llm = self.llm.acquisition.n_select
         if n_select_acq != n_select_llm:
-            errors.append(
-                f"Warning: n_select 不一致："
-                f"Acquisition={n_select_acq}, LLM={n_select_llm}"
+            import logging as _log
+            _log.getLogger(__name__).debug(
+                "n_select 不一致：Acquisition=%d, LLM=%d (LLMAcquisitionConfig 未被消费)",
+                n_select_acq, n_select_llm,
             )
 
         return errors

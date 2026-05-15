@@ -35,6 +35,14 @@ if str(ROOT) not in sys.path:
 
 import numpy as np
 
+# 加载 .env（确保 schema 中的 os.getenv 能读到 LLM 配置）
+try:
+    from dotenv import load_dotenv
+    _dotenv = Path(__file__).resolve().parent.parent / ".env"
+    load_dotenv(_dotenv if _dotenv.exists() else None)
+except ImportError:
+    pass
+
 try:
     import optuna
     from optuna.samplers import TPESampler
@@ -57,6 +65,11 @@ from main import build_optimizer_config
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
+
+# 全局 verbose 标志，由 CLI --verbose 设置
+_VERBOSE = False
+_VERBOSE_LOGGER = logging.getLogger("llm")
+_VERBOSE_LOGGER.setLevel(logging.DEBUG)
 
 RESULT_DIR = ROOT / "exp" / "optuna_results"
 
@@ -178,6 +191,19 @@ def run_trial(
 
     trial_dir.mkdir(parents=True, exist_ok=True)
 
+    # Verbose 模式：为当前 trial 设置 DEBUG 级别的文件日志
+    trial_fh = None
+    if _VERBOSE:
+        log_path = trial_dir / "debug.log"
+        trial_fh = logging.FileHandler(log_path, mode="w", encoding="utf-8")
+        trial_fh.setLevel(logging.DEBUG)
+        trial_fh.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s | %(message)s"))
+        # 为关键模块开启 DEBUG
+        for mod_name in ("llm", "llmbo", "llm.llm_interface", "llmbo.optimizer"):
+            mod_logger = logging.getLogger(mod_name)
+            mod_logger.setLevel(logging.DEBUG)
+            mod_logger.addHandler(trial_fh)
+
     args = argparse.Namespace(preset=preset, mock=False)
     flat = build_optimizer_config(config, args, trial_dir)
 
@@ -211,6 +237,12 @@ def run_trial(
     }
     with open(trial_dir / "trial_meta.json", "w") as f:
         json.dump(meta, f, indent=2, ensure_ascii=False)
+
+    # 关闭 trial 级别的 debug file handler
+    if trial_fh is not None:
+        trial_fh.close()
+        for mod_name in ("llm", "llmbo", "llm.llm_interface", "llmbo.optimizer"):
+            logging.getLogger(mod_name).removeHandler(trial_fh)
 
     return float(canonical_hv)
 
@@ -274,12 +306,19 @@ def create_parser() -> argparse.ArgumentParser:
                    help="Base random seed (default: 42)")
     p.add_argument("--dry-run", action="store_true",
                    help="Print first trial config and exit (no experiment run)")
+    p.add_argument("--verbose", "-v", action="store_true",
+                   help="Enable DEBUG logging with LLM I/O, saved per-trial log files")
     return p
 
 
 def main() -> int:
     parser = create_parser()
     args = parser.parse_args()
+
+    global _VERBOSE
+    _VERBOSE = args.verbose
+    if _VERBOSE:
+        logger.info("Verbose mode: DEBUG logs → trial_XXX/debug.log (includes LLM I/O)")
 
     RESULT_DIR.mkdir(parents=True, exist_ok=True)
     db_path = RESULT_DIR / f"{args.study_name}.db"

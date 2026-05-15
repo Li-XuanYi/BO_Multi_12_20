@@ -69,7 +69,7 @@ def main() -> int:
         resp = client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": "Reply with exactly one word: OK"}],
-            max_tokens=20,
+            max_tokens=2000,
             temperature=0.0,
         )
         elapsed = time.time() - t0
@@ -94,7 +94,7 @@ def main() -> int:
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": "What is 2+2? Answer with just the number."},
             ],
-            max_tokens=10,
+            max_tokens=1000,
             temperature=0.0,
         )
         elapsed = time.time() - t0

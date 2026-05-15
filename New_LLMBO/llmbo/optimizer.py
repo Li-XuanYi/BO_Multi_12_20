@@ -98,7 +98,7 @@ DEFAULT_CONFIG = {
     "llm_temperature": 0.7,
     "battery_param_set": "Chen2020",
     "warmstart_context_level": "full",
-    "warmstart_max_tokens": 2500,
+    "warmstart_max_tokens": 4096,
     "warmstart_max_retries": 3,
     "warmstart_temperature": None,
     "kernel_nu": 2.5,
@@ -425,7 +425,7 @@ class BayesOptimizer:
                 self.cfg.get("battery_param_set", getattr(self.simulator, "param_set", "Chen2020"))
             ),
             warmstart_context_level=str(self.cfg.get("warmstart_context_level", "full")),
-            warmstart_max_tokens=int(self.cfg.get("warmstart_max_tokens", 2500)),
+            warmstart_max_tokens=int(self.cfg.get("warmstart_max_tokens", 4096)),
             warmstart_max_retries=int(self.cfg.get("warmstart_max_retries", 3)),
             warmstart_temperature=self.cfg.get("warmstart_temperature"),
             soc_start=float(self.cfg.get("soc_start", getattr(self.simulator, "soc_start", 0.0))),
