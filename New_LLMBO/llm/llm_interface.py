@@ -292,7 +292,7 @@ class LLMCaller:
                     stripped = ResponseParser._strip_thinking_tags(content)
                     if stripped != content.strip():
                         logger.debug("LLM response after stripping thinking tags: %s", stripped)
-                    responses.append(content.strip())
+                    responses.append(stripped)
                     success = True
                     break
                 except Exception as e:
@@ -395,7 +395,7 @@ class ResponseParser:
     @staticmethod
     def _strip_thinking_tags(text: str) -> str:
         """去除 <think>...</think> 推理标签（如 MiniMax-M2.7 等思考模型会输出）。"""
-        return re.sub(r"<think[\s\S]*?</think", "", text).strip()
+        return re.sub(r"<think[\s\S]*?</think\s*>", "", text).strip()
 
     @staticmethod
     def extract_json(text: str) -> Optional[Any]:
@@ -411,7 +411,7 @@ class ResponseParser:
             return None
 
         # 步骤 1: 去除 <think>...</think> 推理标签（支持思考型模型）
-        text = re.sub(r"<think[\s\S]*?</think", "", text).strip()
+        text = re.sub(r"<think[\s\S]*?</think\s*>", "", text).strip()
         if not text:
             return None
 
@@ -427,7 +427,7 @@ class ResponseParser:
             if m:
                 inner = m.group(1).strip()
                 # 去除代码块内的推理标签
-                inner = re.sub(r"<think[\s\S]*?</think", "", inner).strip()
+                inner = re.sub(r"<think[\s\S]*?</think\s*>", "", inner).strip()
                 try:
                     return json.loads(inner)
                 except json.JSONDecodeError:

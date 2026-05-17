@@ -92,7 +92,7 @@ DEFAULT_CONFIG = {
     "random_init_cache_path": None,
     "llm_backend": os.getenv("LLM_BACKEND", "openai"),
     "llm_model": os.getenv("LLM_MODEL", "gpt-4.1-mini"),
-    "llm_api_base": os.getenv("LLM_BASE_URL") or os.getenv("OPENAI_BASE_URL", "https://api.nuwaapi.com/v1"),
+    "llm_api_base": os.getenv("LLM_API_BASE") or os.getenv("LLM_BASE_URL") or os.getenv("OPENAI_BASE_URL", "https://api.nuwaapi.com/v1"),
     "llm_api_key": os.getenv("LLM_API_KEY") or os.getenv("OPENAI_API_KEY", ""),
     "llm_n_samples": 3,
     "llm_temperature": 0.7,
@@ -294,6 +294,16 @@ def generate_reference_parego_weight_set(
         remaining.remove(best_idx)
 
     return base[chosen]
+
+
+def is_usable_simplex_weight_set(W: np.ndarray, n_obj: int = 3) -> bool:
+    """Check that W is a valid simplex weight matrix (non-negative, rows sum to ~1)."""
+    if not isinstance(W, np.ndarray) or W.ndim != 2 or W.shape[1] != n_obj:
+        return False
+    if np.any(W < -1e-6):
+        return False
+    row_sums = W.sum(axis=1)
+    return bool(np.allclose(row_sums, 1.0, atol=1e-4))
 
 
 def generate_riesz_weight_set(
@@ -1680,6 +1690,52 @@ class BayesOptimizer:
             for idx in order
         ]
 
+    def _compute_sensitivity_summary(self) -> str:
+        """Per-parameter linear sensitivity from feasible observations (OLS)."""
+        feasible = self.database.get_feasible()
+        if len(feasible) < 6:
+            return "none"
+
+        X = np.array([obs.theta for obs in feasible], dtype=float)
+        Y = np.array([obs.objectives for obs in feasible], dtype=float)
+        lo = np.array([self.param_bounds[k][0] for k in PARAM_KEYS], dtype=float)
+        hi = np.array([self.param_bounds[k][1] for k in PARAM_KEYS], dtype=float)
+        span = hi - lo
+        X_norm = (X - lo) / span
+
+        obj_info = [("time", "s"), ("temp", "K"), ("aging", "%")]
+        param_units = ["A", "A", "A", "SOC", "SOC"]
+
+        lines = []
+        for j in range(3):
+            y = Y[:, j]
+            A = np.column_stack([X_norm, np.ones(len(y))])
+            try:
+                coeffs, _, _, _ = np.linalg.lstsq(A, y, rcond=None)
+            except np.linalg.LinAlgError:
+                continue
+            betas = coeffs[:5]
+            per_unit = betas / span
+            sorted_idx = np.argsort(np.abs(per_unit))[::-1]
+
+            parts = []
+            for k in sorted_idx[:3]:
+                val = per_unit[k]
+                # Skip near-zero sensitivities (noise floor)
+                if abs(val) < 1e-6 * max(np.abs(per_unit)):
+                    continue
+                if abs(val) >= 1:
+                    fmt = f"{val:+.1f}"
+                elif abs(val) >= 0.01:
+                    fmt = f"{val:+.3f}"
+                else:
+                    fmt = f"{val:+.6f}"
+                parts.append(f"d{obj_info[j][0]}/d{PARAM_KEYS[k]}≈{fmt} {obj_info[j][1]}/{param_units[k]}")
+            lines.append("  " + ", ".join(parts))
+
+        return ("Parameter sensitivity (OLS, top-3 per objective):\n"
+                + "\n".join(lines)) if lines else "none"
+
     def _build_guidance_state(
         self,
         *,
@@ -1695,6 +1751,7 @@ class BayesOptimizer:
             scalar_y=scalar_y,
             proposal_summary=proposal_summary,
         )
+        sensitivity_summary = self._compute_sensitivity_summary()
         top_scalar_protocols = self._build_top_scalar_protocols_summary(
             scalar_y=scalar_y,
             top_k=int(self.cfg.get("guidance_top_scalar_k", 3)),
@@ -1736,6 +1793,7 @@ class BayesOptimizer:
             "boundary_failure_stats": str(boundary_failure_stats["summary"]),
             "proposal_summary": proposal_summary or {},
             "selective_history_summary": selective_history_summary,
+            "sensitivity_summary": sensitivity_summary,
             "safe_dsoc_sum_max": float(self.cfg.get("llm_safe_dsoc_sum_max", LLM_SAFE_DSOC_SUM_MAX)),
             "hard_dsoc_sum_max": float(DSOC_SUM_MAX),
         }

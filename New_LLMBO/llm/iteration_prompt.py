@@ -142,6 +142,7 @@ class IterationPromptContextBuilder:
             ),
             "PROPOSAL_SUMMARY": proposal_summary,
             "HOTSPOTS_BLOCK": hotspots_block,
+            "SENSITIVITY_SUMMARY": str(state_dict.get("sensitivity_summary", "none") or "none"),
             "PARETO_CONTEXT": str(pareto_context or "none"),
         }
 
