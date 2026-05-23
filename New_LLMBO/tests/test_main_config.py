@@ -95,6 +95,12 @@ def test_build_optimizer_config_region_lifted_force_pool_tuned_preset_uses_tight
     flat = build_optimizer_config(cfg, args, Path("results"))
 
     assert flat["enable_region_lifted_gp"] is True
+    assert flat["n_warmstart"] == 6
+    assert flat["n_random_init"] == 0
+    assert flat["warmstart_batch_size"] == 6
+    assert flat["warmstart_max_attempts"] == 1
+    assert flat["warmstart_prompt_version"] == "experimental"
+    assert flat["warmstart_temperature"] == 0.0
     assert flat["region_lift_external_influence_mode"] == "force_pool"
     assert flat["region_lift_include_raw_candidates"] is False
     assert flat["region_lift_active_until"] == 16
@@ -108,6 +114,86 @@ def test_build_optimizer_config_region_lifted_force_pool_tuned_preset_uses_tight
     assert flat["region_lift_max_volume"] == 0.08
     assert flat["region_lift_close_distance"] == 0.03
     assert flat["region_lift_dsoc_margin"] == 0.01
+
+
+def test_build_optimizer_config_lgbo_preset_uses_acquisition_internal_uniform_lift() -> None:
+    cfg = create_minimal_config(n_iterations=5, n_warmstart=3, n_candidates=5)
+    args = argparse.Namespace(preset="warmstart_region_lgbo_proposition1", mock=True)
+    flat = build_optimizer_config(cfg, args, Path("results"))
+
+    assert flat["enable_region_lifted_gp"] is True
+    assert flat["region_lift_mode"] == "lgbo_proposition1"
+    assert flat["region_lift_control_mode"] == "none"
+    assert flat["region_lift_anchor_weighting"] == "uniform"
+    assert flat["region_lift_external_influence_mode"] == "diagnostic_only"
+    assert flat["region_lift_apply_override"] is False
+    assert flat["region_lift_include_raw_candidates"] is False
+    assert flat["region_lift_lgbo_shift_source"] == "posterior_covariance"
+    assert flat["warmstart_prompt_version"] == "experimental"
+
+
+def test_build_optimizer_config_random_lgbo_preset_uses_fixed_random_control() -> None:
+    cfg = create_minimal_config(n_iterations=5, n_warmstart=3, n_candidates=5)
+    args = argparse.Namespace(preset="random_region_lgbo_proposition1", mock=True)
+    flat = build_optimizer_config(cfg, args, Path("results"))
+
+    assert flat["region_lift_mode"] == "lgbo_proposition1"
+    assert flat["region_lift_control_mode"] == "fixed_random"
+    assert flat["region_lift_lgbo_shift_source"] == "posterior_covariance"
+    assert flat["n_warmstart"] == 0
+    assert flat["n_random_init"] == 6
+    assert flat["region_lift_random_width_norm"] == 0.15
+    assert flat["region_lift_random_confidence"] == 0.5
+
+
+def test_build_optimizer_config_named_lgbo_ablation_presets() -> None:
+    cfg = create_minimal_config(n_iterations=5, n_warmstart=3, n_candidates=5)
+
+    prior = build_optimizer_config(cfg, argparse.Namespace(preset="llm_region_lgbo_prior", mock=True), Path("results"))
+    posterior = build_optimizer_config(cfg, argparse.Namespace(preset="llm_region_lgbo_posterior", mock=True), Path("results"))
+    llmbo_mo = build_optimizer_config(cfg, argparse.Namespace(preset="llmbo_mo", mock=True), Path("results"))
+
+    assert prior["n_warmstart"] == 0
+    assert prior["region_lift_lgbo_shift_source"] == "prior_kernel"
+    assert posterior["n_warmstart"] == 0
+    assert posterior["region_lift_lgbo_shift_source"] == "posterior_covariance"
+    assert llmbo_mo["n_warmstart"] > 0
+    assert llmbo_mo["region_lift_lgbo_shift_source"] == "posterior_covariance"
+
+
+def test_build_optimizer_config_calibrated_region_preset_changes_only_region_policy() -> None:
+    cfg = create_minimal_config(n_iterations=5, n_warmstart=3, n_candidates=5)
+    flat = build_optimizer_config(
+        cfg,
+        argparse.Namespace(preset="llm_region_lgbo_posterior_calibrated", mock=True),
+        Path("results"),
+    )
+
+    assert flat["n_warmstart"] == 0
+    assert flat["region_lift_lgbo_shift_source"] == "posterior_covariance"
+    assert flat["region_preference_prompt_version"] == "calibrated"
+    assert flat["region_lift_confidence_scale"] == 0.75
+    assert flat["region_lift_active_until"] == 8
+
+
+def test_build_optimizer_config_adaptive_region_preset_uses_soft_confidence_policy() -> None:
+    cfg = create_minimal_config(n_iterations=5, n_warmstart=3, n_candidates=5)
+    flat = build_optimizer_config(
+        cfg,
+        argparse.Namespace(preset="llm_region_lgbo_posterior_adaptive", mock=True),
+        Path("results"),
+    )
+
+    assert flat["n_warmstart"] == 0
+    assert flat["n_random_init"] == 6
+    assert flat["region_lift_lgbo_shift_source"] == "posterior_covariance"
+    assert flat["region_preference_prompt_version"] == "calibrated_v2"
+    assert flat["region_lift_confidence_scale"] == 1.0
+    assert flat["region_lift_active_until"] == 12
+    assert flat["region_lift_adaptive_confidence_enabled"] is True
+    assert flat["region_lift_adaptive_confidence_floor"] == 0.35
+    assert flat["region_lift_adaptive_base_scale"] == 0.85
+    assert flat["region_lift_lgbo_shift_mean_budget"] == 0.025
 
 
 def test_bayes_optimizer_setup_passes_requested_battery_param_set(monkeypatch, tmp_path) -> None:

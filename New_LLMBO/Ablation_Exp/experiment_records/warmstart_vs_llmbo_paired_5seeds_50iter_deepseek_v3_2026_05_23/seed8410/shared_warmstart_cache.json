@@ -1,0 +1,303 @@
+{
+  "version": 1,
+  "backend": "openai",
+  "model": "deepseek-v3",
+  "temperature": 0.0,
+  "target_pool": 6,
+  "candidate_pool": [
+    [
+      5.85,
+      4.85,
+      2.95,
+      0.37237121212121216,
+      0.27437878787878794
+    ],
+    [
+      2.15,
+      2.15,
+      2.15,
+      0.12,
+      0.12
+    ],
+    [
+      5.9,
+      2.1,
+      2.05,
+      0.35,
+      0.25
+    ],
+    [
+      3.2,
+      4.6,
+      2.85,
+      0.25,
+      0.18
+    ],
+    [
+      4.4,
+      3.4,
+      2.45,
+      0.15,
+      0.28
+    ],
+    [
+      2.85,
+      3.75,
+      2.65,
+      0.22,
+      0.15
+    ]
+  ],
+  "final_selected": [
+    [
+      5.85,
+      4.85,
+      2.95,
+      0.37237121212121216,
+      0.27437878787878794
+    ],
+    [
+      2.15,
+      2.15,
+      2.15,
+      0.12,
+      0.12
+    ],
+    [
+      5.9,
+      2.1,
+      2.05,
+      0.35,
+      0.25
+    ],
+    [
+      4.4,
+      3.4,
+      2.45,
+      0.15,
+      0.28
+    ],
+    [
+      3.2,
+      4.6,
+      2.85,
+      0.25,
+      0.18
+    ],
+    [
+      2.85,
+      3.75,
+      2.65,
+      0.22,
+      0.15
+    ]
+  ],
+  "summary": {
+    "input_count": 6,
+    "valid_count": 6,
+    "filtered": {
+      "non_finite": 0,
+      "shape": 0,
+      "bounds": 0,
+      "hard_dsoc": 0,
+      "duplicate": 0
+    },
+    "requested": 6,
+    "selected_count": 6,
+    "selected": [
+      {
+        "theta": [
+          5.85,
+          4.85,
+          2.95,
+          0.37237121212121216,
+          0.27437878787878794
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 0,
+        "quality": 0.58,
+        "diversity": 0.0,
+        "archive_bonus": 0.0,
+        "score": 0.58,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.6467500000000002,
+        "monotone": true
+      },
+      {
+        "theta": [
+          2.15,
+          2.15,
+          2.15,
+          0.12,
+          0.12
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 1,
+        "quality": 0.58,
+        "diversity": 1.899769873601971,
+        "archive_bonus": 0.0,
+        "score": 1.4348964431208868,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.24,
+        "monotone": true
+      },
+      {
+        "theta": [
+          5.9,
+          2.1,
+          2.05,
+          0.35,
+          0.25
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 2,
+        "quality": 0.58,
+        "diversity": 1.29261477269594,
+        "archive_bonus": 0.0,
+        "score": 1.161676647713173,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.6,
+        "monotone": true
+      },
+      {
+        "theta": [
+          4.4,
+          3.4,
+          2.45,
+          0.15,
+          0.28
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 4,
+        "quality": 0.58,
+        "diversity": 0.9774186524832755,
+        "archive_bonus": 0.0,
+        "score": 1.019838393617474,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.43000000000000005,
+        "monotone": true
+      },
+      {
+        "theta": [
+          3.2,
+          4.6,
+          2.85,
+          0.25,
+          0.18
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 3,
+        "quality": 0.5,
+        "diversity": 0.8781293248212995,
+        "archive_bonus": 0.0,
+        "score": 0.8951581961695847,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.43,
+        "monotone": false
+      },
+      {
+        "theta": [
+          2.85,
+          3.75,
+          2.65,
+          0.22,
+          0.15
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 5,
+        "quality": 0.5,
+        "diversity": 0.4005421672905086,
+        "archive_bonus": 0.0,
+        "score": 0.6802439752807289,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.37,
+        "monotone": false
+      }
+    ],
+    "boundary_selected": 0,
+    "method": "portfolio_selector",
+    "config": {
+      "hard_dsoc_sum_max": 0.7,
+      "soft_dsoc_sum_max": 0.65,
+      "diversity_weight": 0.45,
+      "soft_penalty_weight": 0.65,
+      "monotone_bonus": 0.08,
+      "archive_bonus_weight": 0.0,
+      "boundary_probe_limit": 1
+    },
+    "enabled": true,
+    "pool_target": 6,
+    "pool_collected": 6,
+    "disk_cache": "miss",
+    "cache_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\warmstart_vs_llmbo_paired_5seeds_50iter_deepseek_v3_2026_05_23\\seed8410\\shared_warmstart_cache.json",
+    "final_selected_count": 6,
+    "final_selected": [
+      [
+        5.85,
+        4.85,
+        2.95,
+        0.37237121212121216,
+        0.27437878787878794
+      ],
+      [
+        2.15,
+        2.15,
+        2.15,
+        0.12,
+        0.12
+      ],
+      [
+        5.9,
+        2.1,
+        2.05,
+        0.35,
+        0.25
+      ],
+      [
+        4.4,
+        3.4,
+        2.45,
+        0.15,
+        0.28
+      ],
+      [
+        3.2,
+        4.6,
+        2.85,
+        0.25,
+        0.18
+      ],
+      [
+        2.85,
+        3.75,
+        2.65,
+        0.22,
+        0.15
+      ]
+    ]
+  }
+}

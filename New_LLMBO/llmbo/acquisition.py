@@ -89,6 +89,8 @@ class AcquisitionResult:
     lift_summary: Optional[Dict[str, Any]] = None
     all_prior_bonus: Optional[np.ndarray] = None
     all_risk_penalty: Optional[np.ndarray] = None
+    all_ei_base: Optional[np.ndarray] = None
+    all_alpha_base: Optional[np.ndarray] = None
     candidate_pool: Optional[np.ndarray] = None
 
 
@@ -299,21 +301,27 @@ class AcquisitionFunction:
         mean, std = self.gp.predict_with_coupling(candidate_pool, coupling=lift)
         mean_base = self.gp.predict(candidate_pool)[0] if lift is not None else mean.copy()
         ei = expected_improvement(mean, std, f_min)
+        ei_base = expected_improvement(mean_base, std, f_min) if lift is not None else ei.copy()
         wcharge = np.ones_like(ei)
         prior_bonus = np.zeros_like(ei)
         risk_penalty = np.zeros_like(ei)
         score = ei * wcharge
+        score_base = ei_base * wcharge
 
         if prior is not None and prior.is_active():
             prior_bonus = prior.bonus(candidate_pool)
             risk_penalty = prior.risk(candidate_pool)
             score = self._normalize_feature(np.log1p(ei)) + prior_bonus - risk_penalty
+            score_base = self._normalize_feature(np.log1p(ei_base)) + prior_bonus - risk_penalty
 
         if np.all(score <= 1e-12):
             logger.info("EI surface is flat; falling back to max-uncertainty selection")
             score = std.copy() - risk_penalty
+        if np.all(score_base <= 1e-12):
+            score_base = std.copy() - risk_penalty
 
         selected_indices = self._select_top_unique(candidate_pool, score, self.n_select)
+        plain_selected_indices = self._select_top_unique(candidate_pool, score_base, self.n_select)
         selected_thetas = [candidate_pool[i].copy() for i in selected_indices]
         selected_scores = score[selected_indices]
 
@@ -343,11 +351,17 @@ class AcquisitionFunction:
                 "gp_llm_coupling": lift is not None,
                 "acq_prior_active": prior is not None and prior.is_active(),
                 "acq_prior": None if prior is None else prior.to_dict(),
+                "plain_selected_indices_without_lift": [int(i) for i in plain_selected_indices],
+                "plain_best_score_without_lift": float(np.max(score_base)) if len(score_base) else 0.0,
+                "plain_best_ei_without_lift": float(np.max(ei_base)) if len(ei_base) else 0.0,
+                "selected_changed_by_lift": bool(list(selected_indices) != list(plain_selected_indices)),
             },
             all_mean_base=mean_base,
             lift_summary=lift.to_dict() if lift is not None else None,
             all_prior_bonus=prior_bonus,
             all_risk_penalty=risk_penalty,
+            all_ei_base=ei_base,
+            all_alpha_base=score_base,
             candidate_pool=candidate_pool.copy(),
         )
 

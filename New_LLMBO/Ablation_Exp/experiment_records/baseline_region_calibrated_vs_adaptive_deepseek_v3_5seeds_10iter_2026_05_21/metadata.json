@@ -1,0 +1,24 @@
+{
+  "started_at": "2026-05-21T12:31:13.320632",
+  "iterations": 10,
+  "seeds": [
+    57161,
+    26695,
+    96532,
+    8409,
+    8410
+  ],
+  "variants": [
+    "baseline_plain_ei",
+    "llm_region_before_calibrated",
+    "llm_region_after_adaptive"
+  ],
+  "model": "deepseek-v3",
+  "api_base": "https://api.chat.csu.edu.cn/v1",
+  "api_key_storage": "environment variable only; summaries redact api keys",
+  "comparison_semantics": {
+    "before_region": "llm_region_lgbo_posterior_calibrated",
+    "after_region": "llm_region_lgbo_posterior_adaptive",
+    "rollback_rule": "rollback adaptive code if after mean canonical HV is lower than before"
+  }
+}

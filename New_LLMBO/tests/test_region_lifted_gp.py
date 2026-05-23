@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import dataclasses
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -12,12 +13,13 @@ if str(ROOT) not in sys.path:
 
 import llmbo.optimizer as optimizer_module
 from llmbo.acquisition import AcquisitionFunction, AcquisitionResult, expected_improvement
-from llmbo.gp_model import MaternGPModel
+from llmbo.gp_model import LLMPreferenceCoupling, MaternGPModel
 from llmbo.optimizer import BayesOptimizer
 from llmbo.region_lifted_gp import (
     LLMRegionPreference,
     RegionLiftConfig,
     RegionLiftResult,
+    build_lgbo_region_lift,
     evaluate_region_lift_on_pool,
     parse_region_preference_payload,
     sample_region_candidates,
@@ -52,6 +54,19 @@ def test_parse_region_preference_accepts_nested_region_bounds_and_array_points()
 
     assert point_pref.kind == "point"
     assert point_pref.point == {"I1": 4.5, "I2": 3.5, "I3": 2.5, "dSOC1": 0.2, "dSOC2": 0.2}
+
+
+def test_parse_region_preference_preserves_mechanistic_thinking() -> None:
+    pref = parse_region_preference_payload(
+        {
+            "kind": "point",
+            "point": [4.5, 3.5, 2.5, 0.2, 0.2],
+            "confidence": 0.75,
+            "mechanistic_thinking": "Moderate SOC splits should reduce thermal stress while keeping charge time competitive.",
+        }
+    )
+
+    assert pref.mechanistic_thinking.startswith("Moderate SOC")
 
 
 def _fit_gp() -> MaternGPModel:
@@ -196,6 +211,233 @@ def test_promising_region_lowers_standardized_mean_and_increases_minimization_ei
         assert result.fallback_reason == "same_as_plain"
 
 
+def test_lgbo_coupling_uses_uniform_weights_and_low_confidence_still_builds() -> None:
+    gp = _fit_gp()
+    cfg = RegionLiftConfig(
+        enable_region_lifted_gp=True,
+        region_lift_mode="lgbo_proposition1",
+        region_lift_min_confidence=0.6,
+        region_lift_n_anchors=8,
+        region_lift_min_volume=1e-6,
+        region_lift_anchor_weighting="ei_softmax",
+    )
+    pref = _preference(confidence=0.2)
+
+    result = build_lgbo_region_lift(
+        gp=gp,
+        preference=pref,
+        bounds=DEFAULT_BOUNDS,
+        config=cfg,
+        bo_iteration=5,
+    )
+
+    assert result.coupling is not None
+    assert result.structural_fallback_reason is None
+    assert result.telemetry["anchor_weighting_mode"] == "uniform"
+    assert result.telemetry["lgbo_denominator_covariance_source"] == "posterior_standardized"
+    assert result.telemetry["lgbo_shift_kernel_source"] == "prior_latent_standardized"
+    assert np.allclose(result.coupling.weights, np.full(len(result.coupling.weights), 1.0 / len(result.coupling.weights)))
+    expected_lambda = pref.confidence / np.sqrt(
+        max(result.telemetry["lgbo_posterior_variance"], cfg.region_lift_lgbo_min_variance)
+    )
+    assert np.isclose(result.coupling.lambda_value, expected_lambda)
+    assert np.isclose(
+        result.coupling.lambda_value
+        * np.sqrt(max(result.telemetry["lgbo_posterior_variance"], cfg.region_lift_lgbo_min_variance)),
+        pref.confidence,
+    )
+
+
+def test_lgbo_build_can_use_posterior_covariance_shift_source() -> None:
+    gp = _fit_gp()
+    cfg = RegionLiftConfig(
+        enable_region_lifted_gp=True,
+        region_lift_mode="lgbo_proposition1",
+        region_lift_lgbo_shift_source="posterior_covariance",
+        region_lift_n_anchors=8,
+        region_lift_min_volume=1e-6,
+    )
+
+    result = build_lgbo_region_lift(
+        gp=gp,
+        preference=_preference(confidence=0.7),
+        bounds=DEFAULT_BOUNDS,
+        config=cfg,
+        bo_iteration=0,
+    )
+
+    assert result.coupling is not None
+    assert result.coupling.shift_source == "posterior_covariance"
+    assert result.telemetry["region_lift_lgbo_shift_source"] == "posterior_covariance"
+    assert result.telemetry["lgbo_shift_kernel_source"] == "posterior_standardized_cross_covariance"
+    assert result.telemetry["region_width_norm_mean"] > 0.0
+    assert len(result.telemetry["region_center_norm"]) == 5
+
+
+def test_lgbo_shift_mean_budget_only_scales_down_lambda() -> None:
+    gp = _fit_gp()
+    cfg = RegionLiftConfig(
+        enable_region_lifted_gp=True,
+        region_lift_mode="lgbo_proposition1",
+        region_lift_lgbo_shift_source="posterior_covariance",
+        region_lift_n_anchors=8,
+        region_lift_min_volume=1e-6,
+        region_lift_lgbo_shift_mean_budget=1e-6,
+    )
+
+    result = build_lgbo_region_lift(
+        gp=gp,
+        preference=_preference(confidence=0.9),
+        bounds=DEFAULT_BOUNDS,
+        config=cfg,
+        bo_iteration=0,
+    )
+
+    assert result.coupling is not None
+    assert result.telemetry["lgbo_shift_budget_applied"] is True
+    assert result.telemetry["lgbo_lambda_after_budget"] < result.telemetry["lgbo_lambda_before_budget"]
+    assert result.coupling.lambda_value == result.telemetry["lgbo_lambda_after_budget"]
+    assert result.telemetry["lgbo_shift_abs_mean_before_budget"] > result.telemetry["lgbo_shift_mean_budget"]
+    assert abs(result.telemetry["lgbo_shift_mean"]) <= result.telemetry["lgbo_shift_mean_budget"] + 1e-12
+
+def test_predict_with_lgbo_coupling_lowers_region_correlated_mean_for_minimization() -> None:
+    gp = _fit_gp()
+    cfg = RegionLiftConfig(
+        enable_region_lifted_gp=True,
+        region_lift_mode="lgbo_proposition1",
+        region_lift_n_anchors=8,
+        region_lift_min_volume=1e-6,
+    )
+    result = build_lgbo_region_lift(
+        gp=gp,
+        preference=_preference(confidence=0.8),
+        bounds=DEFAULT_BOUNDS,
+        config=cfg,
+        bo_iteration=0,
+    )
+    assert result.coupling is not None
+    x = np.array([[3.55, 3.15, 2.40, 0.23, 0.18]], dtype=float)
+
+    mean_base, std_base = gp.predict(x)
+    mean_lifted, std_lifted = gp.predict_with_coupling(x, coupling=result.coupling)
+
+    assert float(mean_lifted[0]) < float(mean_base[0])
+    assert np.allclose(std_lifted, std_base)
+
+
+def test_predict_with_lgbo_coupling_uses_prior_kernel_not_posterior_cross_covariance(monkeypatch) -> None:
+    gp = _fit_gp()
+    x = np.array([[3.55, 3.15, 2.40, 0.23, 0.18]], dtype=float)
+    grid = np.array([[3.50, 3.10, 2.40, 0.23, 0.18]], dtype=float)
+    coupling = LLMPreferenceCoupling(
+        mode="lgbo_region",
+        grid=grid,
+        weights=np.array([1.0], dtype=float),
+        confidence=1.0,
+        lambda_value=2.0,
+        posterior_variance=1.0,
+        gate=1.0,
+    )
+    called = {"prior": False}
+
+    monkeypatch.setattr(gp, "predict", lambda X_new: (np.full(np.atleast_2d(X_new).shape[0], 10.0), np.ones(np.atleast_2d(X_new).shape[0])))
+
+    def fake_prior_kernel(X_left, X_right=None):
+        called["prior"] = True
+        left = np.atleast_2d(np.asarray(X_left, dtype=float))
+        right = grid if X_right is None else np.atleast_2d(np.asarray(X_right, dtype=float))
+        return np.full((left.shape[0], right.shape[0]), 0.5, dtype=float)
+
+    monkeypatch.setattr(gp, "prior_kernel_standardized", fake_prior_kernel)
+    monkeypatch.setattr(
+        gp,
+        "posterior_covariance_standardized",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("LGBO coupling should not use posterior cross-covariance")),
+    )
+
+    mean_lifted, std_lifted = gp.predict_with_coupling(x, coupling=coupling)
+
+    assert called["prior"] is True
+    assert float(mean_lifted[0]) < 10.0
+    assert np.allclose(std_lifted, np.ones(1))
+
+
+def test_predict_with_lgbo_coupling_can_use_posterior_cross_covariance(monkeypatch) -> None:
+    gp = _fit_gp()
+    x = np.array([[3.55, 3.15, 2.40, 0.23, 0.18]], dtype=float)
+    grid = np.array([[3.50, 3.10, 2.40, 0.23, 0.18]], dtype=float)
+    coupling = LLMPreferenceCoupling(
+        mode="lgbo_region",
+        grid=grid,
+        weights=np.array([1.0], dtype=float),
+        confidence=1.0,
+        lambda_value=2.0,
+        posterior_variance=1.0,
+        gate=1.0,
+        shift_source="posterior_covariance",
+    )
+    called = {"posterior": False}
+
+    monkeypatch.setattr(
+        gp,
+        "predict",
+        lambda X_new: (np.full(np.atleast_2d(X_new).shape[0], 10.0), np.ones(np.atleast_2d(X_new).shape[0])),
+    )
+    monkeypatch.setattr(
+        gp,
+        "prior_kernel_standardized",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("posterior LGBO coupling should not use prior kernel")
+        ),
+    )
+
+    def fake_posterior_covariance(X_left, X_right=None):
+        called["posterior"] = True
+        left = np.atleast_2d(np.asarray(X_left, dtype=float))
+        right = grid if X_right is None else np.atleast_2d(np.asarray(X_right, dtype=float))
+        return np.full((left.shape[0], right.shape[0]), 0.5, dtype=float)
+
+    monkeypatch.setattr(gp, "posterior_covariance_standardized", fake_posterior_covariance)
+
+    mean_lifted, std_lifted = gp.predict_with_coupling(x, coupling=coupling)
+
+    assert called["posterior"] is True
+    assert float(mean_lifted[0]) < 10.0
+    assert np.allclose(std_lifted, np.ones(1))
+
+
+def test_random_lgbo_preserves_region_shape_but_changes_location() -> None:
+    gp = _fit_gp()
+    base_cfg = RegionLiftConfig(
+        enable_region_lifted_gp=True,
+        region_lift_mode="lgbo_proposition1",
+        region_lift_n_anchors=8,
+        region_lift_min_volume=1e-6,
+    )
+    random_cfg = dataclasses.replace(base_cfg, region_lift_control_mode="shape_randomized")
+    pref = _preference(confidence=0.8)
+
+    base = build_lgbo_region_lift(
+        gp=gp,
+        preference=pref,
+        bounds=DEFAULT_BOUNDS,
+        config=base_cfg,
+        bo_iteration=0,
+    )
+    randomized = build_lgbo_region_lift(
+        gp=gp,
+        preference=pref,
+        bounds=DEFAULT_BOUNDS,
+        config=random_cfg,
+        bo_iteration=0,
+    )
+
+    assert randomized.coupling is not None
+    assert randomized.telemetry["randomized_region_from_hash"]
+    assert np.allclose(randomized.telemetry["per_dim_widths"], base.telemetry["per_dim_widths"])
+    assert not np.allclose(randomized.telemetry["region_raw_lb"], base.telemetry["region_raw_lb"])
+
+
 def test_region_lift_guards_fail_open_to_plain_ei() -> None:
     gp = _fit_gp()
     X_pool = np.array(
@@ -324,6 +566,42 @@ def test_region_lift_same_as_plain_is_not_accepted() -> None:
 
     assert result.accepted is False
     assert result.fallback_reason == "same_as_plain"
+
+
+def test_lgbo_same_as_plain_is_telemetry_only_not_fallback() -> None:
+    gp = _fit_gp()
+    X_pool = np.array([[3.5, 3.1, 2.4, 0.23, 0.18]], dtype=float)
+    cfg = RegionLiftConfig(
+        enable_region_lifted_gp=True,
+        region_lift_mode="lgbo_proposition1",
+        region_lift_min_confidence=0.5,
+        region_lift_n_anchors=8,
+        region_lift_min_volume=1e-6,
+        region_lift_active_until=10,
+        region_lift_max_plain_ei_gap=0.0,
+        region_lift_min_sigma_ratio=10.0,
+        region_lift_close_distance=2.0,
+    )
+
+    result = evaluate_region_lift_on_pool(
+        gp=gp,
+        candidate_pool=X_pool,
+        f_min_y=0.55,
+        preference=_preference(confidence=0.8),
+        existing_X=np.array([[3.5, 3.1, 2.4, 0.23, 0.18]], dtype=float),
+        bounds=DEFAULT_BOUNDS,
+        config=cfg,
+        trust=0.0,
+        bo_iteration=999,
+    )
+
+    assert result.accepted is True
+    assert result.fallback_reason is None
+    assert result.telemetry["same_as_plain"] is True
+    assert result.telemetry["too_close_to_existing"] is True
+    assert result.telemetry["low_sigma_ratio"] is True
+    assert result.telemetry["acquisition_used_lift"] is True
+    assert result.telemetry["anchor_weighting_mode"] == "uniform"
 
 
 def test_degenerate_region_is_repaired_into_valid_candidates() -> None:
@@ -830,6 +1108,201 @@ def test_region_lift_force_pool_restart_only_keeps_region_candidates_out_of_raw_
     assert np.allclose(captured["lift_pool"][:2], base_pool)
 
 
+def test_lgbo_preset_uses_acquisition_internal_lift_without_region_pool_injection(monkeypatch) -> None:
+    bo = BayesOptimizer(
+        config={
+            "experiment_preset": "warmstart_region_lgbo_proposition1",
+            "max_iterations": 1,
+            "checkpoint_every": 99,
+        }
+    )
+    bo.setup()
+    observations = [
+        (np.array([4.0, 3.5, 2.5, 0.25, 0.20], dtype=float), np.array([4200.0, 4.2, 0.80], dtype=float)),
+        (np.array([5.0, 4.0, 2.8, 0.20, 0.18], dtype=float), np.array([3600.0, 4.0, 0.70], dtype=float)),
+        (np.array([3.6, 3.1, 2.2, 0.30, 0.20], dtype=float), np.array([5000.0, 3.6, 0.60], dtype=float)),
+    ]
+    for theta, objectives in observations:
+        bo.database.add_observation(theta=theta, objectives=objectives, feasible=True, source="test")
+    bo.initialize_acquisition()
+    base_pool = np.array(
+        [
+            [3.10, 2.90, 2.20, 0.21, 0.16],
+            [3.90, 3.40, 2.45, 0.26, 0.18],
+        ],
+        dtype=float,
+    )
+    captured: dict = {}
+
+    monkeypatch.setattr(bo.llm, "query_region_preference", lambda state: _preference())
+    monkeypatch.setattr(
+        bo,
+        "_sample_region_candidates_from_preference",
+        lambda preference, t: (_ for _ in ()).throw(AssertionError("LGBO should not sample region pool candidates")),
+    )
+
+    def fake_step(*, X_candidates, X_external_restarts=None, database, t, w_vec, lift, prior):
+        captured["step_candidates"] = X_candidates
+        captured["step_external_restarts"] = X_external_restarts
+        captured["lift"] = lift
+        n = base_pool.shape[0]
+        return AcquisitionResult(
+            selected_thetas=[base_pool[0].copy()],
+            selected_indices=[0],
+            selected_scores=np.array([1.0], dtype=float),
+            all_alpha=np.ones(n, dtype=float),
+            all_ei=np.ones(n, dtype=float),
+            all_wcharge=np.ones(n, dtype=float),
+            all_mean=np.zeros(n, dtype=float),
+            all_std=np.ones(n, dtype=float),
+            state=bo.af.get_state(),
+            debug={},
+            all_mean_base=np.ones(n, dtype=float),
+            candidate_pool=base_pool.copy(),
+        )
+
+    monkeypatch.setattr(bo.af, "step", fake_step)
+    bo.simulator = SimpleNamespace(
+        evaluate=lambda theta: {
+            "raw_objectives": np.array([3500.0, 3.9, 0.65], dtype=float),
+            "feasible": True,
+        }
+    )
+
+    bo.run_optimization_loop()
+
+    assert captured["step_candidates"] is None
+    assert captured["step_external_restarts"] is None
+    assert captured["lift"] is not None
+    assert captured["lift"].mode == "lgbo_region"
+    assert captured["lift"].shift_source == "posterior_covariance"
+    assert bo._last_region_lift_summary["acquisition_used_lift"] is True
+    assert bo._last_region_lift_summary["selected_source"] == "lgbo_lifted_gp"
+
+
+def test_random_lgbo_preset_uses_fixed_random_region_without_llm_query(monkeypatch) -> None:
+    bo = BayesOptimizer(
+        config={
+            "experiment_preset": "random_region_lgbo_proposition1",
+            "max_iterations": 1,
+            "checkpoint_every": 99,
+        }
+    )
+    bo.setup()
+    observations = [
+        (np.array([4.0, 3.5, 2.5, 0.25, 0.20], dtype=float), np.array([4200.0, 4.2, 0.80], dtype=float)),
+        (np.array([5.0, 4.0, 2.8, 0.20, 0.18], dtype=float), np.array([3600.0, 4.0, 0.70], dtype=float)),
+        (np.array([3.6, 3.1, 2.2, 0.30, 0.20], dtype=float), np.array([5000.0, 3.6, 0.60], dtype=float)),
+    ]
+    for theta, objectives in observations:
+        bo.database.add_observation(theta=theta, objectives=objectives, feasible=True, source="test")
+    bo.initialize_acquisition()
+    base_pool = np.array(
+        [
+            [3.10, 2.90, 2.20, 0.21, 0.16],
+            [3.90, 3.40, 2.45, 0.26, 0.18],
+        ],
+        dtype=float,
+    )
+    captured: dict = {}
+
+    monkeypatch.setattr(
+        bo.llm,
+        "query_region_preference",
+        lambda state: (_ for _ in ()).throw(AssertionError("Random-LGBO should not call the LLM")),
+    )
+    monkeypatch.setattr(
+        bo,
+        "_sample_region_candidates_from_preference",
+        lambda preference, t: (_ for _ in ()).throw(AssertionError("LGBO should not sample region pool candidates")),
+    )
+
+    def fake_step(*, X_candidates, X_external_restarts=None, database, t, w_vec, lift, prior):
+        captured["step_candidates"] = X_candidates
+        captured["step_external_restarts"] = X_external_restarts
+        captured["lift"] = lift
+        n = base_pool.shape[0]
+        return AcquisitionResult(
+            selected_thetas=[base_pool[0].copy()],
+            selected_indices=[0],
+            selected_scores=np.array([1.0], dtype=float),
+            all_alpha=np.ones(n, dtype=float),
+            all_ei=np.ones(n, dtype=float),
+            all_wcharge=np.ones(n, dtype=float),
+            all_mean=np.zeros(n, dtype=float),
+            all_std=np.ones(n, dtype=float),
+            state=bo.af.get_state(),
+            debug={},
+            all_mean_base=np.ones(n, dtype=float),
+            candidate_pool=base_pool.copy(),
+        )
+
+    monkeypatch.setattr(bo.af, "step", fake_step)
+    bo.simulator = SimpleNamespace(
+        evaluate=lambda theta: {
+            "raw_objectives": np.array([3500.0, 3.9, 0.65], dtype=float),
+            "feasible": True,
+        }
+    )
+
+    bo.run_optimization_loop()
+
+    assert captured["step_candidates"] is None
+    assert captured["step_external_restarts"] is None
+    assert captured["lift"] is not None
+    assert captured["lift"].mode == "lgbo_region"
+    assert bo._last_region_lift_summary["region_lift_control_mode"] == "fixed_random"
+    assert bo._last_region_lift_summary["random_control_type"] == "fixed_random"
+    assert bo._last_region_lift_summary["region_lift_lgbo_shift_source"] == "posterior_covariance"
+    assert bo._last_region_lift_summary["llm_called_for_region"] is False
+    assert bo._last_region_lift_summary["preference"]["preference_type"] == "random_control"
+    assert bo._last_region_lift_summary["preference"]["confidence"] == 0.5
+
+
+def test_adaptive_region_confidence_is_soft_floor_not_hard_fallback(tmp_path) -> None:
+    bo = BayesOptimizer(
+        config={
+            "experiment_preset": "llm_region_lgbo_posterior_adaptive",
+            "checkpoint_dir": str(tmp_path / "checkpoints"),
+        }
+    )
+    pref = _preference(confidence=0.1)
+
+    adjusted = bo._apply_adaptive_region_confidence(pref, t=0)
+
+    assert adjusted.kind == "region"
+    assert adjusted.confidence == 0.35
+    adaptive = adjusted.raw_response["_adaptive_confidence"]
+    assert adaptive["llm_raw_confidence"] == 0.1
+    assert adaptive["effective_confidence"] == 0.35
+    assert adaptive["effective_confidence_floor_applied"] is True
+    assert adaptive["confidence_width_factor"] <= 1.0
+    assert adjusted.parser_status == "ok"
+
+
+def test_adaptive_region_confidence_softly_downweights_repeated_bad_region(tmp_path) -> None:
+    bo = BayesOptimizer(
+        config={
+            "experiment_preset": "llm_region_lgbo_posterior_adaptive",
+            "checkpoint_dir": str(tmp_path / "checkpoints"),
+        }
+    )
+    first = bo._apply_adaptive_region_confidence(_preference(confidence=0.8), t=0)
+    first_adaptive = first.raw_response["_adaptive_confidence"]
+    bo._last_region_adoption_note = {
+        "hv_gain_raw": -0.01,
+        "region_center_norm": first_adaptive["adaptive_region_center_norm"],
+    }
+
+    repeated = bo._apply_adaptive_region_confidence(_preference(confidence=0.8), t=5)
+    telemetry = repeated.raw_response["_adaptive_confidence"]
+
+    assert telemetry["confidence_repeat_factor"] == 0.85
+    assert telemetry["confidence_late_factor"] < 1.0
+    assert repeated.confidence >= 0.35
+    assert repeated.confidence < first.confidence
+
+
 def test_region_lift_summary_counts_use_accepted_flag() -> None:
     bo = BayesOptimizer(config={"experiment_preset": "warmstart_region_lifted_gp"})
     bo._region_lift_telemetry = [
@@ -842,6 +1315,26 @@ def test_region_lift_summary_counts_use_accepted_flag() -> None:
     assert summary["region_lift_attempt_count"] == 2
     assert summary["region_lift_accept_count"] == 1
     assert summary["lift_accept_rate"] == 0.5
+
+
+def test_lgbo_trust_update_is_skipped_and_prompt_memory_is_recorded() -> None:
+    bo = BayesOptimizer(config={"experiment_preset": "warmstart_region_lgbo_proposition1"})
+    bo._region_lift_trust = 0.5
+    bo._last_region_lift_summary = {
+        "accepted": True,
+        "acquisition_used_lift": True,
+        "selected_source": "lgbo_lifted_gp",
+        "preference": {"mechanistic_thinking": "Mechanism summary"},
+        "evaluated_theta": [3.1, 2.9, 2.2, 0.21, 0.16],
+    }
+
+    bo._finalize_region_lift_trust(hv_gain=0.1)
+
+    assert bo._region_lift_trust == 0.5
+    assert bo._last_region_lift_summary["trust_update_reason"] == "skipped_lgbo_mode"
+    assert bo._region_lift_telemetry[-1]["hv_gain_raw"] == 0.1
+    assert bo._previous_region_thinking == "Mechanism summary"
+    assert bo._last_region_adoption_note["suggestion_used"] is True
 
 
 def test_external_candidates_do_not_consume_internal_restart_budget(monkeypatch) -> None:

@@ -914,9 +914,11 @@ class LLMInterface:
         battery_model: Optional[str] = None,
         battery_param_set: str = "Chen2020",
         warmstart_context_level: str = "full",
+        warmstart_prompt_version: Optional[str] = None,
         enable_iteration_fewshot: bool = True,
         warmstart_max_tokens: int = 2500,
         region_preference_max_tokens: int = 4096,
+        region_preference_prompt_version: str = "default",
         warmstart_max_retries: int = 3,
         warmstart_temperature: Optional[float] = None,
         soc_start: float = 0.0,
@@ -939,9 +941,11 @@ class LLMInterface:
         self._battery  = battery_model
         self._battery_param_set = battery_param_set
         self._warmstart_context_level = warmstart_context_level
+        self._warmstart_prompt_version = warmstart_prompt_version
         self._enable_iteration_fewshot = enable_iteration_fewshot
         self._warmstart_max_tokens = int(warmstart_max_tokens)
         self._region_preference_max_tokens = int(region_preference_max_tokens)
+        self._region_preference_prompt_version = str(region_preference_prompt_version or "default")
         self._warmstart_max_retries = int(warmstart_max_retries)
         self._warmstart_temperature = (
             self._config.temperature if warmstart_temperature is None
@@ -1000,7 +1004,9 @@ class LLMInterface:
 
     def _render_warmstart_prompt(self, num_recommendation: int) -> str:
         context = self._warmstart_context_builder.build(num_recommendation=num_recommendation)
-        return render_warmstart_prompt(self._warmstart_context_level, context)
+        # Use explicit prompt_version if set, otherwise fall back to context_level
+        level = self._warmstart_prompt_version or self._warmstart_context_level
+        return render_warmstart_prompt(level, context)
 
     @staticmethod
     def _coerce_theta_list(rows: Any) -> List[np.ndarray]:
@@ -1176,6 +1182,7 @@ class LLMInterface:
             "confidence": 0.72,
             "preference_type": "balanced",
             "reason": "mock fallback: weighted center of top scalarized historical points",
+            "mechanistic_thinking": "Recent good scalarized points suggest a balanced current schedule with moderate SOC splits remains plausible.",
             "risk_flags": [],
         }
         pref = parse_region_preference_payload(payload)
@@ -1221,18 +1228,66 @@ class LLMInterface:
         )
         return guidance
 
+    def _extract_json_flexible(self, text: str) -> Optional[Any]:
+        """
+        Extract JSON from LLM response with multiple fallback strategies.
+        More tolerant than the standard extract_json.
+        """
+        import json
+        import re
+
+        if not text or not text.strip():
+            return None
+        text = text.strip()
+
+        # Strategy 1: Direct parse
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError:
+            pass
+
+        # Strategy 2: Extract from markdown code blocks
+        patterns = [
+            r'```(?:json)?\s*([\s\S]*?)\s*```',
+            r'`({[^`]+})`',
+        ]
+        for pattern in patterns:
+            matches = re.findall(pattern, text, re.IGNORECASE)
+            for match in matches:
+                try:
+                    return json.loads(match.strip())
+                except json.JSONDecodeError:
+                    continue
+
+        # Strategy 3: Find JSON object boundaries
+        start = text.find('{')
+        end = text.rfind('}')
+        if start != -1 and end != -1 and end > start:
+            try:
+                return json.loads(text[start:end + 1])
+            except json.JSONDecodeError:
+                pass
+
+        # Strategy 4: Try to fix common JSON errors
+        fixed = re.sub(r',(\s*[}\]])', r'\1', text)
+        fixed = re.sub(r"(?<!\\)'", '"', fixed)
+        try:
+            return json.loads(fixed)
+        except json.JSONDecodeError:
+            pass
+
+        return None
+
     def query_region_preference(
         self,
         state_dict: Dict[str, Any],
     ) -> LLMRegionPreference:
         """
-        Region-Lifted GP preference query.
+        Region-Lifted GP preference query with improved parsing tolerance.
 
-        This path intentionally has no heuristic fallback: invalid, empty, or
-        low-quality LLM responses become kind="none" so the optimizer can
-        fail-open to plain EI. The only exception is `mock` backend, where we
-        return a deterministic point preference so the coupling path can be
-        exercised offline and in tests.
+        This path uses flexible JSON extraction and detailed logging to diagnose
+        parsing issues. Invalid responses become kind="none" so the optimizer
+        can fail-open to plain EI.
         """
         t = int(state_dict.get("iteration", 0))
         logger.info("=== Region-Lifted GP preference query (t=%d) ===", t)
@@ -1242,7 +1297,10 @@ class LLMInterface:
         prompt = render_region_preference_prompt(
             state=state_dict,
             param_bounds=self._bounds,
+            prompt_version=self._region_preference_prompt_version,
         )
+        logger.debug("Region preference prompt length: %d chars", len(prompt))
+
         responses = self._caller.call(
             prompt,
             n=1,
@@ -1250,17 +1308,36 @@ class LLMInterface:
             max_tokens=self._region_preference_max_tokens,
         )
         call_diagnostics = list(getattr(self._caller, "last_call_diagnostics", []) or [])
-        for text in responses:
-            parsed = self._parser.extract_json(text)
+
+        for idx, text in enumerate(responses):
+            logger.debug("Processing response %d/%d (length: %d)", idx + 1, len(responses), len(text))
+
+            # Try flexible JSON extraction first
+            parsed = self._extract_json_flexible(text)
             if parsed is None:
+                logger.warning("Response %d: JSON extraction failed", idx + 1)
+                logger.debug("Response preview: %s", self._safe_text_preview(text, 200))
                 continue
-            pref = parse_region_preference_payload(parsed)
-            if pref.raw_response_hash is None:
-                pref.raw_response_hash = str(abs(hash(text)))
-            pref.raw_text_preview = self._safe_text_preview(json.dumps(parsed, ensure_ascii=True, sort_keys=True))
-            pref.llm_call_diagnostics = call_diagnostics
-            return pref
-        if not responses and call_diagnostics:
+
+            logger.debug("Response %d: JSON extracted successfully, type=%s", idx + 1, type(parsed).__name__)
+
+            # Parse the region preference
+            pref = parse_region_preference_payload(parsed, log_level=logging.INFO)
+
+            # If parsing succeeded, enrich and return
+            if pref.parser_status == "ok":
+                if pref.raw_response_hash is None:
+                    pref.raw_response_hash = str(abs(hash(text)))
+                pref.raw_text_preview = self._safe_text_preview(json.dumps(parsed, ensure_ascii=True, sort_keys=True))
+                pref.llm_call_diagnostics = call_diagnostics
+                logger.info("Region preference parsed successfully: kind=%s, confidence=%.2f", pref.kind, pref.confidence)
+                return pref
+            else:
+                logger.warning("Response %d: parse_region_preference_payload failed with status '%s'", idx + 1, pref.parser_status)
+
+        # All responses failed - determine failure reason
+        parser_status: Optional[str] = None
+        if call_diagnostics:
             error_types = {
                 str(item.get("error_type", "")).strip()
                 for item in call_diagnostics
@@ -1270,10 +1347,12 @@ class LLMInterface:
                 parser_status = "query_permission_denied"
             elif error_types:
                 parser_status = "query_exception"
-            else:
-                parser_status = "empty_response"
-        else:
+        if parser_status is None and not responses:
+            parser_status = "no_responses"
+        elif parser_status is None:
             parser_status = "parse_fail"
+
+        logger.error("All region preference responses failed, status=%s", parser_status)
         pref = LLMRegionPreference.none(parser_status)
         pref.raw_text_preview = self._safe_text_preview("\n".join(responses))
         pref.llm_call_diagnostics = call_diagnostics
@@ -1682,9 +1761,11 @@ def build_llm_interface(
     battery_model: Optional[str] = None,
     battery_param_set: str = "Chen2020",
     warmstart_context_level: str = "full",
+    warmstart_prompt_version: Optional[str] = None,
     enable_iteration_fewshot: bool = True,
     warmstart_max_tokens: int = 2500,
     region_preference_max_tokens: int = 4096,
+    region_preference_prompt_version: str = "default",
     warmstart_max_retries: int = 3,
     warmstart_temperature: Optional[float] = None,
     soc_start: float = 0.0,
@@ -1741,9 +1822,11 @@ def build_llm_interface(
         battery_model=battery_model,
         battery_param_set=battery_param_set,
         warmstart_context_level=warmstart_context_level,
+        warmstart_prompt_version=warmstart_prompt_version,
         enable_iteration_fewshot=enable_iteration_fewshot,
         warmstart_max_tokens=warmstart_max_tokens,
         region_preference_max_tokens=region_preference_max_tokens,
+        region_preference_prompt_version=region_preference_prompt_version,
         warmstart_max_retries=warmstart_max_retries,
         warmstart_temperature=warmstart_temperature,
         soc_start=soc_start,

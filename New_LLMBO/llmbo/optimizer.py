@@ -3,6 +3,7 @@ from __future__ import annotations
 import dataclasses
 import json
 import logging
+import math
 import os
 import time
 from collections import Counter
@@ -24,10 +25,17 @@ from llmbo.constraint_policy import build_constraint_policy
 from llmbo.gp_model import build_gp_stack
 from llmbo.proposal import ProposalTrainingRecord, build_proposal_sampler
 from llmbo.region_lifted_gp import (
+    LGBORegionLiftBuildResult,
     LLMRegionPreference,
     RegionLiftConfig,
+    build_lgbo_region_lift,
     evaluate_region_lift_on_pool,
+    is_lgbo_region_lift_mode,
+    parse_region_preference_payload,
     sample_region_candidates,
+    _bounds_arrays,
+    _normalize,
+    _preference_bounds,
 )
 from llmbo.rerank import (
     RerankState,
@@ -99,8 +107,10 @@ DEFAULT_CONFIG = {
     "llm_temperature": 0.7,
     "battery_param_set": "Chen2020",
     "warmstart_context_level": "full",
+    "warmstart_prompt_version": None,
     "warmstart_max_tokens": 2500,
     "region_preference_max_tokens": 4096,
+    "region_preference_prompt_version": "default",
     "warmstart_max_retries": 3,
     "warmstart_temperature": None,
     "kernel_nu": 2.5,
@@ -184,6 +194,10 @@ DEFAULT_CONFIG = {
     "llm_rerank_entropy_threshold": 0.80,
     "llm_rerank_fail_open_to_plain_ei": True,
     "enable_region_lifted_gp": False,
+    "region_lift_mode": "heuristic_correlation",
+    "region_lift_control_mode": "none",
+    "region_lift_random_width_norm": 0.15,
+    "region_lift_random_confidence": 0.5,
     "region_lift_apply_override": False,
     "region_lift_override_uses_diagnostic_pool": False,
     "region_lift_external_influence_mode": "diagnostic_only",
@@ -221,6 +235,18 @@ DEFAULT_CONFIG = {
     "region_lift_guard_max_plain_ei_gap": 0.25,
     "region_lift_guard_require_inside": True,
     "region_lift_guard_require_positive_corr": True,
+    "region_lift_lgbo_min_variance": 1e-12,
+    "region_lift_lgbo_shift_source": "prior_kernel",
+    "region_lift_confidence_scale": 1.0,
+    "region_lift_adaptive_confidence_enabled": False,
+    "region_lift_adaptive_confidence_floor": 0.35,
+    "region_lift_adaptive_base_scale": 0.85,
+    "region_lift_adaptive_width_min_factor": 0.80,
+    "region_lift_adaptive_repeat_min_factor": 0.85,
+    "region_lift_adaptive_late_min_factor": 0.85,
+    "region_lift_adaptive_width_start": 0.30,
+    "region_lift_adaptive_repeat_distance": 0.18,
+    "region_lift_lgbo_shift_mean_budget": 0.0,
     "checkpoint_dir": "checkpoints",
     "checkpoint_every": 5,
     "battery_model": "LG INR21700-M50 (Chen2020)",
@@ -393,8 +419,12 @@ EXPERIMENT_PRESETS = {
         "ei_n_external_restarts": 16,
     },
     "warmstart_region_lifted_gp_force_pool_tuned": {
-        "n_warmstart": 3,
-        "n_random_init": 3,
+        "n_warmstart": 6,
+        "n_random_init": 0,
+        "warmstart_batch_size": 6,
+        "warmstart_max_attempts": 1,
+        "warmstart_prompt_version": "experimental",
+        "warmstart_temperature": 0.0,
         "enable_warmstart_portfolio": True,
         "enable_iterative_guidance": False,
         "enable_gp_llm_coupling": False,
@@ -425,6 +455,99 @@ EXPERIMENT_PRESETS = {
         "region_lift_dsoc_margin": 0.01,
         "ei_n_external_restarts": 32,
     },
+}
+
+EXPERIMENT_PRESETS["llm_region_lgbo_prior"] = {
+    **EXPERIMENT_PRESETS["warmstart_region_lifted_gp_force_pool_tuned"],
+    "n_warmstart": 0,
+    "n_random_init": 6,
+    "region_lift_mode": "lgbo_proposition1",
+    "region_lift_control_mode": "none",
+    "region_lift_lgbo_shift_source": "prior_kernel",
+    "region_lift_apply_override": False,
+    "region_lift_external_influence_mode": "diagnostic_only",
+    "region_lift_include_raw_candidates": False,
+    "region_lift_anchor_weighting": "uniform",
+    "region_lift_lgbo_min_variance": 1e-12,
+    "region_lift_trust_beta": 0.0,
+    "region_lift_point_current_probe_levels": 0,
+    "region_lift_point_current_probe_keep": 0,
+}
+
+EXPERIMENT_PRESETS["llm_region_lgbo_posterior"] = {
+    **EXPERIMENT_PRESETS["llm_region_lgbo_prior"],
+    "region_lift_lgbo_shift_source": "posterior_covariance",
+}
+
+EXPERIMENT_PRESETS["llm_region_lgbo_posterior_calibrated"] = {
+    **EXPERIMENT_PRESETS["llm_region_lgbo_posterior"],
+    "region_preference_prompt_version": "calibrated",
+    "region_lift_confidence_scale": 0.75,
+    "region_lift_max_width": 0.55,
+    "region_lift_active_until": 8,
+}
+
+EXPERIMENT_PRESETS["llm_region_lgbo_posterior_adaptive"] = {
+    **EXPERIMENT_PRESETS["llm_region_lgbo_posterior_calibrated"],
+    "region_preference_prompt_version": "calibrated_v2",
+    "region_lift_confidence_scale": 1.0,
+    "region_lift_active_until": 12,
+    "region_lift_adaptive_confidence_enabled": True,
+    "region_lift_adaptive_confidence_floor": 0.35,
+    "region_lift_adaptive_base_scale": 0.85,
+    "region_lift_adaptive_width_min_factor": 0.80,
+    "region_lift_adaptive_repeat_min_factor": 0.85,
+    "region_lift_adaptive_late_min_factor": 0.85,
+    "region_lift_adaptive_width_start": 0.30,
+    "region_lift_adaptive_repeat_distance": 0.18,
+    "region_lift_lgbo_shift_mean_budget": 0.025,
+}
+
+EXPERIMENT_PRESETS["warmstart_lgbo_prior"] = {
+    **EXPERIMENT_PRESETS["llm_region_lgbo_prior"],
+    "n_warmstart": 6,
+    "n_random_init": 0,
+}
+
+EXPERIMENT_PRESETS["warmstart_lgbo_posterior"] = {
+    **EXPERIMENT_PRESETS["warmstart_lgbo_prior"],
+    "region_lift_lgbo_shift_source": "posterior_covariance",
+}
+
+EXPERIMENT_PRESETS["random_region_lgbo_prior"] = {
+    **EXPERIMENT_PRESETS["llm_region_lgbo_prior"],
+    "region_lift_control_mode": "fixed_random",
+    "n_warmstart": 0,
+    "n_random_init": 6,
+    "region_lift_random_width_norm": 0.15,
+    "region_lift_random_confidence": 0.5,
+    "region_lift_lgbo_shift_source": "prior_kernel",
+}
+
+EXPERIMENT_PRESETS["random_region_lgbo_posterior"] = {
+    **EXPERIMENT_PRESETS["random_region_lgbo_prior"],
+    "region_lift_lgbo_shift_source": "posterior_covariance",
+}
+
+EXPERIMENT_PRESETS["baseline_plain_ei"] = {
+    **EXPERIMENT_PRESETS["strict_baseline"],
+}
+
+# Backward-compatible aliases for older experiment scripts.
+EXPERIMENT_PRESETS["warmstart_region_lgbo_proposition1"] = {
+    **EXPERIMENT_PRESETS["warmstart_lgbo_posterior"],
+}
+
+EXPERIMENT_PRESETS["llmbo_mo"] = {
+    **EXPERIMENT_PRESETS["warmstart_lgbo_posterior"],
+}
+
+EXPERIMENT_PRESETS["LLMBO-MO"] = {
+    **EXPERIMENT_PRESETS["warmstart_lgbo_posterior"],
+}
+
+EXPERIMENT_PRESETS["random_region_lgbo_proposition1"] = {
+    **EXPERIMENT_PRESETS["random_region_lgbo_posterior"],
 }
 
 
@@ -635,6 +758,8 @@ class BayesOptimizer:
         self._last_acq_prior_summary: Optional[Dict[str, Any]] = None
         self._last_rerank_summary: Optional[Dict[str, Any]] = None
         self._last_region_lift_summary: Optional[Dict[str, Any]] = None
+        self._previous_region_thinking: Optional[str] = None
+        self._last_region_adoption_note: Optional[Dict[str, Any]] = None
         self._last_candidate_source_counts: Dict[str, int] = {}
         self._rerank_telemetry: List[Dict[str, Any]] = []
         self._region_lift_telemetry: List[Dict[str, Any]] = []
@@ -696,8 +821,10 @@ class BayesOptimizer:
                 self.cfg.get("battery_param_set", getattr(self.simulator, "param_set", "Chen2020"))
             ),
             warmstart_context_level=str(self.cfg.get("warmstart_context_level", "full")),
+            warmstart_prompt_version=self.cfg.get("warmstart_prompt_version"),
             warmstart_max_tokens=int(self.cfg.get("warmstart_max_tokens", 2500)),
             region_preference_max_tokens=int(self.cfg.get("region_preference_max_tokens", 4096)),
+            region_preference_prompt_version=str(self.cfg.get("region_preference_prompt_version", "default")),
             warmstart_max_retries=int(self.cfg.get("warmstart_max_retries", 3)),
             warmstart_temperature=self.cfg.get("warmstart_temperature"),
             soc_start=float(self.cfg.get("soc_start", getattr(self.simulator, "soc_start", 0.0))),
@@ -971,6 +1098,8 @@ class BayesOptimizer:
             hotspot_candidates = np.empty((0, len(PARAM_KEYS)), dtype=float)
             uncertainty_hotspots: List[Dict[str, Any]] = []
             region_preference: Optional[LLMRegionPreference] = None
+            region_acquisition_lift = None
+            region_lift_pre_acq_summary: Optional[Dict[str, Any]] = None
             region_pool_influenced_acquisition = False
             region_influence_mode = self._region_influence_mode()
             self._previous_guidance = None
@@ -989,22 +1118,33 @@ class BayesOptimizer:
 
             if bool(self.cfg.get("enable_region_lifted_gp", False)):
                 if self._region_lift_window_active(t):
-                    region_preference = self._query_region_preference(
-                        t=t,
-                        w_vec=w_vec,
-                        scalar_y=scalar_y,
-                        ideal_point_raw=ideal_point_raw,
-                    )
-                    diagnostic_region_candidates = self._sample_region_candidates_from_preference(
-                        preference=region_preference,
-                        t=t,
-                    )
-                    region_pool_influenced_acquisition = self._should_influence_acquisition_with_region(t=t)
-                    if region_pool_influenced_acquisition:
-                        if bool(self.cfg.get("region_lift_include_raw_candidates", True)):
-                            region_acquisition_candidates = diagnostic_region_candidates.copy()
-                        else:
-                            region_restart_candidates = diagnostic_region_candidates.copy()
+                    if self._is_fixed_random_region_lift_control():
+                        region_preference = self._query_region_preference_random_fallback(t=t)
+                    else:
+                        region_preference = self._query_region_preference(
+                            t=t,
+                            w_vec=w_vec,
+                            scalar_y=scalar_y,
+                            ideal_point_raw=ideal_point_raw,
+                        )
+                    if self._is_lgbo_region_lift_mode():
+                        lgbo_build = self._build_lgbo_acquisition_lift(
+                            preference=region_preference,
+                            t=t,
+                        )
+                        region_acquisition_lift = lgbo_build.coupling
+                        region_lift_pre_acq_summary = dict(lgbo_build.telemetry)
+                    else:
+                        diagnostic_region_candidates = self._sample_region_candidates_from_preference(
+                            preference=region_preference,
+                            t=t,
+                        )
+                        region_pool_influenced_acquisition = self._should_influence_acquisition_with_region(t=t)
+                        if region_pool_influenced_acquisition:
+                            if bool(self.cfg.get("region_lift_include_raw_candidates", True)):
+                                region_acquisition_candidates = diagnostic_region_candidates.copy()
+                            else:
+                                region_restart_candidates = diagnostic_region_candidates.copy()
                 else:
                     region_preference = LLMRegionPreference.none("inactive_window_skipped")
 
@@ -1074,13 +1214,18 @@ class BayesOptimizer:
                 )
                 self._last_acq_prior_summary = None if acq_prior is None else acq_prior.to_dict()
 
+            active_acquisition_lift = (
+                region_acquisition_lift
+                if region_acquisition_lift is not None
+                else (None if bool(self.cfg.get("enable_region_lifted_gp", False)) else coupling)
+            )
             acq_result = self.af.step(
                 X_candidates=X_candidates,
                 X_external_restarts=region_restart_candidates if region_restart_candidates.size else None,
                 database=self.database,
                 t=t,
                 w_vec=w_vec,
-                lift=None if bool(self.cfg.get("enable_region_lifted_gp", False)) else coupling,
+                lift=active_acquisition_lift,
                 prior=acq_prior,
             )
             plain_selected_indices = list(acq_result.selected_indices)
@@ -1097,6 +1242,8 @@ class BayesOptimizer:
                 diagnostic_region_candidates=diagnostic_region_candidates,
                 region_pool_influenced_acquisition=region_pool_influenced_acquisition,
                 region_influence_mode=region_influence_mode,
+                pre_acquisition_summary=region_lift_pre_acq_summary,
+                acquisition_lift=region_acquisition_lift,
             )
             self._update_region_influence_gate_from_summary()
             acq_result = self._maybe_apply_llm_rerank(
@@ -1165,8 +1312,12 @@ class BayesOptimizer:
                         "mean_coupled": float(acq_result.all_mean[acq_result.selected_indices[rank]]),
                         "mean_base": float(acq_result.all_mean_base[acq_result.selected_indices[rank]]),
                         "std": float(acq_result.all_std[acq_result.selected_indices[rank]]),
-                        "coupling_lambda": float(coupling.lambda_value) if coupling is not None else 0.0,
-                        "coupling_mode": guidance.mode if guidance is not None else None,
+                        "coupling_lambda": float(active_acquisition_lift.lambda_value) if active_acquisition_lift is not None else 0.0,
+                        "coupling_mode": (
+                            active_acquisition_lift.mode
+                            if active_acquisition_lift is not None
+                            else (guidance.mode if guidance is not None else None)
+                        ),
                         "prior_bonus": (
                             float(acq_result.all_prior_bonus[acq_result.selected_indices[rank]])
                             if acq_result.all_prior_bonus is not None else 0.0
@@ -1255,6 +1406,9 @@ class BayesOptimizer:
                 )
                 self._rerank_telemetry.append(telemetry.to_dict())
                 if rank == 0 and self._last_region_lift_summary is not None:
+                    self._last_region_lift_summary["evaluated_theta"] = np.asarray(theta, dtype=float).round(6).tolist()
+                    self._last_region_lift_summary["hv_before_raw"] = float(hv_before_raw)
+                    self._last_region_lift_summary["hv_after_raw"] = float(hv_after_raw)
                     self._finalize_region_lift_trust(hv_gain=float(hv_after_raw - hv_before_raw))
                 n_new += 1
 
@@ -1308,10 +1462,24 @@ class BayesOptimizer:
         diagnostic_region_candidates: np.ndarray,
         region_pool_influenced_acquisition: bool,
         region_influence_mode: str,
+        pre_acquisition_summary: Optional[Dict[str, Any]] = None,
+        acquisition_lift: Optional[Any] = None,
     ) -> Any:
         if not bool(self.cfg.get("enable_region_lifted_gp", False)):
             return acq_result
         region_preference = preference or LLMRegionPreference.none("missing_preference")
+        if self._is_lgbo_region_lift_mode():
+            self._last_region_lift_summary = self._build_lgbo_post_acquisition_summary(
+                t=t,
+                acq_result=acq_result,
+                plain_selected_indices=plain_selected_indices,
+                plain_selected_scores=plain_selected_scores,
+                preference=region_preference,
+                pre_acquisition_summary=pre_acquisition_summary,
+                acquisition_lift=acquisition_lift,
+            )
+            return acq_result
+
         override_enabled = bool(self.cfg.get("region_lift_apply_override", False))
         override_uses_diagnostic_pool = bool(
             self.cfg.get("region_lift_override_uses_diagnostic_pool", False)
@@ -1320,6 +1488,7 @@ class BayesOptimizer:
         summary_base = {
             "override_enabled": override_enabled,
             "override_uses_diagnostic_pool": override_uses_diagnostic_pool,
+            "iteration": int(t),
             "preference": region_preference.to_dict(),
             "region_pool_influenced_acquisition": bool(region_pool_influenced_acquisition),
             "region_influence_mode": region_influence_mode,
@@ -1429,6 +1598,214 @@ class BayesOptimizer:
             acq_result.lift_summary = summary
         return acq_result
 
+    def _is_lgbo_region_lift_mode(self) -> bool:
+        return is_lgbo_region_lift_mode(RegionLiftConfig.from_config(self.cfg))
+
+    def _is_fixed_random_region_lift_control(self) -> bool:
+        return (
+            self._is_lgbo_region_lift_mode()
+            and str(self.cfg.get("region_lift_control_mode", "none") or "none").lower() == "fixed_random"
+        )
+
+    def _build_lgbo_acquisition_lift(
+        self,
+        *,
+        preference: LLMRegionPreference,
+        t: int,
+    ) -> LGBORegionLiftBuildResult:
+        config = RegionLiftConfig.from_config(self.cfg)
+        result = build_lgbo_region_lift(
+            gp=self.gp,
+            preference=preference,
+            bounds=self.param_bounds,
+            config=config,
+            bo_iteration=int(t),
+        )
+        result.telemetry.update(
+            {
+                "trust_before": float(self._region_lift_trust),
+                "trust_after": float(self._region_lift_trust),
+                "trust_update_reason": "pending",
+                "preference": result.preference.to_dict(),
+                "llm_called_for_region": not self._is_fixed_random_region_lift_control(),
+            }
+        )
+        if isinstance(preference.raw_response, dict):
+            adaptive = preference.raw_response.get("_adaptive_confidence")
+            if isinstance(adaptive, dict):
+                result.telemetry.update(adaptive)
+        return result
+
+    def _query_region_preference_random_fallback(self, *, t: int) -> LLMRegionPreference:
+        lo = np.array([self.param_bounds[key][0] for key in PARAM_KEYS], dtype=float)
+        hi = np.array([self.param_bounds[key][1] for key in PARAM_KEYS], dtype=float)
+        span = np.maximum(hi - lo, 1e-12)
+        width_norm_raw = self.cfg.get("region_lift_random_width_norm", 0.15)
+        if isinstance(width_norm_raw, (list, tuple, np.ndarray)):
+            width_norm = np.asarray(width_norm_raw, dtype=float).ravel()
+            if width_norm.size != len(PARAM_KEYS):
+                width_norm = np.full(len(PARAM_KEYS), 0.15, dtype=float)
+        else:
+            width_norm = np.full(len(PARAM_KEYS), float(width_norm_raw), dtype=float)
+        width_norm = np.clip(width_norm, 1e-6, 1.0)
+        width = np.minimum(width_norm * span, span)
+        center_min = lo + 0.5 * width
+        center_max = hi - 0.5 * width
+        seed_base = int(self.cfg.get("w_sample_seed") or 0)
+        sampler = qmc.Sobol(d=len(PARAM_KEYS), scramble=True, seed=seed_base + int(t) + 104729)
+        unit = sampler.random_base2(m=8)
+        margin = max(float(self.cfg.get("region_lift_dsoc_margin", 0.0)), 0.0)
+        safe_limit = float(DSOC_SUM_MAX) - margin
+        chosen_lb = None
+        chosen_ub = None
+        for row in unit:
+            center = center_min + row * (center_max - center_min)
+            lb = center - 0.5 * width
+            ub = center + 0.5 * width
+            if ub[3] + ub[4] <= safe_limit + 1e-12:
+                chosen_lb, chosen_ub = lb, ub
+                break
+        if chosen_lb is None or chosen_ub is None:
+            center = 0.5 * (center_min + center_max)
+            excess = max((center[3] + center[4] + 0.5 * (width[3] + width[4])) - safe_limit, 0.0)
+            center[3:5] -= 0.5 * excess
+            center = np.clip(center, center_min, center_max)
+            chosen_lb = center - 0.5 * width
+            chosen_ub = center + 0.5 * width
+        payload = {
+            "kind": "region",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "lb": {key: float(chosen_lb[idx]) for idx, key in enumerate(PARAM_KEYS)},
+            "ub": {key: float(chosen_ub[idx]) for idx, key in enumerate(PARAM_KEYS)},
+            "confidence": float(np.clip(self.cfg.get("region_lift_random_confidence", 0.5), 0.0, 1.0)),
+            "preference_type": "random_control",
+            "reason": "fixed random LGBO control region",
+            "mechanistic_thinking": "Random control: no LLM mechanism is used.",
+            "llm_called_for_region": False,
+            "random_control_type": "fixed_random",
+        }
+        pref = parse_region_preference_payload(payload)
+        pref.parser_status = "ok"
+        return pref
+
+    def _build_lgbo_post_acquisition_summary(
+        self,
+        *,
+        t: int,
+        acq_result: Any,
+        plain_selected_indices: List[int],
+        plain_selected_scores: np.ndarray,
+        preference: LLMRegionPreference,
+        pre_acquisition_summary: Optional[Dict[str, Any]],
+        acquisition_lift: Optional[Any],
+    ) -> Dict[str, Any]:
+        debug_plain_indices = []
+        try:
+            debug_plain_indices = list(getattr(acq_result, "debug", {}).get("plain_selected_indices_without_lift", []))
+        except Exception:
+            debug_plain_indices = []
+        if debug_plain_indices:
+            plain_index_before = int(debug_plain_indices[0])
+        else:
+            plain_index_before = int(plain_selected_indices[0]) if plain_selected_indices else None
+        selected_index_after = (
+            int(acq_result.selected_indices[0])
+            if getattr(acq_result, "selected_indices", None) else plain_index_before
+        )
+        summary = dict(pre_acquisition_summary or {})
+        fallback_reason = summary.get("structural_fallback_reason") or summary.get("fallback_reason")
+        used_lift = acquisition_lift is not None
+        summary.update(
+            {
+                "active": bool(self._region_lift_window_active(t)),
+                "accepted": bool(used_lift),
+                "selected_source": "lgbo_lifted_gp" if used_lift else "plain_ei",
+                "fallback_reason": None if used_lift else (fallback_reason or "missing_lgbo_lift"),
+                "structural_fallback_reason": None if used_lift else (fallback_reason or "missing_lgbo_lift"),
+                "acquisition_used_lift": bool(used_lift),
+                "selected_index_before": plain_index_before,
+                "selected_index_after": selected_index_after,
+                "plain_selected_idx": plain_index_before,
+                "lifted_selected_idx": selected_index_after,
+                "selected_score_before": self._score_at_index(
+                    getattr(acq_result, "all_alpha_base", None),
+                    plain_index_before,
+                    float(plain_selected_scores[0]) if len(plain_selected_scores) else None,
+                ),
+                "selected_score_after": self._score_at_index(
+                    getattr(acq_result, "all_alpha", None),
+                    selected_index_after,
+                    None,
+                ),
+                "selected_changed_by_lift": bool(
+                    plain_index_before is not None
+                    and selected_index_after is not None
+                    and int(plain_index_before) != int(selected_index_after)
+                ),
+                "iteration": int(t),
+                "region_lift_mode": str(self.cfg.get("region_lift_mode", "heuristic_correlation")),
+                "region_lift_control_mode": str(self.cfg.get("region_lift_control_mode", "none")),
+                "region_lift_lgbo_shift_source": str(
+                    getattr(acquisition_lift, "shift_source", self.cfg.get("region_lift_lgbo_shift_source", "prior_kernel"))
+                ),
+                "plain_ei_at_plain": self._score_at_index(getattr(acq_result, "all_ei_base", None), plain_index_before, None),
+                "plain_ei_at_lifted": self._score_at_index(getattr(acq_result, "all_ei_base", None), selected_index_after, None),
+                "lifted_ei_at_lifted": self._score_at_index(getattr(acq_result, "all_ei", None), selected_index_after, None),
+                "override_enabled": bool(self.cfg.get("region_lift_apply_override", False)),
+                "override_uses_diagnostic_pool": bool(self.cfg.get("region_lift_override_uses_diagnostic_pool", False)),
+                "region_pool_influenced_acquisition": False,
+                "region_influence_mode": "diagnostic_only",
+                "region_influence_gate_passed": False,
+                "inactive_window_skipped": not bool(self._region_lift_window_active(t)),
+                "diagnostic_region_candidate_count": 0,
+                "acquisition_candidate_pool_size": (
+                    int(acq_result.candidate_pool.shape[0])
+                    if getattr(acq_result, "candidate_pool", None) is not None else 0
+                ),
+                "preference": preference.to_dict(),
+            }
+        )
+        if used_lift:
+            summary["anchor_weighting_mode"] = "uniform"
+            summary["lgbo_covariance_source"] = "posterior_standardized"
+            summary["lgbo_shift_kernel_source"] = (
+                "posterior_standardized_cross_covariance"
+                if str(getattr(acquisition_lift, "shift_source", "")).lower() == "posterior_covariance"
+                else "prior_latent_standardized"
+            )
+            try:
+                mean_base = np.asarray(acq_result.all_mean_base, dtype=float).ravel()
+                mean_lifted = np.asarray(acq_result.all_mean, dtype=float).ravel()
+                _, y_std = self.gp.target_standardization()
+                shift_z = (mean_base - mean_lifted) / max(float(y_std), 1e-12)
+                if len(shift_z):
+                    summary.update(
+                        {
+                            "lgbo_shift_min": float(np.min(shift_z)),
+                            "lgbo_shift_max": float(np.max(shift_z)),
+                            "lgbo_shift_mean": float(np.mean(shift_z)),
+                            "max_shift_z": float(np.max(shift_z)),
+                            "mean_shift_z": float(np.mean(shift_z)),
+                        }
+                    )
+            except Exception:
+                pass
+        return summary
+
+    @staticmethod
+    def _score_at_index(values: Any, index: Optional[int], default: Optional[float]) -> Optional[float]:
+        if values is None or index is None:
+            return default
+        try:
+            arr = np.asarray(values, dtype=float).ravel()
+            idx = int(index)
+            if idx < 0 or idx >= len(arr):
+                return default
+            return float(arr[idx])
+        except Exception:
+            return default
+
     def _region_influence_mode(self) -> str:
         raw = str(self.cfg.get("region_lift_external_influence_mode", "diagnostic_only") or "diagnostic_only").lower()
         if raw in {"diagnostic_only", "guarded_pool", "force_pool"}:
@@ -1440,6 +1817,8 @@ class BayesOptimizer:
         return int(t) < active_until
 
     def _should_influence_acquisition_with_region(self, *, t: int) -> bool:
+        if self._is_lgbo_region_lift_mode():
+            return False
         if not self._region_lift_window_active(t):
             return False
         mode = self._region_influence_mode()
@@ -1533,7 +1912,15 @@ class BayesOptimizer:
             ideal_point_raw=ideal_point_raw,
         )
         try:
-            return self.llm.query_region_preference(state)
+            pref = self.llm.query_region_preference(state)
+            scale = float(self.cfg.get("region_lift_confidence_scale", 1.0) or 1.0)
+            if scale != 1.0 and pref is not None:
+                before = float(pref.confidence)
+                pref.confidence = float(np.clip(before * scale, 0.0, 1.0))
+                pref.risk_flags.append(f"confidence_scaled:{scale:.3f}")
+            if pref is not None:
+                pref = self._apply_adaptive_region_confidence(pref, t=t)
+            return pref
         except Exception as exc:
             logger.warning("Region preference query failed: %s", exc)
             return LLMRegionPreference.none("query_exception")
@@ -1575,6 +1962,94 @@ class BayesOptimizer:
         if not ranked:
             return np.empty((0, len(PARAM_KEYS)), dtype=float)
         return np.vstack(ranked)
+
+    def _apply_adaptive_region_confidence(
+        self,
+        preference: LLMRegionPreference,
+        *,
+        t: int,
+    ) -> LLMRegionPreference:
+        if not bool(self.cfg.get("region_lift_adaptive_confidence_enabled", False)):
+            return preference
+        if preference.kind not in {"point", "region"}:
+            return preference
+
+        config = RegionLiftConfig.from_config(self.cfg)
+        raw_confidence = float(np.clip(preference.confidence, 0.0, 1.0))
+        base_scale = float(np.clip(self.cfg.get("region_lift_adaptive_base_scale", 0.85), 0.0, 1.0))
+        floor = float(np.clip(self.cfg.get("region_lift_adaptive_confidence_floor", 0.35), 0.0, 1.0))
+        width_factor = 1.0
+        repeat_factor = 1.0
+        late_factor = 1.0
+        width_mean = None
+        center_norm = None
+        center_distance = None
+        prev_hv_gain = None
+        prev_selected_changed = False
+
+        try:
+            lb, ub, bounds_error = _preference_bounds(preference, self.param_bounds, config)
+            if lb is not None and ub is not None and not bounds_error:
+                lo, hi = _bounds_arrays(self.param_bounds)
+                span = np.maximum(hi - lo, 1e-12)
+                width_norm = (ub - lb) / span
+                width_mean = float(np.mean(width_norm))
+                center_norm_arr = _normalize(0.5 * (lb + ub), lo, hi)
+                center_norm = center_norm_arr.tolist()
+
+                width_start = float(np.clip(self.cfg.get("region_lift_adaptive_width_start", 0.30), 0.0, 1.0))
+                width_min_factor = float(
+                    np.clip(self.cfg.get("region_lift_adaptive_width_min_factor", 0.80), 0.0, 1.0)
+                )
+                width_limit = max(float(config.region_lift_max_width), width_start + 1e-12)
+                width_pressure = float(np.clip((width_mean - width_start) / max(width_limit - width_start, 1e-12), 0.0, 1.0))
+                width_factor = 1.0 - (1.0 - width_min_factor) * width_pressure
+
+                previous = self._last_region_adoption_note if isinstance(self._last_region_adoption_note, dict) else {}
+                prev_center = previous.get("region_center_norm") if isinstance(previous, dict) else None
+                prev_hv_gain = float(previous.get("hv_gain_raw", 0.0) or 0.0) if isinstance(previous, dict) else 0.0
+                if prev_center is not None and prev_hv_gain <= 0.0:
+                    prev_arr = np.asarray(prev_center, dtype=float).ravel()
+                    if prev_arr.size == len(PARAM_KEYS):
+                        center_distance = float(np.linalg.norm(center_norm_arr - prev_arr) / math.sqrt(len(PARAM_KEYS)))
+                        repeat_distance = float(
+                            np.clip(self.cfg.get("region_lift_adaptive_repeat_distance", 0.18), 1e-9, 1.0)
+                        )
+                        if center_distance <= repeat_distance:
+                            repeat_factor = float(
+                                np.clip(self.cfg.get("region_lift_adaptive_repeat_min_factor", 0.85), 0.0, 1.0)
+                            )
+        except Exception as exc:
+            preference.risk_flags.append(f"adaptive_confidence_width_error:{type(exc).__name__}")
+
+        active_until = max(int(self.cfg.get("region_lift_active_until", 0)), 1)
+        progress = float(np.clip(int(t) / max(active_until - 1, 1), 0.0, 1.0))
+        late_min_factor = float(np.clip(self.cfg.get("region_lift_adaptive_late_min_factor", 0.85), 0.0, 1.0))
+        late_factor = 1.0 - (1.0 - late_min_factor) * progress
+
+        unbounded = raw_confidence * base_scale * width_factor * repeat_factor * late_factor
+        effective = float(np.clip(max(floor, unbounded), 0.0, 1.0))
+        preference.confidence = effective
+        floor_applied = bool(effective > unbounded + 1e-12)
+        adaptive_telemetry = {
+            "llm_raw_confidence": raw_confidence,
+            "effective_confidence": effective,
+            "confidence_base_scale": base_scale,
+            "confidence_width_factor": float(width_factor),
+            "confidence_repeat_factor": float(repeat_factor),
+            "confidence_late_factor": float(late_factor),
+            "effective_confidence_floor_applied": floor_applied,
+            "adaptive_region_width_norm_mean": width_mean,
+            "adaptive_region_center_norm": center_norm,
+            "adaptive_region_repeat_center_distance": center_distance,
+        }
+        if not isinstance(preference.raw_response, dict):
+            preference.raw_response = {}
+        preference.raw_response["_adaptive_confidence"] = adaptive_telemetry
+        preference.risk_flags.append(
+            f"adaptive_confidence:{raw_confidence:.3f}->{effective:.3f}"
+        )
+        return preference
 
     def _build_point_current_probe_candidates(
         self,
@@ -1718,6 +2193,10 @@ class BayesOptimizer:
             "f_min": float(self.database.get_f_min()),
             "hv_feedback": self.database.get_hv_feedback_summary(window=3),
             "boundary_failures": self.database.get_boundary_failure_stats(),
+            "previous_region_thinking": self._previous_region_thinking,
+            "previous_thinking": self._previous_region_thinking,
+            "last_region_adoption_note": self._last_region_adoption_note,
+            "adoption_note": self._last_region_adoption_note,
             "top_scalar_points": top_rows,
             "recent_observations": [
                 {
@@ -1736,6 +2215,29 @@ class BayesOptimizer:
         summary = dict(self._last_region_lift_summary)
         trust_before = float(summary.get("trust_before", self._region_lift_trust))
         trust_after = float(self._region_lift_trust)
+        def _attach_hv_outcome(target: Dict[str, Any]) -> None:
+            try:
+                hv_after_raw = float(target.get("hv_after_raw", self.database.compute_hypervolume_raw()) or 0.0)
+                hv_before_raw = float(target.get("hv_before_raw", hv_after_raw - float(hv_gain)) or 0.0)
+                hv_max = float(self.database.hv_max)
+            except Exception:
+                return
+            target["canonical_hv_after"] = float(canonical_hv_from_raw(hv_after_raw, hv_max))
+            target["delta_selected_hv_after_eval"] = float(
+                canonical_hv_from_raw(hv_after_raw, hv_max) - canonical_hv_from_raw(hv_before_raw, hv_max)
+            )
+
+        if self._is_lgbo_region_lift_mode():
+            summary["trust_before"] = trust_before
+            summary["trust_after"] = trust_after
+            summary["trust_update_reason"] = "skipped_lgbo_mode"
+            summary["hv_gain_raw"] = float(hv_gain)
+            _attach_hv_outcome(summary)
+            self._last_region_lift_summary = summary
+            self._region_lift_telemetry.append(summary)
+            self._update_region_prompt_memory(summary)
+            return
+
         reason = "skipped_not_lifted"
         beta = float(np.clip(self.cfg.get("region_lift_trust_beta", 0.2), 0.0, 1.0))
 
@@ -1781,8 +2283,28 @@ class BayesOptimizer:
         summary["trust_after"] = trust_after
         summary["trust_update_reason"] = reason
         summary["hv_gain_raw"] = float(hv_gain)
+        _attach_hv_outcome(summary)
         self._last_region_lift_summary = summary
         self._region_lift_telemetry.append(summary)
+        self._update_region_prompt_memory(summary)
+
+    def _update_region_prompt_memory(self, summary: Dict[str, Any]) -> None:
+        preference = summary.get("preference") if isinstance(summary, dict) else None
+        thinking = ""
+        if isinstance(preference, dict):
+            thinking = str(preference.get("mechanistic_thinking") or preference.get("reason") or "")
+        self._previous_region_thinking = thinking[:500] if thinking else None
+        self._last_region_adoption_note = {
+            "iteration": int(summary.get("iteration", summary.get("t", -1)) or -1),
+            "suggestion_used": bool(summary.get("acquisition_used_lift", False) or summary.get("selected_source") == "lifted"),
+            "selected_source": summary.get("selected_source"),
+            "fallback_reason": summary.get("fallback_reason"),
+            "actual_theta": summary.get("evaluated_theta"),
+            "hv_gain_raw": float(summary.get("hv_gain_raw", 0.0) or 0.0),
+            "region_center_norm": summary.get("region_center_norm"),
+            "region_width_norm_mean": summary.get("region_width_norm_mean"),
+            "selected_changed_by_lift": bool(summary.get("selected_changed_by_lift", False)),
+        }
 
     def save_results(self, output_dir: str = "results") -> None:
         output = Path(output_dir)

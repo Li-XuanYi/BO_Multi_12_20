@@ -24,6 +24,7 @@ WARMSTART_TEMPLATE_MAP = {
     "none": "basic",
     "partial": "problem",
     "full": "detailed",
+    "experimental": "experimental",
 }
 PLACEHOLDER_PATTERN = re.compile(r"\[([A-Z][A-Z0-9_]{1,})\]")
 DEFAULT_DSOC_SUM_MAX = CANONICAL_DSOC_SUM_MAX

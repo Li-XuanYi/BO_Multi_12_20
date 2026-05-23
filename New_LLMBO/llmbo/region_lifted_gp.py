@@ -3,13 +3,17 @@ from __future__ import annotations
 import dataclasses
 import hashlib
 import json
+import logging
 import math
 from typing import Any, Dict, List, Mapping, Optional, Tuple
+
+logger = logging.getLogger(__name__)
 
 import numpy as np
 from scipy.stats import qmc
 
 from llmbo.acquisition import expected_improvement
+from llmbo.gp_model import LLMPreferenceCoupling
 from utils.constants import DSOC_SUM_MAX
 
 PARAM_KEYS = ["I1", "I2", "I3", "dSOC1", "dSOC2"]
@@ -26,6 +30,7 @@ class LLMRegionPreference:
     confidence: float = 0.0
     preference_type: str = "unspecified"
     reason: str = ""
+    mechanistic_thinking: str = ""
     risk_flags: List[str] = dataclasses.field(default_factory=list)
     raw_response: Optional[Dict[str, Any]] = None
     raw_response_hash: Optional[str] = None
@@ -44,6 +49,8 @@ class LLMRegionPreference:
 @dataclasses.dataclass
 class RegionLiftConfig:
     enable_region_lifted_gp: bool = False
+    region_lift_mode: str = "heuristic_correlation"
+    region_lift_control_mode: str = "none"
     region_lift_external_influence_mode: str = "diagnostic_only"
     region_lift_lambda_max: float = 0.25
     region_lift_min_confidence: float = 0.60
@@ -75,6 +82,11 @@ class RegionLiftConfig:
     region_lift_guard_max_plain_ei_gap: float = 0.25
     region_lift_guard_require_inside: bool = True
     region_lift_guard_require_positive_corr: bool = True
+    region_lift_lgbo_min_variance: float = 1e-12
+    region_lift_lgbo_shift_source: str = "prior_kernel"
+    region_lift_confidence_scale: float = 1.0
+    region_lift_lgbo_shift_mean_budget: float = 0.0
+    region_lift_weight_mode: Optional[str] = None
 
     @classmethod
     def from_config(cls, cfg: Mapping[str, Any]) -> "RegionLiftConfig":
@@ -82,6 +94,8 @@ class RegionLiftConfig:
         for field in dataclasses.fields(cls):
             if field.name in cfg:
                 values[field.name] = cfg[field.name]
+        if "region_lift_weight_mode" in cfg:
+            values["region_lift_anchor_weighting"] = cfg["region_lift_weight_mode"]
         return cls(**values)
 
 
@@ -94,6 +108,14 @@ class RegionLiftResult:
     telemetry: Dict[str, Any]
 
 
+@dataclasses.dataclass
+class LGBORegionLiftBuildResult:
+    coupling: Optional[LLMPreferenceCoupling]
+    preference: LLMRegionPreference
+    telemetry: Dict[str, Any]
+    structural_fallback_reason: Optional[str] = None
+
+
 def _hash_payload(payload: Any) -> str:
     try:
         text = json.dumps(payload, sort_keys=True, ensure_ascii=True)
@@ -103,81 +125,208 @@ def _hash_payload(payload: Any) -> str:
 
 
 def _coerce_param_dict(value: Any) -> Optional[Dict[str, float]]:
+    """
+    Coerce a value to a valid parameter dictionary with improved tolerance.
+
+    Improvements:
+    - Accepts partial dictionaries (fills missing keys with defaults)
+    - Handles string numbers
+    - Logs warnings for missing/invalid keys
+    """
     if value is None:
         return None
+
+    # Default values for missing keys
+    defaults = {"I1": 4.0, "I2": 3.5, "I3": 2.5, "dSOC1": 0.25, "dSOC2": 0.20}
+
     if isinstance(value, Mapping):
         out: Dict[str, float] = {}
+        missing_keys = []
+        invalid_keys = []
+
         for key in PARAM_KEYS:
             if key not in value:
-                return None
+                missing_keys.append(key)
+                continue
             raw = value[key]
             if raw is None:
-                return None
+                missing_keys.append(key)
+                continue
             try:
+                # Handle string numbers
+                if isinstance(raw, str):
+                    raw = raw.strip()
                 out[key] = float(raw)
             except Exception:
-                return None
-        return out
+                invalid_keys.append(key)
+                continue
+
+        # If we have at least 3 valid keys, fill missing with defaults
+        if len(out) >= 3:
+            for key in missing_keys:
+                out[key] = defaults[key]
+                logger.debug("_coerce_param_dict: filled missing key %s with default %.2f", key, defaults[key])
+
+        # Log issues for debugging
+        if invalid_keys:
+            logger.warning("_coerce_param_dict: invalid values for keys: %s", invalid_keys)
+
+        return out if len(out) == len(PARAM_KEYS) else None
+
     if isinstance(value, (list, tuple)) and len(value) == len(PARAM_KEYS):
         out = {}
         for key, raw in zip(PARAM_KEYS, value):
             if raw is None:
                 return None
             try:
+                if isinstance(raw, str):
+                    raw = raw.strip()
                 out[key] = float(raw)
             except Exception:
                 return None
         return out
+
     return None
 
 
 def _extract_region_bounds(payload: Mapping[str, Any]) -> Tuple[Any, Any]:
-    lb = payload.get("lb") or payload.get("lower") or payload.get("lower_bounds")
-    ub = payload.get("ub") or payload.get("upper") or payload.get("upper_bounds")
-    region = payload.get("region") or payload.get("bounds") or payload.get("box")
-    if (lb is not None or ub is not None) or region is None:
+    """
+    Extract region bounds from payload with improved tolerance.
+
+    Handles multiple naming conventions and nested structures.
+    """
+    # Direct keys
+    lb = payload.get("lb") or payload.get("lower") or payload.get("lower_bounds") or payload.get("min")
+    ub = payload.get("ub") or payload.get("upper") or payload.get("upper_bounds") or payload.get("max")
+
+    # Check for nested region/bounds structure
+    region = payload.get("region") or payload.get("bounds") or payload.get("box") or payload.get("area")
+
+    if (lb is not None and ub is not None):
         return lb, ub
-    if isinstance(region, Mapping):
-        return (
-            region.get("lb") or region.get("lower") or region.get("lower_bounds"),
-            region.get("ub") or region.get("upper") or region.get("upper_bounds"),
-        )
-    if isinstance(region, (list, tuple)) and len(region) == 2:
-        return region[0], region[1]
+
+    if region is not None:
+        if isinstance(region, Mapping):
+            lb = region.get("lb") or region.get("lower") or region.get("lower_bounds") or region.get("min") or lb
+            ub = region.get("ub") or region.get("upper") or region.get("upper_bounds") or region.get("max") or ub
+        elif isinstance(region, (list, tuple)) and len(region) == 2:
+            lb, ub = region[0], region[1]
+
+    # Handle center + width format (convert to lb/ub)
+    if lb is None and ub is None:
+        center = payload.get("center") or payload.get("point") or payload.get("midpoint")
+        width = payload.get("width") or payload.get("size") or payload.get("span")
+        if center is not None and width is not None:
+            try:
+                center_arr = np.array([float(center[k]) if isinstance(center, Mapping) else float(center[i])
+                                       for i, k in enumerate(PARAM_KEYS)])
+                width_arr = np.array([float(width[k]) if isinstance(width, Mapping) else float(width[i])
+                                      for i, k in enumerate(PARAM_KEYS)])
+                lb = {k: float(center_arr[i] - width_arr[i] / 2) for i, k in enumerate(PARAM_KEYS)}
+                ub = {k: float(center_arr[i] + width_arr[i] / 2) for i, k in enumerate(PARAM_KEYS)}
+                logger.debug("Converted center+width format to lb/ub")
+            except Exception as e:
+                logger.debug("Failed to convert center+width format: %s", e)
+
     return lb, ub
 
 
-def parse_region_preference_payload(payload: Any) -> LLMRegionPreference:
+def parse_region_preference_payload(payload: Any, *, log_level: int = logging.DEBUG) -> LLMRegionPreference:
+    """
+    Parse region preference payload with detailed logging for debugging.
+
+    Args:
+        payload: The parsed JSON payload from LLM response
+        log_level: Logging level for diagnostics (default: DEBUG)
+
+    Returns:
+        LLMRegionPreference object with parser_status indicating success/failure reason
+    """
+    logger.log(log_level, "parse_region_preference_payload: starting parsing")
+
     if not isinstance(payload, Mapping):
+        logger.warning("parse_region_preference_payload: payload is not a Mapping, got %s", type(payload).__name__)
         return LLMRegionPreference.none("invalid_json")
-    kind = str(payload.get("kind", payload.get("type", payload.get("mode", "none")))).lower()
-    if kind in {"box", "bounds"}:
+
+    # Log available keys for debugging
+    available_keys = list(payload.keys())
+    logger.log(log_level, "parse_region_preference_payload: available keys: %s", available_keys)
+
+    # Determine kind with fallbacks
+    kind_raw = payload.get("kind", payload.get("type", payload.get("mode", "none")))
+    kind = str(kind_raw).lower().strip()
+    logger.log(log_level, "parse_region_preference_payload: kind_raw=%s, kind=%s", kind_raw, kind)
+
+    if kind in {"box", "bounds", "area", "zone"}:
         kind = "region"
     if kind not in {"point", "region", "none"}:
+        logger.warning("parse_region_preference_payload: invalid kind '%s', expected point/region/none", kind)
         return LLMRegionPreference.none("invalid_kind")
+
     raw_hash = _hash_payload(payload)
     lb_raw, ub_raw = _extract_region_bounds(payload)
+
+    # Log bounds extraction results
+    logger.log(log_level, "parse_region_preference_payload: lb_raw=%s, ub_raw=%s", lb_raw is not None, ub_raw is not None)
+
+    # Extract point
+    point_raw = payload.get("point") or payload.get("theta") or payload.get("x") or payload.get("center")
+    point = _coerce_param_dict(point_raw)
+    if point_raw is not None and point is None:
+        logger.warning("parse_region_preference_payload: failed to coerce point: %s", point_raw)
+
+    # Extract region bounds
+    lb = _coerce_param_dict(lb_raw)
+    ub = _coerce_param_dict(ub_raw)
+    if lb_raw is not None and lb is None:
+        logger.warning("parse_region_preference_payload: failed to coerce lb: %s", lb_raw)
+    if ub_raw is not None and ub is None:
+        logger.warning("parse_region_preference_payload: failed to coerce ub: %s", ub_raw)
+
+    # Build preference object
     pref = LLMRegionPreference(
         kind=kind,
         coordinate_space=str(payload.get("coordinate_space", "raw")).lower(),
         preference_direction=str(payload.get("preference_direction", "promising")).lower(),
-        point=_coerce_param_dict(payload.get("point") or payload.get("theta") or payload.get("x")),
-        lb=_coerce_param_dict(lb_raw),
-        ub=_coerce_param_dict(ub_raw),
+        point=point,
+        lb=lb,
+        ub=ub,
         confidence=float(payload.get("confidence", 0.0) or 0.0),
         preference_type=str(payload.get("preference_type", "unspecified")),
         reason=str(payload.get("reason", payload.get("rationale", ""))),
+        mechanistic_thinking=str(
+            payload.get(
+                "mechanistic_thinking",
+                payload.get("thinking", payload.get("mechanistic_rationale", "")),
+            )
+        ),
         risk_flags=[str(x) for x in payload.get("risk_flags", [])] if isinstance(payload.get("risk_flags", []), list) else [],
         raw_response=dict(payload),
         raw_response_hash=raw_hash,
         parser_status="ok",
     )
+
+    # Validation with detailed logging
     if pref.kind == "point" and pref.point is None:
+        logger.warning("parse_region_preference_payload: kind='point' but point is None")
         pref.kind = "none"
         pref.parser_status = "invalid_point"
-    if pref.kind == "region" and (pref.lb is None or pref.ub is None):
-        pref.kind = "none"
-        pref.parser_status = "invalid_region_bounds"
+
+    if pref.kind == "region":
+        if pref.lb is None and pref.ub is None:
+            logger.warning("parse_region_preference_payload: kind='region' but both lb and ub are None")
+            pref.kind = "none"
+            pref.parser_status = "invalid_region_bounds"
+        elif pref.lb is None:
+            logger.warning("parse_region_preference_payload: kind='region' but lb is None")
+            pref.kind = "none"
+            pref.parser_status = "invalid_region_lb"
+        elif pref.ub is None:
+            logger.warning("parse_region_preference_payload: kind='region' but ub is None")
+            pref.kind = "none"
+            pref.parser_status = "invalid_region_ub"
+
+    logger.log(log_level, "parse_region_preference_payload: final kind=%s, status=%s", pref.kind, pref.parser_status)
     return pref
 
 
@@ -505,6 +654,269 @@ def sample_region_candidates(
     return np.vstack(unique)
 
 
+def is_lgbo_region_lift_mode(config: RegionLiftConfig) -> bool:
+    return str(config.region_lift_mode or "").lower() == "lgbo_proposition1"
+
+
+def _normalize_lgbo_shift_source(value: Any) -> str:
+    raw = str(value or "prior_kernel").strip().lower()
+    if raw in {"posterior", "posterior_covariance", "posterior_cross_covariance", "posterior_standardized"}:
+        return "posterior_covariance"
+    return "prior_kernel"
+
+
+def _lgbo_shift_kernel_source_label(source: str) -> str:
+    if _normalize_lgbo_shift_source(source) == "posterior_covariance":
+        return "posterior_standardized_cross_covariance"
+    return "prior_latent_standardized"
+
+
+def _apply_lgbo_shift_mean_budget(
+    *,
+    lambda_value: float,
+    shift_values: np.ndarray,
+    config: RegionLiftConfig,
+) -> Tuple[float, np.ndarray, Dict[str, Any]]:
+    shift_arr = np.asarray(shift_values, dtype=float).ravel()
+    lambda_before = float(lambda_value)
+    base_budget = float(getattr(config, "region_lift_lgbo_shift_mean_budget", 0.0) or 0.0)
+    abs_mean_before = float(np.mean(np.abs(shift_arr))) if len(shift_arr) else 0.0
+    scale = 1.0
+    applied = False
+    if base_budget > 0.0 and abs_mean_before > base_budget and lambda_before > 0.0:
+        scale = float(np.clip(base_budget / max(abs_mean_before, 1e-12), 0.0, 1.0))
+        lambda_value = float(lambda_before * scale)
+        shift_arr = shift_arr * scale
+        applied = True
+    return float(lambda_value), shift_arr, {
+        "lgbo_shift_mean_budget": base_budget,
+        "lgbo_shift_abs_mean_before_budget": abs_mean_before,
+        "lgbo_lambda_before_budget": lambda_before,
+        "lgbo_lambda_after_budget": float(lambda_value),
+        "lgbo_shift_budget_scale": scale,
+        "lgbo_shift_budget_applied": applied,
+    }
+
+
+def _randomize_region_with_same_shape(
+    lb: np.ndarray,
+    ub: np.ndarray,
+    lo: np.ndarray,
+    hi: np.ndarray,
+    config: RegionLiftConfig,
+    *,
+    seed_payload: Any,
+) -> Tuple[Optional[np.ndarray], Optional[np.ndarray], Optional[str]]:
+    width = np.asarray(ub, dtype=float) - np.asarray(lb, dtype=float)
+    if np.any(width <= 0.0):
+        return None, None, None
+
+    try:
+        seed_hash = _hash_payload(seed_payload)
+        seed = int(seed_hash[:8], 16)
+    except Exception:
+        seed_hash = _hash_payload(str(seed_payload))
+        seed = int(seed_hash[:8], 16)
+    rng = np.random.default_rng(seed)
+
+    center_min = lo + 0.5 * width
+    center_max = hi - 0.5 * width
+    if np.any(center_max < center_min):
+        return None, None, seed_hash
+
+    safe_limit = float(DSOC_SUM_MAX) - max(float(config.region_lift_dsoc_margin), 0.0)
+    for _ in range(256):
+        unit = rng.random(len(PARAM_KEYS))
+        center = center_min + unit * (center_max - center_min)
+        randomized_lb = center - 0.5 * width
+        randomized_ub = center + 0.5 * width
+        if randomized_ub[3] + randomized_ub[4] > safe_limit + 1e-12:
+            continue
+        anchors = _sobol_box(randomized_lb, randomized_ub, max(int(config.region_lift_n_anchors), 1))
+        if np.any(_deterministic_feasible(anchors, lo, hi)):
+            return randomized_lb, randomized_ub, seed_hash
+    return None, None, seed_hash
+
+
+def build_lgbo_region_lift(
+    *,
+    gp: Any,
+    preference: LLMRegionPreference,
+    bounds: Mapping[str, Tuple[float, float]],
+    config: RegionLiftConfig,
+    bo_iteration: int,
+) -> LGBORegionLiftBuildResult:
+    shift_source = _normalize_lgbo_shift_source(config.region_lift_lgbo_shift_source)
+    telemetry: Dict[str, Any] = {
+        "active": True,
+        "region_lift_mode": str(config.region_lift_mode),
+        "region_lift_control_mode": str(config.region_lift_control_mode),
+        "region_lift_lgbo_shift_source": shift_source,
+        "region_lift_confidence_scale": float(config.region_lift_confidence_scale),
+        "anchor_weighting_mode": "uniform",
+        "lgbo_covariance_source": "posterior_standardized",
+        "lgbo_denominator_covariance_source": "posterior_standardized",
+        "lgbo_shift_kernel_source": _lgbo_shift_kernel_source_label(shift_source),
+        "acquisition_used_lift": False,
+        "structural_fallback_reason": None,
+        "fallback_reason": None,
+        "parser_status": preference.parser_status,
+        "llm_raw_response_hash": preference.raw_response_hash,
+        "llm_called_for_region": bool(
+            not isinstance(preference.raw_response, Mapping)
+            or preference.raw_response.get("llm_called_for_region", True)
+        ),
+        "random_control_type": (
+            None
+            if not isinstance(preference.raw_response, Mapping)
+            else preference.raw_response.get("random_control_type")
+        ),
+        "trust_before": None,
+        "trust_after": None,
+        "trust_update_reason": "pending",
+    }
+
+    if not is_lgbo_region_lift_mode(config):
+        telemetry["structural_fallback_reason"] = "not_lgbo_mode"
+        telemetry["fallback_reason"] = "not_lgbo_mode"
+        return LGBORegionLiftBuildResult(None, preference, telemetry, "not_lgbo_mode")
+
+    fallback = _validate_preference(preference, config, require_min_confidence=False)
+    if fallback:
+        telemetry["structural_fallback_reason"] = fallback
+        telemetry["fallback_reason"] = fallback
+        return LGBORegionLiftBuildResult(None, preference, telemetry, fallback)
+
+    lb, ub, bounds_error = _preference_bounds(preference, bounds, config)
+    if lb is None or ub is None or bounds_error:
+        reason = bounds_error or "invalid_region_bounds"
+        telemetry["structural_fallback_reason"] = reason
+        telemetry["fallback_reason"] = reason
+        return LGBORegionLiftBuildResult(None, preference, telemetry, reason)
+
+    lo, hi = _bounds_arrays(bounds)
+    span = np.maximum(hi - lo, 1e-12)
+    width_norm = (ub - lb) / span
+    relative_volume = float(np.prod(width_norm))
+    if relative_volume < float(config.region_lift_min_volume) - 1e-12:
+        telemetry["structural_fallback_reason"] = "bad_region_volume"
+        telemetry["fallback_reason"] = "bad_region_volume"
+        return LGBORegionLiftBuildResult(None, preference, telemetry, "bad_region_volume")
+    if relative_volume > float(config.region_lift_max_volume) + 1e-12:
+        telemetry["structural_fallback_reason"] = "bad_region_volume"
+        telemetry["fallback_reason"] = "bad_region_volume"
+        return LGBORegionLiftBuildResult(None, preference, telemetry, "bad_region_volume")
+    if np.any(width_norm < float(config.region_lift_min_width) - 1e-12) or np.any(
+        width_norm > float(config.region_lift_max_width) + 1e-12
+    ):
+        telemetry["structural_fallback_reason"] = "bad_region_width"
+        telemetry["fallback_reason"] = "bad_region_width"
+        return LGBORegionLiftBuildResult(None, preference, telemetry, "bad_region_width")
+
+    randomized_from_hash = None
+    if str(config.region_lift_control_mode or "none").lower() == "shape_randomized":
+        randomized_lb, randomized_ub, randomized_from_hash = _randomize_region_with_same_shape(
+            lb,
+            ub,
+            lo,
+            hi,
+            config,
+            seed_payload={
+                "preference_hash": preference.raw_response_hash,
+                "lb": lb.tolist(),
+                "ub": ub.tolist(),
+                "iteration": int(bo_iteration),
+            },
+        )
+        if randomized_lb is None or randomized_ub is None:
+            telemetry["randomized_region_from_hash"] = randomized_from_hash
+            telemetry["structural_fallback_reason"] = "randomize_region_failed"
+            telemetry["fallback_reason"] = "randomize_region_failed"
+            return LGBORegionLiftBuildResult(None, preference, telemetry, "randomize_region_failed")
+        lb, ub = randomized_lb, randomized_ub
+        telemetry["randomized_region_from_hash"] = randomized_from_hash
+
+    anchors = _sobol_box(lb, ub, int(config.region_lift_n_anchors))
+    feasible_mask = _deterministic_feasible(anchors, lo, hi)
+    anchors = anchors[feasible_mask]
+    feasible_anchor_ratio = float(np.mean(feasible_mask)) if len(feasible_mask) else 0.0
+    if len(anchors) == 0:
+        telemetry["feasible_anchor_ratio"] = feasible_anchor_ratio
+        telemetry["structural_fallback_reason"] = "no_feasible_anchors"
+        telemetry["fallback_reason"] = "no_feasible_anchors"
+        return LGBORegionLiftBuildResult(None, preference, telemetry, "no_feasible_anchors")
+
+    weights = np.full(len(anchors), 1.0 / float(len(anchors)), dtype=float)
+    try:
+        sigma_gg = np.asarray(gp.posterior_covariance_standardized(anchors, anchors), dtype=float)
+        if shift_source == "posterior_covariance":
+            shift_gg = sigma_gg
+        else:
+            shift_gg = np.asarray(gp.prior_kernel_standardized(anchors, anchors), dtype=float)
+    except Exception as exc:
+        reason = f"kernel_unavailable:{type(exc).__name__}"
+        telemetry["structural_fallback_reason"] = reason
+        telemetry["fallback_reason"] = reason
+        return LGBORegionLiftBuildResult(None, preference, telemetry, reason)
+
+    sigma_gg = 0.5 * (sigma_gg + sigma_gg.T)
+    posterior_variance = float(weights @ sigma_gg @ weights)
+    if not np.isfinite(posterior_variance):
+        reason = "nonfinite_posterior_variance"
+        telemetry["structural_fallback_reason"] = reason
+        telemetry["fallback_reason"] = reason
+        return LGBORegionLiftBuildResult(None, preference, telemetry, reason)
+    protected_variance = max(posterior_variance, float(config.region_lift_lgbo_min_variance))
+    confidence = float(np.clip(preference.confidence, 0.0, 1.0))
+    lambda_value = float(confidence / math.sqrt(protected_variance))
+    shift_gg = 0.5 * (np.asarray(shift_gg, dtype=float) + np.asarray(shift_gg, dtype=float).T)
+    shift_at_anchors = np.asarray(lambda_value * (shift_gg @ weights), dtype=float).ravel()
+    lambda_value, shift_at_anchors, budget_telemetry = _apply_lgbo_shift_mean_budget(
+        lambda_value=lambda_value,
+        shift_values=shift_at_anchors,
+        config=config,
+    )
+    coupling = LLMPreferenceCoupling(
+        mode="lgbo_region",
+        grid=anchors,
+        weights=weights,
+        confidence=confidence,
+        lambda_value=lambda_value,
+        posterior_variance=posterior_variance,
+        gate=1.0,
+        shift_source=shift_source,
+    )
+    telemetry.update(
+        {
+            "selected_source": "lgbo_lifted_gp",
+            "fallback_reason": None,
+            "structural_fallback_reason": None,
+            "acquisition_used_lift": True,
+            "region_raw_lb": lb.tolist(),
+            "region_raw_ub": ub.tolist(),
+            "region_normalized_lb": _normalize(lb, lo, hi).tolist(),
+            "region_normalized_ub": _normalize(ub, lo, hi).tolist(),
+            "relative_volume": relative_volume,
+            "per_dim_widths": ((ub - lb) / span).tolist(),
+            "region_width_norm_mean": float(np.mean((ub - lb) / span)),
+            "region_center_norm": _normalize(0.5 * (lb + ub), lo, hi).tolist(),
+            "n_lgbo_anchors": int(len(anchors)),
+            "feasible_anchor_ratio": feasible_anchor_ratio,
+            "lgbo_confidence": confidence,
+            "lgbo_lambda": lambda_value,
+            "lgbo_posterior_variance": posterior_variance,
+            "lgbo_protected_variance": protected_variance,
+            **budget_telemetry,
+            "lgbo_shift_min": float(np.min(shift_at_anchors)) if len(shift_at_anchors) else 0.0,
+            "lgbo_shift_max": float(np.max(shift_at_anchors)) if len(shift_at_anchors) else 0.0,
+            "lgbo_shift_mean": float(np.mean(shift_at_anchors)) if len(shift_at_anchors) else 0.0,
+            "max_shift_z": float(np.max(shift_at_anchors)) if len(shift_at_anchors) else 0.0,
+            "mean_shift_z": float(np.mean(shift_at_anchors)) if len(shift_at_anchors) else 0.0,
+        }
+    )
+    return LGBORegionLiftBuildResult(coupling, preference, telemetry, None)
+
+
 def evaluate_region_lift_on_pool(
     *,
     gp: Any,
@@ -522,6 +934,10 @@ def evaluate_region_lift_on_pool(
     plain_index = 0
     telemetry: Dict[str, Any] = {
         "active": True,
+        "region_lift_mode": str(config.region_lift_mode),
+        "region_lift_control_mode": str(config.region_lift_control_mode),
+        "region_lift_lgbo_shift_source": _normalize_lgbo_shift_source(config.region_lift_lgbo_shift_source),
+        "region_lift_confidence_scale": float(config.region_lift_confidence_scale),
         "llm_raw_response_hash": preference.raw_response_hash,
         "parser_status": preference.parser_status,
         "selected_source": "fallback",
@@ -531,6 +947,7 @@ def evaluate_region_lift_on_pool(
         "trust_update_reason": "pending",
     }
     fallback_selected_source = "fallback"
+    lgbo_shift_source = _normalize_lgbo_shift_source(config.region_lift_lgbo_shift_source)
 
     def _fallback(reason: str) -> RegionLiftResult:
         telemetry["selected_source"] = fallback_selected_source
@@ -566,7 +983,8 @@ def evaluate_region_lift_on_pool(
         }
     )
 
-    fallback = _validate_preference(preference, config)
+    lgbo_mode = is_lgbo_region_lift_mode(config)
+    fallback = _validate_preference(preference, config, require_min_confidence=not lgbo_mode)
     if fallback:
         return _fallback(fallback)
 
@@ -612,8 +1030,88 @@ def evaluate_region_lift_on_pool(
             "anchor_min_dist_to_existing": float(np.min(min_dists)) if len(min_dists) else None,
             "anchor_close_fraction": close_fraction,
             "feasible_anchor_ratio": feasible_ratio,
+            "too_close_to_existing": bool(close_fraction > float(config.region_lift_max_close_fraction)),
+            "low_feasible_anchor_ratio": bool(feasible_ratio < float(config.region_lift_min_feasible_anchor_ratio)),
         }
     )
+    if lgbo_mode:
+        anchors = anchors[feasible_mask]
+        if len(anchors) == 0:
+            return _fallback("no_feasible_anchors")
+        weights = np.full(len(anchors), 1.0 / float(len(anchors)), dtype=float)
+        try:
+            sigma_gg = np.asarray(gp.posterior_covariance_standardized(anchors, anchors), dtype=float)
+            if lgbo_shift_source == "posterior_covariance":
+                shift_xg = np.asarray(gp.posterior_covariance_standardized(X_pool, anchors), dtype=float)
+            else:
+                shift_xg = np.asarray(gp.prior_kernel_standardized(X_pool, anchors), dtype=float)
+        except Exception as exc:
+            return _fallback(f"kernel_unavailable:{type(exc).__name__}")
+
+        sigma_gg = 0.5 * (sigma_gg + sigma_gg.T)
+        posterior_variance = float(weights @ sigma_gg @ weights)
+        if not np.isfinite(posterior_variance):
+            return _fallback("nonfinite_posterior_variance")
+        protected_variance = max(posterior_variance, float(config.region_lift_lgbo_min_variance))
+        confidence = float(np.clip(preference.confidence, 0.0, 1.0))
+        lambda_value = float(confidence / math.sqrt(protected_variance))
+        shift_z = np.asarray(lambda_value * (shift_xg @ weights), dtype=float).ravel()
+        lambda_value, shift_z, budget_telemetry = _apply_lgbo_shift_mean_budget(
+            lambda_value=lambda_value,
+            shift_values=shift_z,
+            config=config,
+        )
+        mean_lifted_z = mean_z - shift_z
+        ei_lifted = expected_improvement(mean_lifted_z, sigma_z, f_min_z)
+        lift_index = int(np.argmax(ei_lifted))
+        plain_log_at_lift = float(plain_log[lift_index])
+        gap = float(plain_log[plain_index] - plain_log_at_lift)
+        lift_inside = bool(_inside_region(X_pool[lift_index], lb, ub, tol=float(config.region_lift_near_region_tol))[0])
+        sigma_ratio = float(sigma_z[lift_index] / max(float(sigma_z[plain_index]), 1e-12))
+        telemetry.update(
+            {
+                "selected_source": "lgbo_lifted_gp",
+                "fallback_reason": None,
+                "region_lift_lgbo_shift_source": lgbo_shift_source,
+                "anchor_weighting_mode": "uniform",
+                "lgbo_covariance_source": "posterior_standardized",
+                "lgbo_denominator_covariance_source": "posterior_standardized",
+                "lgbo_shift_kernel_source": _lgbo_shift_kernel_source_label(lgbo_shift_source),
+                "acquisition_used_lift": True,
+                "region_width_norm_mean": float(np.mean(width_norm)),
+                "region_center_norm": _normalize(0.5 * (lb + ub), lo, hi).tolist(),
+                "n_lgbo_anchors": int(len(anchors)),
+                "lgbo_confidence": confidence,
+                "lgbo_lambda": lambda_value,
+                "lgbo_posterior_variance": posterior_variance,
+                "lgbo_protected_variance": protected_variance,
+                **budget_telemetry,
+                "lgbo_shift_min": float(np.min(shift_z)) if len(shift_z) else 0.0,
+                "lgbo_shift_max": float(np.max(shift_z)) if len(shift_z) else 0.0,
+                "lgbo_shift_mean": float(np.mean(shift_z)) if len(shift_z) else 0.0,
+                "max_shift_z": float(np.max(shift_z)) if len(shift_z) else 0.0,
+                "mean_shift_z": float(np.mean(shift_z)) if len(shift_z) else 0.0,
+                "lift_idx": int(lift_index),
+                "same_as_plain": bool(lift_index == plain_index),
+                "plain_log_ei_surrogate_at_lift": plain_log_at_lift,
+                "lifted_ei_at_lift": float(ei_lifted[lift_index]),
+                "lifted_ei_at_lifted": float(ei_lifted[lift_index]),
+                "plain_ei_at_plain": float(ei_plain[plain_index]),
+                "plain_ei_at_lift": float(ei_plain[lift_index]),
+                "plain_ei_at_lifted": float(ei_plain[lift_index]),
+                "plain_ei_gap": gap,
+                "plain_ei_gap_exceeded": bool(gap > float(config.region_lift_max_plain_ei_gap)),
+                "lift_candidate_inside_region": lift_inside,
+                "outside_region": not lift_inside,
+                "sigma_unchanged": True,
+                "lift_sigma_z": float(sigma_z[lift_index]),
+                "plain_sigma_z": float(sigma_z[plain_index]),
+                "sigma_ratio_vs_plain": sigma_ratio,
+                "low_sigma_ratio": bool(sigma_ratio < float(config.region_lift_min_sigma_ratio)),
+            }
+        )
+        return RegionLiftResult(lift_index, "lgbo_lifted_gp", True, None, telemetry)
+
     if close_fraction > float(config.region_lift_max_close_fraction):
         return _fallback("too_close_to_existing")
     if feasible_ratio < float(config.region_lift_min_feasible_anchor_ratio):
@@ -721,7 +1219,12 @@ def evaluate_region_lift_on_pool(
     return RegionLiftResult(lift_index, "lifted", True, None, telemetry)
 
 
-def _validate_preference(preference: LLMRegionPreference, config: RegionLiftConfig) -> Optional[str]:
+def _validate_preference(
+    preference: LLMRegionPreference,
+    config: RegionLiftConfig,
+    *,
+    require_min_confidence: bool = True,
+) -> Optional[str]:
     if preference.kind == "none":
         return preference.parser_status or "no_preference"
     if preference.parser_status != "ok":
@@ -730,7 +1233,7 @@ def _validate_preference(preference: LLMRegionPreference, config: RegionLiftConf
         return "non_raw_coordinate_space"
     if preference.preference_direction != "promising":
         return "non_promising_direction"
-    if float(preference.confidence) < float(config.region_lift_min_confidence):
+    if require_min_confidence and float(preference.confidence) < float(config.region_lift_min_confidence):
         return "low_confidence"
     if preference.kind not in {"point", "region"}:
         return "invalid_kind"

@@ -1,0 +1,45 @@
+You are an expert in lithium-ion battery fast charging optimization.
+
+Task: Identify a promising region or point in the 5D parameter space for Bayesian Optimization.
+
+Decision Variables:
+- I1: Stage 1 current [[I1_RANGE]]
+- I2: Stage 2 current [[I2_RANGE]]
+- I3: Stage 3 current [[I3_RANGE]]
+- dSOC1: Stage 1 SOC width [[DSOC1_RANGE]]
+- dSOC2: Stage 2 SOC width [[DSOC2_RANGE]]
+
+Hard Constraint: dSOC1 + dSOC2 < [[DSOC_SUM_MAX]]
+
+Current Context:
+- Iteration [[ITERATION]] of [[MAX_ITERATIONS]]
+- Weight vector: time=[[W_TIME]], temp=[[W_TEMP]], aging=[[W_AGING]]
+- Current best scalarized value: [[F_MIN]]
+
+Output Format (JSON only):
+Return exactly one JSON object with ONE of these two structures:
+
+1. For a specific point:
+{
+  "kind": "point",
+  "point": {"I1": 4.0, "I2": 3.5, "I3": 2.5, "dSOC1": 0.25, "dSOC2": 0.20},
+  "confidence": 0.7,
+  "reason": "brief explanation"
+}
+
+2. For a region/box:
+{
+  "kind": "region",
+  "lb": {"I1": 3.8, "I2": 3.0, "I3": 2.2, "dSOC1": 0.20, "dSOC2": 0.18},
+  "ub": {"I1": 4.5, "I2": 4.0, "I3": 2.8, "dSOC1": 0.30, "dSOC2": 0.25},
+  "confidence": 0.7,
+  "reason": "brief explanation"
+}
+
+Guidelines:
+- Use "point" when confident about a specific location
+- Use "region" when the promising area is uncertain (width 5-20% of range per dimension)
+- Confidence should reflect your certainty (0.0-1.0)
+- All values must respect the parameter bounds and dSOC constraint
+
+JSON only, no markdown or explanations outside the JSON:

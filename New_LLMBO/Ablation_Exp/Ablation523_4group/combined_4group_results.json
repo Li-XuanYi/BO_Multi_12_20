@@ -1,0 +1,45 @@
+{
+  "created_at": "2026-05-23",
+  "experiment_folder": "Ablation_Exp/Ablation523_4group",
+  "settings": {
+    "seeds": 5,
+    "iterations": 50,
+    "metric": "canonical_hv",
+    "model": "deepseek-v3"
+  },
+  "results": [
+    {
+      "group": "Baseline",
+      "mean_canonical_hv": 0.383635,
+      "vs_baseline": null,
+      "wins_vs_baseline": null,
+      "source_report": "source_reports/adaptive4_5seeds_50iter_report.json"
+    },
+    {
+      "group": "WarmStart",
+      "mean_canonical_hv": 0.390242,
+      "vs_baseline": 0.006607,
+      "wins_vs_baseline": "4/5",
+      "source_report": "source_reports/adaptive4_5seeds_50iter_report.json"
+    },
+    {
+      "group": "LLM_Region",
+      "mean_canonical_hv": 0.386211,
+      "vs_baseline": 0.002576,
+      "wins_vs_baseline": "4/5",
+      "source_report": "source_reports/adaptive4_5seeds_50iter_report.json"
+    },
+    {
+      "group": "LLMBO = WarmStart+LLM_Region",
+      "mean_canonical_hv": 0.393196,
+      "vs_baseline": 0.009561,
+      "wins_vs_baseline": "3/5",
+      "source_report": "source_reports/warmstart_vs_llmbo_paired_5seeds_50iter_report.json"
+    }
+  ],
+  "source_notes": [
+    "Baseline, WarmStart, and LLM_Region are from adaptive4_5seeds_50iter_deepseek_v3_2026_05_22.",
+    "LLMBO is from warmstart_vs_llmbo_paired_5seeds_50iter_deepseek_v3_2026_05_23.",
+    "The paired LLMBO rerun used shared selected WarmStart initialization for the WarmStart and LLMBO comparison."
+  ]
+}

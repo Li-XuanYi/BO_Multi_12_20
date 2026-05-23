@@ -33,6 +33,7 @@ class LLMPreferenceCoupling:
     local_lb: Optional[np.ndarray] = None
     local_ub: Optional[np.ndarray] = None
     local_sigma: Optional[np.ndarray] = None
+    shift_source: str = "prior_kernel"
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -43,6 +44,7 @@ class LLMPreferenceCoupling:
             "lambda_value": float(self.lambda_value),
             "posterior_variance": float(self.posterior_variance),
             "gate": float(self.gate),
+            "shift_source": str(self.shift_source),
             "align_score": float(self.align_score),
             "history_score": float(self.history_score),
             "hv_score": float(self.hv_score),
@@ -84,6 +86,13 @@ class GPProtocol(Protocol):
         ...
 
     def posterior_covariance(
+        self,
+        X_left: np.ndarray,
+        X_right: Optional[np.ndarray] = None,
+    ) -> np.ndarray:
+        ...
+
+    def prior_kernel_standardized(
         self,
         X_left: np.ndarray,
         X_right: Optional[np.ndarray] = None,
@@ -363,8 +372,15 @@ class MaternGPModel:
         if coupling is None:
             return mean, std
 
-        sigma_xg_z = self.posterior_covariance_standardized(X_new, coupling.grid)
-        base_z = np.asarray(sigma_xg_z @ coupling.weights, dtype=float).ravel()
+        if str(coupling.mode) == "lgbo_region" and str(getattr(coupling, "shift_source", "prior_kernel")).lower() in {
+            "prior",
+            "prior_kernel",
+            "prior_latent_standardized",
+        }:
+            kernel_xg_z = self.prior_kernel_standardized(X_new, coupling.grid)
+        else:
+            kernel_xg_z = self.posterior_covariance_standardized(X_new, coupling.grid)
+        base_z = np.asarray(kernel_xg_z @ coupling.weights, dtype=float).ravel()
         mask = self._coupling_local_mask(X_new, coupling)
         shift_z = (
             float(coupling.lambda_value)
@@ -402,6 +418,17 @@ class MaternGPModel:
             diag = np.clip(np.diag(cov), 1e-12, None)
             cov[np.diag_indices_from(cov)] = diag
         return cov
+
+    def prior_kernel_standardized(
+        self,
+        X_left: np.ndarray,
+        X_right: Optional[np.ndarray] = None,
+    ) -> np.ndarray:
+        """Latent prior kernel in the GP standardized objective space."""
+        left = np.atleast_2d(np.asarray(X_left, dtype=float))
+        right = left if X_right is None else np.atleast_2d(np.asarray(X_right, dtype=float))
+        model = self._require_model()
+        return self._latent_kernel(model, self._normalize_X(left), self._normalize_X(right))
 
     def build_preference_coupling(
         self,

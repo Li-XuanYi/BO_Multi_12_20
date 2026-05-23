@@ -565,8 +565,14 @@ class LLMWarmStartConfig(BaseModel):
 
     context_level: str = Field(
         default="full",
-        description="上下文级别 (full/partial/none)",
-        pattern="^(full|partial|none)$"
+        description="上下文级别 (full/partial/none/experimental)",
+        pattern="^(full|partial|none|experimental)$"
+    )
+
+    prompt_version: str = Field(
+        default="detailed",
+        description="WarmStart提示词版本 (basic/problem/detailed/experimental)",
+        pattern="^(basic|problem|detailed|experimental)$"
     )
 
     max_retries: int = Field(

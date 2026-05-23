@@ -1,0 +1,45 @@
+{
+  "seed": 8409,
+  "iterations": 4,
+  "records": [
+    {
+      "variant": "baseline",
+      "canonical_hv": 0.24537678346608632,
+      "display_hv": 0.6134419586652158,
+      "n_total": 14,
+      "region_lift_attempt_count": 0,
+      "region_lift_accept_count": 0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "fallback_reasons": {}
+    },
+    {
+      "variant": "baseline_llm_region_mock",
+      "canonical_hv": 0.24248537230092707,
+      "display_hv": 0.6062134307523176,
+      "n_total": 14,
+      "region_lift_attempt_count": 4,
+      "region_lift_accept_count": 0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 4,
+      "fallback_reasons": {
+        "same_as_plain": 2,
+        "outside_region": 2
+      }
+    },
+    {
+      "variant": "baseline_llm_region_mock_relaxed",
+      "canonical_hv": 0.246179353333474,
+      "display_hv": 0.6154483833336849,
+      "n_total": 12,
+      "region_lift_attempt_count": 4,
+      "region_lift_accept_count": 2,
+      "effective_lift_accept_count": 2,
+      "region_pool_influenced_acquisition_count": 4,
+      "fallback_reasons": {
+        "same_as_plain": 2
+      },
+      "mean_region_lift_hv_gain": 0.09147066185077768
+    }
+  ]
+}

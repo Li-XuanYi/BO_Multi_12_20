@@ -1,0 +1,858 @@
+{
+  "version": "2.0",
+  "param_bounds": {
+    "I1": [
+      2.0,
+      6.0
+    ],
+    "I2": [
+      2.0,
+      5.0
+    ],
+    "I3": [
+      2.0,
+      3.0
+    ],
+    "dSOC1": [
+      0.1,
+      0.4
+    ],
+    "dSOC2": [
+      0.1,
+      0.3
+    ]
+  },
+  "ref_point": [
+    7200.0,
+    40.0,
+    5.0
+  ],
+  "ideal_point": [
+    1800.0,
+    0.0,
+    0.3
+  ],
+  "normalize": true,
+  "observations": [
+    {
+      "theta": [
+        5.5,
+        4.5,
+        2.8,
+        0.2,
+        0.2
+      ],
+      "objectives": [
+        4026.0,
+        5.246953932433207,
+        1.048777160039507
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T12:08:30.920541"
+    },
+    {
+      "theta": [
+        2.5,
+        2.5,
+        2.0,
+        0.35,
+        0.25
+      ],
+      "objectives": [
+        6120.0,
+        2.2137865669620456,
+        0.7265894947682922
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T12:08:34.988304"
+    },
+    {
+      "theta": [
+        5.8,
+        3.0,
+        2.0,
+        0.18,
+        0.22
+      ],
+      "objectives": [
+        5479.0,
+        3.9026593020090847,
+        0.9475242136181863
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T12:08:38.688583"
+    },
+    {
+      "theta": [
+        4.0,
+        3.5,
+        2.5,
+        0.25,
+        0.2
+      ],
+      "objectives": [
+        4674.0,
+        3.823129467052502,
+        0.907625352341977
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T12:08:42.235127"
+    },
+    {
+      "theta": [
+        5.0,
+        4.0,
+        2.2,
+        0.2,
+        0.25
+      ],
+      "objectives": [
+        4709.0,
+        4.675185614145682,
+        1.0147636939269702
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T12:08:45.845329"
+    },
+    {
+      "theta": [
+        3.5,
+        3.0,
+        2.0,
+        0.3,
+        0.28
+      ],
+      "objectives": [
+        5203.0,
+        3.1807491524131764,
+        0.8797097356589447
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T12:08:49.589577"
+    },
+    {
+      "theta": [
+        4.248024382310276,
+        3.855800115550712,
+        2.5214253505811945,
+        0.24916692692438192,
+        0.1627019386745664
+      ],
+      "objectives": [
+        4587.0,
+        4.203055656361949,
+        0.937006964093428
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 1,
+      "acq_value": 0.011092670394850918,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.2814543999648862,
+        "mean_base": 0.2814543999648862,
+        "std": 0.056303300097092876,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T12:08:59.522697"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.239082128684143,
+        0.23987286715205014,
+        0.1
+      ],
+      "objectives": [
+        6758.0,
+        1.859327205516735,
+        0.6235756855263564
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 2,
+      "acq_value": 0.11242057373261935,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.0054176210870257036,
+        "mean_base": 0.0054176210870257036,
+        "std": 0.038807326117435224,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T12:09:09.464876"
+    },
+    {
+      "theta": [
+        2.0,
+        4.9243066833894975,
+        3.0,
+        0.2663194385694946,
+        0.16777759388642208
+      ],
+      "objectives": [
+        5205.0,
+        3.6802258605574143,
+        0.6177545242939547
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 3,
+      "acq_value": 0.129196991877369,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.10000189898996087,
+        "mean_base": 0.10000189898996087,
+        "std": 0.14150840056211642,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T12:09:21.241628"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.305415498029738,
+        0.1,
+        0.1
+      ],
+      "objectives": [
+        6485.0,
+        1.9766638801163994,
+        0.6325419556237256
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 4,
+      "acq_value": 0.0031764507154947376,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.01375402359152278,
+        "mean_base": 0.01375402359152278,
+        "std": 0.008079688069259,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T12:09:31.750537"
+    },
+    {
+      "theta": [
+        2.2547636762294814,
+        4.68379004824288,
+        3.0,
+        0.1,
+        0.19502004990396882
+      ],
+      "objectives": [
+        4577.0,
+        3.727626850115985,
+        0.7800872878280446
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 5,
+      "acq_value": 0.021560122305545486,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.13916315585600803,
+        "mean_base": 0.13916315585600803,
+        "std": 0.044410340132879624,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "fallback",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T12:09:42.352538"
+    }
+  ],
+  "pareto_indices": [
+    0,
+    1,
+    5,
+    7,
+    8,
+    9,
+    10
+  ],
+  "iteration_stats": [
+    {
+      "iteration": 1,
+      "n_total": 7,
+      "n_feasible": 7,
+      "pareto_size": 5,
+      "hypervolume": 0.593810814443149,
+      "display_hv": 0.593810814443149,
+      "canonical_hv": 0.2375243257772596,
+      "hypervolume_canonical": 0.2375243257772596,
+      "hypervolume_raw": 6.989165139391817,
+      "best_time_s": 4026.0,
+      "best_temp_K": 2.2137865669620456,
+      "best_aging_pct": 0.7265894947682922,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 0,
+      "w_vec": [
+        0.5053755077393848,
+        0.11584004389979127,
+        0.378784448360824
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 9.93,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.7,
+        "trust_after": 0.6649999999999999,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 136,
+        "plain_log_ei_surrogate_at_plain": -2.0187610145064396,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 136,
+        "selected_score_before": 0.011092670394850918,
+        "selected_index_after": 136,
+        "diagnostic_candidate_pool_size": 141,
+        "acquisition_candidate_pool_size": 141,
+        "selection_candidate_pool_size": 141,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "AuthenticationError",
+              "error": "Error code: 401 - {'error': {'code': '', 'message': 'Invalid token (request id: 202605170408573923161428268d9d6YbERznRS)', 'type': 'new_api_error'}}"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "AuthenticationError",
+              "error": "Error code: 401 - {'error': {'code': '', 'message': 'Invalid token (request id: 202605170408589246837128268d9d6vT4p2OHz)', 'type': 'new_api_error'}}"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "AuthenticationError",
+              "error": "Error code: 401 - {'error': {'code': '', 'message': 'Invalid token (request id: 202605170409019482661198268d9d67UvJMlK4)', 'type': 'new_api_error'}}"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.020073351822786023
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 2,
+      "n_total": 8,
+      "n_feasible": 8,
+      "pareto_size": 6,
+      "hypervolume": 0.6004251362273803,
+      "display_hv": 0.6004251362273803,
+      "canonical_hv": 0.24017005449095213,
+      "hypervolume_canonical": 0.24017005449095213,
+      "hypervolume_raw": 7.0670158388244655,
+      "best_time_s": 4026.0,
+      "best_temp_K": 1.859327205516735,
+      "best_aging_pct": 0.6235756855263564,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 1,
+      "w_vec": [
+        0.11220657855741253,
+        0.4932206831272125,
+        0.3945727383153751
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 9.94,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.6649999999999999,
+        "trust_after": 0.6317499999999999,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 139,
+        "plain_log_ei_surrogate_at_plain": -0.12351583038201835,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 139,
+        "selected_score_before": 0.11242057373261935,
+        "selected_index_after": 139,
+        "diagnostic_candidate_pool_size": 140,
+        "acquisition_candidate_pool_size": 140,
+        "selection_candidate_pool_size": 140,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "AuthenticationError",
+              "error": "Error code: 401 - {'error': {'code': '', 'message': 'Invalid token (request id: 202605170409073836600518268d9d6oMBfxur3)', 'type': 'new_api_error'}}"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "AuthenticationError",
+              "error": "Error code: 401 - {'error': {'code': '', 'message': 'Invalid token (request id: 202605170409089151484048268d9d6CPTK1p67)', 'type': 'new_api_error'}}"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "AuthenticationError",
+              "error": "Error code: 401 - {'error': {'code': '', 'message': 'Invalid token (request id: 202605170409119390032528268d9d6pHn6Noux)', 'type': 'new_api_error'}}"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.07785069943264844
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 3,
+      "n_total": 9,
+      "n_feasible": 9,
+      "pareto_size": 7,
+      "hypervolume": 0.6434550007647397,
+      "display_hv": 0.6434550007647397,
+      "canonical_hv": 0.2573820003058959,
+      "hypervolume_canonical": 0.2573820003058959,
+      "hypervolume_raw": 7.573478203372826,
+      "best_time_s": 4026.0,
+      "best_temp_K": 1.859327205516735,
+      "best_aging_pct": 0.6177545242939547,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 2,
+      "w_vec": [
+        0.7886919575009149,
+        0.20134677173270993,
+        0.00996127076637511
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 11.77,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.6317499999999999,
+        "trust_after": 0.6001624999999999,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 134,
+        "plain_log_ei_surrogate_at_plain": -0.5191546977119865,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 134,
+        "selected_score_before": 0.129196991877369,
+        "selected_index_after": 134,
+        "diagnostic_candidate_pool_size": 145,
+        "acquisition_candidate_pool_size": 145,
+        "selection_candidate_pool_size": 145,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "AuthenticationError",
+              "error": "Error code: 401 - {'error': {'code': '', 'message': 'Invalid token (request id: 202605170409174230269678268d9d6zGQ5z45F)', 'type': 'new_api_error'}}"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "AuthenticationError",
+              "error": "Error code: 401 - {'error': {'code': '', 'message': 'Invalid token (request id: 202605170409189648325958268d9d6LQIXGC7t)', 'type': 'new_api_error'}}"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "AuthenticationError",
+              "error": "Error code: 401 - {'error': {'code': '', 'message': 'Invalid token (request id: 20260517040922206773518268d9d6iwJ6GUb5)', 'type': 'new_api_error'}}"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.5064623645483604
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 4,
+      "n_total": 10,
+      "n_feasible": 10,
+      "pareto_size": 8,
+      "hypervolume": 0.643913260195522,
+      "display_hv": 0.643913260195522,
+      "canonical_hv": 0.2575653040782088,
+      "hypervolume_canonical": 0.2575653040782088,
+      "hypervolume_raw": 7.57887192602071,
+      "best_time_s": 4026.0,
+      "best_temp_K": 1.859327205516735,
+      "best_aging_pct": 0.6177545242939547,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 3,
+      "w_vec": [
+        0.009960202877699609,
+        0.28264156492760156,
+        0.7073982321946988
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 10.5,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.6001624999999999,
+        "trust_after": 0.5701543749999999,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 133,
+        "plain_log_ei_surrogate_at_plain": -4.3472548742092805,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 133,
+        "selected_score_before": 0.0031764507154947376,
+        "selected_index_after": 133,
+        "diagnostic_candidate_pool_size": 143,
+        "acquisition_candidate_pool_size": 143,
+        "selection_candidate_pool_size": 143,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "AuthenticationError",
+              "error": "Error code: 401 - {'error': {'code': '', 'message': 'Invalid token (request id: 202605170409294483174368268d9d6VLFbo0rb)', 'type': 'new_api_error'}}"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "AuthenticationError",
+              "error": "Error code: 401 - {'error': {'code': '', 'message': 'Invalid token (request id: 202605170409309768644738268d9d6ufGjv4gZ)', 'type': 'new_api_error'}}"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "AuthenticationError",
+              "error": "Error code: 401 - {'error': {'code': '', 'message': 'Invalid token (request id: 2026051704093478574968268d9d6MCVAUhgO)', 'type': 'new_api_error'}}"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.0053937226478844025
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 5,
+      "n_total": 11,
+      "n_feasible": 11,
+      "pareto_size": 7,
+      "hypervolume": 0.6563571674116658,
+      "display_hv": 0.6563571674116658,
+      "canonical_hv": 0.26254286696466633,
+      "hypervolume_canonical": 0.26254286696466633,
+      "hypervolume_raw": 7.7253369623546435,
+      "best_time_s": 4026.0,
+      "best_temp_K": 1.859327205516735,
+      "best_aging_pct": 0.6177545242939547,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 4,
+      "w_vec": [
+        0.2806214627455438,
+        0.009960046994512238,
+        0.7094184902599441
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 10.6,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "fallback",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.5701543749999999,
+        "trust_after": 0.5416466562499999,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 134,
+        "plain_log_ei_surrogate_at_plain": -2.2200985281195496,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 134,
+        "selected_score_before": 0.021560122305545486,
+        "selected_index_after": 134,
+        "diagnostic_candidate_pool_size": 144,
+        "acquisition_candidate_pool_size": 144,
+        "selection_candidate_pool_size": 144,
+        "override_enabled": true,
+        "override_uses_diagnostic_pool": true,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "AuthenticationError",
+              "error": "Error code: 401 - {'error': {'code': '', 'message': 'Invalid token (request id: 202605170409396894729128268d9d6njRbs05k)', 'type': 'new_api_error'}}"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "AuthenticationError",
+              "error": "Error code: 401 - {'error': {'code': '', 'message': 'Invalid token (request id: 202605170409412237515128268d9d6PYZbdJe4)', 'type': 'new_api_error'}}"
+            },
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "error_type": "AuthenticationError",
+              "error": "Error code: 401 - {'error': {'code': '', 'message': 'Invalid token (request id: 202605170409442688304258268d9d6K3RUZ0tM)', 'type': 'new_api_error'}}"
+            }
+          ],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "hv_gain_raw": 0.14646503633393326
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    }
+  ],
+  "improvement_window": [
+    true,
+    true
+  ],
+  "saved_at": "2026-05-17T12:09:42.364315"
+}

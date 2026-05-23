@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "backend": "openai",
+  "model": "gpt-4.1-mini",
+  "temperature": 0.0,
+  "target_pool": 6,
+  "candidate_pool": [
+    [
+      5.85,
+      4.1,
+      2.55,
+      0.185,
+      0.195
+    ],
+    [
+      3.75,
+      3.25,
+      2.05,
+      0.295,
+      0.205
+    ],
+    [
+      3.45,
+      2.85,
+      2.0,
+      0.235,
+      0.215
+    ],
+    [
+      2.85,
+      2.5,
+      2.0,
+      0.15,
+      0.18
+    ],
+    [
+      4.2,
+      3.5,
+      2.2,
+      0.22,
+      0.18
+    ],
+    [
+      3.1,
+      2.7,
+      2.0,
+      0.12,
+      0.18
+    ]
+  ],
+  "final_selected": [
+    [
+      5.85,
+      4.1,
+      2.55,
+      0.185,
+      0.195
+    ],
+    [
+      2.85,
+      2.5,
+      2.0,
+      0.15,
+      0.18
+    ],
+    [
+      3.75,
+      3.25,
+      2.05,
+      0.295,
+      0.205
+    ]
+  ],
+  "summary": {
+    "input_count": 6,
+    "valid_count": 6,
+    "filtered": {
+      "non_finite": 0,
+      "shape": 0,
+      "bounds": 0,
+      "hard_dsoc": 0,
+      "duplicate": 0
+    },
+    "requested": 3,
+    "selected_count": 3,
+    "selected": [
+      {
+        "theta": [
+          5.85,
+          4.1,
+          2.55,
+          0.185,
+          0.195
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 0,
+        "quality": 0.58,
+        "diversity": 0.0,
+        "archive_bonus": 0.0,
+        "score": 0.58,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.38,
+        "monotone": true
+      },
+      {
+        "theta": [
+          2.85,
+          2.5,
+          2.0,
+          0.15,
+          0.18
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 3,
+        "quality": 0.58,
+        "diversity": 1.0810552971775103,
+        "archive_bonus": 0.0,
+        "score": 1.0664748837298796,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.32999999999999996,
+        "monotone": true
+      },
+      {
+        "theta": [
+          3.75,
+          3.25,
+          2.05,
+          0.295,
+          0.205
+        ],
+        "source": "llm_pool",
+        "confidence": 0.5,
+        "style": "unknown",
+        "risk_flags": [],
+        "rationale": "",
+        "raw_index": 1,
+        "quality": 0.58,
+        "diversity": 0.6040373424806706,
+        "archive_bonus": 0.0,
+        "score": 0.8518168041163018,
+        "boundary_probe": 0.0,
+        "dSOC_sum": 0.5,
+        "monotone": true
+      }
+    ],
+    "boundary_selected": 0,
+    "method": "portfolio_selector",
+    "config": {
+      "hard_dsoc_sum_max": 0.7,
+      "soft_dsoc_sum_max": 0.65,
+      "diversity_weight": 0.45,
+      "soft_penalty_weight": 0.65,
+      "monotone_bonus": 0.08,
+      "archive_bonus_weight": 0.0,
+      "boundary_probe_limit": 1
+    },
+    "enabled": true,
+    "pool_target": 6,
+    "pool_collected": 6,
+    "disk_cache": "miss",
+    "cache_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\ablation_4way_5seeds_50iter_gpt_4_1_mini_nuwaapi_2026_05_14_213920\\seed8411\\shared_warmstart_cache.json",
+    "final_selected_count": 3,
+    "final_selected": [
+      [
+        5.85,
+        4.1,
+        2.55,
+        0.185,
+        0.195
+      ],
+      [
+        2.85,
+        2.5,
+        2.0,
+        0.15,
+        0.18
+      ],
+      [
+        3.75,
+        3.25,
+        2.05,
+        0.295,
+        0.205
+      ]
+    ]
+  }
+}
