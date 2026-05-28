@@ -1,0 +1,43 @@
+{
+  "created_at": "2026-05-27T19:47:46.426667",
+  "experiment": "ablation_4way_exp_prompt",
+  "variant_set": "llm_region_adaptive_v3_ablation",
+  "iterations": 20,
+  "seeds": [
+    8409,
+    8410,
+    8411
+  ],
+  "api_base": "https://api.chat.csu.edu.cn/v1",
+  "model": "deepseek-v3",
+  "model_display": "deepseek-v3",
+  "llm_backend": "openai",
+  "api_key_storage": "not written to disk; read from LLM_API_KEY/OPENAI_API_KEY at runtime",
+  "warmstart_prompt_version": "experimental",
+  "variants": [
+    {
+      "key": "baseline",
+      "label": "Baseline",
+      "preset": "strict_baseline",
+      "needs_llm": false,
+      "overrides": {
+        "n_warmstart": 0,
+        "n_random_init": 6
+      }
+    },
+    {
+      "key": "llm_region_adaptive",
+      "label": "LLM_Region adaptive",
+      "preset": "llm_region_lgbo_posterior_adaptive",
+      "needs_llm": true,
+      "overrides": {}
+    },
+    {
+      "key": "llm_region_adaptive_v3",
+      "label": "LLM_Region adaptive v3",
+      "preset": "llm_region_lgbo_posterior_adaptive_v3",
+      "needs_llm": true,
+      "overrides": {}
+    }
+  ]
+}

@@ -10,6 +10,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parent
 OUT_DIR = ROOT / "images" / "summary_compare_style"
+IEEE_DIR = ROOT / "images" / "ieee"
 ADAPTIVE_REPORT = ROOT / "source_reports" / "adaptive4_5seeds_50iter_report.json"
 PAIRED_REPORT = ROOT / "source_reports" / "warmstart_vs_llmbo_paired_5seeds_50iter_report.json"
 
@@ -416,6 +417,117 @@ def _plot_delta_summary(rows: List[Mapping[str, Any]]) -> Dict[str, str]:
     return {"png": str(png), "pdf": str(pdf)}
 
 
+def _plot_ieee_two_panel(rows: List[Mapping[str, Any]]) -> Dict[str, str]:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.ticker import MultipleLocator
+
+    _set_compare_style()
+    plt.rcParams.update(
+        {
+            "font.size": 8.5,
+            "axes.labelsize": 9.0,
+            "axes.titlesize": 9.5,
+            "xtick.labelsize": 8.0,
+            "ytick.labelsize": 8.0,
+            "legend.fontsize": 8.0,
+            "axes.linewidth": 0.75,
+            "grid.linewidth": 0.55,
+        }
+    )
+    IEEE_DIR.mkdir(parents=True, exist_ok=True)
+
+    fig, (ax_curve, ax_delta) = plt.subplots(
+        1,
+        2,
+        figsize=(7.15, 2.75),
+        gridspec_kw={"width_ratios": [1.55, 1.0], "wspace": 0.34},
+        constrained_layout=True,
+    )
+
+    for row in rows:
+        traces = _load_group_traces(row)
+        if not traces:
+            continue
+        min_len = min(len(trace) for trace in traces)
+        stack = np.vstack([trace[:min_len] for trace in traces])
+        x = np.arange(1, min_len + 1)
+        mean = stack.mean(axis=0)
+        std = stack.std(axis=0)
+        ax_curve.plot(
+            x,
+            mean,
+            color=row["color"],
+            linewidth=1.45,
+            marker=row["marker"],
+            markevery=max(min_len // 6, 1),
+            markersize=3.1,
+            label=row["label"],
+            solid_capstyle="round",
+        )
+        ax_curve.fill_between(x, mean - std, mean + std, color=row["color"], alpha=0.09, linewidth=0)
+
+    ax_curve.set_title("(a) HV convergence", pad=3)
+    ax_curve.set_xlabel("Evaluation index")
+    ax_curve.set_ylabel("Canonical HV")
+    ax_curve.yaxis.set_major_locator(MultipleLocator(0.04))
+    ax_curve.yaxis.set_minor_locator(MultipleLocator(0.02))
+    ax_curve.grid(True, alpha=0.75)
+    ax_curve.set_axisbelow(True)
+    ax_curve.legend(
+        loc="lower right",
+        ncol=1,
+        frameon=True,
+        fancybox=False,
+        edgecolor="#777777",
+        handlelength=1.7,
+        borderpad=0.35,
+        labelspacing=0.25,
+    )
+
+    comparison_rows = [row for row in rows if row["key"] != "baseline"]
+    x_delta = np.arange(len(comparison_rows))
+    deltas = np.array([row["delta_vs_baseline"] for row in comparison_rows], dtype=float)
+    colors = [row["color"] for row in comparison_rows]
+    bars = ax_delta.bar(
+        x_delta,
+        deltas,
+        color=colors,
+        alpha=0.88,
+        width=0.62,
+        edgecolor="#555555",
+        linewidth=0.65,
+    )
+    ax_delta.axhline(0.0, color="#555555", linewidth=0.75)
+    for bar, row, delta in zip(bars, comparison_rows, deltas):
+        ax_delta.text(
+            bar.get_x() + bar.get_width() / 2,
+            delta + 0.00028,
+            f"+{delta:.4f}",
+            ha="center",
+            va="bottom",
+            fontsize=7.8,
+            color="#333333",
+        )
+    ax_delta.set_title("(b) Gain over baseline", pad=3)
+    ax_delta.set_ylabel(r"$\Delta$ Canonical HV")
+    ax_delta.set_xticks(x_delta)
+    ax_delta.set_xticklabels([row["label"] for row in comparison_rows], rotation=22, ha="right")
+    ax_delta.yaxis.set_major_locator(MultipleLocator(0.003))
+    ax_delta.grid(True, axis="y", alpha=0.75)
+    ax_delta.set_axisbelow(True)
+    ax_delta.set_ylim(0.0, max(deltas) + 0.0022)
+
+    png = IEEE_DIR / "ablation523_ieee_twopanel.png"
+    pdf = IEEE_DIR / "ablation523_ieee_twopanel.pdf"
+    fig.savefig(png, dpi=600, bbox_inches="tight")
+    fig.savefig(pdf, bbox_inches="tight")
+    plt.close(fig)
+    return {"png": str(png), "pdf": str(pdf)}
+
+
 def main() -> None:
     rows = _build_table()
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -425,6 +537,7 @@ def main() -> None:
         "delta_summary": _plot_delta_summary(rows),
         "canonical_hv_box": _plot_hv_box(rows),
         "hv_convergence": _plot_hv_convergence(rows),
+        "ieee_twopanel": _plot_ieee_two_panel(rows),
         "values_csv": str(OUT_DIR / "ablation523_4group_plot_values.csv"),
     }
     manifest = {

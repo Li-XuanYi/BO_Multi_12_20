@@ -1,0 +1,259 @@
+\documentclass[journal]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{float}
+
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+\begin{document}
+
+\title{LLAMBO-MO: Large Language Model-Augmented Multi-Objective Bayesian Optimization for Battery Fast-Charging Protocol Design}
+
+\author{Anonymous Authors}
+
+\markboth{IEEE TRANSACTIONS ON TRANSPORTATION ELECTRIFICATION}%
+{Anonymous \MakeLowercase{\textit{et al.}}: LLAMBO-MO}
+
+\maketitle
+
+\begin{abstract}
+The design of fast-charging protocols for lithium-ion batteries is inherently a constrained multi-objective optimization problem (CMOP) that must simultaneously minimize charging time, peak temperature rise, and capacity fade. While Bayesian optimization (BO) has emerged as a sample-efficient paradigm for such expensive black-box problems, existing methods rely solely on mathematical surrogates and fail to leverage the rich domain knowledge embedded in battery literature. This paper proposes LLAMBO-MO, a large language model (LLM)-augmented multi-objective BO framework that strategically integrates LLM-generated domain knowledge at two touchpoints within the BO loop. First, the LLM generates physics-informed warmstart candidates to bootstrap the surrogate with high-quality initial data. Second, the LLM provides iteration-level guidance that is coupled with the Gaussian process posterior through a bounded acquisition-time mean shift. The multi-objective problem is decomposed via augmented Tchebycheff scalarization with Riesz s-energy weight vectors. Experiments on an SPMe-based electrochemical-thermal-aging simulator demonstrate that LLAMBO-MO outperforms ParEGO, NSGA-II, DISK, and PIMD in both hypervolume convergence and Pareto front quality within a fixed evaluation budget.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Lithium-ion battery, fast charging, multi-objective optimization, Bayesian optimization, large language models, Gaussian process, Tchebycheff scalarization.
+\end{IEEEkeywords}
+
+\IEEEpeerreviewmaketitle
+
+\section{Introduction}
+\label{sec:introduction}
+
+Lithium-ion batteries have become the dominant energy storage technology for electric vehicles and portable electronics, owing to their high energy density and long cycle life. However, the fundamental trade-off between charging speed and battery degradation remains a critical challenge: fast charging reduces user wait time but accelerates capacity fade and increases safety risks from excessive heat generation.
+
+The charging protocol design problem is naturally formulated as a constrained multi-objective optimization problem (CMOP), where multiple competing objectives must be simultaneously minimized under physical constraints. Model-based optimization approaches, which rely on battery simulation models rather than physical experiments, offer a cost-effective alternative for exploring the protocol design space.
+
+From an algorithmic perspective, Bayesian optimization (BO) has gained popularity for charging protocol design due to its sample efficiency. Despite these advances, existing BO-based methods construct surrogate models purely from numerical data, without incorporating the extensive domain knowledge available in the battery science literature.
+
+Meanwhile, large language models (LLMs) have demonstrated remarkable capabilities in synthesizing and reasoning over scientific knowledge. Trained on vast corpora of scientific literature, LLMs encode rich domain priors about electrochemical relationships, thermal dynamics, and degradation mechanisms.
+
+This paper proposes LLAMBO-MO (LLM-Augmented Multi-Objective Bayesian Optimization), a framework that strategically integrates LLM-generated domain knowledge into a decomposition-based multi-objective BO algorithm for battery fast-charging protocol design.
+
+\section{Problem Formulation}
+\label{sec:problem}
+
+\subsection{Charging Protocol Design as CMOP}
+
+The charging protocol design problem determines the optimal parameters of a multi-stage constant-current (MCC) charging protocol through optimization. It is formulated as a CMOP with objectives:
+\begin{equation}
+\min_{\boldsymbol{\theta}} f(\boldsymbol{\theta}) = \{t_c, \Delta T_p, Q_s\}
+\end{equation}
+where $\boldsymbol{\theta}$ denotes the decision vector, $t_c$ is the total charging time, $\Delta T_p$ is the peak temperature rise above ambient, and $Q_s$ represents the capacity fade.
+
+\subsection{Decision Variables and Constraints}
+
+A 3-stage constant-current (3-CC) protocol is adopted. The decision vector comprises five variables:
+\begin{equation}
+\boldsymbol{\theta} = [I_1, I_2, I_3, \Delta s_1, \Delta s_2]
+\end{equation}
+where $I_1, I_2, I_3$ denote the charging currents for stages 1, 2, and 3, respectively, and $\Delta s_1, \Delta s_2$ denote the state-of-charge (SOC) interval widths for stages 1 and 2. The constraint is $\Delta s_1 + \Delta s_2 \leq 0.70$, ensuring $\Delta s_3 > 0$ for the final charging stage.
+
+\section{Electrochemical-Thermal-Aging Model}
+\label{sec:model}
+
+\subsection{Electrochemical Model}
+
+The Single Particle Model with electrolyte (SPMe) is adopted as a computationally efficient reduced-order variant of the P2D model. The SPMe approximates each electrode as a single spherical particle while retaining an electrolyte concentration equation.
+
+\subsection{Thermal Model}
+
+A lumped-parameter thermal model is coupled with the electrochemical model. The governing equation for the cell temperature $T$ is:
+\begin{equation}
+\rho C_p \frac{\partial T}{\partial t} = q_{\text{gen}} - h_c (T - T_{\text{air}})
+\end{equation}
+where $q_{\text{gen}}$ is the volumetric heat generation rate computed from the electrochemical model.
+
+\subsection{Aging Model}
+
+The capacity fade percentage is computed as a function of the mean SOC, mean temperature, and mean current during the charging process:
+\begin{equation}
+Q_s = \frac{Q_{\text{eff}}}{\text{Cap}(\bar{s}, \bar{T}, \bar{I})} \times 100\%
+\end{equation}
+where $\text{Cap}(\cdot)$ is an Arrhenius-type function capturing the dependence of cycle life on operating conditions.
+
+\section{Proposed LLAMBO-MO Framework}
+\label{sec:method}
+
+\subsection{Motivation and Framework Overview}
+
+The key insight of LLAMBO-MO is that LLM-generated domain knowledge should not replace the surrogate model, but rather complement it at strategic points where it can have the greatest impact. This leads to a two-touchpoint architecture:
+\begin{itemize}
+\item \textbf{Touchpoint 1 (Initialization):} The LLM generates physics-informed warmstart candidates.
+\item \textbf{Touchpoint 2 (Iteration-Level Guidance):} The LLM provides guidance coupled with the GP posterior.
+\end{itemize}
+
+\subsection{Riesz s-Energy Weight Generation and Tchebycheff Scalarization}
+
+The objectives are transformed to improve numerical conditioning:
+\begin{equation}
+\tilde{f}_1 = \log_{10}(t_c), \quad \tilde{f}_2 = \Delta T_p, \quad \tilde{f}_3 = \log_{10}(Q_s)
+\end{equation}
+
+Given a weight vector $\boldsymbol{w}$, the scalarized objective is:
+\begin{equation}
+g^{\text{tch}}(\boldsymbol{\theta} \mid \boldsymbol{w}) = \max_{i} \{w_i \cdot \bar{f}_i(\boldsymbol{\theta})\} + \eta \sum_{i=1}^{3} w_i \cdot \bar{f}_i(\boldsymbol{\theta})
+\end{equation}
+where $\eta = 0.05$ is the augmentation coefficient.
+
+\subsection{Gaussian Process Surrogate Model}
+
+LLAMBO-MO employs a Gaussian process (GP) as the surrogate model. The kernel function is the Mat\'{e}rn 5/2 kernel with automatic relevance determination (ARD):
+\begin{equation}
+k(\boldsymbol{\theta}, \boldsymbol{\theta}') = \sigma_f^2 \left(1 + \frac{\sqrt{5}r}{\ell} + \frac{5r^2}{3\ell^2}\right) \exp\left(-\frac{\sqrt{5}r}{\ell}\right) + \sigma_n^2 \delta(\boldsymbol{\theta}, \boldsymbol{\theta}')
+\end{equation}
+
+\subsection{LLM Integration: Two-Touchpoint Architecture}
+
+\subsubsection{Touchpoint 1: Warmstart Candidate Generation}
+
+The initial design of experiments significantly impacts BO performance. Instead of relying on random sampling, LLAMBO-MO queries the LLM to generate initial charging protocol candidates informed by domain knowledge.
+
+\subsubsection{Touchpoint 2: Iteration-Level Guidance}
+
+At each BO iteration, after the GP is fitted, the LLM is queried for guidance on where to search next. The LLM responds with either point mode or region mode guidance.
+
+\subsection{GP-LLM Coupling via Acquisition-Time Mean Shift}
+
+The coupling strength parameter $\lambda$ is computed as:
+\begin{equation}
+\lambda = \text{clip}\left(\frac{c}{\sqrt{\boldsymbol{v}^\top \boldsymbol{\Sigma}_{\mathcal{G}\mathcal{G}} \boldsymbol{v}}} \cdot \rho^t, \lambda_{\min}, \lambda_{\max}\right)
+\end{equation}
+
+For any candidate point $\boldsymbol{\theta}$, the coupled posterior mean is:
+\begin{equation}
+\mu_{\text{coupled}}(\boldsymbol{\theta}) = \mu(\boldsymbol{\theta}) - \lambda \cdot g_{\text{gate}} \cdot m(\boldsymbol{\theta}) \cdot \left[\boldsymbol{\Sigma}_{\boldsymbol{\theta}\mathcal{G}} \boldsymbol{v}\right]_z \cdot \hat{\sigma}_y
+\end{equation}
+
+\subsection{Acquisition Function with Stagnation-Aware Exploration}
+
+LLAMBO-MO uses the Expected Improvement (EI) acquisition function. Given the coupled posterior, the EI at a candidate point $\boldsymbol{\theta}$ is:
+\begin{equation}
+\alpha_{\text{EI}}(\boldsymbol{\theta}) = (f_{\min} - \mu_{\text{coupled}}(\boldsymbol{\theta})) \Phi(z) + \sigma(\boldsymbol{\theta}) \phi(z)
+\end{equation}
+where $z = (f_{\min} - \mu_{\text{coupled}}(\boldsymbol{\theta})) / \sigma(\boldsymbol{\theta})$.
+
+\subsection{Overall Algorithm}
+
+The complete LLAMBO-MO procedure is summarized in Algorithm~\ref{alg:llambo-mo}.
+
+\begin{algorithm}
+\caption{LLAMBO-MO}
+\label{alg:llambo-mo}
+\begin{algorithmic}[1]
+\Require Simulator $\mathcal{S}$, LLM $\mathcal{L}$, budget $T$, warmstart count $n_{\text{ws}}$, Riesz weight set $\mathcal{W}$
+\Ensure Pareto front $\mathcal{P}$, hypervolume trace
+\State Generate Riesz s-energy weight set $\mathcal{W}$ (cached)
+\State // \textbf{Touchpoint 1: Warmstart}
+\State Query LLM for $n_{\text{ws}}$ initial candidates $\{\boldsymbol{\theta}_j\}_{j=1}^{n_{\text{ws}}}$
+\For{$j = 1$ to $n_{\text{ws}}$}
+    \State Evaluate $\boldsymbol{y}_j = \mathcal{S}(\boldsymbol{\theta}_j)$; add $(\boldsymbol{\theta}_j, \boldsymbol{y}_j)$ to database $\mathcal{D}$
+\EndFor
+\For{$t = 1$ to $T$}
+    \State Sample weight $\boldsymbol{w}^{(t)}$ from $\mathcal{W}$
+    \State Update dynamic normalization bounds
+    \State Compute scalarized targets $g_j^{\text{tch}}$ for all $\boldsymbol{\theta}_j \in \mathcal{D}$
+    \State Fit GP on $\{(\boldsymbol{\theta}_j, g_j^{\text{tch}})\}$
+    \State // \textbf{Touchpoint 2: Iteration guidance}
+    \State Query LLM for guidance
+    \State Build GP-LLM coupling $(\lambda, \mathcal{G}, \boldsymbol{v})$ from guidance
+    \State Select $\boldsymbol{\theta}^* = \arg\max_{\boldsymbol{\theta}} \alpha(\boldsymbol{\theta})$
+    \State Evaluate $\boldsymbol{y}^* = \mathcal{S}(\boldsymbol{\theta}^*)$; add to $\mathcal{D}$
+    \State Update Pareto front $\mathcal{P}$ and hypervolume
+\EndFor
+\State \Return $\mathcal{P}$
+\end{algorithmic}
+\end{algorithm}
+
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Experimental Setup}
+
+Experiments are conducted on the LG INR21700-M50 cell (Chen2020). Each algorithm is allotted a fixed evaluation budget of 56 simulator evaluations. The primary metric is the normalized hypervolume (HV) computed in the log-transformed objective space.
+
+\subsection{Baseline Methods}
+
+LLAMBO-MO is compared against ParEGO, NSGA-II, DISK, and PIMD.
+
+\subsection{HV Convergence Comparison}
+
+Table~\ref{tab:hv} summarizes the final normalized hypervolume across all algorithms.
+
+\begin{table}[htbp]
+\caption{Final Canonical HV on Chen2020 (5 Seeds, 56 Evaluations)}
+\label{tab:hv}
+\centering
+\begin{tabular}{lccc}
+\toprule
+Algorithm & Mean HV & Std HV & Pareto Size \\
+\midrule
+LLAMBO-MO & \textbf{0.3872} & 0.0142 & 42.8 \\
+ParEGO & 0.3763 & 0.0041 & 46.2 \\
+NSGA-II & 0.3273 & 0.0216 & 25.2 \\
+DISK & 0.3091 & 0.0274 & 28.0 \\
+PIMD & 0.2982 & 0.0128 & 25.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Ablation Study}
+
+Table~\ref{tab:ablation} presents the ablation study results.
+
+\begin{table}[htbp]
+\caption{Ablation Study on Chen2020 (5 Seeds, 50 Iterations)}
+\label{tab:ablation}
+\centering
+\begin{tabular}{lccc}
+\toprule
+Variant & Warmstart & Iteration Guidance & Mean HV \\
+\midrule
+V0 (Baseline) & -- & -- & 0.3700 \\
+V1 (WarmStart) & $\checkmark$ & -- & 0.3751 \\
+V2 (Full) & $\checkmark$ & $\checkmark$ & \textbf{0.3872} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+This paper proposed LLAMBO-MO, a framework that integrates LLM-generated domain knowledge into multi-objective Bayesian optimization for battery fast-charging protocol design. The two-touchpoint architecture provides LLM guidance at initialization and during optimization, while the GP-LLM coupling mechanism preserves statistical rigor. Experiments demonstrate superior performance over state-of-the-art methods.
+
+\begin{thebibliography}{1}
+
+\bibitem{ref1}
+N.~Nitta \textit{et al.}, ``Li-ion battery materials: present and future,'' \textit{Materials Today}, vol.~18, no.~5, pp.~252--264, 2015.
+
+\bibitem{ref2}
+A.~Tomaszewska \textit{et al.}, ``Lithium-ion battery fast charging: A review,'' \textit{eTransportation}, vol.~1, p.~100011, 2019.
+
+\bibitem{ref3}
+J.~Knowles, ``ParEGO: A hybrid algorithm with on-line landscape approximation for expensive multiobjective optimization problems,'' \textit{IEEE Trans. Evol. Comput.}, vol.~10, no.~1, pp.~50--66, 2006.
+
+\bibitem{ref4}
+K.~Deb \textit{et al.}, ``A fast and elitist multiobjective genetic algorithm: NSGA-II,'' \textit{IEEE Trans. Evol. Comput.}, vol.~6, no.~2, pp.~182--197, 2002.
+
+\end{thebibliography}
+
+\end{document}
