@@ -44,7 +44,7 @@
 \node[model, below=of dbinit] (scalar) {Riesz weights\\Tchebycheff scalarization};
 \node[model, left=of scalar] (gp) {GP surrogate\\on scalarized targets};
 \node[llm, left=of gp] (guide) {LLM point/region\\guidance};
-\node[model, left=of guide] (lift) {Region-Lifted GP\\and EI acquisition};
+\node[model, left=of guide] (lift) {Region-Lifted GP\\or plain EI fallback};
 \node[eval, below=of lift] (sim) {PyBaMM simulator\\SPMe/thermal/aging};
 \node[store, right=of sim] (db) {Database update\\Pareto front and HV};
 
@@ -66,6 +66,6 @@
 
 \end{tikzpicture}%
 }
-\caption{Closed-loop LLMBO-MO framework. The LLM contributes knowledge at initialization and during iteration, while the BO core keeps final decisions tied to scalarization, GP uncertainty, acquisition optimization, and simulator feedback.}
+\caption{Closed-loop LLMBO-MO framework. The LLM contributes knowledge at initialization and during iteration, while guard checks pass valid guidance to region-lifted GP coupling or fall back to plain EI. The BO core keeps final decisions tied to scalarization, GP uncertainty, acquisition optimization, and simulator feedback.}
 \label{fig:framework}
 \end{figure*}
