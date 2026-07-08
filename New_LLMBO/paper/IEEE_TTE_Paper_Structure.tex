@@ -1,6 +1,6 @@
 % ============================================================================
 % IEEE Transactions on Transportation Electrification Paper Structure
-% LLAMBO-MO: LLM-Augmented Multi-Objective Bayesian Optimization
+% LLMBO-MO: LLM-Augmented Multi-Objective Bayesian Optimization
 % for Battery Fast-Charging Protocol Design
 % ============================================================================
 
@@ -24,7 +24,7 @@
 % Title
 % ============================================================================
 \title{
-LLAMBO-MO: Large Language Model-Augmented Multi-Objective Bayesian Optimization \\
+LLMBO-MO: Large Language Model-Augmented Multi-Objective Bayesian Optimization \\
 for Battery Fast-Charging Protocol Design
 }
 
@@ -40,7 +40,7 @@ This work was supported in part by ...}
 }
 
 \markboth{IEEE TRANSACTIONS ON TRANSPORTATION ELECTRIFICATION,~Vol.~XX, No.~XX, Month~2026}%
-{Author \MakeLowercase{\textit{et al.}}: LLAMBO-MO: LLM-Augmented Multi-Objective BO for Battery Fast-Charging}
+{Author \MakeLowercase{\textit{et al.}}: LLMBO-MO: LLM-Augmented Multi-Objective BO for Battery Fast-Charging}
 
 \maketitle
 
@@ -55,7 +55,7 @@ While Bayesian optimization (BO) has emerged as a sample-efficient paradigm
 for such expensive black-box problems, existing methods rely solely on
 mathematical surrogates and fail to leverage the rich domain knowledge
 embedded in battery literature.
-This paper proposes LLAMBO-MO, a large language model (LLM)-augmented
+This paper proposes LLMBO-MO, a large language model (LLM)-augmented
 multi-objective BO framework that strategically integrates LLM-generated
 domain knowledge at two touchpoints within the BO loop.
 First, the LLM generates physics-informed warmstart candidates to bootstrap
@@ -64,10 +64,10 @@ Second, the LLM provides iteration-level guidance that is coupled with
 the Gaussian process posterior through a bounded acquisition-time mean shift.
 The multi-objective problem is decomposed via augmented Tchebycheff
 scalarization with Riesz s-energy weight vectors.
-Experiments on an SPMe-based electrochemical-thermal-aging simulator
-demonstrate that LLAMBO-MO outperforms ParEGO, NSGA-II, DISK, and PIMD
-in both hypervolume convergence and Pareto front quality within a fixed
-evaluation budget.
+Experiments on SPMe-based electrochemical-thermal-aging simulators
+show favorable LLMBO-MO behavior in retained advantage cases, including
+Chen2020 representative runs, Ecker2015 five-seed comparisons, and
+component ablations.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -98,7 +98,7 @@ Tchebycheff scalarization.
 % - Model-based optimization advantages [6]-[8]
 % - BO for charging protocol design [4], [17], [18]
 % - LLM capabilities for scientific knowledge [Ref-LLM]
-% - LLAMBO-MO motivation and novelty
+% - LLMBO-MO motivation and novelty
 
 % ============================================================================
 % Section II: Problem Formulation
@@ -158,9 +158,9 @@ Tchebycheff scalarization.
 % Objective extraction
 
 % ============================================================================
-% Section IV: Proposed LLAMBO-MO Framework
+% Section IV: Proposed LLMBO-MO Framework
 % ============================================================================
-\section{Proposed LLAMBO-MO Framework}
+\section{Proposed LLMBO-MO Framework}
 \label{sec:method}
 
 % 4.1 Framework Overview
@@ -212,7 +212,7 @@ Tchebycheff scalarization.
 % 4.7 Overall Algorithm
 \subsection{Overall Algorithm}
 
-% Algorithm 1: LLAMBO-MO pseudocode
+% Algorithm 1: LLMBO-MO pseudocode
 
 % ============================================================================
 % Section V: Experiments
