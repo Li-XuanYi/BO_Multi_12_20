@@ -1,0 +1,24 @@
+# Terminology Lock
+# Stable terms across the paper. Do NOT vary without explicit decision.
+#
+# Format:
+# - canonical: "term"
+#   forbidden: ["alias1", "alias2"]
+#   context: "where this term applies"
+
+terms:
+  - canonical: "Tchebycheff scalarization"
+    forbidden: ["Tchebycheff decomposition", "weighted Tchebycheff"]
+    context: "scalarization function definition"
+
+  - canonical: "LLMBO"
+    forbidden: ["LLAMBO-MO", "LLM-BO"]
+    context: "method name"
+
+  - canonical: "capacity fade"
+    forbidden: ["aging", "degradation"]
+    context: "objective metric"
+
+  - canonical: "physics-informed GP"
+    forbidden: ["physics-GP", "hybrid GP"]
+    context: "surrogate model"

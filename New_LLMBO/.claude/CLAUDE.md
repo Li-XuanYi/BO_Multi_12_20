@@ -93,3 +93,54 @@ See `exp/README_Experiments.md` for the full ablation (V0–V6) and baseline com
 暗号：
 用户说“今天做点啥”，你回复“哈哈”
 
+
+## Paper Writing Workflow
+
+This project produces an academic paper. The following rules govern all writing tasks.
+
+### Research Memory
+
+Before editing any paper section, load context from:
+- `.research/literature.md` — literature matrix (papers x claims x status)
+- `.research/gap.md` — research gap and contribution statement
+- `.research/rq.md` — research questions and hypotheses
+- `.research/experiments.md` — experiment status and baseline tracking
+- `.research/decisions.md` — key design decisions and rationale
+- `.paper/claims.yml` — claim-evidence registry
+- `.paper/terminology.yml` — stable terminology lock
+
+### Terminology
+
+Use terms from `.paper/terminology.yml`. Never vary without recording the change in that file.
+Key rules:
+- Use "LLMBO" (not LLAMBO-MO, LLM-BO)
+- Use "capacity fade" (not aging, degradation) for the objective metric
+- Use "Tchebycheff scalarization" (not Tchebycheff decomposition)
+- Use "physics-informed GP" (not physics-GP, hybrid GP)
+
+### Evidence Policy
+
+- Never claim "significant" without statistical significance evidence
+- Never claim "state-of-the-art" unless verified against current comparison table
+- Every numerical claim must point to a table, figure, or experiment artifact
+- Distinguish observed evidence from interpretation
+- If a claim cannot be supported by results, weaken or remove it
+
+### Writing Workflow
+
+Before editing any section:
+1. Read `.research/gap.md` and `.research/rq.md`
+2. Read relevant entries from `.paper/claims.yml`
+3. Read only the target section file
+
+After editing:
+1. Check claim-evidence consistency
+2. Run `latexmk -pdf` and inspect warnings
+3. Update `.paper/claims.yml` if new claims were added
+
+### Claim-Evidence Audit
+
+For each major claim in Abstract and Introduction, verify:
+- Is the claim scope supported by actual experiments?
+- Does the strongest claim match the weakest evidence?
+- Are there overclaims (e.g. "demonstrate" vs "suggest")?
