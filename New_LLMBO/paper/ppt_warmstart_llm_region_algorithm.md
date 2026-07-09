@@ -4,7 +4,7 @@
 
 1. `WarmStart` 的介绍话术
 2. `LLM_Region` 的介绍话术
-3. `LLMBO / LLAMBO-MO` 的论文风格伪代码
+3. `LLMBO / LLMBO-MO` 的论文风格伪代码
 
 说明：
 - 下文将 `LLM_Region` 统一表述为“LLM 生成区域偏好，并通过 Region-Lifted GP / lifted EI 影响采样”。
@@ -64,14 +64,14 @@
    建议明确说：
    - 任务：三目标快充协议优化
    - 指标：`Hypervolume (HV)` 和 Pareto front quality
-   - 对比：`LLAMBO-MO vs ParEGO vs NSGA-II`，以及需要时补 `DISK / PIMD`
+   - 对比：`LLMBO-MO vs ParEGO vs NSGA-II`，以及需要时补 `DISK / PIMD`
    - 预算：固定评估预算下比较样本效率
 
 9. `实验结果一：总体效果`
-   讲什么：先讲最强结论，即完整 LLAMBO-MO 在主对比实验中取得更好的 HV 收敛和 Pareto 前沿质量。
+   讲什么：先讲最强结论，即完整 LLMBO-MO 在主对比实验中取得更好的 HV 收敛和 Pareto 前沿质量。
    当前可用口径：
-   - Chen2020 上，`LLAMBO-MO` 的 mean HV 为 `0.3872`，高于 `ParEGO` 的 `0.3763`
-   - Ecker2015 上，`LLAMBO-MO` 的 mean HV 为 `1.8684`，明显高于 `ParEGO` 的 `1.5866`
+   - Chen2020 上，`LLMBO-MO` 的 canonical HV 为 `0.3848256`，高于 `ParEGO reference` 的 `0.3523111`
+   - Ecker2015 上，`LLMBO-MO` 的 canonical HV 为 `1.8684`，明显高于 `ParEGO reference` 的 `1.5866`
    这一页的目标：先证明“方法整体有效”。
 
 10. `实验结果二：消融分析`
@@ -261,7 +261,7 @@ $$
 
 ```latex
 \begin{algorithm}[t]
-\caption{LLAMBO-MO / LLMBO with WarmStart and LLM\_Region Guidance}
+\caption{LLMBO-MO / LLMBO with WarmStart and LLM\_Region Guidance}
 \label{alg:llmbo}
 \begin{algorithmic}[1]
 \Require Evaluation budget $T$, warm-start size $n_{\mathrm{ws}}$, random init size $n_{\mathrm{rand}}$, weight set $\mathcal{W}$, simulator $f(\cdot)$
@@ -413,3 +413,4 @@ $$
 - `LLM_Region: 用区域先验引导 BO 搜索`
 - `Two-Touchpoint LLM Integration in LLMBO`
 - `Algorithm of LLMBO for Battery Fast-Charging Optimization`
+

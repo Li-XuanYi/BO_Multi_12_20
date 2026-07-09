@@ -1,0 +1,71 @@
+\begin{figure*}[t]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+    font=\small,
+    node distance=8mm and 11mm,
+    block/.style={
+        draw,
+        rounded corners=2pt,
+        align=center,
+        minimum width=28mm,
+        minimum height=10mm,
+        fill=white
+    },
+    llm/.style={
+        block,
+        fill=blue!6,
+        draw=blue!55!black
+    },
+    model/.style={
+        block,
+        fill=green!7,
+        draw=green!45!black
+    },
+    eval/.style={
+        block,
+        fill=orange!9,
+        draw=orange!70!black
+    },
+    store/.style={
+        block,
+        fill=gray!8,
+        draw=gray!65!black
+    },
+    arrow/.style={-{Latex[length=2.2mm]}, thick},
+    feedback/.style={-{Latex[length=2.2mm]}, thick, dashed, gray!70!black}
+]
+
+\node[block] (problem) {Charging protocol\\bounds and constraints};
+\node[llm, right=of problem] (warm) {LLM WarmStart\\candidate pool};
+\node[block, right=of warm] (portfolio) {Validation, repair\\and portfolio selection};
+\node[store, right=of portfolio] (dbinit) {Initial\\ObservationDB};
+
+\node[model, below=of dbinit] (scalar) {Riesz weights\\Tchebycheff scalarization};
+\node[model, left=of scalar] (gp) {GP surrogate\\on scalarized targets};
+\node[llm, left=of gp] (guide) {LLM point/region\\guidance};
+\node[model, left=of guide] (lift) {Region-Lifted GP\\or plain EI fallback};
+\node[eval, below=of lift] (sim) {PyBaMM simulator\\SPMe/thermal/aging};
+\node[store, right=of sim] (db) {Database update\\Pareto front and HV};
+
+\draw[arrow] (problem) -- (warm);
+\draw[arrow] (warm) -- (portfolio);
+\draw[arrow] (portfolio) -- (dbinit);
+\draw[arrow] (dbinit) -- (scalar);
+\draw[arrow] (scalar) -- (gp);
+\draw[arrow] (gp) -- (guide);
+\draw[arrow] (guide) -- (lift);
+\draw[arrow] (gp.south west) |- (lift.east);
+\draw[arrow] (lift) -- (sim);
+\draw[arrow] (sim) -- (db);
+\draw[feedback] (db.east) -- ++(9mm,0) |- (scalar.east);
+\draw[feedback] (db.north) |- (guide.south);
+
+\node[draw=blue!55!black, rounded corners=2pt, fit=(warm)(guide), inner sep=3mm, label={[blue!55!black]above:LLM knowledge touchpoints}] {};
+\node[draw=green!45!black, rounded corners=2pt, fit=(scalar)(gp)(lift), inner sep=3mm, label={[green!45!black]below:BO decision core}] {};
+
+\end{tikzpicture}%
+}
+\caption{Closed-loop LLMBO-MO framework. The LLM contributes knowledge at initialization and during iteration, while guard checks pass valid guidance to region-lifted GP coupling or fall back to plain EI. The BO core keeps final decisions tied to scalarization, GP uncertainty, acquisition optimization, and simulator feedback.}
+\label{fig:framework}
+\end{figure*}
