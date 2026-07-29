@@ -1,71 +1,193 @@
 \begin{figure*}[t]
 \centering
-\resizebox{\textwidth}{!}{%
+\resizebox{0.74\textwidth}{!}{%
 \begin{tikzpicture}[
-    font=\small,
-    node distance=8mm and 11mm,
-    block/.style={
-        draw,
-        rounded corners=2pt,
+    x=1cm,
+    y=1cm,
+    font=\sffamily\footnotesize,
+    process/.style={
+        draw=black!78,
+        line width=0.60pt,
         align=center,
-        minimum width=28mm,
-        minimum height=10mm,
-        fill=white
+        fill=white,
+        minimum width=3.55cm,
+        minimum height=0.86cm,
+        rounded corners=1.2pt
     },
     llm/.style={
-        block,
-        fill=blue!6,
-        draw=blue!55!black
+        process,
+        fill=orange!14,
+        draw=orange!78!black
     },
-    model/.style={
-        block,
-        fill=green!7,
-        draw=green!45!black
+    bo/.style={
+        process,
+        fill=blue!8,
+        draw=blue!60!black
     },
-    eval/.style={
-        block,
-        fill=orange!9,
-        draw=orange!70!black
+    simulator/.style={
+        process,
+        fill=teal!10,
+        draw=teal!60!black
     },
-    store/.style={
-        block,
-        fill=gray!8,
-        draw=gray!65!black
+    data/.style={
+        process,
+        fill=gray!14,
+        draw=black!58
     },
-    arrow/.style={-{Latex[length=2.2mm]}, thick},
-    feedback/.style={-{Latex[length=2.2mm]}, thick, dashed, gray!70!black}
+    output/.style={
+        process,
+        fill=purple!15,
+        draw=purple!65!black,
+        rounded corners=4pt
+    },
+    decision/.style={
+        diamond,
+        aspect=2.25,
+        draw=black!78,
+        line width=0.60pt,
+        fill=white,
+        align=center,
+        inner xsep=1.0pt,
+        inner ysep=1.2pt
+    },
+    flow/.style={
+        -{Latex[length=2.0mm,width=1.2mm]},
+        draw=black!82,
+        line width=0.72pt
+    },
+    advisory/.style={
+        -{Latex[length=1.9mm,width=1.15mm]},
+        draw=orange!82!black,
+        line width=0.72pt,
+        dashed
+    },
+    fallback/.style={
+        -{Latex[length=1.8mm,width=1.1mm]},
+        draw=black!55,
+        line width=0.62pt,
+        densely dotted
+    },
+    edge label/.style={
+        font=\sffamily\scriptsize,
+        fill=white,
+        inner sep=1.3pt
+    }
 ]
 
-\node[block] (problem) {Charging protocol\\bounds and constraints};
-\node[llm, right=of problem] (warm) {LLM WarmStart\\candidate pool};
-\node[block, right=of warm] (portfolio) {Validation, repair\\and portfolio selection};
-\node[store, right=of portfolio] (dbinit) {Initial\\ObservationDB};
+% --------------------------------------------------------------------------
+% Phase A: constrained warm start
+% --------------------------------------------------------------------------
+\node[data, minimum width=5.25cm, minimum height=1.05cm] (task) at (0,11.25)
+    {\textbf{Battery charging CMOP}\\
+     protocol bounds, three objectives, and safety constraints};
 
-\node[model, below=of dbinit] (scalar) {Riesz weights\\Tchebycheff scalarization};
-\node[model, left=of scalar] (gp) {GP surrogate\\on scalarized targets};
-\node[llm, left=of gp] (guide) {LLM point/region\\guidance};
-\node[model, left=of guide] (lift) {Region-Lifted GP\\or plain EI fallback};
-\node[eval, below=of lift] (sim) {PyBaMM simulator\\SPMe/thermal/aging};
-\node[store, right=of sim] (db) {Database update\\Pareto front and HV};
+\node[llm] (llmpool) at (-2.55,9.83)
+    {\textbf{LLM candidate pool}\\domain-informed protocols};
+\node[process] (fallbackpool) at (2.55,9.83)
+    {\textbf{Physics priors + LHS}\\complete the pool if needed};
 
-\draw[arrow] (problem) -- (warm);
-\draw[arrow] (warm) -- (portfolio);
-\draw[arrow] (portfolio) -- (dbinit);
-\draw[arrow] (dbinit) -- (scalar);
-\draw[arrow] (scalar) -- (gp);
-\draw[arrow] (gp) -- (guide);
-\draw[arrow] (guide) -- (lift);
-\draw[arrow] (gp.south west) |- (lift.east);
-\draw[arrow] (lift) -- (sim);
-\draw[arrow] (sim) -- (db);
-\draw[feedback] (db.east) -- ++(9mm,0) |- (scalar.east);
-\draw[feedback] (db.north) |- (guide.south);
+\node[process, minimum width=4.45cm] (screen) at (0,8.47)
+    {\textbf{Repair, screen, and diversify}\\constraint-aware portfolio};
+\node[data, minimum width=4.45cm] (dinit) at (0,7.18)
+    {\textbf{Simulator-verified initial data}\\$\bD_0$};
 
-\node[draw=blue!55!black, rounded corners=2pt, fit=(warm)(guide), inner sep=3mm, label={[blue!55!black]above:LLM knowledge touchpoints}] {};
-\node[draw=green!45!black, rounded corners=2pt, fit=(scalar)(gp)(lift), inner sep=3mm, label={[green!45!black]below:BO decision core}] {};
+\draw[flow] (task.south) -- ++(0,-0.34) -| (llmpool.north);
+\draw[flow] (task.south) -- ++(0,-0.34) -| (fallbackpool.north);
+\draw[flow] (llmpool.south) |- (screen.west);
+\draw[flow] (fallbackpool.south) |- (screen.east);
+\draw[flow] (screen) -- (dinit);
+
+% --------------------------------------------------------------------------
+% Phase B: numerical MOBO loop
+% --------------------------------------------------------------------------
+\node[bo] (scalar) at (0,5.67)
+    {\textbf{Transform and scalarize}\\augmented Tchebycheff objective};
+\node[bo] (gp) at (0,4.34)
+    {\textbf{Fit GP surrogate}\\posterior mean and uncertainty};
+\node[bo, minimum width=4.05cm] (acq) at (0,2.88)
+    {\textbf{Optimize expected improvement}\\select next protocol $\btheta_{t+1}$};
+\node[simulator, minimum width=4.25cm] (sim) at (0,1.47)
+    {\textbf{Battery simulator}\\SPMe + thermal + aging evaluation};
+\node[data, minimum width=4.05cm] (update) at (0,0.12)
+    {\textbf{Update optimization state}\\$\bD_{t+1}$, $\bP_{t+1}$, and HV};
+\node[decision] (budget) at (0,-1.28) {\textbf{Budget}\\exhausted?};
+\node[output, minimum width=4.05cm] (result) at (0,-2.88)
+    {\textbf{Pareto-optimal protocols}\\Pareto front and HV trace};
+
+\node[process, minimum width=3.20cm] (weight) at (-5.05,5.67)
+    {\textbf{Trade-off direction}\\Riesz weight $\bw^{(t)}$};
+
+\draw[flow] (dinit) -- (scalar);
+\draw[flow] (weight) -- (scalar);
+\draw[flow] (scalar) -- (gp);
+\draw[flow] (gp) -- node[edge label, right] {$\mu_t,\sigma_t$} (acq);
+\draw[flow] (acq) -- (sim);
+\draw[flow] (sim) -- (update);
+\draw[flow] (update) -- (budget);
+\draw[flow] (budget) -- node[edge label, right] {Yes} (result);
+
+% A single outer feedback path closes the BO loop.
+\draw[flow] (budget.west) -- node[edge label, above] {No} ++(-5.95,0)
+    |- (weight.west);
+
+% --------------------------------------------------------------------------
+% Touchpoint 2: guarded, advisory LLM branch
+% --------------------------------------------------------------------------
+\node[llm, minimum width=3.70cm] (preference) at (4.95,4.48)
+    {\textbf{LLM search preference}\\point or bounded region};
+\node[decision, draw=orange!78!black, fill=orange!7] (guard) at (4.95,3.18)
+    {\textbf{Valid and}\\feasible?};
+\node[llm, minimum width=3.35cm] (lift) at (4.95,1.90)
+    {\textbf{Region-lifted mean}\\bounded, decaying influence};
+
+\draw[advisory] (gp.east) -- node[edge label, above, text=orange!82!black]
+    {current BO state} (preference.west);
+\draw[advisory] (preference) -- (guard);
+\draw[advisory] (guard) -- node[edge label, right, text=orange!82!black]
+    {Yes} (lift);
+\draw[advisory] (lift.west) -- (acq.east);
+\draw[fallback] (guard.west) -- ++(-0.65,0) |-
+    node[edge label, near start, above] {No: plain EI} (acq.north east);
+
+% --------------------------------------------------------------------------
+% Functional regions, placed behind the flowchart.
+% --------------------------------------------------------------------------
+\begin{scope}[on background layer]
+    \draw[
+        draw=orange!45!black,
+        fill=orange!3,
+        rounded corners=3pt
+    ] (-4.95,6.52) rectangle (4.95,12.15);
+
+    \draw[
+        draw=blue!45!black,
+        fill=blue!2,
+        rounded corners=3pt
+    ] (-7.35,-2.05) rectangle (2.70,6.38);
+
+    \draw[
+        draw=orange!60!black,
+        fill=orange!2,
+        rounded corners=3pt
+    ] (2.78,1.30) rectangle (7.15,5.15);
+\end{scope}
+
+\node[anchor=south west, font=\sffamily\bfseries\small,
+      text=orange!70!black] at (-4.72,12.30)
+      {A.\ Constrained warm start};
+\node[anchor=south west, font=\sffamily\bfseries\small,
+      text=blue!62!black] at (-7.08,6.61)
+      {B.\ Numerical multi-objective BO loop};
+\node[anchor=south west, font=\sffamily\bfseries\scriptsize,
+      text=orange!75!black] at (2.78,5.31)
+      {Touchpoint 2: advisory guidance};
 
 \end{tikzpicture}%
 }
-\caption{Closed-loop LLMBO-MO framework. The LLM contributes knowledge at initialization and during iteration, while guard checks pass valid guidance to region-lifted GP coupling or fall back to plain EI. The BO core keeps final decisions tied to scalarization, GP uncertainty, acquisition optimization, and simulator feedback.}
+\caption{LLMBO-MO framework. Constrained warm starting produces
+simulator-verified initial data. The numerical loop then scalarizes the
+observations, fits a GP, optimizes expected improvement, and evaluates the
+selected protocol. Iteration-level LLM preferences affect acquisition only
+after guard checks; rejected guidance follows the plain-EI path.}
 \label{fig:framework}
 \end{figure*}

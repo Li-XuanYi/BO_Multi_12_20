@@ -1,0 +1,81 @@
+\begin{figure*}[t]
+\centering
+\resizebox{0.92\textwidth}{!}{%
+\begin{tikzpicture}[
+    x=1cm,
+    y=1cm,
+    font=\sffamily\small,
+    main/.style={
+        draw=blue!65!black,
+        line width=0.70pt,
+        rounded corners=1.5pt,
+        fill=white,
+        align=center,
+        minimum width=2.70cm,
+        minimum height=1.18cm
+    },
+    advise/.style={
+        draw=orange!82!black,
+        line width=0.70pt,
+        rounded corners=1.5pt,
+        fill=white,
+        align=center,
+        minimum width=2.25cm,
+        minimum height=1.05cm
+    },
+    flow/.style={
+        -{Latex[length=2.1mm,width=1.3mm]},
+        line width=0.85pt,
+        draw=blue!72!black
+    },
+    advice/.style={
+        -{Latex[length=2.0mm,width=1.25mm]},
+        line width=0.80pt,
+        draw=orange!82!black,
+        dashed
+    },
+    fallback/.style={
+        -{Latex[length=1.9mm,width=1.2mm]},
+        line width=0.70pt,
+        draw=black!55,
+        densely dotted
+    }
+]
+
+% Numerical loop
+\node[main] (scalar) at (1.55,1.15) {\textbf{Scalarize}};
+\node[main] (gp) at (4.85,1.15) {\textbf{Fit GP}};
+\node[main, minimum width=3.15cm] (ei) at (8.45,1.15)
+    {\textbf{Expected improvement}};
+\node[main, minimum width=3.15cm] (update) at (12.15,1.15)
+    {\textbf{Simulate + update}};
+
+\draw[flow] (scalar) -- (gp);
+\draw[flow] (gp) -- (ei);
+\draw[flow] (ei) -- (update);
+\draw[flow] (update.south) -- ++(0,-0.65) -| (scalar.south);
+
+% Optional LLM branch
+\node[advise, minimum width=2.75cm] (pref) at (4.85,3.55)
+    {\textbf{LLM preference}};
+\node[advise] (guard) at (7.90,3.55) {\textbf{Guard}};
+\node[advise] (lift) at (10.65,3.55) {\textbf{Mean shift}};
+
+\draw[advice] (pref) -- (guard);
+\draw[advice] (guard) -- (lift);
+\draw[advice] (lift.south) -- ($(ei.north)+(0.72,0)$);
+\draw[fallback] (guard.south) -- node[left, font=\sffamily\scriptsize,
+    text=black!60] {invalid} ($(ei.north)+(-0.72,0)$);
+
+\node[font=\sffamily\scriptsize, text=orange!82!black]
+    at (9.82,2.45) {valid};
+
+\end{tikzpicture}%
+}
+\caption{Guarded acquisition step. Each iteration scalarizes the observed
+objectives, fits the GP, maximizes expected improvement, and evaluates the
+selected protocol. During the guidance window, a valid LLM preference shifts
+only the acquisition-time posterior mean; invalid or absent guidance follows
+the dotted path to standard EI.}
+\label{fig:guarded_region_lift}
+\end{figure*}

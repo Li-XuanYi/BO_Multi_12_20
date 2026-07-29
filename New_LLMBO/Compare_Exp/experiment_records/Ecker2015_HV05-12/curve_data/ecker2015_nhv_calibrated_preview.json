@@ -1,0 +1,65 @@
+{
+  "status": "calibrated_preview_not_adopted_as_paper_metric",
+  "metric": {
+    "name": "normalized hypervolume",
+    "ideal_raw": [
+      2500.0,
+      0.0,
+      0.004
+    ],
+    "reference_raw": [
+      7000.0,
+      35.0,
+      0.009
+    ],
+    "reference_normalized": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "log10_objectives": [
+      "charging_time",
+      "capacity_fade"
+    ],
+    "clipping": [
+      0.0,
+      1.0
+    ],
+    "std": "population (ddof=0)"
+  },
+  "seeds": [
+    8409,
+    8410,
+    8411,
+    8412,
+    8413
+  ],
+  "max_evaluations": 56,
+  "final": {
+    "ParEGO": {
+      "per_seed": {
+        "8409": 0.5597094234921303,
+        "8410": 0.5617900209268567,
+        "8411": 0.5546089925380194,
+        "8412": 0.5607887450654154,
+        "8413": 0.5329100760497526
+      },
+      "mean": 0.5539614516144349,
+      "population_std": 0.01081219067964481
+    },
+    "LLMBO-MO": {
+      "per_seed": {
+        "8409": 0.5528771545705589,
+        "8410": 0.5773072754447108,
+        "8411": 0.5714026718451252,
+        "8412": 0.5713192256657252,
+        "8413": 0.5572098527325061
+      },
+      "mean": 0.5660232360517252,
+      "population_std": 0.009325347868152848
+    }
+  },
+  "delta_mean": 0.012061784437290335,
+  "relative_gain_percent": 2.1773689129700458,
+  "paired_wins": 4
+}

@@ -1,0 +1,109 @@
+\relax 
+\citation{ref1}
+\citation{ref2}
+\citation{ref3}
+\citation{ref11}
+\citation{ref12,ref14}
+\citation{ref13}
+\citation{ref4}
+\citation{ref10}
+\citation{ref16}
+\@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}{}\protected@file@percent }
+\newlabel{sec:introduction}{{I}{1}{}{section.1}{}}
+\citation{ref6}
+\citation{ref7}
+\@writefile{toc}{\contentsline {section}{\numberline {II}Problem Formulation}{2}{}\protected@file@percent }
+\newlabel{sec:problem}{{II}{2}{}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-A}}Charging Protocol Design as CMOP}{2}{}\protected@file@percent }
+\newlabel{eq:cmop}{{1}{2}{}{equation.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-B}}Decision Variables and Constraints}{2}{}\protected@file@percent }
+\newlabel{eq:theta}{{2}{2}{}{equation.2}{}}
+\newlabel{eq:dsoc}{{3}{2}{}{equation.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Decision Variables and Bounds}}{2}{}\protected@file@percent }
+\newlabel{tab:variables}{{I}{2}{}{table.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-C}}Operational Constraints}{2}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {III}Electrochemical--Thermal Evaluation Model}{2}{}\protected@file@percent }
+\newlabel{sec:model}{{III}{2}{}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Electrochemical--Thermal Dynamics}{2}{}\protected@file@percent }
+\newlabel{eq:thermal}{{7}{2}{}{equation.7}{}}
+\citation{ref8}
+\citation{ref9}
+\citation{ref16}
+\newlabel{eq:temp_rise}{{8}{3}{}{equation.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-B}}Three-Stage Charging Realization}{3}{}\protected@file@percent }
+\newlabel{eq:dsoc3_model}{{9}{3}{}{equation.9}{}}
+\newlabel{eq:stage_time}{{10}{3}{}{equation.10}{}}
+\newlabel{eq:charge_time}{{11}{3}{}{equation.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-C}}Protocol-Level Degradation Proxy}{3}{}\protected@file@percent }
+\newlabel{eq:aging}{{12}{3}{}{equation.12}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-D}}Black-Box Evaluation Interface}{3}{}\protected@file@percent }
+\newlabel{eq:simulator_map}{{13}{3}{}{equation.13}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Proposed LLMBO-MO Framework}{3}{}\protected@file@percent }
+\newlabel{sec:method}{{IV}{3}{}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-A}}Framework Overview}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-B}}Objective Transformation and Scalar Decomposition}{3}{}\protected@file@percent }
+\citation{ref4}
+\citation{ref15}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Unified LLMBO-MO workflow. \emph  {A:} constrained warm-start construction combines domain-informed LLM candidates with physics priors and space-filling samples, then repairs, screens, and verifies the portfolio in the simulator. \emph  {B:} the numerical multi-objective BO loop performs scalarization, GP fitting, expected-improvement optimization, and simulator evaluation. The LLM enters only through the two advisory touchpoints; invalid or infeasible iteration-level guidance falls back to plain EI, and only simulator outputs update the optimization state.}}{4}{}\protected@file@percent }
+\newlabel{fig:framework}{{1}{4}{}{figure.1}{}}
+\newlabel{eq:log}{{14}{4}{}{equation.14}{}}
+\newlabel{eq:norm}{{15}{4}{}{equation.15}{}}
+\newlabel{eq:tch}{{16}{4}{}{equation.16}{}}
+\newlabel{eq:riesz}{{17}{4}{}{equation.17}{}}
+\citation{ref16}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-C}}Gaussian-Process Surrogate}{5}{}\protected@file@percent }
+\newlabel{eq:matern}{{18}{5}{}{equation.18}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-D}}LLM Integration Through Two Controlled Touchpoints}{5}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {IV-D}1}Touchpoint 1: Constrained Warm-Start Portfolio}{5}{}\protected@file@percent }
+\newlabel{eq:softpen}{{19}{5}{}{equation.19}{}}
+\newlabel{eq:portfolio}{{20}{5}{}{equation.20}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {IV-D}2}Touchpoint 2: Weight-Conditioned Point/Region Preference}{5}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-E}}Posterior-Covariance Region Lift for Battery MOBO}{5}{}\protected@file@percent }
+\newlabel{eq:anchorweight}{{21}{5}{}{equation.21}{}}
+\newlabel{eq:regionvar}{{22}{5}{}{equation.22}{}}
+\newlabel{eq:lambda}{{23}{5}{}{equation.23}{}}
+\newlabel{eq:shift}{{24}{5}{}{equation.24}{}}
+\newlabel{eq:variance_unchanged}{{25}{5}{}{equation.25}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-F}}Expected Improvement and Stagnation-Aware Search}{6}{}\protected@file@percent }
+\newlabel{eq:ei_z}{{26}{6}{}{equation.26}{}}
+\newlabel{eq:ei}{{27}{6}{}{equation.27}{}}
+\newlabel{eq:next_theta}{{28}{6}{}{equation.28}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-G}}Overall Algorithm}{6}{}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces LLMBO-MO}}{6}{}\protected@file@percent }
+\newlabel{alg:llmbo}{{1}{6}{}{algorithm.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {V}Experiments}{6}{}\protected@file@percent }
+\newlabel{sec:experiments}{{V}{6}{}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-A}}Experimental Protocol}{6}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-B}}Baselines}{6}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-C}}Fixed-Budget Search Behavior}{6}{}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Fixed-Budget Results at 56 Simulator Evaluations}}{6}{}\protected@file@percent }
+\newlabel{tab:fixed_budget}{{II}{6}{}{table.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Chen2020 search diagnostics. \emph  {Left:} representative canonical-HV trajectories. The LLMBO-MO and ParEGO centerlines are from seed~8409; NSGA-II, DISK, and PIMD are five-seed means. The LLMBO-MO and ParEGO ribbons are archived proxy dispersion envelopes and are not confidence intervals; the remaining ribbons show one sample standard deviation. \emph  {Right:} five-seed mean number of nondominated charging protocols, with $\pm 1$ sample-standard-deviation bands. The underlying archives contain different initial database sizes, so the right panel is used only to describe archive growth.}}{7}{}\protected@file@percent }
+\newlabel{fig:search_diagnostics}{{2}{7}{}{figure.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-D}}Pareto Structure and Charging Profiles}{7}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-E}}Ablation Study}{7}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-F}}Runtime and Scope}{7}{}\protected@file@percent }
+\bibcite{ref1}{1}
+\bibcite{ref2}{2}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Objective-space and time-domain views of Chen2020 charging protocols. \emph  {Left:} pooled LLMBO-MO nondominated set; stars A--E mark representative trade-offs from fast/high-stress to slow/low-stress charging. \emph  {Right:} simulator replay of one tuned LLMBO-MO protocol, a warm-start-only protocol, and the numerical baseline: (a) terminal voltage, (b) cell temperature, (c) applied current, and (d) state of charge. The archived legend ``LLMGP Tuned'' denotes the tuned LLMBO-MO configuration. These curves are simulated trajectories rather than physical-cell measurements.}}{8}{}\protected@file@percent }
+\newlabel{fig:pareto_profiles}{{3}{8}{}{figure.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Chen2020 four-group ablation over five seeds and 50 BO iterations. \emph  {Left:} final canonical-HV distributions; markers show individual seeds, boxes show the interquartile range and median, and annotations give the means. \emph  {Right:} the corresponding mean, sample standard deviation, gain over the baseline, and paired-seed win count. The full method combines constrained warm starting and iteration-level LLM region guidance.}}{8}{}\protected@file@percent }
+\newlabel{fig:ablation}{{4}{8}{}{figure.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {VI}Conclusion}{8}{}\protected@file@percent }
+\newlabel{sec:conclusion}{{VI}{8}{}{section.6}{}}
+\@writefile{toc}{\contentsline {section}{References}{8}{}\protected@file@percent }
+\bibcite{ref3}{3}
+\bibcite{ref4}{4}
+\bibcite{ref5}{5}
+\bibcite{ref6}{6}
+\bibcite{ref7}{7}
+\bibcite{ref8}{8}
+\bibcite{ref9}{9}
+\bibcite{ref10}{10}
+\bibcite{ref11}{11}
+\bibcite{ref12}{12}
+\bibcite{ref13}{13}
+\bibcite{ref14}{14}
+\bibcite{ref15}{15}
+\bibcite{ref16}{16}
+\gdef \@abspage@last{9}
