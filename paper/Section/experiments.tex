@@ -1,0 +1,296 @@
+% ============================================================================
+% Experimental validation
+% ============================================================================
+\input{Section/experiment_values}
+
+\section{Experimental Validation}
+\label{sec:experiments}
+
+\subsection{Models, LLM Configuration, and Fixed-Budget Protocol}
+
+All objective values are simulated with the model in Section~\ref{sec:model}
+using the Chen2020~\cite{ref12,ref13} or Ecker2015~\cite{ref12,ref14}
+parameterization; no physical measurement enters an archive.
+
+Each paired seed (8409--8413) uses six initialization and 50 BO evaluations.
+The main configuration uses three screened LLM and three random points.
+Chen2020 uses
+\texttt{deepseek-v3}, whereas Ecker2015 uses
+\texttt{deepseek-v3-thinking}; both use an OpenAI-compatible interface,
+temperature zero, and one completion. Because parameterization and backend
+change together, this is not an isolated transfer test.
+
+\subsection{Baselines, Metrics, and Reproducibility}
+
+ParEGO~\cite{ref5} uses the archived MATLAB-reference scalarization and
+acquisition settings. The Chen2020 comparison additionally includes
+NSGA-II~\cite{ref6}; its 60-evaluation trajectory is truncated at evaluation
+56 for the fixed-budget comparison.
+
+For reporting, define
+\begin{equation*}
+\widetilde{\mathbf f}=
+\left[
+\log_{10}\!\left(\frac{t_c}{1~\mathrm{s}}\right),\,
+\Delta T_p,\,
+\log_{10}\!\left(\frac{D_{\mathrm{chg}}}{1~\mathrm{a.u.}}\right)
+\right]^\top .
+\end{equation*}
+For benchmark $b$, benchmark-scaled hypervolume (sHV) is
+\begin{equation}
+\mathrm{sHV}_b(\mathcal P)=
+\frac{\mathrm{HV}(\widetilde{\mathcal P};\widetilde{\mathbf r}_b)}
+{\prod_{i=1}^{3}(\widetilde r_{b,i}-\widetilde z_{b,i})}.
+\label{eq:scaled_hv}
+\end{equation}
+Chen2020 uses reporting ideal/reference points
+$[1800,0,0.3]$ and $[7200,40,5]$; Ecker2015 uses
+$[2500,0,0.2]$ and $[7000,35,4.5]$. These fixed reporting boxes are distinct
+from the dynamic normalization used by the optimizer. No clipping is applied,
+so sHV is dimensionless and may exceed one. Absolute sHV values are comparable
+only within a parameterization~\cite{ref25}. We report five-seed means and sample standard
+deviations without inferential significance or equivalence claims.
+
+\begin{table*}[!t]
+\caption{Archived Configuration and Reproducibility Information}
+\label{tab:reproducibility}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}p{0.17\textwidth}p{0.255\textwidth}
+p{0.255\textwidth}p{0.255\textwidth}@{}}
+\toprule
+Item & Chen2020 main & Ecker2015 main & Chen2020 same-batch study \\
+\midrule
+Budget; seeds
+& $6+50=56$; 8409--8413
+& $6+50=56$; 8409--8413
+& $6+50=56$; 8409--8413 \\
+LLM
+& \texttt{deepseek-v3}
+& \texttt{deepseek-v3-thinking}
+& \texttt{deepseek-v3} \\
+API sampling
+& OpenAI-compatible; $T=0$; one completion
+& OpenAI-compatible; $T=0$; one completion
+& OpenAI-compatible; $T=0$; one completion \\
+Initialization
+& 3 LLM + 3 random; proposal pool 16
+& 3 LLM + 3 random; proposal pool 16
+& Plain/Region: 6 random; Warm/Full: 6 LLM \\
+Request limits
+& 2500 warm-start tokens; 3 retries
+& 2500 warm-start tokens; 3 retries
+& 2500 warm-start tokens; 1 retry; 4096 region tokens \\
+GP
+& Mat\'ern-$5/2$; normalized target; $\alpha=10^{-6}$; 5 restarts
+& Same
+& Same \\
+EI and weights
+& 12 EI restarts; 120 random samples; 32 external restarts; 30 weights
+& Same
+& Same \\
+Riesz construction
+& $s=2$; 300 steps; learning rate 0.005; seed 42
+& Same
+& Same \\
+Region execution
+& \texttt{force\_pool}; first 16 BO iterations; plain EI
+& Same
+& LGBO posterior lift; first 12 BO iterations; 64 anchors \\
+Region telemetry
+& 50 attempts, 0 accepted lifts; pool influenced 16 selections per run
+& Same
+& 12 active lifts per run; lifted selection differs in 3--8 iterations \\
+Software versions; hardware
+& Not recorded & Not recorded & Not recorded \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Matched Five-Seed Benchmark Results}
+
+At 56 evaluations, LLMBO-MO has a similar observed mean to ParEGO on Chen2020
+(2/5 paired wins) and is higher in all five Ecker2015 pairs
+(Table~\ref{tab:benchmark_results} and Fig.~\ref{fig:benchmark_hv}).
+
+\begin{table}[H]
+\caption{Fixed-Budget Results over Five Paired Seeds}
+\label{tab:benchmark_results}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.2pt}
+\begin{tabular}{@{}llccc@{}}
+\toprule
+Param. & Method & Evals. & Final sHV $\uparrow$ & Wins \\
+\midrule
+\multirow{3}{*}{Chen2020}
+& NSGA-II & 56 & \ChenNSGAMean\,$\pm$\,\ChenNSGAStd & -- \\
+& ParEGO & 56 & \textbf{\ChenParEGOMean}\,$\pm$\,\ChenParEGOStd & -- \\
+& LLMBO-MO & 56 & \ChenLLMBOMean\,$\pm$\,\textbf{\ChenLLMBOStd}
+& \ChenLLMBOWins \\
+\midrule
+\multirow{2}{*}{Ecker2015}
+& ParEGO & 56 & \EckerParEGOMean\,$\pm$\,\EckerParEGOStd & -- \\
+& LLMBO-MO & 56 & \textbf{\EckerLLMBOMean}\,$\pm$\,\textbf{\EckerLLMBOStd}
+& \EckerLLMBOWins \\
+\bottomrule
+\end{tabular}
+\vspace{1pt}
+\begin{minipage}{0.96\columnwidth}
+\scriptsize Wins count paired seeds on which LLMBO-MO exceeds ParEGO.
+Uncertainty is one sample standard deviation.
+\end{minipage}
+\end{table}
+
+No main-run mean shift is accepted; the first 16 guided selections therefore
+test candidate-pool expansion under plain EI.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.80\textwidth]{Section/figures/benchmark_hv.pdf}
+\caption{Fixed-budget progress over seeds 8409--8413. Lines are five-seed
+means and bands are $\pm1$ sample standard deviation; the dashed boundary lies
+between evaluations 6 and 7. (a) Chen2020, including NSGA-II truncated to 56
+evaluations. (b) Ecker2015. Each panel uses its own reporting box from
+\eqref{eq:scaled_hv}.}
+\label{fig:benchmark_hv}
+\end{figure*}
+
+\subsection{Same-Batch Configuration and Sensitivity Studies}
+
+Table~\ref{tab:ablation} compares four configurations under the matched
+five-seed Chen2020 budget. The following studies change one factor at a time.
+
+\begin{table}[H]
+\caption{Same-Batch Chen2020 Configuration Study over Five Seeds}
+\label{tab:ablation}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{2.4pt}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Variant & Final sHV $\uparrow$ & $\Delta$ vs. plain & Wins \\
+\midrule
+Plain BO
+& \AblationBaselineMean\,$\pm$\,\AblationBaselineStd & -- & -- \\
+Warm start
+& \textbf{\AblationWarmMean}\,$\pm$\,\AblationWarmStd
+& +\AblationWarmDelta & 4/5 \\
+Region lift
+& \AblationRegionMean\,$\pm$\,\AblationRegionStd
+& +\AblationRegionDelta & 4/5 \\
+Full (warm + lift)
+& \AblationFullMean\,$\pm$\,\textbf{\AblationFullStd}
+& +\AblationFullDelta & 3/5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The Region and Full variants pass the posterior-covariance construction into
+EI for the first 12 BO iterations; lifted and plain EI selections differ in
+3--8 iterations. Region and Full exceed Plain by \AblationRegionDelta\ and
+\AblationFullDelta, respectively, while Full is \AblationFullGapFromWarm\
+below Warm. These five-seed differences are descriptive.
+
+\emph{Posterior-mean budget sensitivity.}
+Figure~\ref{fig:shift_budget} replays fixed archived region payloads without
+online LLM calls.
+Mean sHV spans \ShiftBudgetMinMean--\ShiftBudgetBestMean\ and peaks at
+$B_\mu=\ShiftBudgetBest$, with no monotonic trend.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.98\columnwidth]{Section/figures/shift_budget_hv.pdf}
+\caption{Final Chen2020 sHV versus $B_\mu$ under fixed-region replay over
+seeds 8409--8413. Error bars show $\pm1$ sample standard deviation.}
+\label{fig:shift_budget}
+\end{figure}
+
+\emph{Objective preprocessing.}
+We plot the complete first 50 cumulative evaluations rather than only the
+final values. The
+\texttt{deepseek-v4-flash} (thinking disabled) supplies a shared 3-LLM +
+3-random initialization before plain EI. At evaluation 50, mean sHV is
+\NormFiftyMinMaxMean$\pm$\NormFiftyMinMaxStd\ for dynamic min--max,
+\NormFiftyZScoreMean$\pm$\NormFiftyZScoreStd\ for z-score scaling, and
+\NormFiftyNoneMean$\pm$\NormFiftyNoneStd\ without objective scaling. These
+five-seed values are descriptive. The respective denominators in
+\eqref{eq:normalize} are the running range, historical standard deviation, and
+one; decision scaling and GP target standardization are unchanged.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.98\columnwidth]{Section/figures/objective_normalization_hv_50eval.pdf}
+\caption{sHV obtained by LLMBO-MO under three objective-preprocessing choices
+during the first 50 cumulative Chen2020 evaluations. Lines are five-seed means
+and bands show $\pm1$ sample standard deviation.}
+\label{fig:objective_normalization}
+\end{figure}
+
+\subsection{Pareto-Set and Protocol Analysis}
+
+Figure~\ref{fig:pareto} shows pairwise projections from a separate tuned
+GPT-4.1-mini Chen2020 seed-8409 archive, not the DeepSeek-V3 matched
+comparison. All panels project the same three-objective nondominated sets.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.95\textwidth]{Section/figures/pareto_projections.pdf}
+\caption{Pairwise projections of the separate Chen2020 seed-8409 archive
+generated with the tuned GPT-4.1-mini backend. ParEGO and LLMBO-MO contain 45
+and 37 points, respectively, that are nondominated in the full space of
+charging time, peak temperature rise, and $D_{\mathrm{chg}}$.}
+\label{fig:pareto}
+\end{figure*}
+
+Figure~\ref{fig:charging_profiles} replays the three simulated points in
+Table~\ref{tab:protocols}; the low-temperature example is not in the final
+nondominated set. The 4.4-V trace limit is a model-level check, and
+$D_{\mathrm{chg}}$ remains an uncalibrated ranking proxy.
+
+\begin{table}[H]
+\caption{Illustrative Simulated Chen2020 Protocols from the Separate
+GPT-4.1-Mini Seed-8409 Archive}
+\label{tab:protocols}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{1.4pt}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Protocol & $(I_1,I_2,I_3)$ (A) & $(\Delta s_1,\Delta s_2)$
+& $t_c$ (s) & $\Delta T_p$ (K) & $D_{\mathrm{chg}}$ (a.u.) \\
+\midrule
+Fast & $(6,5,3)$ & $(0.400,0.300)$ & 2880 & 7.567 & 1.261 \\
+Intermediate & $(2,2,3)$ & $(0.320,0.118)$ & 6112 & 2.857 & 0.571 \\
+Low-temperature & $(2,2,2)$ & $(0.100,0.300)$ & 7200 & 1.529 & 0.640 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.93\textwidth]{Section/figures/charging_profiles.pdf}
+\caption{Simulator replay of the three archived protocols in
+Table~\ref{tab:protocols}: (a) applied current, (b) terminal voltage,
+(c) cell temperature, and (d) state of charge. These trajectories are
+simulated outputs, not physical-cell measurements.}
+\label{fig:charging_profiles}
+\end{figure*}
+
+\subsection{Runtime and Evidence Limitations}
+
+Chen2020 runtimes are $252.4\pm17.7$~s for ParEGO and $440.3\pm31.3$~s for
+LLMBO-MO. Missing hardware and software metadata preclude a portable benchmark.
+Evidence is limited to two simulations, five seeds, an uncalibrated proxy, and
+different LLM backends. It establishes neither long-term cycling nor
+physical-cell behavior. The active lift is evaluated only in the Chen2020
+same-batch study.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.78\columnwidth]{figures/experiment_platform_print.jpg}
+\caption{Laboratory platform reserved for future replay; it supplied no
+measurements to this study.}
+\label{fig:experiment_platform}
+\end{figure}

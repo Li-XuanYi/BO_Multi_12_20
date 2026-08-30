@@ -1,0 +1,119 @@
+\begin{figure*}[!t]
+\centering
+\resizebox{0.98\textwidth}{!}{%
+\begin{tikzpicture}[
+    x=1cm,
+    y=1cm,
+    font=\sffamily\small,
+    box/.style={
+        draw=black!72,
+        line width=0.65pt,
+        rounded corners=2pt,
+        align=center,
+        fill=white,
+        minimum height=0.92cm,
+        text width=2.55cm
+    },
+    llm/.style={box,fill=orange!13,draw=orange!78!black},
+    bo/.style={box,fill=blue!8,draw=blue!62!black},
+    sim/.style={box,fill=teal!10,draw=teal!62!black},
+    data/.style={box,fill=gray!14,draw=black!55},
+    diag/.style={box,fill=purple!9,draw=purple!65!black},
+    flow/.style={
+        -{Latex[length=2.0mm,width=1.25mm]},
+        line width=0.75pt,
+        draw=black!80
+    },
+    advise/.style={
+        -{Latex[length=1.9mm,width=1.2mm]},
+        line width=0.75pt,
+        draw=orange!80!black,
+        dashed
+    },
+    optional/.style={
+        -{Latex[length=1.8mm,width=1.15mm]},
+        line width=0.68pt,
+        draw=purple!70!black,
+        densely dotted
+    },
+    lab/.style={font=\sffamily\footnotesize,fill=white,inner sep=1.2pt}
+]
+
+% Initialization path
+\node[data,text width=2.65cm] (task) at (-7.0,6.0)
+    {\textbf{Protocol task}\\three objectives and encoded limits};
+\node[llm] (warm) at (-3.8,6.0)
+    {\textbf{LLM proposal pool}\\structured protocols and scores};
+\node[bo,text width=2.75cm] (screen) at (-0.45,6.0)
+    {\textbf{Parse and select}\\hard checks + diversity heuristic};
+\node[sim,text width=2.45cm] (initsim) at (2.75,6.0)
+    {\textbf{Simulator}\\evaluate six initial points};
+\node[data,text width=2.30cm] (d0) at (5.80,6.0)
+    {\textbf{Initial database}\\simulator objectives only};
+
+\draw[flow] (task) -- (warm);
+\draw[flow] (warm) -- (screen);
+\draw[flow] (screen) -- node[lab,above]{+ seeded random fill} (initsim);
+\draw[flow] (initsim) -- (d0);
+
+% Numerical BO loop
+\node[bo,text width=2.75cm] (scalar) at (-6.0,2.95)
+    {\textbf{Dynamic preprocessing}\\current ideal + Tchebycheff weight};
+\node[bo,text width=2.45cm] (gp) at (-2.75,2.95)
+    {\textbf{Fit Mat\'ern GP}\\posterior mean and covariance};
+\node[bo,text width=2.70cm] (pool) at (0.65,2.95)
+    {\textbf{Candidate pool}\\numerical points + accepted preference points};
+\node[bo,text width=2.25cm] (ei) at (3.75,2.95)
+    {\textbf{EI selection}\\plain or lifted mean};
+\node[sim,text width=2.20cm] (simulator) at (6.65,2.95)
+    {\textbf{Simulator}\\evaluate candidate};
+\node[data,text width=2.75cm] (update) at (4.55,0.72)
+    {\textbf{Update database}\\nondominated set and sHV trace};
+
+\draw[flow] (d0.south) -- ++(0,-0.45) -| (scalar.north);
+\draw[flow] (scalar) -- (gp);
+\draw[flow] (gp) -- (pool);
+\draw[flow] (pool) -- (ei);
+\draw[flow] (ei) -- (simulator);
+\draw[flow] (simulator.south) |- (update.east);
+\draw[flow] (update.west) -- ++(-10.0,0) |- node[lab,pos=0.28,above]{next weight} (scalar.south);
+
+% Preference and optional posterior-mean branch
+\node[llm,text width=2.75cm] (pref) at (0.65,4.55)
+    {\textbf{Weight-conditioned preference}\\point or bounded region};
+\draw[advise] (gp.north east) -- node[lab,above left]{current state} (pref.west);
+\draw[advise] (pref) -- node[lab,right]{parsed and within encoded bounds} (pool);
+
+\node[diag,text width=3.00cm] (lift) at (0.65,0.72)
+    {\textbf{Posterior-covariance lift}\\budgeted mean shift; covariance unchanged};
+\node[data,text width=2.50cm] (telemetry) at (-2.75,0.72)
+    {\textbf{Execution telemetry}\\which branch selected the point?};
+\draw[advise] (pref.east) -- ++(1.10,0) |- (lift.east);
+\draw[optional] (lift) -- (telemetry);
+\draw[optional] (lift.north east) --
+    node[lab,below right]{same-batch: active for first 12 BO rounds} (ei.south);
+
+% Panel boundaries
+\begin{scope}[on background layer]
+    \draw[rounded corners=4pt,fill=orange!2,draw=orange!45!black]
+        (-8.65,5.18) rectangle (7.25,6.83);
+    \draw[rounded corners=4pt,fill=blue!1,draw=blue!42!black]
+        (-8.65,-0.03) rectangle (8.05,3.78);
+    \draw[rounded corners=4pt,fill=orange!2,draw=orange!52!black]
+        (-0.95,3.82) rectangle (2.33,5.27);
+\end{scope}
+
+\node[anchor=south west,font=\sffamily\bfseries\small,text=orange!75!black]
+    at (-8.53,6.89) {A.\ Screened initialization};
+\node[anchor=south west,font=\sffamily\bfseries\small,text=blue!65!black]
+    at (-8.53,3.84) {B.\ Sequential multiobjective BO};
+
+\end{tikzpicture}%
+}
+\caption{LLMBO-MO execution graph. Only simulator outputs enter the objective
+database. The main benchmark uses screened initialization and
+preference-conditioned candidate-pool expansion followed by plain EI. The
+same-batch Region and Full configurations instead apply the
+posterior-covariance mean lift inside EI during the first 12 BO iterations.}
+\label{fig:framework}
+\end{figure*}

@@ -1,0 +1,50 @@
+\section{Related Work}
+\label{sec:related}
+
+\subsection{Battery Fast-Charging Optimization}
+
+Fast-charging design has been studied with electrochemical--thermal--aging
+models, closed-loop cell experiments, and data-driven search
+~\cite{ref2,ref3,ref15}. BO is attractive when a protocol evaluation is costly:
+Jiang \textit{et al.} compared acquisition rules for fast-charging design
+~\cite{ref7}, and Wang and Jiang combined Chebyshev decomposition with
+constrained BO for time--degradation trade-offs~\cite{ref8}. More recent work
+has accelerated the numerical search~\cite{ref19}, used early-life
+predictors~\cite{ref18}, and incorporated a semi-empirical aging prior
+~\cite{ref31}. In contrast, our health-related objective is an uncalibrated
+simulator ranking proxy.
+
+\subsection{Multiobjective Bayesian Optimization}
+
+ParEGO converts a multiobjective problem into a sequence of augmented
+Tchebycheff subproblems~\cite{ref5}, whereas constrained BO can model expensive
+inequality constraints probabilistically~\cite{ref26}. Direct
+hypervolume-based alternatives include differentiable qEHVI~\cite{ref27} and
+qNEHVI for uncertain or noisy Pareto fronts~\cite{ref28}. Evolutionary methods
+such as NSGA-II provide a nonprobabilistic comparison~\cite{ref6}. The present
+archive uses sequential ParEGO; qEHVI and qNEHVI were not run and are not
+retroactively reported.
+
+\subsection{LLM-Assisted Bayesian Optimization}
+
+LLAMBO uses LLMs for warm starting, surrogate-related prediction, and candidate
+sampling~\cite{ref9}; BORA represents hypotheses about promising regions in a
+language-assisted loop~\cite{ref10}. LGBO converts an LLM region preference
+into a surrogate-mean shift~\cite{ref17}, while LABO treats inexpensive LLM
+predictions as a distinct fidelity in a joint surrogate~\cite{ref30}. These
+mechanisms assign different evidential roles to language-model output. LLMBO-MO
+keeps the evaluated objective database simulator-only: an LLM proposal may
+affect initialization or acquisition, but it never becomes an objective
+observation or reduces the reported GP uncertainty.
+
+\subsection{Research Gap and Positioning}
+
+Transfer BO can reuse observations from related tasks through hierarchical or
+boosted GP models~\cite{ref29}. Our archived Ecker2015 comparison does not
+perform that form of statistical transfer: no Chen2020 observation is inserted
+into the Ecker2015 GP. It instead tests whether the same optimization workflow
+can be executed under a second simulator parameterization, while also changing
+the recorded LLM variant. Accordingly, this paper positions LLMBO-MO as an
+evidence-separated workflow study rather than a claim of cell-independent
+transfer. Its emphasis is traceability from each language-based search signal
+to the simulator evaluation it influenced.

@@ -1,0 +1,124 @@
+{
+  "figure": "historical Region-lift paired ablation boxplot",
+  "method_status": "archived adaptive-posterior Region implementation; not the corrected Region_Lift preset introduced after these runs",
+  "dataset": "Chen2020",
+  "metric": "canonical_hv (plotted as scaled hypervolume)",
+  "bo_iterations": 50,
+  "initial_points": 6,
+  "seeds": [
+    8409,
+    8410,
+    8411,
+    8412,
+    8413
+  ],
+  "box_definition": "median/IQR; whiskers=min/max; all raw points shown",
+  "cohorts": {
+    "no_warm": {
+      "source": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\Ablation523_4group\\source_reports\\adaptive4_5seeds_50iter_report.json",
+      "source_sha256": "27f91a3ab558293d9005e4a5fdba36c0961781dd58b27e9d3933e7d1418b1ae2",
+      "pairing": "shared six-point random initialization within each seed",
+      "left_variant": "baseline",
+      "left": {
+        "values_by_seed": {
+          "8409": 0.38289576872516967,
+          "8410": 0.40108239292056325,
+          "8411": 0.386009826527621,
+          "8412": 0.3769806109566143,
+          "8413": 0.3712068931161188
+        },
+        "mean": 0.3836350984492174,
+        "median": 0.38289576872516967,
+        "sample_std": 0.011284242529385232
+      },
+      "right_variant": "baseline_llm_region",
+      "right": {
+        "values_by_seed": {
+          "8409": 0.38464011549572197,
+          "8410": 0.40154738067545076,
+          "8411": 0.38890849100242286,
+          "8412": 0.3669108331574704,
+          "8413": 0.38904621776102666
+        },
+        "mean": 0.3862106076184185,
+        "median": 0.38890849100242286,
+        "sample_std": 0.012504835136741861
+      },
+      "paired_delta_right_minus_left": {
+        "values_by_seed": {
+          "8409": 0.0017443467705522964,
+          "8410": 0.00046498775488751365,
+          "8411": 0.0028986644748018597,
+          "8412": -0.010069777799143864,
+          "8413": 0.01783932464490784
+        },
+        "mean": 0.002575509169201129,
+        "median": 0.0017443467705522964,
+        "sample_std": 0.00997668414746304,
+        "wins_positive": 4,
+        "exact_two_sided_sign_flip_p": 0.5625,
+        "holm_adjusted_p_over_two_contrasts": 1.0
+      }
+    },
+    "warm": {
+      "source": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\Ablation523_4group\\source_reports\\warmstart_vs_llmbo_paired_5seeds_50iter_report.json",
+      "source_sha256": "803fbdbdbb7fbe2c39c398a57c277d72c64d0d112bffdd71cdf9a00be1162130",
+      "pairing": "shared selected warm-start cache within each seed",
+      "left_variant": "baseline_warmstart",
+      "left": {
+        "values_by_seed": {
+          "8409": 0.3971835839892999,
+          "8410": 0.3955040621871874,
+          "8411": 0.37933948354311187,
+          "8412": 0.4002662409881136,
+          "8413": 0.397027233133229
+        },
+        "mean": 0.39386412076818833,
+        "median": 0.397027233133229,
+        "sample_std": 0.008301592521895836
+      },
+      "right_variant": "llmbo_mo",
+      "right": {
+        "values_by_seed": {
+          "8409": 0.4071163963434341,
+          "8410": 0.38200470357895716,
+          "8411": 0.3980178107342135,
+          "8412": 0.3769768467918461,
+          "8413": 0.40186281081026065
+        },
+        "mean": 0.39319571365174233,
+        "median": 0.3980178107342135,
+        "sample_std": 0.013042689031589297
+      },
+      "paired_delta_right_minus_left": {
+        "values_by_seed": {
+          "8409": 0.00993281235413418,
+          "8410": -0.01349935860823026,
+          "8411": 0.01867832719110163,
+          "8412": -0.023289394196267466,
+          "8413": 0.004835577677031633
+        },
+        "mean": -0.000668407116446057,
+        "median": 0.004835577677031633,
+        "sample_std": 0.017272219051753687,
+        "wins_positive": 3,
+        "exact_two_sided_sign_flip_p": 1.0,
+        "holm_adjusted_p_over_two_contrasts": 1.0
+      }
+    }
+  },
+  "claim_boundary": "The no-warm cohort supports only a descriptive Region gain; the warm cohort is mixed. This figure is not evidence for the corrected preset.",
+  "recommended_caption": "Archived Region-lift ablation at the final canonical hypervolume after 50 BO iterations. Panels (a) and (b) are separate, internally paired five-seed cohorts: Plain BO versus Region lift under shared random initialization, and Warm-start BO versus Warm start + Region under a shared selected warm-start cache. Boxes show the median and interquartile range, whiskers span the observed range, dots show all seeds 8409--8413, thin segments connect paired runs, and white diamonds mark means. Panel (c) shows the corresponding within-seed Region differences; the horizontal line denotes zero. The cohorts come from different archived batches, so no cross-batch factorial or interaction contrast is implied. Results are descriptive (n=5); BO iterations are not treated as independent samples.",
+  "outputs": {
+    "pdf": {
+      "path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\paper\\Section\\figures\\ablation_region_boxplot_historical.pdf",
+      "sha256": "dd24a13fd78f12c9452f80a54838b32bf4951b45e773e43f2fa1563bad5789f4",
+      "bytes": 64335
+    },
+    "png": {
+      "path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\paper\\Section\\figures\\ablation_region_boxplot_historical.png",
+      "sha256": "3f941399e413f432801aa92fa5be1d9fd7df6824d15cc100d4c67584cbe15208",
+      "bytes": 412082
+    }
+  }
+}

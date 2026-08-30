@@ -1,0 +1,44 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Fast-charging protocol design must balance short charging time against
+temperature rise and degradation-related behavior. Large currents can reduce
+the time required to reach a target state of charge (SOC), but the resulting
+electrochemical and thermal response depends nonlinearly on the cell state and
+protocol sequence~\cite{ref2,ref3,ref23}. We therefore study three-stage
+constant-current protocols under encoded voltage, temperature, SOC, and
+decision-variable limits, with charging time, peak temperature rise, and an
+uncalibrated protocol-level degradation proxy as three minimized objectives.
+
+Each candidate requires a coupled simulation or physical experiment, making
+BO attractive for its probabilistic surrogate and acquisition-driven
+evaluation policy~\cite{ref4}. Prior battery studies use constrained and
+multiobjective BO for charging-protocol search~\cite{ref7,ref8,ref15,ref18,
+ref19}, but early decisions still have little task-specific data. LLM-assisted
+methods can supply initialization or search preferences~\cite{ref9,ref10,
+ref17}; because these outputs are neither measurements nor calibrated
+posterior evidence~\cite{ref16}, they must remain separate from simulator
+observations.
+
+LLMBO-MO enforces this separation with a screened warm-start portfolio and a
+weight-conditioned point or region preference. Depending on configuration,
+the preference augments a plain expected-improvement (EI) search or modifies
+the acquisition mean through posterior covariance; only simulator evaluations
+create objective vectors. Figure~\ref{fig:framework} summarizes the workflow.
+
+Five paired seeds and 56 calls provide a fixed-budget comparison on two cell
+parameterizations; all differences are reported descriptively.
+
+The contributions are threefold:
+\begin{enumerate}
+\item We formulate a simulation-based, three-objective battery fast-charging
+problem and make its implementation boundary explicit, including the
+uncalibrated status of the degradation proxy.
+\item We present an LLM-augmented ParEGO workflow with a deterministic
+warm-start portfolio, weight-conditioned preferences, and an
+implementation-faithful posterior-covariance mean-lift construction whose
+covariance is unchanged and whose mean shift is budgeted.
+\item We provide a paired, fixed-budget evaluation on two PyBaMM
+parameterizations together with matched trajectories, protocol inspection,
+runtime, and mechanism telemetry.
+\end{enumerate}

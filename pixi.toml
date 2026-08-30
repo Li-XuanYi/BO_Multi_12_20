@@ -1,0 +1,22 @@
+[workspace]
+authors = ["LynncX <2283618264@qq.com>"]
+channels = ["conda-forge"]
+name = "New_LLMBO"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+python = ">=3.12,<3.13"
+pydantic = ">=2.13.3,<3"
+numpy = ">=2.4.3,<3"
+scipy = ">=1.17.1,<2"
+scikit-learn = ">=1.8.0,<2"
+optuna = ">=4.8.0,<5"
+
+[pypi-dependencies]
+pybamm = ">=26.4.1, <27"
+pymoo = ">=0.6.0"
+python-dotenv = ">=1.0.0"
+openai = ">=1.0.0"

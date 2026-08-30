@@ -1,0 +1,241 @@
+\section{LLM-Augmented Multiobjective Bayesian Optimization}
+\label{sec:method}
+
+\subsection{Design Principles and Workflow}
+
+LLMBO-MO maintains an evaluated database
+$\bD_t=\{(\btheta_j,\mathbf y_j)\}_{j=1}^{n_t}$, where every
+$\mathbf y_j$ is returned by the simulator. LLM text is stored as proposal
+metadata and is never inserted as an objective vector. The workflow has two
+language-assisted stages: a screened initialization portfolio and a
+weight-conditioned point or region preference during BO. The latter can expand
+the EI candidate pool or modify the mean used by EI through a
+posterior-covariance construction. These paths are controlled separately so
+that their activation is recoverable from the archived configuration and
+telemetry.
+
+\input{fig_llambo_mo_framework}
+
+Malformed or out-of-bounds proposals are discarded; only simulator
+evaluations update the database in Fig.~\ref{fig:framework}.
+
+\subsection{Objective Transformation and ParEGO Core}
+\label{sec:scalarization}
+
+The positive time and degradation-proxy objectives are log transformed using
+explicit reference scales,
+\begin{equation}
+\mathbf h(\mathbf f)=
+\begin{bmatrix}
+\log_{10}\!\max\!\left\{\frac{t_c}{t_{\mathrm{ref}}},1\right\}
+\\[-1pt]
+\Delta T_p
+\\[-1pt]
+\log_{10}\!\max\!\left\{\frac{D_{\mathrm{chg}}}{D_{\mathrm{ref}}},
+10^{-12}\right\}
+\end{bmatrix},
+\label{eq:log_transform}
+\end{equation}
+where $t_{\mathrm{ref}}=1$~s and $D_{\mathrm{ref}}=1$~a.u. These choices make
+the logarithm arguments dimensionless while preserving the archived numerical
+values.
+
+Before every GP fit, the implementation recomputes the componentwise ideal
+point from all currently feasible observations. Let
+$z_{i,t}=\min_{(\btheta_j,\mathbf y_j)\in\bD_t}h_i(\mathbf y_j)$.
+The transformed historical minimum and maximum define
+$(\underline y_{i,t},\overline y_{i,t})$. If their range is smaller than 5\%
+of the corresponding fixed benchmark ideal--reference range, the
+implementation substitutes that full benchmark range. The normalized
+ideal-point gap is then
+\begin{equation}
+a_{i,t}(\btheta_j)=
+\frac{|h_i(\mathbf y_j)-z_{i,t}|}
+{\overline y_{i,t}-\underline y_{i,t}},\qquad i=1,2,3.
+\label{eq:normalize}
+\end{equation}
+The absolute value mirrors the archived code and is redundant for the feasible
+observations because $z_{i,t}$ is their componentwise minimum.
+
+For a simplex weight $\bw_t$, the augmented Tchebycheff target is
+\begin{equation}
+\begin{aligned}
+g_t(\btheta\mid\bw_t)=
+\max_i\{w_{i,t}a_{i,t}(\btheta)\}
+{}+\eta\sum_{i=1}^{3}w_{i,t}a_{i,t}(\btheta),\\
+\eta=0.05 .
+\end{aligned}
+\label{eq:tcheby}
+\end{equation}
+A cached 30-direction Riesz $s$-energy set is cycled without
+replacement~\cite{ref21}; construction settings appear in
+Table~\ref{tab:reproducibility}.
+
+Inputs are mapped to $\mathbf x=\mathcal N_\Theta(\btheta)\in[0,1]^5$. A GP
+models the standardized scalar target using a Mat\'ern-$5/2$ kernel with ARD,
+\begin{equation*}
+\begin{aligned}
+r^2(\mathbf x,\mathbf x')
+&=\sum_{d=1}^{5}\frac{(x_d-x'_d)^2}{\ell_d^2},\\
+k(\mathbf x,\mathbf x')
+&=\sigma_f^2\!\left(1+\sqrt5r+\frac{5r^2}{3}\right)
+\exp(-\sqrt5r).
+\end{aligned}
+\end{equation*}
+The fit uses target normalization, an alpha value of $10^{-6}$, and five
+hyperparameter-optimization restarts. Let $\mu_t(\btheta)$ and
+$\sigma_t(\btheta)$ denote the resulting posterior mean and standard deviation
+in scalar-target units. For a mean $\mu_{c,t}$ used at acquisition time, EI for
+minimization is
+\begin{align*}
+\Delta_t(\btheta)&=f_{\min,t}-\mu_{c,t}(\btheta),&
+u_t&=\frac{\Delta_t(\btheta)}{\sigma_t(\btheta)},\\
+\alpha_{\mathrm{EI}}(\btheta)&=
+\Delta_t(\btheta)\Phi(u_t)+\sigma_t(\btheta)\phi(u_t).
+\end{align*}
+with the usual zero-variance limit. No additive language bonus or risk penalty
+is active in the reported configurations~\cite{ref20}.
+
+\subsection{Deterministic LLM Warm Start}
+\label{sec:warmstart}
+
+The warm-start prompt contains the five decision bounds, the hard SOC-sum
+condition, and qualitative requests for diverse protocols. Parsing first
+removes incomplete records and candidates outside the encoded decision
+conditions. Each surviving candidate $j$ carries an LLM-reported score
+$s_j\in[0,1]$; this number is a ranking input, not a calibrated probability.
+
+The greedy portfolio selector operates in normalized decision space. Its
+implemented quality and selection scores are
+\begin{align}
+q_j&=\operatorname{clip}(s_j,0,1)-0.65\,p_j
++0.08\,\mathbb I[I_{1,j}\geq I_{2,j}\geq I_{3,j}],\nonumber\\
+p_j&=\frac{\max(0,\Delta s_{1,j}+\Delta s_{2,j}-0.65)}
+{0.70-0.65},\nonumber\\
+S_j&=q_j+0.45\min_{\btheta_k\in\bC_{\mathrm{sel}}}
+\|\mathcal N_\Theta(\btheta_j)-\mathcal N_\Theta(\btheta_k)\|_2 .
+\label{eq:portfolio}
+\end{align}
+The diversity term is set to zero for the first selected point. At most one
+candidate near the soft SOC boundary is retained. Configuration-specific
+portfolio sizes appear in Table~\ref{tab:reproducibility}.
+
+\subsection{Weight-Conditioned Preference}
+\label{sec:guidance}
+
+At BO iteration $t$, the preference prompt includes the current weight
+$\bw_t$, iteration index, recent observations, and high- and low-ranked
+scalarized examples. A structured response may specify a point or a box
+$\mathcal R_t=[\mathbf l_t,\mathbf u_t]\subseteq\Theta$, an LLM-reported
+guidance score, and a textual rationale referring to the supplied battery
+context. Parsing checks coordinate names, bounds, box width and volume, and the
+encoded SOC condition.
+
+In pool mode, accepted preferences augment the numerical candidate search,
+after which plain EI selects the evaluation.
+
+\subsection{Adaptive Posterior-Covariance Mean Lift}
+\label{sec:coupling}
+
+The same-batch Region and Full configurations use the adaptive posterior mode
+during BO iterations $t=0,\ldots,11$. A deterministic score adjustment
+downweights wide, repeated non-improving, and late-iteration guidance and
+floors the result at 0.35; it is not a calibrated probability. Given an
+accepted region $\mathcal R_t$, the code draws up to $m=64$ feasible Sobol
+anchors
+$\bG_t=\{\mathbf g_1,\ldots,\mathbf g_m\}$, removes anchors that violate the
+encoded decision conditions, and assigns uniform weights
+$\mathbf v=m^{-1}\mathbf 1$. Let
+$\boldsymbol\Sigma_t$ be the GP posterior covariance in standardized
+scalar-target space and define
+\begin{equation}
+\begin{aligned}
+V_t=\mathbf v^\top\boldsymbol\Sigma_{\bG\bG,t}\mathbf v,\quad
+&\epsilon_v=10^{-12},\\
+\widetilde V_t&=\max(V_t,\epsilon_v),&
+\lambda_{0,t}&=\frac{\widehat s_t}{\sqrt{\widetilde V_t}} .
+\end{aligned}
+\label{eq:lambda}
+\end{equation}
+where $\widehat s_t$ is the clipped and adaptively scaled LLM-reported score.
+The uncapped standardized shift at a candidate is
+$\delta_{0,t}(\btheta)=
+\lambda_{0,t}\boldsymbol\Sigma_{\btheta\bG,t}\mathbf v$.
+The implementation limits its mean absolute magnitude over the accepted
+anchors:
+\begin{equation}
+\begin{aligned}
+\bar\delta_{0,t}
+&=\frac{1}{m}\sum_{j=1}^{m}|\delta_{0,t}(\mathbf g_j)|,\\
+\beta_t&=\min\!\left\{1,
+\frac{B_\mu}{\max(\bar\delta_{0,t},10^{-12})}\right\},\\
+\delta_t(\btheta)&=\beta_t\delta_{0,t}(\btheta),\qquad B_\mu=0.025 .
+\end{aligned}
+\label{eq:shift_budget}
+\end{equation}
+The acquisition-time posterior is
+\begin{equation}
+\mu_{c,t}(\btheta)=\mu_t(\btheta)-s_{y,t}\delta_t(\btheta),
+\qquad
+\sigma_{c,t}^2(\btheta)=\sigma_t^2(\btheta),
+\label{eq:coupled_mean}
+\end{equation}
+where $s_{y,t}$ converts the standardized shift to scalar-target units. Thus,
+only the mean supplied to EI can change; the GP fit and covariance remain
+unchanged.
+
+Using posterior covariance in both the numerator and denominator yields an
+explicit pointwise bound. Covariance Cauchy--Schwarz and
+$0\leq\beta_t\leq1$ give
+\begin{equation}
+|\delta_t(\btheta)|
+\leq
+\beta_t\widehat s_t\,\sigma_{z,t}(\btheta)
+\sqrt{\frac{V_t}{\max(V_t,\epsilon_v)}}
+\leq \widehat s_t\,\sigma_{z,t}(\btheta),
+\label{eq:lift_bound}
+\end{equation}
+where $\sigma_{z,t}$ is the posterior standard deviation in standardized
+target space. This bound applies to the evaluated posterior-covariance
+construction; it does not justify the same statement for a prior-kernel
+numerator.
+
+In the active posterior mode, the acquisition routine uses $\mu_{c,t}$ before
+candidate selection; execution evidence is reported in
+Section~\ref{sec:experiments}.
+
+\subsection{Complete Procedure}
+
+Algorithm~\ref{alg:llmbo-mo} summarizes both execution branches.
+
+\begin{algorithm}[!t]
+\caption{LLMBO-MO with auditable preference modes}
+\label{alg:llmbo-mo}
+\begin{algorithmic}[1]
+\Require Simulator $\bS$, LLM $\bL$, $n_{\mathrm{init}}=6$,
+$n_{\mathrm{BO}}=50$, weight set $\bW$
+\Ensure Evaluated nondominated set $\bP$
+\State Parse and screen an LLM initialization pool
+\State Select the LLM portfolio; add seeded random points as configured
+\State Evaluate all $n_{\mathrm{init}}$ points with $\bS$ and form $\bD_0$
+\For{$t=1,\ldots,n_{\mathrm{BO}}$}
+    \State Update feasible objective ranges and the current ideal point
+    \State Select $\bw_t$, rescalarize $\bD_{t-1}$, and fit the GP
+    \State Build the numerical acquisition candidate set $\bC_t$
+    \State Parse the weight-conditioned point or region preference
+    \If{pool expansion is active and the preference passes its checks}
+        \State Add preference-conditioned points to $\bC_t$
+    \EndIf
+    \If{the adaptive posterior mode is active and its checks pass}
+        \State Compute \eqref{eq:lambda}--\eqref{eq:coupled_mean}
+        \State Maximize EI using $\mu_{c,t}$ and select $\btheta_t$
+    \Else
+        \State Maximize plain EI using $\mu_t$ and select $\btheta_t$
+    \EndIf
+    \State Record which acquisition branch selected $\btheta_t$
+    \State Evaluate $\mathbf y_t=\bS(\btheta_t)$ and append
+    $(\btheta_t,\mathbf y_t)$ to $\bD_t$
+\EndFor
+\State \Return nondominated observations $\bP\subseteq\bD_{n_{\mathrm{BO}}}$
+\end{algorithmic}
+\end{algorithm}

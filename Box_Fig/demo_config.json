@@ -1,0 +1,62 @@
+{
+  "metric": "canonical_hv",
+  "value_scale": 0.2,
+  "source_notes": [
+    "Ecker2015 figure values are canonical_hv multiplied by 0.2.",
+    "LLMBO-MO and ParEGO are 5-seed Ecker2015 runs with n_total=56.",
+    "NSGA-II, PIMD, and DISK are 5-seed Ecker2015 external baselines with n_total=60."
+  ],
+  "plot": {
+    "title": "",
+    "y_label": "HV",
+    "figure_size": [
+      5.9,
+      4.0
+    ],
+    "dpi": 300,
+    "x_rotation": 28,
+    "jitter": 0.055,
+    "point_size": 38,
+    "box_width": 0.36,
+    "y_min": 0.18,
+    "y_max": 0.39,
+    "y_ticks": [
+      0.18,
+      0.22,
+      0.26,
+      0.3,
+      0.34,
+      0.38
+    ]
+  },
+  "groups": [
+    {
+      "label": "LLMBO-MO",
+      "path": "../scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/report_5seeds.json",
+      "color": "#D45162"
+    },
+    {
+      "label": "ParEGO",
+      "path": "../optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/report.json",
+      "color": "#2E8BC8"
+    },
+    {
+      "label": "NSGA-II",
+      "path": "../optimized_experiments/nsga2_ecker_5seeds_50evals_2026_05_13/report.json",
+      "color": "#F0A33A"
+    },
+    {
+      "label": "PIMD",
+      "path": "../optimized_experiments/pimd_ecker_5seeds_50evals_2026_05_13/report_5seeds.json",
+      "color": "#5C9E45"
+    },
+    {
+      "label": "DISK",
+      "path": "../optimized_experiments/disk_ecker_5seeds_50evals_2026_05_13/report_5seeds.json",
+      "color": "#8A52CC"
+    }
+  ],
+  "output": {
+    "basename": "hv_box_ecker2015_scaled"
+  }
+}

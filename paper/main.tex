@@ -1,0 +1,264 @@
+% ============================================================================
+% IEEE Transactions on Transportation Electrification manuscript
+% ============================================================================
+
+\documentclass[journal]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{float}
+\usepackage{subfigure}
+\usepackage{url}
+\usepackage{balance}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,backgrounds,positioning,fit,calc,shapes.geometric}
+
+\makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpsep}{12pt plus 2pt minus 2pt}
+\setlength{\@fpbot}{0pt plus 1fil}
+\setlength{\@dblfptop}{0pt}
+\setlength{\@dblfpsep}{12pt plus 2pt minus 2pt}
+\setlength{\@dblfpbot}{0pt plus 1fil}
+\makeatother
+
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bw}{\boldsymbol{w}}
+\newcommand{\bG}{\mathcal{G}}
+\newcommand{\bD}{\mathcal{D}}
+\newcommand{\bS}{\mathcal{S}}
+\newcommand{\bL}{\mathcal{L}}
+\newcommand{\bW}{\mathcal{W}}
+\newcommand{\bP}{\mathcal{P}}
+\newcommand{\bC}{\mathcal{C}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+
+\begin{document}
+
+\title{LLMBO-MO: Large Language Model-Augmented Multiobjective Bayesian
+Optimization for Simulation-Based Battery Fast-Charging Protocol Design}
+
+\author{Anonymous Authors}
+
+\markboth{IEEE TRANSACTIONS ON TRANSPORTATION ELECTRIFICATION}%
+{Anonymous \MakeLowercase{\textit{et al.}}: LLMBO-MO}
+
+\maketitle
+
+\begin{abstract}
+Designing multistage battery fast-charging protocols is an expensive
+multiobjective problem because charging time, temperature rise, and
+degradation-related behavior must be considered under encoded operating
+limits. We present LLMBO-MO, a decomposition-based Bayesian optimization
+workflow in which language-model output is a screened search signal, never an
+objective observation. The model supplies a diversity-aware warm start and a
+weight-conditioned preference that either augments the expected-improvement
+search or induces a budgeted posterior-covariance mean shift without changing
+covariance. Five paired seeds with 56 simulator calls give final
+benchmark-scaled hypervolumes of $0.3835\pm0.0079$ for LLMBO-MO and
+$0.3853\pm0.0094$ for ParEGO on Chen2020, and $1.8684\pm0.0027$ versus
+$1.5866\pm0.0130$ on Ecker2015. No mean lift is accepted in these main runs;
+they evaluate screened initialization and early preference-conditioned search
+under plain expected improvement. Results are descriptive, simulation-only,
+and use an uncalibrated degradation proxy in arbitrary units.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Lithium-ion battery, fast charging, multiobjective optimization, Bayesian
+optimization, large language model, Gaussian process, Tchebycheff
+scalarization, degradation proxy.
+\end{IEEEkeywords}
+
+\IEEEpeerreviewmaketitle
+
+\input{Section/introduction}
+\input{Section/related_work}
+\input{Section/problem}
+\input{Section/method}
+\input{Section/experiments}
+\input{Section/conclusion}
+
+\begin{thebibliography}{99}
+
+\bibitem{ref2}
+A.~Tomaszewska \textit{et al.}, ``Lithium-ion battery fast charging: A
+review,'' \textit{eTransportation}, vol.~1, Art.~no.~100011, 2019,
+doi: 10.1016/j.etran.2019.100011.
+
+\bibitem{ref3}
+Y.~Gao, X.~Zhang, B.~Guo, C.~Zhu, J.~Wiedemann, L.~Wang, and J.~Cao,
+``Health-aware multiobjective optimal charging strategy with coupled
+electrochemical-thermal-aging model for lithium-ion battery,''
+\textit{IEEE Trans. Ind. Informat.}, vol.~16, no.~5, pp.~3417--3429, 2020,
+doi: 10.1109/TII.2019.2935326.
+
+\bibitem{ref4}
+B.~Shahriari \textit{et al.}, ``Taking the human out of the loop: A review of
+Bayesian optimization,'' \textit{Proc. IEEE}, vol.~104, no.~1,
+pp.~148--175, 2016, doi: 10.1109/JPROC.2015.2494218.
+
+\bibitem{ref5}
+J.~Knowles, ``ParEGO: A hybrid algorithm with on-line landscape approximation
+for expensive multiobjective optimization problems,''
+\textit{IEEE Trans. Evol. Comput.}, vol.~10, no.~1, pp.~50--66, 2006,
+doi: 10.1109/TEVC.2005.851274.
+
+\bibitem{ref6}
+K.~Deb \textit{et al.}, ``A fast and elitist multiobjective genetic algorithm:
+NSGA-II,'' \textit{IEEE Trans. Evol. Comput.}, vol.~6, no.~2,
+pp.~182--197, 2002, doi: 10.1109/4235.996017.
+
+\bibitem{ref7}
+B.~Jiang, M.~D.~Berliner, K.~Lai, P.~A.~Asinger, H.~Zhao, P.~K.~Herring,
+M.~Z.~Bazant, and R.~D.~Braatz, ``Fast charging design for lithium-ion
+batteries via Bayesian optimization,'' \textit{Appl. Energy}, vol.~307,
+Art.~no.~118244, 2022, doi: 10.1016/j.apenergy.2021.118244.
+
+\bibitem{ref8}
+X.~Wang and B.~Jiang, ``Multi-objective optimization for fast charging design
+of lithium-ion batteries using constrained Bayesian optimization,''
+\textit{J. Power Sources}, vol.~584, Art.~no.~233602, 2023,
+doi: 10.1016/j.jpowsour.2023.233602.
+
+\bibitem{ref9}
+T.~Liu, N.~Astorga, N.~Seedat, and M.~van der Schaar, ``Large language models
+to enhance Bayesian optimization,'' in \textit{Proc. Int. Conf. Learn.
+Representations (ICLR)}, 2024.
+
+\bibitem{ref10}
+A.~Ciss\'e, X.~Evangelopoulos, V.~V.~Gusev, and A.~I.~Cooper,
+``Language-based Bayesian optimization research assistant (BORA),'' in
+\textit{Proc. 34th Int. Joint Conf. Artif. Intell. (IJCAI)},
+pp.~4967--4975, 2025, doi: 10.24963/ijcai.2025/553.
+
+\bibitem{ref11}
+S.~G.~Marquis \textit{et al.}, ``An asymptotic derivation of a single particle
+model with electrolyte,'' \textit{J. Electrochem. Soc.}, vol.~166, no.~15,
+pp.~A3693--A3706, 2019, doi: 10.1149/2.0341915jes.
+
+\bibitem{ref12}
+V.~Sulzer \textit{et al.}, ``Python Battery Mathematical Modelling (PyBaMM),''
+\textit{J. Open Res. Softw.}, vol.~9, no.~1, Art.~no.~14, 2021,
+doi: 10.5334/jors.309.
+
+\bibitem{ref13}
+C.~H.~Chen \textit{et al.}, ``Development of experimental techniques for
+parameterization of multi-scale lithium-ion battery models,''
+\textit{J. Electrochem. Soc.}, vol.~167, no.~8, Art.~no.~080534, 2020,
+doi: 10.1149/1945-7111/ab9050.
+
+\bibitem{ref14}
+M.~Ecker \textit{et al.}, ``Parameterization of a physico-chemical model of a
+lithium-ion battery: I. determination of parameters,''
+\textit{J. Electrochem. Soc.}, vol.~162, no.~9, pp.~A1836--A1848, 2015,
+doi: 10.1149/2.0551509jes.
+
+\bibitem{ref15}
+P.~M.~Attia \textit{et al.}, ``Closed-loop optimization of fast-charging
+protocols for batteries with machine learning,'' \textit{Nature}, vol.~578,
+pp.~397--402, 2020, doi: 10.1038/s41586-020-1994-5.
+
+\bibitem{ref16}
+R.~Gupta, J.~Hartford, and B.~Liu, ``LLMs for Bayesian optimization in
+scientific domains: Are we there yet?'' in \textit{Findings of the Assoc.
+Comput. Linguistics: EMNLP}, pp.~15482--15510, 2025.
+
+\bibitem{ref17}
+X.~Yuan, Z.~Chen, J.~Zhang, H.~Xiong, N.~Ye, Y.~Li, and Q.~Gu,
+``Unleashing LLMs in Bayesian optimization: Preference-guided framework for
+scientific discovery,'' in \textit{Proc. Int. Conf. Learn. Representations
+(ICLR)}, 2026.
+
+\bibitem{ref18}
+R.~Zhu, W.~Peng, F.~Yang, and M.~Xie, ``Fast-charging protocols design of
+lithium-ion battery: A multiple-objective Bayesian optimization perspective,''
+\textit{IEEE Trans. Transp. Electrific.}, vol.~11, no.~3,
+pp.~8327--8338, 2025, doi: 10.1109/TTE.2025.3539853.
+
+\bibitem{ref19}
+G.~Dong, Y.~Feng, Y.~Lou, M.~Zhang, and J.~Wei, ``Data-driven fast charging
+optimization for lithium-ion battery using Bayesian optimization with fast
+convergence,'' \textit{IEEE Trans. Transp. Electrific.}, vol.~10, no.~2,
+pp.~4173--4183, 2024, doi: 10.1109/TTE.2023.3311813.
+
+\bibitem{ref20}
+D.~R.~Jones, M.~Schonlau, and W.~J.~Welch, ``Efficient global optimization of
+expensive black-box functions,'' \textit{J. Global Optim.}, vol.~13,
+pp.~455--492, 1998, doi: 10.1023/A:1008306431147.
+
+\bibitem{ref21}
+J.~G.~Falc\'on-Cardona, H.~Ishibuchi, and C.~A.~Coello~Coello,
+``Riesz $s$-energy-based reference sets for multi-objective optimization,'' in
+\textit{Proc. IEEE Congr. Evol. Comput. (CEC)}, pp.~1--8, 2020,
+doi: 10.1109/CEC48606.2020.9185833.
+
+\bibitem{ref22}
+D.~Bernardi, E.~Pawlikowski, and J.~Newman, ``A general energy balance for
+battery systems,'' \textit{J. Electrochem. Soc.}, vol.~132, no.~1,
+pp.~5--12, 1985, doi: 10.1149/1.2113792.
+
+\bibitem{ref23}
+W.~Mai, A.~M.~Colclasure, and K.~Smith, ``Model-instructed design of novel
+charging protocols for the extreme fast charging of lithium-ion batteries
+without lithium plating,'' \textit{J. Electrochem. Soc.}, vol.~167, no.~8,
+Art.~no.~080517, 2020, doi: 10.1149/1945-7111/ab8c84.
+
+\bibitem{ref24}
+G.~Suri and S.~Onori, ``A control-oriented cycle-life model for hybrid
+electric vehicle lithium-ion batteries,'' \textit{Energy}, vol.~96,
+pp.~644--653, 2016, doi: 10.1016/j.energy.2015.11.075.
+
+\bibitem{ref25}
+C.~M.~Fonseca, L.~Paquete, and M.~L\'opez-Ib\'a\~nez, ``An improved
+dimension-sweep algorithm for the hypervolume indicator,'' in
+\textit{Proc. IEEE Congr. Evol. Comput. (CEC)}, pp.~1157--1163, 2006,
+doi: 10.1109/CEC.2006.1688440.
+
+\bibitem{ref26}
+J.~R.~Gardner, M.~J.~Kusner, Z.~Xu, K.~Q.~Weinberger, and J.~P.~Cunningham,
+``Bayesian optimization with inequality constraints,'' in
+\textit{Proc. 31st Int. Conf. Mach. Learn. (ICML)}, ser.~PMLR, vol.~32,
+pp.~937--945, 2014.
+
+\bibitem{ref27}
+S.~Daulton, M.~Balandat, and E.~Bakshy, ``Differentiable expected hypervolume
+improvement for parallel multi-objective Bayesian optimization,'' in
+\textit{Adv. Neural Inf. Process. Syst.}, vol.~33, 2020.
+
+\bibitem{ref28}
+S.~Daulton, M.~Balandat, and E.~Bakshy, ``Parallel Bayesian optimization of
+multiple noisy objectives with expected hypervolume improvement,'' in
+\textit{Adv. Neural Inf. Process. Syst.}, vol.~34, 2021.
+
+\bibitem{ref29}
+P.~Tighineanu, K.~Skubch, P.~Baireuther, A.~Reiss, F.~Berkenkamp, and
+J.~Vinogradska, ``Transfer learning with Gaussian processes for Bayesian
+optimization,'' in \textit{Proc. 25th Int. Conf. Artif. Intell. Statist.
+(AISTATS)}, ser.~PMLR, vol.~151, pp.~6152--6181, 2022.
+
+\bibitem{ref30}
+Z.~Chen \textit{et al.}, ``LABO: LLM-accelerated Bayesian optimization through
+broad exploration and selective experimentation,'' in \textit{Proc. 43rd Int.
+Conf. Mach. Learn. (ICML)}, ser.~PMLR, vol.~306, 2026.
+
+\bibitem{ref31}
+W.~Jeong, S.~Heo, and J.~H.~Lee, ``Health-conscious charging of lithium-ion
+batteries using Bayesian optimization guided by a semi-empirical aging
+model,'' \textit{J. Energy Storage}, vol.~141, Art.~no.~119348, 2026,
+doi: 10.1016/j.est.2025.119348.
+
+\end{thebibliography}
+
+\end{document}

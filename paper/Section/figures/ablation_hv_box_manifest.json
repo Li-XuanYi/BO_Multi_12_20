@@ -1,0 +1,74 @@
+{
+  "figure": "short-budget four-way ablation boxplot",
+  "dataset": "Chen2020",
+  "seeds": [
+    8409,
+    8410,
+    8411
+  ],
+  "bo_iterations": 10,
+  "initial_evaluations": 6,
+  "total_evaluations": 16,
+  "archive_metric_key": "canonical_hv",
+  "reader_facing_axis_label": "HV",
+  "groups": [
+    {
+      "key": "baseline",
+      "label": "Baseline",
+      "color": "#3B4A54",
+      "values": [
+        0.2521761643327531,
+        0.3403689248364983,
+        0.27968594836716043
+      ]
+    },
+    {
+      "key": "baseline_warmstart",
+      "label": "Baseline+WarmStart(exp)",
+      "color": "#2E8BC8",
+      "values": [
+        0.34461193723483496,
+        0.336257581594945,
+        0.3578656785294392
+      ]
+    },
+    {
+      "key": "baseline_llm_region",
+      "label": "Baseline+LLM_Region",
+      "color": "#F0A33A",
+      "values": [
+        0.24722228608185612,
+        0.33767947667780324,
+        0.30896113685332793
+      ]
+    },
+    {
+      "key": "llmbo_mo",
+      "label": "LLMBO-MO",
+      "color": "#D45162",
+      "values": [
+        0.34560756429467065,
+        0.35184960310002344,
+        0.3526592341557317
+      ]
+    }
+  ],
+  "provenance": {
+    "experiment_manifest": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\ablation_4way_3seeds_10iter_deepseek_v3_codex_2026_05_17\\manifest.json",
+    "experiment_manifest_sha256": "85e1200a070aba9925f49493adc70ad9779346e77f7054370b91dacde1aaeca6",
+    "plot_manifest": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\ablation_4way_3seeds_10iter_deepseek_v3_codex_2026_05_17\\plot_manifest.json",
+    "plot_manifest_sha256": "c45db796a35bede118940ff19617848aade50deaef135b54eaeef3407e9fd8d2"
+  },
+  "outputs": {
+    "png": {
+      "path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\paper\\Section\\figures\\ablation_hv_box.png",
+      "sha256": "40cbeeb06228f5a1ede05853fea71cfbd27578e4cb9c63f983bf30c4b8ad6366",
+      "bytes": 123818
+    },
+    "pdf": {
+      "path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\paper\\Section\\figures\\ablation_hv_box.pdf",
+      "sha256": "6c88f9579ad002e4c0ca250adc12818592565a1a1a8e07f6ed2763894db7d24e",
+      "bytes": 14104
+    }
+  }
+}

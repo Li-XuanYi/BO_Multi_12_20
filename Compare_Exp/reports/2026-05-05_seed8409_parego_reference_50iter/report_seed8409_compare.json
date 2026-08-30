@@ -1,0 +1,86 @@
+{
+  "seed": 8409,
+  "iterations": 50,
+  "date": "2026-05-05",
+  "reference_mode": {
+    "preset": "parego_matlab_reference",
+    "weight_strategy": "parego_das_dennis_cycle",
+    "weight_simplex_divisions": 30,
+    "weight_eps_min": 1e-06,
+    "weight_sampling_mode": "random_with_replacement",
+    "scalarization_mode": "parego_reference",
+    "acquisition_strategy": "parego_lcb_de",
+    "parego_invert_weights": true,
+    "parego_use_model_standardized_lcb": true,
+    "w_sample_seed": 8409,
+    "init_seed": 10435
+  },
+  "variants": {
+    "parego_reference_matlab_2026_05_05": {
+      "summary_path": "optimized_experiments\\parego_matlab_reference_seed8409_50iter_2026_05_05\\seed8409\\parego_matlab_reference\\summary.json",
+      "canonical_hv": 0.3523110937014429,
+      "display_hv": 0.8807777342536073,
+      "hypervolume_raw": 10.366771513871079,
+      "pareto_size": 45,
+      "n_total": 56
+    },
+    "parego_baseline_2026_05_02": {
+      "summary_path": "optimized_experiments\\parego_seed8409_50iter_2026_05_02\\seed8409\\parego_baseline\\summary.json",
+      "canonical_hv": 0.38386224751468095,
+      "display_hv": 0.9596556187867024,
+      "hypervolume_raw": 11.295165789351998,
+      "pareto_size": 48,
+      "n_total": 56
+    },
+    "strict_baseline_2026_05_01": {
+      "summary_path": "optimized_experiments\\region_lift_fix_seed8409_50iter_2026_05_01\\seed8409\\strict_baseline\\summary.json",
+      "canonical_hv": 0.37138620674280004,
+      "display_hv": 0.9284655168570001,
+      "hypervolume_raw": 10.928057667036008,
+      "pareto_size": 29,
+      "n_total": 56
+    },
+    "warmstart_plain_ei_2026_05_01": {
+      "summary_path": "optimized_experiments\\region_lift_fix_seed8409_50iter_2026_05_01\\seed8409\\warmstart_plain_ei\\summary.json",
+      "canonical_hv": 0.3786745360297893,
+      "display_hv": 0.9466863400744732,
+      "hypervolume_raw": 11.1425171200219,
+      "pareto_size": 37,
+      "n_total": 56
+    },
+    "llmgp_tuned_2026_05_01": {
+      "summary_path": "optimized_experiments\\region_lift_force_pool_local_sweep_seed8409_2026_05_01\\seed8409\\wider_active16_ext32\\summary.json",
+      "canonical_hv": 0.38482555920297173,
+      "display_hv": 0.9620638980074293,
+      "hypervolume_raw": 11.323511283852987,
+      "pareto_size": 37,
+      "n_total": 56
+    }
+  },
+  "deltas_vs_reference_matlab": {
+    "parego_baseline_2026_05_02": {
+      "canonical_hv_delta": 0.03155115381323803,
+      "display_hv_delta": 0.07887788453309508,
+      "hypervolume_raw_delta": 0.9283942754809189,
+      "pareto_size_delta": 3
+    },
+    "strict_baseline_2026_05_01": {
+      "canonical_hv_delta": 0.019075113041357117,
+      "display_hv_delta": 0.04768778260339279,
+      "hypervolume_raw_delta": 0.5612861531649287,
+      "pareto_size_delta": -16
+    },
+    "warmstart_plain_ei_2026_05_01": {
+      "canonical_hv_delta": 0.026363442328346365,
+      "display_hv_delta": 0.06590860582086588,
+      "hypervolume_raw_delta": 0.7757456061508208,
+      "pareto_size_delta": -8
+    },
+    "llmgp_tuned_2026_05_01": {
+      "canonical_hv_delta": 0.03251446550152881,
+      "display_hv_delta": 0.08128616375382203,
+      "hypervolume_raw_delta": 0.9567397699819082,
+      "pareto_size_delta": -8
+    }
+  }
+}

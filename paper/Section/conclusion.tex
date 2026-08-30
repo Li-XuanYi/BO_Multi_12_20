@@ -1,0 +1,14 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+LLMBO-MO screens language-model proposals while reserving objective updates for
+the simulator. Across five paired seeds and 56 evaluations, its observed mean
+sHV is similar to ParEGO on Chen2020 and higher in all five Ecker2015 pairs.
+The main study uses warm start and candidate-pool expansion under plain EI;
+the same-batch study separately tests the posterior-covariance lift. These
+results remain descriptive.
+
+The study is simulation-only, uses an uncalibrated degradation proxy and
+different LLM backends, and provides no physical validation. Future work
+requires matched configurations, a modern hypervolume-based baseline, and
+hardware replay with a calibrated degradation endpoint.
