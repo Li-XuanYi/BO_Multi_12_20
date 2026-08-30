@@ -1,0 +1,2582 @@
+{
+  "version": "2.0",
+  "param_bounds": {
+    "I1": [
+      2.0,
+      6.0
+    ],
+    "I2": [
+      2.0,
+      5.0
+    ],
+    "I3": [
+      2.0,
+      3.0
+    ],
+    "dSOC1": [
+      0.1,
+      0.4
+    ],
+    "dSOC2": [
+      0.1,
+      0.3
+    ]
+  },
+  "ref_point": [
+    7200.0,
+    40.0,
+    5.0
+  ],
+  "ideal_point": [
+    1800.0,
+    0.0,
+    0.3
+  ],
+  "normalize": true,
+  "observations": [
+    {
+      "theta": [
+        4.590315236262558,
+        4.200463804598257,
+        2.2013415208512055,
+        0.18824574757310752,
+        0.28584890181964484
+      ],
+      "objectives": [
+        4628.0,
+        4.835757950576272,
+        1.0098274997919554
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-18T17:51:23.935625"
+    },
+    {
+      "theta": [
+        4.903482923787134,
+        3.860553039447994,
+        2.7005788095884458,
+        0.2826176006522826,
+        0.1341752034099322
+      ],
+      "objectives": [
+        4217.0,
+        4.711427784850077,
+        1.0031058688142203
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-18T17:51:28.046746"
+    },
+    {
+      "theta": [
+        5.664262315679317,
+        2.7956191500489433,
+        2.6092809827204646,
+        0.30016211577027085,
+        0.2624776447142882
+      ],
+      "objectives": [
+        4281.0,
+        5.4230905853566185,
+        1.036007539660804
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-18T17:51:31.729042"
+    },
+    {
+      "theta": [
+        2.8525380123308715,
+        4.766661485538332,
+        2.035905359053058,
+        0.387667281188008,
+        0.11837048788765947
+      ],
+      "objectives": [
+        5492.0,
+        3.864535522182439,
+        0.8055246955765861
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-18T17:51:35.672408"
+    },
+    {
+      "theta": [
+        3.4435558048620107,
+        3.086608182319825,
+        2.3906741290744367,
+        0.2065236866808454,
+        0.19828776018906613
+      ],
+      "objectives": [
+        5211.0,
+        3.0352687065334694,
+        0.8244763714108875
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-18T17:51:39.672655"
+    },
+    {
+      "theta": [
+        2.5503534431000925,
+        2.0302081577446707,
+        2.9681482555812577,
+        0.13175670385894322,
+        0.2026159638019721
+      ],
+      "objectives": [
+        5550.0,
+        2.963766168722748,
+        0.6307170774919528
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-18T17:51:43.920723"
+    },
+    {
+      "theta": [
+        3.398877671676168,
+        2.805641615708346,
+        2.572367064020909,
+        0.15081364716068624,
+        0.20315095641971692
+      ],
+      "objectives": [
+        5223.0,
+        2.587704866995796,
+        0.778695729860145
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 1,
+      "acq_value": 19.918419727718845,
+      "acq_type": "EI_region_lifted_gp",
+      "gp_pred": {
+        "mean_coupled": -19.773838667989345,
+        "mean_base": 0.3168514623194927,
+        "std": 0.004970672297450753,
+        "coupling_lambda": 32.7402375170448,
+        "coupling_mode": "lgbo_region",
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "lgbo_lifted_gp",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": 107.86000366850395
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-18T17:51:59.168126"
+    },
+    {
+      "theta": [
+        3.9626351628360834,
+        2.0,
+        2.8134062126449093,
+        0.1000028051103763,
+        0.13368331160520533
+      ],
+      "objectives": [
+        5280.0,
+        2.8075269460098586,
+        0.7081549361968505
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 2,
+      "acq_value": 0.7423881279362191,
+      "acq_type": "EI_region_lifted_gp",
+      "gp_pred": {
+        "mean_coupled": -0.44766954128270825,
+        "mean_base": 0.47202843066880823,
+        "std": 0.04851206820794261,
+        "coupling_lambda": 4.930466678756977,
+        "coupling_mode": "lgbo_region",
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "lgbo_lifted_gp",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": 5.636155491482765
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-18T17:52:20.386068"
+    },
+    {
+      "theta": [
+        4.016545642770686,
+        2.0,
+        2.829188198878071,
+        0.1,
+        0.10706094727242695
+      ],
+      "objectives": [
+        5184.0,
+        2.8487775754215763,
+        0.7208145598269347
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 3,
+      "acq_value": 0.25585861871458254,
+      "acq_type": "EI_region_lifted_gp",
+      "gp_pred": {
+        "mean_coupled": -0.038753923537724944,
+        "mean_base": 0.22247458813079202,
+        "std": 0.004208480834465101,
+        "coupling_lambda": 3.1712806171201637,
+        "coupling_mode": "lgbo_region",
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "lgbo_lifted_gp",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": 3.2586672974812045
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-18T17:52:36.749808"
+    },
+    {
+      "theta": [
+        4.013203102897582,
+        2.525083541440628,
+        2.834631840412301,
+        0.14314683527338573,
+        0.1
+      ],
+      "objectives": [
+        4891.0,
+        2.903406396401977,
+        0.7877301481052881
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 4,
+      "acq_value": 6.7337082252435785,
+      "acq_type": "EI_region_lifted_gp",
+      "gp_pred": {
+        "mean_coupled": -6.644611895141823,
+        "mean_base": 0.14706660989744033,
+        "std": 0.01657775827792502,
+        "coupling_lambda": 7.429641569345891,
+        "coupling_mode": "lgbo_region",
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "lgbo_lifted_gp",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": 31.92573222091162
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-18T17:52:54.807563"
+    },
+    {
+      "theta": [
+        4.293246561820146,
+        4.022033543784356,
+        2.9070761293477805,
+        0.10000010567734915,
+        0.15070609910214605
+      ],
+      "objectives": [
+        4494.0,
+        3.389195325943206,
+        0.8684670154302099
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 5,
+      "acq_value": 0.014145456281238466,
+      "acq_type": "EI_region_lifted_gp",
+      "gp_pred": {
+        "mean_coupled": 0.2641795337324861,
+        "mean_base": 0.30656336437233384,
+        "std": 0.056984275108964116,
+        "coupling_lambda": 1.2784349228927143,
+        "coupling_mode": "lgbo_region",
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "lgbo_lifted_gp",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": 0.7519357032285939
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-18T17:53:12.624288"
+    },
+    {
+      "theta": [
+        4.293246562368766,
+        4.017505298372864,
+        2.907076127202374,
+        0.10000010656405248,
+        0.15092017343364517
+      ],
+      "objectives": [
+        4495.0,
+        3.387994062187181,
+        0.8685359250219608
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 6,
+      "acq_value": 0.017157520321628327,
+      "acq_type": "EI_region_lifted_gp",
+      "gp_pred": {
+        "mean_coupled": 0.24668512339707038,
+        "mean_base": 0.2642973474146913,
+        "std": 0.0037355223723126497,
+        "coupling_lambda": 1.29140764267983,
+        "coupling_mode": "lgbo_region",
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "lgbo_lifted_gp",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": 0.544556993402984
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-18T17:53:29.153074"
+    },
+    {
+      "theta": [
+        5.429217981991591,
+        3.356029847217928,
+        2.7211620753134094,
+        0.2304129993637735,
+        0.1680951650878771
+      ],
+      "objectives": [
+        4322.0,
+        4.36509989994915,
+        0.987768770335379
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 7,
+      "acq_value": 4.13651487221522,
+      "acq_type": "EI_region_lifted_gp",
+      "gp_pred": {
+        "mean_coupled": -4.126365438711694,
+        "mean_base": -0.08278851124097575,
+        "std": 0.0666225364177303,
+        "coupling_lambda": 4.057034238175308,
+        "coupling_mode": "lgbo_region",
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "lgbo_lifted_gp",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": 11.834103200411557
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-18T17:53:45.404481"
+    },
+    {
+      "theta": [
+        5.690874843840777,
+        3.3909331849149726,
+        2.6509721038179754,
+        0.33435961478865495,
+        0.20161216231640183
+      ],
+      "objectives": [
+        3921.0,
+        5.823257760183157,
+        1.1124643876247333
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 8,
+      "acq_value": 24.59255792959399,
+      "acq_type": "EI_region_lifted_gp",
+      "gp_pred": {
+        "mean_coupled": -24.414451839437888,
+        "mean_base": 0.1513136924207818,
+        "std": 0.018715145944564013,
+        "coupling_lambda": 10.920879577818893,
+        "coupling_mode": "lgbo_region",
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "lgbo_lifted_gp",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": 113.38037380617143
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-18T17:54:06.698905"
+    },
+    {
+      "theta": [
+        5.079396698200216,
+        2.992653878671989,
+        2.6931505584166224,
+        0.17121505332350181,
+        0.1469545608763979
+      ],
+      "objectives": [
+        4711.0,
+        3.3494407401620836,
+        0.887675743186315
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 9,
+      "acq_value": 19.35570829943232,
+      "acq_type": "EI_region_lifted_gp",
+      "gp_pred": {
+        "mean_coupled": -19.345193961510958,
+        "mean_base": 0.6297598652334697,
+        "std": 0.02103975651358179,
+        "coupling_lambda": 12.610108383799195,
+        "coupling_mode": "lgbo_region",
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "lgbo_lifted_gp",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": 69.18148430437033
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-18T17:54:23.950837"
+    },
+    {
+      "theta": [
+        4.214260013083174,
+        3.830873759599419,
+        2.804006817852835,
+        0.15072171472476412,
+        0.1
+      ],
+      "objectives": [
+        4640.0,
+        3.30930149395951,
+        0.8606101266336961
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 10,
+      "acq_value": 0.476847359114978,
+      "acq_type": "EI_region_lifted_gp",
+      "gp_pred": {
+        "mean_coupled": -0.21324525027096874,
+        "mean_base": 0.2750197617203689,
+        "std": 0.019988974676949118,
+        "coupling_lambda": 3.0190462467620973,
+        "coupling_mode": "lgbo_region",
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "lgbo_lifted_gp",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": 7.085702149484335
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-18T17:54:40.843162"
+    }
+  ],
+  "pareto_indices": [
+    1,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    15
+  ],
+  "iteration_stats": [
+    {
+      "iteration": 1,
+      "n_total": 7,
+      "n_feasible": 7,
+      "pareto_size": 4,
+      "hypervolume": 0.5851471867573194,
+      "display_hv": 0.5851471867573194,
+      "canonical_hv": 0.23405887470292774,
+      "hypervolume_canonical": 0.23405887470292774,
+      "hypervolume_raw": 6.887194068589995,
+      "best_time_s": 4217.0,
+      "best_temp_K": 2.587704866995796,
+      "best_aging_pct": 0.6307170774919528,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 0,
+      "w_vec": [
+        0.13769624736142733,
+        0.2585213721588418,
+        0.6037823804797309
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 15.25,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "region_lift_mode": "lgbo_proposition1",
+        "region_lift_control_mode": "none",
+        "anchor_weighting_mode": "uniform",
+        "lgbo_covariance_source": "posterior_standardized",
+        "lgbo_denominator_covariance_source": "posterior_standardized",
+        "lgbo_shift_kernel_source": "prior_latent_standardized",
+        "acquisition_used_lift": true,
+        "structural_fallback_reason": null,
+        "fallback_reason": null,
+        "parser_status": "ok",
+        "llm_raw_response_hash": "2d5a1bfd4a3886dc",
+        "llm_called_for_region": true,
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_lgbo_mode",
+        "selected_source": "lgbo_lifted_gp",
+        "region_raw_lb": [
+          3.0000000000001252,
+          2.500000000000166,
+          2.3000000000001997,
+          0.15000000000016667,
+          0.15000000000025004
+        ],
+        "region_raw_ub": [
+          3.999999999999875,
+          3.499999999999833,
+          2.6999999999998,
+          0.24999999999983336,
+          0.24999999999975003
+        ],
+        "region_normalized_lb": [
+          0.2499999999999688,
+          0.16666666666666646,
+          0.2999999999998996,
+          0.16666666666666663,
+          0.2500000000000002
+        ],
+        "region_normalized_ub": [
+          0.4999999999998438,
+          0.4999999999997777,
+          0.6999999999990998,
+          0.4999999999977778,
+          0.7499999999950002
+        ],
+        "relative_volume": 0.005555555555500468,
+        "per_dim_widths": [
+          0.2499999999999375,
+          0.3333333333332223,
+          0.39999999999960023,
+          0.33333333333222226,
+          0.4999999999975
+        ],
+        "n_lgbo_anchors": 64,
+        "feasible_anchor_ratio": 1.0,
+        "lgbo_confidence": 0.65,
+        "lgbo_lambda": 32.7402375170448,
+        "lgbo_posterior_variance": 0.00039415138944114364,
+        "lgbo_protected_variance": 0.00039415138944114364,
+        "lgbo_shift_min": 81.59746675820035,
+        "lgbo_shift_max": 107.86000366850395,
+        "lgbo_shift_mean": 101.09441826929134,
+        "max_shift_z": 107.86000366850395,
+        "mean_shift_z": 101.09441826929134,
+        "preference": {
+          "kind": "region",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": {
+            "I1": 3.0,
+            "I2": 2.5,
+            "I3": 2.3,
+            "dSOC1": 0.15,
+            "dSOC2": 0.15
+          },
+          "ub": {
+            "I1": 4.0,
+            "I2": 3.5,
+            "I3": 2.7,
+            "dSOC1": 0.25,
+            "dSOC2": 0.25
+          },
+          "confidence": 0.65,
+          "preference_type": "exploratory_balance",
+          "reason": "Weight vector emphasizes third objective (0.604) which relates to degradation; moderate currents with balanced SOC steps may reduce stress while maintaining reasonable charge time.",
+          "mechanistic_thinking": "Balanced moderate currents across phases reduce lithium plating risk while avoiding high polarization; dSOC1+dSOC2=0.3-0.5 satisfies constraint and allows stress distribution.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "region",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "lb": {
+              "I1": 3.0,
+              "I2": 2.5,
+              "I3": 2.3,
+              "dSOC1": 0.15,
+              "dSOC2": 0.15
+            },
+            "ub": {
+              "I1": 4.0,
+              "I2": 3.5,
+              "I3": 2.7,
+              "dSOC1": 0.25,
+              "dSOC2": 0.25
+            },
+            "confidence": 0.65,
+            "preference_type": "exploratory_balance",
+            "reason": "Weight vector emphasizes third objective (0.604) which relates to degradation; moderate currents with balanced SOC steps may reduce stress while maintaining reasonable charge time.",
+            "mechanistic_thinking": "Balanced moderate currents across phases reduce lithium plating risk while avoiding high polarization; dSOC1+dSOC2=0.3-0.5 satisfies constraint and allows stress distribution."
+          },
+          "raw_response_hash": "2d5a1bfd4a3886dc",
+          "raw_text_preview": "{\"confidence\": 0.65, \"coordinate_space\": \"raw\", \"kind\": \"region\", \"lb\": {\"I1\": 3.0, \"I2\": 2.5, \"I3\": 2.3, \"dSOC1\": 0.15, \"dSOC2\": 0.15}, \"mechanistic_thinking\": \"Balanced moderate currents across phases reduce lithium plating risk while avoiding high polarization; dSOC1+dSOC2=0.3-0.5 satisfies constraint and allows stress distribution.\", \"preference_direction\": \"promising\", \"preference_type\": \"exploratory_balance\", \"reason\": \"Weight vector emphasizes third objective (0.604) which relates to degradation; moderate currents with balanced SOC steps may reduce stress while maintaining reasonable ch...<truncated>",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "finish_reason": "stop",
+              "message_field_names": [
+                "audio",
+                "content",
+                "function_call",
+                "reasoning_content",
+                "refusal",
+                "role",
+                "tool_calls"
+              ],
+              "content_length": 825,
+              "reasoning_content_length": 0,
+              "extracted_text_source": "content",
+              "extracted_text_length": 825,
+              "usage": {
+                "completion_tokens": 253,
+                "prompt_tokens": 1543,
+                "total_tokens": 1796,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null,
+                "reasoning_tokens": 0
+              }
+            }
+          ],
+          "parser_status": "ok"
+        },
+        "accepted": true,
+        "selected_index_before": 3,
+        "selected_index_after": 143,
+        "selected_score_before": 0.04947365784495745,
+        "selected_score_after": 19.918419727718845,
+        "selected_changed_by_lift": true,
+        "iteration": 0,
+        "override_enabled": false,
+        "override_uses_diagnostic_pool": false,
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "acquisition_candidate_pool_size": 145,
+        "evaluated_theta": [
+          3.398878,
+          2.805642,
+          2.572367,
+          0.150814,
+          0.203151
+        ],
+        "hv_before_raw": 6.820808599540665,
+        "hv_after_raw": 6.887194068589995,
+        "hv_gain_raw": 0.0663854690493304
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 2,
+      "n_total": 8,
+      "n_feasible": 8,
+      "pareto_size": 5,
+      "hypervolume": 0.5880315480404432,
+      "display_hv": 0.5880315480404432,
+      "canonical_hv": 0.23521261921617728,
+      "hypervolume_canonical": 0.23521261921617728,
+      "hypervolume_raw": 6.921143058468741,
+      "best_time_s": 4217.0,
+      "best_temp_K": 2.587704866995796,
+      "best_aging_pct": 0.6307170774919528,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 1,
+      "w_vec": [
+        0.2806214627455438,
+        0.009960046994512238,
+        0.7094184902599441
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 21.21,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "region_lift_mode": "lgbo_proposition1",
+        "region_lift_control_mode": "none",
+        "anchor_weighting_mode": "uniform",
+        "lgbo_covariance_source": "posterior_standardized",
+        "lgbo_denominator_covariance_source": "posterior_standardized",
+        "lgbo_shift_kernel_source": "prior_latent_standardized",
+        "acquisition_used_lift": true,
+        "structural_fallback_reason": null,
+        "fallback_reason": null,
+        "parser_status": "ok",
+        "llm_raw_response_hash": "9c178fe2fb81286a",
+        "llm_called_for_region": true,
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_lgbo_mode",
+        "selected_source": "lgbo_lifted_gp",
+        "region_raw_lb": [
+          4.2000000000001,
+          2.2000000000000997,
+          2.30000000000015,
+          0.15000000000011665,
+          0.12000000000015
+        ],
+        "region_raw_ub": [
+          4.9999999999999,
+          2.7999999999998995,
+          2.59999999999985,
+          0.21999999999988334,
+          0.17999999999985
+        ],
+        "region_normalized_lb": [
+          0.5499999999998874,
+          0.06666666666667766,
+          0.2999999999998499,
+          0.16666666666649993,
+          0.10000000000024999
+        ],
+        "region_normalized_ub": [
+          0.7499999999997874,
+          0.26666666666654426,
+          0.5999999999992499,
+          0.3999999999982778,
+          0.39999999999725
+        ],
+        "relative_volume": 0.00083999999999167,
+        "per_dim_widths": [
+          0.19999999999995,
+          0.19999999999993326,
+          0.29999999999970006,
+          0.2333333333325556,
+          0.2999999999985
+        ],
+        "n_lgbo_anchors": 64,
+        "feasible_anchor_ratio": 1.0,
+        "lgbo_confidence": 0.65,
+        "lgbo_lambda": 4.930466678756977,
+        "lgbo_posterior_variance": 0.017380035416999774,
+        "lgbo_protected_variance": 0.017380035416999774,
+        "lgbo_shift_min": 1.5807174440004974,
+        "lgbo_shift_max": 5.636155491482765,
+        "lgbo_shift_mean": 4.0719594405402715,
+        "max_shift_z": 5.636155491482765,
+        "mean_shift_z": 4.0719594405402715,
+        "preference": {
+          "kind": "region",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": {
+            "I1": 4.2,
+            "I2": 2.2,
+            "I3": 2.3,
+            "dSOC1": 0.15,
+            "dSOC2": 0.12
+          },
+          "ub": {
+            "I1": 5.0,
+            "I2": 2.8,
+            "I3": 2.6,
+            "dSOC1": 0.22,
+            "dSOC2": 0.18
+          },
+          "confidence": 0.65,
+          "preference_type": "exploration",
+          "reason": "Higher I1 with moderate I2,I3 targets lower charging time (heavily weighted objective) while keeping polarization moderate; constrained dSOC sum ~0.3-0.4 avoids plating risk and satisfies hard constraint.",
+          "mechanistic_thinking": "Higher first-phase current reduces total charging time (dominant weight), while moderate later currents and SOC increments balance polarization to limit degradation.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "region",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "lb": {
+              "I1": 4.2,
+              "I2": 2.2,
+              "I3": 2.3,
+              "dSOC1": 0.15,
+              "dSOC2": 0.12
+            },
+            "ub": {
+              "I1": 5.0,
+              "I2": 2.8,
+              "I3": 2.6,
+              "dSOC1": 0.22,
+              "dSOC2": 0.18
+            },
+            "confidence": 0.65,
+            "preference_type": "exploration",
+            "reason": "Higher I1 with moderate I2,I3 targets lower charging time (heavily weighted objective) while keeping polarization moderate; constrained dSOC sum ~0.3-0.4 avoids plating risk and satisfies hard constraint.",
+            "mechanistic_thinking": "Higher first-phase current reduces total charging time (dominant weight), while moderate later currents and SOC increments balance polarization to limit degradation."
+          },
+          "raw_response_hash": "9c178fe2fb81286a",
+          "raw_text_preview": "{\"confidence\": 0.65, \"coordinate_space\": \"raw\", \"kind\": \"region\", \"lb\": {\"I1\": 4.2, \"I2\": 2.2, \"I3\": 2.3, \"dSOC1\": 0.15, \"dSOC2\": 0.12}, \"mechanistic_thinking\": \"Higher first-phase current reduces total charging time (dominant weight), while moderate later currents and SOC increments balance polarization to limit degradation.\", \"preference_direction\": \"promising\", \"preference_type\": \"exploration\", \"reason\": \"Higher I1 with moderate I2,I3 targets lower charging time (heavily weighted objective) while keeping polarization moderate; constrained dSOC sum ~0.3-0.4 avoids plating risk and satisfies ...<truncated>",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "finish_reason": "stop",
+              "message_field_names": [
+                "audio",
+                "content",
+                "function_call",
+                "reasoning_content",
+                "refusal",
+                "role",
+                "tool_calls"
+              ],
+              "content_length": 831,
+              "reasoning_content_length": 0,
+              "extracted_text_source": "content",
+              "extracted_text_length": 831,
+              "usage": {
+                "completion_tokens": 255,
+                "prompt_tokens": 1786,
+                "total_tokens": 2041,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null,
+                "reasoning_tokens": 0
+              }
+            }
+          ],
+          "parser_status": "ok"
+        },
+        "accepted": true,
+        "selected_index_before": 8,
+        "selected_index_after": 136,
+        "selected_score_before": 0.018874138361105255,
+        "selected_score_after": 0.7423881279362191,
+        "selected_changed_by_lift": true,
+        "iteration": 1,
+        "override_enabled": false,
+        "override_uses_diagnostic_pool": false,
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "acquisition_candidate_pool_size": 145,
+        "evaluated_theta": [
+          3.962635,
+          2.0,
+          2.813406,
+          0.100003,
+          0.133683
+        ],
+        "hv_before_raw": 6.887194068589995,
+        "hv_after_raw": 6.921143058468741,
+        "hv_gain_raw": 0.03394898987874573
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 3,
+      "n_total": 9,
+      "n_feasible": 9,
+      "pareto_size": 5,
+      "hypervolume": 0.5899981706507277,
+      "display_hv": 0.5899981706507277,
+      "canonical_hv": 0.23599926826029108,
+      "hypervolume_canonical": 0.23599926826029108,
+      "hypervolume_raw": 6.944290245848664,
+      "best_time_s": 4217.0,
+      "best_temp_K": 2.587704866995796,
+      "best_aging_pct": 0.6307170774919528,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 2,
+      "w_vec": [
+        0.24467579477979998,
+        0.2530136266904166,
+        0.5023105785297834
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 16.36,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "region_lift_mode": "lgbo_proposition1",
+        "region_lift_control_mode": "none",
+        "anchor_weighting_mode": "uniform",
+        "lgbo_covariance_source": "posterior_standardized",
+        "lgbo_denominator_covariance_source": "posterior_standardized",
+        "lgbo_shift_kernel_source": "prior_latent_standardized",
+        "acquisition_used_lift": true,
+        "structural_fallback_reason": null,
+        "fallback_reason": null,
+        "parser_status": "ok",
+        "llm_raw_response_hash": "c704adbb215b42d8",
+        "llm_called_for_region": true,
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_lgbo_mode",
+        "selected_source": "lgbo_lifted_gp",
+        "region_raw_lb": [
+          4.500000000000163,
+          2.800000000000166,
+          2.20000000000025,
+          0.15000000000016667,
+          0.12000000000019999
+        ],
+        "region_raw_ub": [
+          5.799999999999838,
+          3.799999999999833,
+          2.69999999999975,
+          0.24999999999983336,
+          0.1999999999998
+        ],
+        "region_normalized_lb": [
+          0.6249999999998846,
+          0.2666666666666331,
+          0.2000000000000502,
+          0.16666666666666663,
+          0.10000000000049993
+        ],
+        "region_normalized_ub": [
+          0.9499999999997221,
+          0.5999999999997443,
+          0.69999999999905,
+          0.4999999999977778,
+          0.4999999999965
+        ],
+        "relative_volume": 0.007222222222150604,
+        "per_dim_widths": [
+          0.3249999999999187,
+          0.3333333333332223,
+          0.49999999999949996,
+          0.33333333333222226,
+          0.3999999999980001
+        ],
+        "n_lgbo_anchors": 64,
+        "feasible_anchor_ratio": 1.0,
+        "lgbo_confidence": 0.75,
+        "lgbo_lambda": 3.1712806171201637,
+        "lgbo_posterior_variance": 0.05593107679119974,
+        "lgbo_protected_variance": 0.05593107679119974,
+        "lgbo_shift_min": 0.43005736184155974,
+        "lgbo_shift_max": 3.2586672974812045,
+        "lgbo_shift_mean": 1.8887629194567106,
+        "max_shift_z": 3.2586672974812045,
+        "mean_shift_z": 1.8887629194567106,
+        "preference": {
+          "kind": "region",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": {
+            "I1": 4.5,
+            "I2": 2.8,
+            "I3": 2.2,
+            "dSOC1": 0.15,
+            "dSOC2": 0.12
+          },
+          "ub": {
+            "I1": 5.8,
+            "I2": 3.8,
+            "I3": 2.7,
+            "dSOC1": 0.25,
+            "dSOC2": 0.2
+          },
+          "confidence": 0.75,
+          "preference_type": "exploration",
+          "reason": "High I1 reduces charging time (dominant weight), moderate I2/I3 balance polarization, and constrained dSOC sum limits degradation while exploring less-tested high-current region.",
+          "mechanistic_thinking": "High first-phase current minimizes charging time; moderate later currents reduce lithium plating risk; constrained SOC increments manage heat generation and capacity fade.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "region",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "lb": {
+              "I1": 4.5,
+              "I2": 2.8,
+              "I3": 2.2,
+              "dSOC1": 0.15,
+              "dSOC2": 0.12
+            },
+            "ub": {
+              "I1": 5.8,
+              "I2": 3.8,
+              "I3": 2.7,
+              "dSOC1": 0.25,
+              "dSOC2": 0.2
+            },
+            "confidence": 0.75,
+            "preference_type": "exploration",
+            "reason": "High I1 reduces charging time (dominant weight), moderate I2/I3 balance polarization, and constrained dSOC sum limits degradation while exploring less-tested high-current region.",
+            "mechanistic_thinking": "High first-phase current minimizes charging time; moderate later currents reduce lithium plating risk; constrained SOC increments manage heat generation and capacity fade."
+          },
+          "raw_response_hash": "c704adbb215b42d8",
+          "raw_text_preview": "{\"confidence\": 0.75, \"coordinate_space\": \"raw\", \"kind\": \"region\", \"lb\": {\"I1\": 4.5, \"I2\": 2.8, \"I3\": 2.2, \"dSOC1\": 0.15, \"dSOC2\": 0.12}, \"mechanistic_thinking\": \"High first-phase current minimizes charging time; moderate later currents reduce lithium plating risk; constrained SOC increments manage heat generation and capacity fade.\", \"preference_direction\": \"promising\", \"preference_type\": \"exploration\", \"reason\": \"High I1 reduces charging time (dominant weight), moderate I2/I3 balance polarization, and constrained dSOC sum limits degradation while exploring less-tested high-current region.\", \"...<truncated>",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "finish_reason": "stop",
+              "message_field_names": [
+                "audio",
+                "content",
+                "function_call",
+                "reasoning_content",
+                "refusal",
+                "role",
+                "tool_calls"
+              ],
+              "content_length": 810,
+              "reasoning_content_length": 0,
+              "extracted_text_source": "content",
+              "extracted_text_length": 810,
+              "usage": {
+                "completion_tokens": 245,
+                "prompt_tokens": 1761,
+                "total_tokens": 2006,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null,
+                "reasoning_tokens": 0
+              }
+            }
+          ],
+          "parser_status": "ok"
+        },
+        "accepted": true,
+        "selected_index_before": 2,
+        "selected_index_after": 138,
+        "selected_score_before": 0.035011793425986995,
+        "selected_score_after": 0.25585861871458254,
+        "selected_changed_by_lift": true,
+        "iteration": 2,
+        "override_enabled": false,
+        "override_uses_diagnostic_pool": false,
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "acquisition_candidate_pool_size": 145,
+        "evaluated_theta": [
+          4.016546,
+          2.0,
+          2.829188,
+          0.1,
+          0.107061
+        ],
+        "hv_before_raw": 6.921143058468741,
+        "hv_after_raw": 6.944290245848664,
+        "hv_gain_raw": 0.02314718737992294
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 4,
+      "n_total": 10,
+      "n_feasible": 10,
+      "pareto_size": 6,
+      "hypervolume": 0.6010653741291815,
+      "display_hv": 0.6010653741291815,
+      "canonical_hv": 0.2404261496516726,
+      "hypervolume_canonical": 0.2404261496516726,
+      "hypervolume_raw": 7.074551451708819,
+      "best_time_s": 4217.0,
+      "best_temp_K": 2.587704866995796,
+      "best_aging_pct": 0.6307170774919528,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 3,
+      "w_vec": [
+        0.009959495077642794,
+        0.6361944316499807,
+        0.35384607327237655
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 18.06,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "region_lift_mode": "lgbo_proposition1",
+        "region_lift_control_mode": "none",
+        "anchor_weighting_mode": "uniform",
+        "lgbo_covariance_source": "posterior_standardized",
+        "lgbo_denominator_covariance_source": "posterior_standardized",
+        "lgbo_shift_kernel_source": "prior_latent_standardized",
+        "acquisition_used_lift": true,
+        "structural_fallback_reason": null,
+        "fallback_reason": null,
+        "parser_status": "ok",
+        "llm_raw_response_hash": "6a0b9eac65735570",
+        "llm_called_for_region": true,
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_lgbo_mode",
+        "selected_source": "lgbo_lifted_gp",
+        "region_raw_lb": [
+          3.8000000000000878,
+          2.800000000000117,
+          2.4000000000001998,
+          0.12000000000010001,
+          0.12000000000015
+        ],
+        "region_raw_ub": [
+          4.499999999999913,
+          3.4999999999998836,
+          2.7999999999997995,
+          0.17999999999990002,
+          0.17999999999985
+        ],
+        "region_normalized_lb": [
+          0.4499999999999094,
+          0.2666666666666168,
+          0.39999999999979974,
+          0.0666666666667778,
+          0.10000000000024999
+        ],
+        "region_normalized_ub": [
+          0.624999999999822,
+          0.49999999999979455,
+          0.7999999999989995,
+          0.2666666666654445,
+          0.39999999999725
+        ],
+        "relative_volume": 0.0009799999999902814,
+        "per_dim_widths": [
+          0.1749999999999563,
+          0.23333333333325554,
+          0.3999999999995998,
+          0.19999999999933332,
+          0.2999999999985
+        ],
+        "n_lgbo_anchors": 64,
+        "feasible_anchor_ratio": 1.0,
+        "lgbo_confidence": 0.7,
+        "lgbo_lambda": 7.429641569345891,
+        "lgbo_posterior_variance": 0.008876880124850797,
+        "lgbo_protected_variance": 0.008876880124850797,
+        "lgbo_shift_min": 21.84282838747709,
+        "lgbo_shift_max": 31.92573222091162,
+        "lgbo_shift_mean": 28.296244460339874,
+        "max_shift_z": 31.92573222091162,
+        "mean_shift_z": 28.296244460339874,
+        "preference": {
+          "kind": "region",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": {
+            "I1": 3.8,
+            "I2": 2.8,
+            "I3": 2.4,
+            "dSOC1": 0.12,
+            "dSOC2": 0.12
+          },
+          "ub": {
+            "I1": 4.5,
+            "I2": 3.5,
+            "I3": 2.8,
+            "dSOC1": 0.18,
+            "dSOC2": 0.18
+          },
+          "confidence": 0.7,
+          "preference_type": "exploration",
+          "reason": "Weight vector emphasizes minimizing objective 2 (lithium plating) and objective 3 (capacity fade). Region explores higher I2 and I3 than recent low-current points to probe trade-offs between plating risk and charging time, while keeping dSOC increments moderate to manage heat and stay within constraint.",
+          "mechanistic_thinking": "Moderately elevated currents in phases 2 and 3 can reduce total charging time without excessively increasing plating overpotential, while constrained SOC increments limit cumulative heat generation and solid-electrolyte interphase growth.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "region",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "lb": {
+              "I1": 3.8,
+              "I2": 2.8,
+              "I3": 2.4,
+              "dSOC1": 0.12,
+              "dSOC2": 0.12
+            },
+            "ub": {
+              "I1": 4.5,
+              "I2": 3.5,
+              "I3": 2.8,
+              "dSOC1": 0.18,
+              "dSOC2": 0.18
+            },
+            "confidence": 0.7,
+            "preference_type": "exploration",
+            "reason": "Weight vector emphasizes minimizing objective 2 (lithium plating) and objective 3 (capacity fade). Region explores higher I2 and I3 than recent low-current points to probe trade-offs between plating risk and charging time, while keeping dSOC increments moderate to manage heat and stay within constraint.",
+            "mechanistic_thinking": "Moderately elevated currents in phases 2 and 3 can reduce total charging time without excessively increasing plating overpotential, while constrained SOC increments limit cumulative heat generation and solid-electrolyte interphase growth."
+          },
+          "raw_response_hash": "6a0b9eac65735570",
+          "raw_text_preview": "{\"confidence\": 0.7, \"coordinate_space\": \"raw\", \"kind\": \"region\", \"lb\": {\"I1\": 3.8, \"I2\": 2.8, \"I3\": 2.4, \"dSOC1\": 0.12, \"dSOC2\": 0.12}, \"mechanistic_thinking\": \"Moderately elevated currents in phases 2 and 3 can reduce total charging time without excessively increasing plating overpotential, while constrained SOC increments limit cumulative heat generation and solid-electrolyte interphase growth.\", \"preference_direction\": \"promising\", \"preference_type\": \"exploration\", \"reason\": \"Weight vector emphasizes minimizing objective 2 (lithium plating) and objective 3 (capacity fade). Region explores h...<truncated>",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "finish_reason": "stop",
+              "message_field_names": [
+                "audio",
+                "content",
+                "function_call",
+                "reasoning_content",
+                "refusal",
+                "role",
+                "tool_calls"
+              ],
+              "content_length": 929,
+              "reasoning_content_length": 0,
+              "extracted_text_source": "content",
+              "extracted_text_length": 929,
+              "usage": {
+                "completion_tokens": 280,
+                "prompt_tokens": 1754,
+                "total_tokens": 2034,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null,
+                "reasoning_tokens": 0
+              }
+            }
+          ],
+          "parser_status": "ok"
+        },
+        "accepted": true,
+        "selected_index_before": 10,
+        "selected_index_after": 140,
+        "selected_score_before": 0.048770714162019814,
+        "selected_score_after": 6.7337082252435785,
+        "selected_changed_by_lift": true,
+        "iteration": 3,
+        "override_enabled": false,
+        "override_uses_diagnostic_pool": false,
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "acquisition_candidate_pool_size": 145,
+        "evaluated_theta": [
+          4.013203,
+          2.525084,
+          2.834632,
+          0.143147,
+          0.1
+        ],
+        "hv_before_raw": 6.944290245848664,
+        "hv_after_raw": 7.074551451708819,
+        "hv_gain_raw": 0.13026120586015555
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 5,
+      "n_total": 11,
+      "n_feasible": 11,
+      "pareto_size": 7,
+      "hypervolume": 0.6111046103001593,
+      "display_hv": 0.6111046103001593,
+      "canonical_hv": 0.24444184412006373,
+      "hypervolume_canonical": 0.24444184412006373,
+      "hypervolume_raw": 7.19271346184014,
+      "best_time_s": 4217.0,
+      "best_temp_K": 2.587704866995796,
+      "best_aging_pct": 0.6307170774919528,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 4,
+      "w_vec": [
+        0.4169518697141941,
+        0.30525833021976934,
+        0.27778980006603654
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 17.81,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "region_lift_mode": "lgbo_proposition1",
+        "region_lift_control_mode": "none",
+        "anchor_weighting_mode": "uniform",
+        "lgbo_covariance_source": "posterior_standardized",
+        "lgbo_denominator_covariance_source": "posterior_standardized",
+        "lgbo_shift_kernel_source": "prior_latent_standardized",
+        "acquisition_used_lift": true,
+        "structural_fallback_reason": null,
+        "fallback_reason": null,
+        "parser_status": "ok",
+        "llm_raw_response_hash": "23b813c3c8b6b247",
+        "llm_called_for_region": true,
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_lgbo_mode",
+        "selected_source": "lgbo_lifted_gp",
+        "region_raw_lb": [
+          4.500000000000087,
+          3.800000000000117,
+          2.50000000000015,
+          0.15000000000016667,
+          0.1000000000002
+        ],
+        "region_raw_ub": [
+          5.199999999999912,
+          4.499999999999884,
+          2.7999999999998497,
+          0.24999999999983336,
+          0.1799999999998
+        ],
+        "region_normalized_lb": [
+          0.6249999999998656,
+          0.599999999999839,
+          0.49999999999965006,
+          0.16666666666666663,
+          9.999640004870708e-13
+        ],
+        "region_normalized_ub": [
+          0.799999999999778,
+          0.8333333333330167,
+          0.7999999999990497,
+          0.4999999999977778,
+          0.3999999999969999
+        ],
+        "relative_volume": 0.0016333333333171346,
+        "per_dim_widths": [
+          0.1749999999999563,
+          0.23333333333325554,
+          0.2999999999996996,
+          0.33333333333222226,
+          0.39999999999799996
+        ],
+        "n_lgbo_anchors": 64,
+        "feasible_anchor_ratio": 1.0,
+        "lgbo_confidence": 0.7,
+        "lgbo_lambda": 1.2784349228927143,
+        "lgbo_posterior_variance": 0.29980497036803777,
+        "lgbo_protected_variance": 0.29980497036803777,
+        "lgbo_shift_min": 3.730208408573971e-11,
+        "lgbo_shift_max": 0.7519357032285939,
+        "lgbo_shift_mean": 0.12572913047953116,
+        "max_shift_z": 0.7519357032285939,
+        "mean_shift_z": 0.12572913047953116,
+        "preference": {
+          "kind": "region",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": {
+            "I1": 4.5,
+            "I2": 3.8,
+            "I3": 2.5,
+            "dSOC1": 0.15,
+            "dSOC2": 0.1
+          },
+          "ub": {
+            "I1": 5.2,
+            "I2": 4.5,
+            "I3": 2.8,
+            "dSOC1": 0.25,
+            "dSOC2": 0.18
+          },
+          "confidence": 0.7,
+          "preference_type": "exploration",
+          "reason": "Weight vector emphasizes charging time (I1) and plating risk (I2), suggesting a region with higher I1 and moderate I2 to balance speed and safety, while keeping dSOC sum low to respect constraint and limit degradation.",
+          "mechanistic_thinking": "Higher I1 reduces total time, but pairing with moderate I2 and I3 controls plating overpotential; constrained dSOC limits cumulative heat and SEI growth.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "region",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "lb": {
+              "I1": 4.5,
+              "I2": 3.8,
+              "I3": 2.5,
+              "dSOC1": 0.15,
+              "dSOC2": 0.1
+            },
+            "ub": {
+              "I1": 5.2,
+              "I2": 4.5,
+              "I3": 2.8,
+              "dSOC1": 0.25,
+              "dSOC2": 0.18
+            },
+            "confidence": 0.7,
+            "preference_type": "exploration",
+            "reason": "Weight vector emphasizes charging time (I1) and plating risk (I2), suggesting a region with higher I1 and moderate I2 to balance speed and safety, while keeping dSOC sum low to respect constraint and limit degradation.",
+            "mechanistic_thinking": "Higher I1 reduces total time, but pairing with moderate I2 and I3 controls plating overpotential; constrained dSOC limits cumulative heat and SEI growth."
+          },
+          "raw_response_hash": "23b813c3c8b6b247",
+          "raw_text_preview": "{\"confidence\": 0.7, \"coordinate_space\": \"raw\", \"kind\": \"region\", \"lb\": {\"I1\": 4.5, \"I2\": 3.8, \"I3\": 2.5, \"dSOC1\": 0.15, \"dSOC2\": 0.1}, \"mechanistic_thinking\": \"Higher I1 reduces total time, but pairing with moderate I2 and I3 controls plating overpotential; constrained dSOC limits cumulative heat and SEI growth.\", \"preference_direction\": \"promising\", \"preference_type\": \"exploration\", \"reason\": \"Weight vector emphasizes charging time (I1) and plating risk (I2), suggesting a region with higher I1 and moderate I2 to balance speed and safety, while keeping dSOC sum low to respect constraint and li...<truncated>",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "finish_reason": "stop",
+              "message_field_names": [
+                "audio",
+                "content",
+                "function_call",
+                "reasoning_content",
+                "refusal",
+                "role",
+                "tool_calls"
+              ],
+              "content_length": 757,
+              "reasoning_content_length": 0,
+              "extracted_text_source": "content",
+              "extracted_text_length": 757,
+              "usage": {
+                "completion_tokens": 258,
+                "prompt_tokens": 1784,
+                "total_tokens": 2042,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null,
+                "reasoning_tokens": 0
+              }
+            }
+          ],
+          "parser_status": "ok"
+        },
+        "accepted": true,
+        "selected_index_before": 134,
+        "selected_index_after": 142,
+        "selected_score_before": 0.007684522235990554,
+        "selected_score_after": 0.014145456281238466,
+        "selected_changed_by_lift": true,
+        "iteration": 4,
+        "override_enabled": false,
+        "override_uses_diagnostic_pool": false,
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "acquisition_candidate_pool_size": 143,
+        "evaluated_theta": [
+          4.293247,
+          4.022034,
+          2.907076,
+          0.1,
+          0.150706
+        ],
+        "hv_before_raw": 7.074551451708819,
+        "hv_after_raw": 7.19271346184014,
+        "hv_gain_raw": 0.11816201013132055
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 6,
+      "n_total": 12,
+      "n_feasible": 12,
+      "pareto_size": 8,
+      "hypervolume": 0.6111074551916723,
+      "display_hv": 0.6111074551916723,
+      "canonical_hv": 0.24444298207666892,
+      "hypervolume_canonical": 0.24444298207666892,
+      "hypervolume_raw": 7.192746946270036,
+      "best_time_s": 4217.0,
+      "best_temp_K": 2.587704866995796,
+      "best_aging_pct": 0.6307170774919528,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 5,
+      "w_vec": [
+        0.5053755077393848,
+        0.11584004389979127,
+        0.378784448360824
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 16.53,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "region_lift_mode": "lgbo_proposition1",
+        "region_lift_control_mode": "none",
+        "anchor_weighting_mode": "uniform",
+        "lgbo_covariance_source": "posterior_standardized",
+        "lgbo_denominator_covariance_source": "posterior_standardized",
+        "lgbo_shift_kernel_source": "prior_latent_standardized",
+        "acquisition_used_lift": true,
+        "structural_fallback_reason": null,
+        "fallback_reason": null,
+        "parser_status": "ok",
+        "llm_raw_response_hash": "00fca3f25eb56381",
+        "llm_called_for_region": true,
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_lgbo_mode",
+        "selected_source": "lgbo_lifted_gp",
+        "region_raw_lb": [
+          5.200000000000075,
+          3.2000000000001334,
+          2.2000000000002005,
+          0.15000000000016667,
+          0.12000000000019999
+        ],
+        "region_raw_ub": [
+          5.799999999999924,
+          3.9999999999998668,
+          2.5999999999998002,
+          0.24999999999983336,
+          0.1999999999998
+        ],
+        "region_normalized_lb": [
+          0.7999999999998186,
+          0.39999999999991115,
+          0.20000000000000046,
+          0.16666666666666663,
+          0.10000000000049993
+        ],
+        "region_normalized_ub": [
+          0.9499999999997436,
+          0.6666666666664001,
+          0.5999999999992002,
+          0.4999999999977778,
+          0.4999999999965
+        ],
+        "relative_volume": 0.002133333333312176,
+        "per_dim_widths": [
+          0.14999999999996239,
+          0.2666666666665778,
+          0.3999999999995998,
+          0.33333333333222226,
+          0.3999999999980001
+        ],
+        "n_lgbo_anchors": 64,
+        "feasible_anchor_ratio": 1.0,
+        "lgbo_confidence": 0.65,
+        "lgbo_lambda": 1.29140764267983,
+        "lgbo_posterior_variance": 0.2533378081335529,
+        "lgbo_protected_variance": 0.2533378081335529,
+        "lgbo_shift_min": 1.0036954976918114e-08,
+        "lgbo_shift_max": 0.544556993402984,
+        "lgbo_shift_mean": 0.1716525429131536,
+        "max_shift_z": 0.544556993402984,
+        "mean_shift_z": 0.1716525429131536,
+        "preference": {
+          "kind": "region",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": {
+            "I1": 5.2,
+            "I2": 3.2,
+            "I3": 2.2,
+            "dSOC1": 0.15,
+            "dSOC2": 0.12
+          },
+          "ub": {
+            "I1": 5.8,
+            "I2": 4.0,
+            "I3": 2.6,
+            "dSOC1": 0.25,
+            "dSOC2": 0.2
+          },
+          "confidence": 0.65,
+          "preference_type": "exploratory_balance",
+          "reason": "High w_vec weight on first objective (time) favors higher I1 to reduce total charge duration, while moderate I2 and I3 manage plating risk; constrained dSOC sum limits heat and degradation, exploring a less-sampled high-current region.",
+          "mechanistic_thinking": "Elevated I1 accelerates charge but increases overpotential; pairing with intermediate I2 and I3 balances kinetics and lithium plating margin, while limited dSOC steps reduce cumulative side reactions.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "region",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "lb": {
+              "I1": 5.2,
+              "I2": 3.2,
+              "I3": 2.2,
+              "dSOC1": 0.15,
+              "dSOC2": 0.12
+            },
+            "ub": {
+              "I1": 5.8,
+              "I2": 4.0,
+              "I3": 2.6,
+              "dSOC1": 0.25,
+              "dSOC2": 0.2
+            },
+            "confidence": 0.65,
+            "preference_type": "exploratory_balance",
+            "reason": "High w_vec weight on first objective (time) favors higher I1 to reduce total charge duration, while moderate I2 and I3 manage plating risk; constrained dSOC sum limits heat and degradation, exploring a less-sampled high-current region.",
+            "mechanistic_thinking": "Elevated I1 accelerates charge but increases overpotential; pairing with intermediate I2 and I3 balances kinetics and lithium plating margin, while limited dSOC steps reduce cumulative side reactions."
+          },
+          "raw_response_hash": "00fca3f25eb56381",
+          "raw_text_preview": "{\"confidence\": 0.65, \"coordinate_space\": \"raw\", \"kind\": \"region\", \"lb\": {\"I1\": 5.2, \"I2\": 3.2, \"I3\": 2.2, \"dSOC1\": 0.15, \"dSOC2\": 0.12}, \"mechanistic_thinking\": \"Elevated I1 accelerates charge but increases overpotential; pairing with intermediate I2 and I3 balances kinetics and lithium plating margin, while limited dSOC steps reduce cumulative side reactions.\", \"preference_direction\": \"promising\", \"preference_type\": \"exploratory_balance\", \"reason\": \"High w_vec weight on first objective (time) favors higher I1 to reduce total charge duration, while moderate I2 and I3 manage plating risk; const...<truncated>",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "finish_reason": "stop",
+              "message_field_names": [
+                "audio",
+                "content",
+                "function_call",
+                "reasoning_content",
+                "refusal",
+                "role",
+                "tool_calls"
+              ],
+              "content_length": 830,
+              "reasoning_content_length": 0,
+              "extracted_text_source": "content",
+              "extracted_text_length": 830,
+              "usage": {
+                "completion_tokens": 269,
+                "prompt_tokens": 1763,
+                "total_tokens": 2032,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null,
+                "reasoning_tokens": 0
+              }
+            }
+          ],
+          "parser_status": "ok"
+        },
+        "accepted": true,
+        "selected_index_before": 3,
+        "selected_index_after": 133,
+        "selected_score_before": 0.009243031286724606,
+        "selected_score_after": 0.017157520321628327,
+        "selected_changed_by_lift": true,
+        "iteration": 5,
+        "override_enabled": false,
+        "override_uses_diagnostic_pool": false,
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "acquisition_candidate_pool_size": 145,
+        "evaluated_theta": [
+          4.293247,
+          4.017505,
+          2.907076,
+          0.1,
+          0.15092
+        ],
+        "hv_before_raw": 7.19271346184014,
+        "hv_after_raw": 7.192746946270036,
+        "hv_gain_raw": 3.3484429896368795e-05
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 7,
+      "n_total": 13,
+      "n_feasible": 13,
+      "pareto_size": 9,
+      "hypervolume": 0.6117987153608073,
+      "display_hv": 0.6117987153608073,
+      "canonical_hv": 0.24471948614432293,
+      "hypervolume_canonical": 0.24471948614432293,
+      "hypervolume_raw": 7.200883092259393,
+      "best_time_s": 4217.0,
+      "best_temp_K": 2.587704866995796,
+      "best_aging_pct": 0.6307170774919528,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 6,
+      "w_vec": [
+        0.9800828880641623,
+        0.00995855596791882,
+        0.00995855596791882
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 16.25,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "region_lift_mode": "lgbo_proposition1",
+        "region_lift_control_mode": "none",
+        "anchor_weighting_mode": "uniform",
+        "lgbo_covariance_source": "posterior_standardized",
+        "lgbo_denominator_covariance_source": "posterior_standardized",
+        "lgbo_shift_kernel_source": "prior_latent_standardized",
+        "acquisition_used_lift": true,
+        "structural_fallback_reason": null,
+        "fallback_reason": null,
+        "parser_status": "ok",
+        "llm_raw_response_hash": "6d32aa32be48c358",
+        "llm_called_for_region": true,
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_lgbo_mode",
+        "selected_source": "lgbo_lifted_gp",
+        "region_raw_lb": [
+          4.800000000000074,
+          2.8000000000000997,
+          2.4000000000001998,
+          0.15000000000016667,
+          0.15000000000025004
+        ],
+        "region_raw_ub": [
+          5.399999999999925,
+          3.3999999999999,
+          2.7999999999997995,
+          0.24999999999983336,
+          0.24999999999975003
+        ],
+        "region_normalized_lb": [
+          0.6999999999998436,
+          0.26666666666661104,
+          0.39999999999979974,
+          0.16666666666666663,
+          0.2500000000000002
+        ],
+        "region_normalized_ub": [
+          0.8499999999997687,
+          0.46666666666647777,
+          0.7999999999989995,
+          0.4999999999977778,
+          0.7499999999950002
+        ],
+        "relative_volume": 0.0019999999999801682,
+        "per_dim_widths": [
+          0.1499999999999626,
+          0.19999999999993343,
+          0.3999999999995998,
+          0.33333333333222226,
+          0.4999999999975
+        ],
+        "n_lgbo_anchors": 64,
+        "feasible_anchor_ratio": 1.0,
+        "lgbo_confidence": 0.7,
+        "lgbo_lambda": 4.057034238175308,
+        "lgbo_posterior_variance": 0.02976999312704641,
+        "lgbo_protected_variance": 0.02976999312704641,
+        "lgbo_shift_min": 4.897022888715917,
+        "lgbo_shift_max": 11.834103200411557,
+        "lgbo_shift_mean": 9.328426693953572,
+        "max_shift_z": 11.834103200411557,
+        "mean_shift_z": 9.328426693953572,
+        "preference": {
+          "kind": "region",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": {
+            "I1": 4.8,
+            "I2": 2.8,
+            "I3": 2.4,
+            "dSOC1": 0.15,
+            "dSOC2": 0.15
+          },
+          "ub": {
+            "I1": 5.4,
+            "I2": 3.4,
+            "I3": 2.8,
+            "dSOC1": 0.25,
+            "dSOC2": 0.25
+          },
+          "confidence": 0.7,
+          "preference_type": "exploration",
+          "reason": "High I1 weighted by w_vec[0]=0.98 reduces charging time, while moderate I2 and I3 balance kinetics and lithium plating risk; constrained dSOC steps limit side reactions and satisfy dSOC1+dSOC2<0.70.",
+          "mechanistic_thinking": "Elevated I1 accelerates charge transfer but increases overpotential; intermediate I2 and I3 mitigate lithium plating by reducing local current density gradients.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "region",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "lb": {
+              "I1": 4.8,
+              "I2": 2.8,
+              "I3": 2.4,
+              "dSOC1": 0.15,
+              "dSOC2": 0.15
+            },
+            "ub": {
+              "I1": 5.4,
+              "I2": 3.4,
+              "I3": 2.8,
+              "dSOC1": 0.25,
+              "dSOC2": 0.25
+            },
+            "confidence": 0.7,
+            "preference_type": "exploration",
+            "reason": "High I1 weighted by w_vec[0]=0.98 reduces charging time, while moderate I2 and I3 balance kinetics and lithium plating risk; constrained dSOC steps limit side reactions and satisfy dSOC1+dSOC2<0.70.",
+            "mechanistic_thinking": "Elevated I1 accelerates charge transfer but increases overpotential; intermediate I2 and I3 mitigate lithium plating by reducing local current density gradients."
+          },
+          "raw_response_hash": "6d32aa32be48c358",
+          "raw_text_preview": "{\"confidence\": 0.7, \"coordinate_space\": \"raw\", \"kind\": \"region\", \"lb\": {\"I1\": 4.8, \"I2\": 2.8, \"I3\": 2.4, \"dSOC1\": 0.15, \"dSOC2\": 0.15}, \"mechanistic_thinking\": \"Elevated I1 accelerates charge transfer but increases overpotential; intermediate I2 and I3 mitigate lithium plating by reducing local current density gradients.\", \"preference_direction\": \"promising\", \"preference_type\": \"exploration\", \"reason\": \"High I1 weighted by w_vec[0]=0.98 reduces charging time, while moderate I2 and I3 balance kinetics and lithium plating risk; constrained dSOC steps limit side reactions and satisfy dSOC1+dSOC2<...<truncated>",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "finish_reason": "stop",
+              "message_field_names": [
+                "audio",
+                "content",
+                "function_call",
+                "reasoning_content",
+                "refusal",
+                "role",
+                "tool_calls"
+              ],
+              "content_length": 820,
+              "reasoning_content_length": 0,
+              "extracted_text_source": "content",
+              "extracted_text_length": 820,
+              "usage": {
+                "completion_tokens": 263,
+                "prompt_tokens": 1776,
+                "total_tokens": 2039,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null,
+                "reasoning_tokens": 0
+              }
+            }
+          ],
+          "parser_status": "ok"
+        },
+        "accepted": true,
+        "selected_index_before": 2,
+        "selected_index_after": 137,
+        "selected_score_before": 0.27023972512867694,
+        "selected_score_after": 4.13651487221522,
+        "selected_changed_by_lift": true,
+        "iteration": 6,
+        "override_enabled": false,
+        "override_uses_diagnostic_pool": false,
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "acquisition_candidate_pool_size": 145,
+        "evaluated_theta": [
+          5.429218,
+          3.35603,
+          2.721162,
+          0.230413,
+          0.168095
+        ],
+        "hv_before_raw": 7.192746946270036,
+        "hv_after_raw": 7.200883092259393,
+        "hv_gain_raw": 0.008136145989356969
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 8,
+      "n_total": 14,
+      "n_feasible": 14,
+      "pareto_size": 10,
+      "hypervolume": 0.671700024783766,
+      "display_hv": 0.671700024783766,
+      "canonical_hv": 0.26868000991350643,
+      "hypervolume_canonical": 0.26868000991350643,
+      "hypervolume_raw": 7.90592269989178,
+      "best_time_s": 3921.0,
+      "best_temp_K": 2.587704866995796,
+      "best_aging_pct": 0.6307170774919528,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 7,
+      "w_vec": [
+        0.7087438576486591,
+        0.11059720038623395,
+        0.18065894196510696
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 21.29,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "region_lift_mode": "lgbo_proposition1",
+        "region_lift_control_mode": "none",
+        "anchor_weighting_mode": "uniform",
+        "lgbo_covariance_source": "posterior_standardized",
+        "lgbo_denominator_covariance_source": "posterior_standardized",
+        "lgbo_shift_kernel_source": "prior_latent_standardized",
+        "acquisition_used_lift": true,
+        "structural_fallback_reason": null,
+        "fallback_reason": null,
+        "parser_status": "ok",
+        "llm_raw_response_hash": "1a468c3a2e00c2b0",
+        "llm_called_for_region": true,
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_lgbo_mode",
+        "selected_source": "lgbo_lifted_gp",
+        "region_raw_lb": [
+          5.0000000000001,
+          3.0000000000001,
+          2.4000000000001998,
+          0.25000000000016664,
+          0.15000000000025004
+        ],
+        "region_raw_ub": [
+          5.7999999999999,
+          3.5999999999999,
+          2.7999999999997995,
+          0.34999999999983333,
+          0.24999999999975003
+        ],
+        "region_normalized_lb": [
+          0.7499999999998376,
+          0.33333333333325554,
+          0.39999999999979974,
+          0.4999999999988888,
+          0.2500000000000002
+        ],
+        "region_normalized_ub": [
+          0.9499999999997376,
+          0.5333333333331223,
+          0.7999999999989995,
+          0.8333333333299999,
+          0.7499999999950002
+        ],
+        "relative_volume": 0.0026666666666402225,
+        "per_dim_widths": [
+          0.19999999999995,
+          0.19999999999993343,
+          0.3999999999995998,
+          0.33333333333222226,
+          0.4999999999975
+        ],
+        "n_lgbo_anchors": 64,
+        "feasible_anchor_ratio": 1.0,
+        "lgbo_confidence": 0.7,
+        "lgbo_lambda": 10.920879577818893,
+        "lgbo_posterior_variance": 0.004108476843453916,
+        "lgbo_protected_variance": 0.004108476843453916,
+        "lgbo_shift_min": 93.44096897048232,
+        "lgbo_shift_max": 113.38037380617143,
+        "lgbo_shift_mean": 106.93999469253264,
+        "max_shift_z": 113.38037380617143,
+        "mean_shift_z": 106.93999469253264,
+        "preference": {
+          "kind": "region",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": {
+            "I1": 5.0,
+            "I2": 3.0,
+            "I3": 2.4,
+            "dSOC1": 0.25,
+            "dSOC2": 0.15
+          },
+          "ub": {
+            "I1": 5.8,
+            "I2": 3.6,
+            "I3": 2.8,
+            "dSOC1": 0.35,
+            "dSOC2": 0.25
+          },
+          "confidence": 0.7,
+          "preference_type": "exploration",
+          "reason": "High weight on first objective favors high I1 for fast charging, but moderate I2 and I3 are needed to manage lithium plating risk and overpotential, with dSOC phases balanced to stay under 0.70 total and explore less sampled high-current regions.",
+          "mechanistic_thinking": "Elevated I1 reduces charge time but increases heat and plating risk; intermediate I2 and I3 help distribute current density, while controlled dSOC phases manage state-of-charge gradients to avoid degradation.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "region",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "lb": {
+              "I1": 5.0,
+              "I2": 3.0,
+              "I3": 2.4,
+              "dSOC1": 0.25,
+              "dSOC2": 0.15
+            },
+            "ub": {
+              "I1": 5.8,
+              "I2": 3.6,
+              "I3": 2.8,
+              "dSOC1": 0.35,
+              "dSOC2": 0.25
+            },
+            "confidence": 0.7,
+            "preference_type": "exploration",
+            "reason": "High weight on first objective favors high I1 for fast charging, but moderate I2 and I3 are needed to manage lithium plating risk and overpotential, with dSOC phases balanced to stay under 0.70 total and explore less sampled high-current regions.",
+            "mechanistic_thinking": "Elevated I1 reduces charge time but increases heat and plating risk; intermediate I2 and I3 help distribute current density, while controlled dSOC phases manage state-of-charge gradients to avoid degradation."
+          },
+          "raw_response_hash": "1a468c3a2e00c2b0",
+          "raw_text_preview": "{\"confidence\": 0.7, \"coordinate_space\": \"raw\", \"kind\": \"region\", \"lb\": {\"I1\": 5.0, \"I2\": 3.0, \"I3\": 2.4, \"dSOC1\": 0.25, \"dSOC2\": 0.15}, \"mechanistic_thinking\": \"Elevated I1 reduces charge time but increases heat and plating risk; intermediate I2 and I3 help distribute current density, while controlled dSOC phases manage state-of-charge gradients to avoid degradation.\", \"preference_direction\": \"promising\", \"preference_type\": \"exploration\", \"reason\": \"High weight on first objective favors high I1 for fast charging, but moderate I2 and I3 are needed to manage lithium plating risk and overpotentia...<truncated>",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "finish_reason": "stop",
+              "message_field_names": [
+                "audio",
+                "content",
+                "function_call",
+                "reasoning_content",
+                "refusal",
+                "role",
+                "tool_calls"
+              ],
+              "content_length": 841,
+              "reasoning_content_length": 0,
+              "extracted_text_source": "content",
+              "extracted_text_length": 841,
+              "usage": {
+                "completion_tokens": 272,
+                "prompt_tokens": 1759,
+                "total_tokens": 2031,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null,
+                "reasoning_tokens": 0
+              }
+            }
+          ],
+          "parser_status": "ok"
+        },
+        "accepted": true,
+        "selected_index_before": 129,
+        "selected_index_after": 140,
+        "selected_score_before": 0.25394265939500693,
+        "selected_score_after": 24.59255792959399,
+        "selected_changed_by_lift": true,
+        "iteration": 7,
+        "override_enabled": false,
+        "override_uses_diagnostic_pool": false,
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "acquisition_candidate_pool_size": 145,
+        "evaluated_theta": [
+          5.690875,
+          3.390933,
+          2.650972,
+          0.33436,
+          0.201612
+        ],
+        "hv_before_raw": 7.200883092259393,
+        "hv_after_raw": 7.90592269989178,
+        "hv_gain_raw": 0.7050396076323873
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 9,
+      "n_total": 15,
+      "n_feasible": 15,
+      "pareto_size": 11,
+      "hypervolume": 0.6717400686560945,
+      "display_hv": 0.6717400686560945,
+      "canonical_hv": 0.2686960274624378,
+      "hypervolume_canonical": 0.2686960274624378,
+      "hypervolume_raw": 7.906394017068425,
+      "best_time_s": 3921.0,
+      "best_temp_K": 2.587704866995796,
+      "best_aging_pct": 0.6307170774919528,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 8,
+      "w_vec": [
+        0.009958538053722576,
+        0.009958538053722576,
+        0.9800829238925549
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 17.25,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "region_lift_mode": "lgbo_proposition1",
+        "region_lift_control_mode": "none",
+        "anchor_weighting_mode": "uniform",
+        "lgbo_covariance_source": "posterior_standardized",
+        "lgbo_denominator_covariance_source": "posterior_standardized",
+        "lgbo_shift_kernel_source": "prior_latent_standardized",
+        "acquisition_used_lift": true,
+        "structural_fallback_reason": null,
+        "fallback_reason": null,
+        "parser_status": "ok",
+        "llm_raw_response_hash": "1bbc8416f7133d31",
+        "llm_called_for_region": true,
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_lgbo_mode",
+        "selected_source": "lgbo_lifted_gp",
+        "region_raw_lb": [
+          4.800000000000099,
+          2.8000000000000997,
+          2.4000000000001496,
+          0.15000000000016667,
+          0.12000000000015
+        ],
+        "region_raw_ub": [
+          5.599999999999899,
+          3.3999999999999,
+          2.6999999999998496,
+          0.24999999999983336,
+          0.17999999999985
+        ],
+        "region_normalized_lb": [
+          0.6999999999998499,
+          0.26666666666661104,
+          0.39999999999974956,
+          0.16666666666666663,
+          0.10000000000024999
+        ],
+        "region_normalized_ub": [
+          0.8999999999997498,
+          0.46666666666647777,
+          0.6999999999991495,
+          0.4999999999977778,
+          0.39999999999725
+        ],
+        "relative_volume": 0.0011999999999881012,
+        "per_dim_widths": [
+          0.19999999999995,
+          0.19999999999993343,
+          0.29999999999970006,
+          0.33333333333222226,
+          0.2999999999985
+        ],
+        "n_lgbo_anchors": 64,
+        "feasible_anchor_ratio": 1.0,
+        "lgbo_confidence": 0.7,
+        "lgbo_lambda": 12.610108383799195,
+        "lgbo_posterior_variance": 0.003081473529011937,
+        "lgbo_protected_variance": 0.003081473529011937,
+        "lgbo_shift_min": 51.168708776023934,
+        "lgbo_shift_max": 69.18148430437033,
+        "lgbo_shift_mean": 62.002957844400626,
+        "max_shift_z": 69.18148430437033,
+        "mean_shift_z": 62.002957844400626,
+        "preference": {
+          "kind": "region",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": {
+            "I1": 4.8,
+            "I2": 2.8,
+            "I3": 2.4,
+            "dSOC1": 0.15,
+            "dSOC2": 0.12
+          },
+          "ub": {
+            "I1": 5.6,
+            "I2": 3.4,
+            "I3": 2.7,
+            "dSOC1": 0.25,
+            "dSOC2": 0.18
+          },
+          "confidence": 0.7,
+          "preference_type": "exploration",
+          "reason": "Weight vector heavily emphasizes third objective (likely degradation), so region explores higher I1 for fast charging while using moderate I2/I3 to manage current density and lower dSOC phases to limit total SOC swing, respecting dSOC1+dSOC2<0.70 constraint and avoiding collapse to past points.",
+          "mechanistic_thinking": "Higher current in early phase (I1) reduces charge time but increases plating risk; intermediate later currents (I2, I3) help mitigate localized stress, while constrained SOC increments manage lithium concentration gradients to reduce degradation.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "region",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "lb": {
+              "I1": 4.8,
+              "I2": 2.8,
+              "I3": 2.4,
+              "dSOC1": 0.15,
+              "dSOC2": 0.12
+            },
+            "ub": {
+              "I1": 5.6,
+              "I2": 3.4,
+              "I3": 2.7,
+              "dSOC1": 0.25,
+              "dSOC2": 0.18
+            },
+            "confidence": 0.7,
+            "preference_type": "exploration",
+            "reason": "Weight vector heavily emphasizes third objective (likely degradation), so region explores higher I1 for fast charging while using moderate I2/I3 to manage current density and lower dSOC phases to limit total SOC swing, respecting dSOC1+dSOC2<0.70 constraint and avoiding collapse to past points.",
+            "mechanistic_thinking": "Higher current in early phase (I1) reduces charge time but increases plating risk; intermediate later currents (I2, I3) help mitigate localized stress, while constrained SOC increments manage lithium concentration gradients to reduce degradation."
+          },
+          "raw_response_hash": "1bbc8416f7133d31",
+          "raw_text_preview": "{\"confidence\": 0.7, \"coordinate_space\": \"raw\", \"kind\": \"region\", \"lb\": {\"I1\": 4.8, \"I2\": 2.8, \"I3\": 2.4, \"dSOC1\": 0.15, \"dSOC2\": 0.12}, \"mechanistic_thinking\": \"Higher current in early phase (I1) reduces charge time but increases plating risk; intermediate later currents (I2, I3) help mitigate localized stress, while constrained SOC increments manage lithium concentration gradients to reduce degradation.\", \"preference_direction\": \"promising\", \"preference_type\": \"exploration\", \"reason\": \"Weight vector heavily emphasizes third objective (likely degradation), so region explores higher I1 for fast...<truncated>",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "finish_reason": "stop",
+              "message_field_names": [
+                "audio",
+                "content",
+                "function_call",
+                "reasoning_content",
+                "refusal",
+                "role",
+                "tool_calls"
+              ],
+              "content_length": 928,
+              "reasoning_content_length": 0,
+              "extracted_text_source": "content",
+              "extracted_text_length": 928,
+              "usage": {
+                "completion_tokens": 284,
+                "prompt_tokens": 1783,
+                "total_tokens": 2067,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null,
+                "reasoning_tokens": 0
+              }
+            }
+          ],
+          "parser_status": "ok"
+        },
+        "accepted": true,
+        "selected_index_before": 12,
+        "selected_index_after": 140,
+        "selected_score_before": 0.0726398120518691,
+        "selected_score_after": 19.35570829943232,
+        "selected_changed_by_lift": true,
+        "iteration": 8,
+        "override_enabled": false,
+        "override_uses_diagnostic_pool": false,
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "acquisition_candidate_pool_size": 145,
+        "evaluated_theta": [
+          5.079397,
+          2.992654,
+          2.693151,
+          0.171215,
+          0.146955
+        ],
+        "hv_before_raw": 7.90592269989178,
+        "hv_after_raw": 7.906394017068425,
+        "hv_gain_raw": 0.0004713171766441704
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 10,
+      "n_total": 16,
+      "n_feasible": 16,
+      "pareto_size": 11,
+      "hypervolume": 0.6720978178039079,
+      "display_hv": 0.6720978178039079,
+      "canonical_hv": 0.26883912712156316,
+      "hypervolume_canonical": 0.26883912712156316,
+      "hypervolume_raw": 7.910604731679422,
+      "best_time_s": 3921.0,
+      "best_temp_K": 2.587704866995796,
+      "best_aging_pct": 0.6307170774919528,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 9,
+      "w_vec": [
+        0.37905181488264583,
+        0.12050512995326085,
+        0.5004430551640934
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 16.89,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "region_lift_mode": "lgbo_proposition1",
+        "region_lift_control_mode": "none",
+        "anchor_weighting_mode": "uniform",
+        "lgbo_covariance_source": "posterior_standardized",
+        "lgbo_denominator_covariance_source": "posterior_standardized",
+        "lgbo_shift_kernel_source": "prior_latent_standardized",
+        "acquisition_used_lift": true,
+        "structural_fallback_reason": null,
+        "fallback_reason": null,
+        "parser_status": "ok",
+        "llm_raw_response_hash": "45f77dc2fc702ba7",
+        "llm_called_for_region": true,
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_lgbo_mode",
+        "selected_source": "lgbo_lifted_gp",
+        "region_raw_lb": [
+          4.500000000000126,
+          3.800000000000117,
+          2.7000000000001,
+          0.15000000000016667,
+          0.12000000000015
+        ],
+        "region_raw_ub": [
+          5.499999999999876,
+          4.499999999999884,
+          2.8999999999999,
+          0.24999999999983336,
+          0.17999999999985
+        ],
+        "region_normalized_lb": [
+          0.6249999999998753,
+          0.599999999999839,
+          0.6999999999994,
+          0.16666666666666663,
+          0.10000000000024999
+        ],
+        "region_normalized_ub": [
+          0.8749999999997502,
+          0.8333333333330167,
+          0.8999999999989999,
+          0.4999999999977778,
+          0.39999999999725
+        ],
+        "relative_volume": 0.0011666666666550962,
+        "per_dim_widths": [
+          0.24999999999993738,
+          0.23333333333325554,
+          0.1999999999997999,
+          0.33333333333222226,
+          0.2999999999985
+        ],
+        "n_lgbo_anchors": 64,
+        "feasible_anchor_ratio": 1.0,
+        "lgbo_confidence": 0.7,
+        "lgbo_lambda": 3.0190462467620973,
+        "lgbo_posterior_variance": 0.05375966435239714,
+        "lgbo_protected_variance": 0.05375966435239714,
+        "lgbo_shift_min": 3.0289029799275347,
+        "lgbo_shift_max": 7.085702149484335,
+        "lgbo_shift_mean": 5.402737790979622,
+        "max_shift_z": 7.085702149484335,
+        "mean_shift_z": 5.402737790979622,
+        "preference": {
+          "kind": "region",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": {
+            "I1": 4.5,
+            "I2": 3.8,
+            "I3": 2.7,
+            "dSOC1": 0.15,
+            "dSOC2": 0.12
+          },
+          "ub": {
+            "I1": 5.5,
+            "I2": 4.5,
+            "I3": 2.9,
+            "dSOC1": 0.25,
+            "dSOC2": 0.18
+          },
+          "confidence": 0.7,
+          "preference_type": "exploration",
+          "reason": "Weight vector emphasizes charge time (f0) and degradation (f2), suggesting a region with moderately high I1 to reduce time, balanced I2 to manage stress, and moderate SOC increments to limit concentration gradients, avoiding extremes that collapse search.",
+          "mechanistic_thinking": "Higher I1 reduces charge time but increases plating risk; intermediate I2 helps mitigate localized stress, while constrained dSOC1 and dSOC2 manage lithium concentration gradients to reduce degradation.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "region",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "lb": {
+              "I1": 4.5,
+              "I2": 3.8,
+              "I3": 2.7,
+              "dSOC1": 0.15,
+              "dSOC2": 0.12
+            },
+            "ub": {
+              "I1": 5.5,
+              "I2": 4.5,
+              "I3": 2.9,
+              "dSOC1": 0.25,
+              "dSOC2": 0.18
+            },
+            "confidence": 0.7,
+            "preference_type": "exploration",
+            "reason": "Weight vector emphasizes charge time (f0) and degradation (f2), suggesting a region with moderately high I1 to reduce time, balanced I2 to manage stress, and moderate SOC increments to limit concentration gradients, avoiding extremes that collapse search.",
+            "mechanistic_thinking": "Higher I1 reduces charge time but increases plating risk; intermediate I2 helps mitigate localized stress, while constrained dSOC1 and dSOC2 manage lithium concentration gradients to reduce degradation."
+          },
+          "raw_response_hash": "45f77dc2fc702ba7",
+          "raw_text_preview": "{\"confidence\": 0.7, \"coordinate_space\": \"raw\", \"kind\": \"region\", \"lb\": {\"I1\": 4.5, \"I2\": 3.8, \"I3\": 2.7, \"dSOC1\": 0.15, \"dSOC2\": 0.12}, \"mechanistic_thinking\": \"Higher I1 reduces charge time but increases plating risk; intermediate I2 helps mitigate localized stress, while constrained dSOC1 and dSOC2 manage lithium concentration gradients to reduce degradation.\", \"preference_direction\": \"promising\", \"preference_type\": \"exploration\", \"reason\": \"Weight vector emphasizes charge time (f0) and degradation (f2), suggesting a region with moderately high I1 to reduce time, balanced I2 to manage stress...<truncated>",
+          "llm_call_diagnostics": [
+            {
+              "backend": "openai",
+              "model": "deepseek-v3",
+              "finish_reason": "stop",
+              "message_field_names": [
+                "audio",
+                "content",
+                "function_call",
+                "reasoning_content",
+                "refusal",
+                "role",
+                "tool_calls"
+              ],
+              "content_length": 844,
+              "reasoning_content_length": 0,
+              "extracted_text_source": "content",
+              "extracted_text_length": 844,
+              "usage": {
+                "completion_tokens": 265,
+                "prompt_tokens": 1791,
+                "total_tokens": 2056,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null,
+                "reasoning_tokens": 0
+              }
+            }
+          ],
+          "parser_status": "ok"
+        },
+        "accepted": true,
+        "selected_index_before": 5,
+        "selected_index_after": 140,
+        "selected_score_before": 0.022683624234713665,
+        "selected_score_after": 0.476847359114978,
+        "selected_changed_by_lift": true,
+        "iteration": 9,
+        "override_enabled": false,
+        "override_uses_diagnostic_pool": false,
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "acquisition_candidate_pool_size": 145,
+        "evaluated_theta": [
+          4.21426,
+          3.830874,
+          2.804007,
+          0.150722,
+          0.1
+        ],
+        "hv_before_raw": 7.906394017068425,
+        "hv_after_raw": 7.910604731679422,
+        "hv_gain_raw": 0.004210714610997535
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    }
+  ],
+  "improvement_window": [
+    true,
+    true
+  ],
+  "saved_at": "2026-05-18T17:54:40.869412"
+}

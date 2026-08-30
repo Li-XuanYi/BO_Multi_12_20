@@ -1,0 +1,156 @@
+{
+  "runs": [
+    {
+      "seed": 0,
+      "preset": "strict_baseline",
+      "label": "strict_baseline",
+      "canonical_hv": 0.37272876215970724,
+      "display_hv": 0.931821905399268,
+      "hypervolume_raw": 10.967562427177286,
+      "pareto_size": 19,
+      "n_total": 26,
+      "region_lift_accept_rate": 0.0,
+      "region_lift_accept_count": 0,
+      "region_lift_attempt_count": 0
+    },
+    {
+      "seed": 0,
+      "preset": "warmstart_plain_ei",
+      "label": "warmstart_plain_ei",
+      "canonical_hv": 0.3604443854727051,
+      "display_hv": 0.9011109636817627,
+      "hypervolume_raw": 10.606094030123645,
+      "pareto_size": 20,
+      "n_total": 26,
+      "region_lift_accept_rate": 0.0,
+      "region_lift_accept_count": 0,
+      "region_lift_attempt_count": 0
+    },
+    {
+      "seed": 0,
+      "preset": "warmstart_region_lifted_gp",
+      "label": "warmstart_region_lifted_gp",
+      "canonical_hv": 0.3798585445978936,
+      "display_hv": 0.9496463614947339,
+      "hypervolume_raw": 11.177356631225042,
+      "pareto_size": 22,
+      "n_total": 26,
+      "region_lift_accept_rate": 0.1,
+      "region_lift_accept_count": 2,
+      "region_lift_attempt_count": 20
+    },
+    {
+      "seed": 1,
+      "preset": "strict_baseline",
+      "label": "strict_baseline",
+      "canonical_hv": 0.37204820812749045,
+      "display_hv": 0.930120520318726,
+      "hypervolume_raw": 10.94753709081699,
+      "pareto_size": 16,
+      "n_total": 26,
+      "region_lift_accept_rate": 0.0,
+      "region_lift_accept_count": 0,
+      "region_lift_attempt_count": 0
+    },
+    {
+      "seed": 1,
+      "preset": "warmstart_plain_ei",
+      "label": "warmstart_plain_ei",
+      "canonical_hv": 0.3791565916104717,
+      "display_hv": 0.9478914790261792,
+      "hypervolume_raw": 11.156701629539945,
+      "pareto_size": 18,
+      "n_total": 26,
+      "region_lift_accept_rate": 0.0,
+      "region_lift_accept_count": 0,
+      "region_lift_attempt_count": 0
+    },
+    {
+      "seed": 1,
+      "preset": "warmstart_region_lifted_gp",
+      "label": "warmstart_region_lifted_gp",
+      "canonical_hv": 0.3791565916104717,
+      "display_hv": 0.9478914790261792,
+      "hypervolume_raw": 11.156701629539945,
+      "pareto_size": 18,
+      "n_total": 26,
+      "region_lift_accept_rate": 0.0,
+      "region_lift_accept_count": 0,
+      "region_lift_attempt_count": 20
+    },
+    {
+      "seed": 2,
+      "preset": "strict_baseline",
+      "label": "strict_baseline",
+      "canonical_hv": 0.3434722747243391,
+      "display_hv": 0.8586806868108477,
+      "hypervolume_raw": 10.106688824378047,
+      "pareto_size": 18,
+      "n_total": 26,
+      "region_lift_accept_rate": 0.0,
+      "region_lift_accept_count": 0,
+      "region_lift_attempt_count": 0
+    },
+    {
+      "seed": 2,
+      "preset": "warmstart_plain_ei",
+      "label": "warmstart_plain_ei",
+      "canonical_hv": 0.3715092202482788,
+      "display_hv": 0.928773050620697,
+      "hypervolume_raw": 10.931677345573577,
+      "pareto_size": 18,
+      "n_total": 26,
+      "region_lift_accept_rate": 0.0,
+      "region_lift_accept_count": 0,
+      "region_lift_attempt_count": 0
+    },
+    {
+      "seed": 2,
+      "preset": "warmstart_region_lifted_gp",
+      "label": "warmstart_region_lifted_gp",
+      "canonical_hv": 0.370676813915454,
+      "display_hv": 0.9266920347886349,
+      "hypervolume_raw": 10.907183747689865,
+      "pareto_size": 21,
+      "n_total": 26,
+      "region_lift_accept_rate": 0.1,
+      "region_lift_accept_count": 2,
+      "region_lift_attempt_count": 20
+    }
+  ],
+  "aggregate": {
+    "strict_baseline": {
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "mean_canonical_hv": 0.36274974833717893,
+      "median_canonical_hv": 0.37204820812749045,
+      "min_canonical_hv": 0.3434722747243391,
+      "max_canonical_hv": 0.37272876215970724
+    },
+    "warmstart_plain_ei": {
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "mean_canonical_hv": 0.37037006577715187,
+      "median_canonical_hv": 0.3715092202482788,
+      "min_canonical_hv": 0.3604443854727051,
+      "max_canonical_hv": 0.3791565916104717
+    },
+    "warmstart_region_lifted_gp": {
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "mean_canonical_hv": 0.37656398337460645,
+      "median_canonical_hv": 0.3791565916104717,
+      "min_canonical_hv": 0.370676813915454,
+      "max_canonical_hv": 0.3798585445978936
+    }
+  }
+}

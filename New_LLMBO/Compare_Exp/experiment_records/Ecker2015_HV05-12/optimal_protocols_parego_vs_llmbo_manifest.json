@@ -1,0 +1,50 @@
+{
+  "figure_family": "ecker2015_optimal_protocols_parego_vs_llmbo",
+  "generation_script": "Compare_Exp/plot_ecker2015_optimal_protocols.py",
+  "seeds": [
+    8409,
+    8410,
+    8411,
+    8412,
+    8413
+  ],
+  "max_evals": 56,
+  "metric": "Number of optimal charging protocols, computed as ObservationDB.pareto_size after replaying each database prefix.",
+  "notes": [
+    "Centerline is the five-seed mean at each evaluation.",
+    "Shaded band is +/- one across-seed standard deviation.",
+    "A common visual origin at evaluation 0 and count 0 is prepended to match the Ecker-style curve layout."
+  ],
+  "lines": {
+    "ParEGO": {
+      "color": "#1f77b4",
+      "source_root": "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11",
+      "variant_dir": "parego_matlab_reference_Ecker2015",
+      "final_optimal_protocols": {
+        "mean": 34.6,
+        "std": 2.9393876913398134,
+        "min": 32.0,
+        "max": 40.0
+      }
+    },
+    "LLMBO-MO": {
+      "color": "#d62728",
+      "source_root": "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11",
+      "variant_dir": "minmax",
+      "final_optimal_protocols": {
+        "mean": 26.8,
+        "std": 2.039607805437114,
+        "min": 24.0,
+        "max": 29.0
+      }
+    }
+  },
+  "artifacts": {
+    "figure_png": "Compare_Exp/images/Ecker2015_HV05-12/optimal_protocols_parego_vs_llmbo.png",
+    "figure_pdf": "Compare_Exp/images/Ecker2015_HV05-12/optimal_protocols_parego_vs_llmbo.pdf",
+    "legacy_figure_png": "Compare_Exp/images/Ecker2015_HV05-12/ecker2015_optimal_protocols_parego_vs_llmbo.png",
+    "legacy_figure_pdf": "Compare_Exp/images/Ecker2015_HV05-12/ecker2015_optimal_protocols_parego_vs_llmbo.pdf",
+    "curve_csv": "Compare_Exp/experiment_records/Ecker2015_HV05-12/curve_data/optimal_protocols_parego_vs_llmbo.csv",
+    "curve_json": "Compare_Exp/experiment_records/Ecker2015_HV05-12/curve_data/optimal_protocols_parego_vs_llmbo.json"
+  }
+}

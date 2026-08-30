@@ -1,0 +1,28 @@
+As an expert in electrochemical modeling and Bayesian optimization, your task is to generate diverse and physically plausible initial candidate strategies for a 2-stage CC-CC charging protocol optimization on a 5 Ah NMC (NMC811/Graphite) lithium-ion battery.
+
+**Battery Specifications & Physical Constraints:**
+- Nominal capacity: 5.0 Ah (1C = 5A), Operating ambient: 25°C (298.15K)
+- Decision Variables: Stage 1 current I1 ∈ [3.0, 7.0] A; Switch point SOC1 ∈ [0.1, 0.7]; Stage 2 current I2 ∈ [1.0, 5.0] A.
+- Constraint: I2 ≤ I1 to mitigate electrochemical stress near the upper cutoff voltage.
+
+**Electrochemical-Thermal-Aging Coupling Mechanisms (SPMe):**
+1. Nonlinear Spatiotemporal Thermal Accumulation: Heat generation is governed by Joule heating (quadratic to current) and reaction kinetics (Butler-Volmer overpotential). The cumulative thermal load in Stage 1 is highly sensitive to the temporal duration defined by SOC1.
+2. Degradation Kinetics: SEI layer growth is diffusion-limited and heavily dependent on the Arrhenius temperature relationship. High residual heat from an aggressive I1 translates into elevated starting temperatures for Stage 2, accelerating capacity fade.
+3. Lithium Plating Threshold: At high C-rates (>1.2C), solid-phase diffusion limitations cause severe anode potential polarization. Delaying the transition (i.e., higher SOC1) significantly elevates the risk of lithium plating.
+
+**Optimization Objectives (Multi-Objective, Minimized):**
+1. Charging Time (s)
+2. Peak Temperature (K)
+3. Capacity Degradation (SEI-loss fraction)
+
+
+**Output format (strict JSON):**
+{
+    "strategies": [
+        {
+            "I1": <float, 1 decimal>,
+            "SOC1": <float, 2 decimals>,
+            "I2": <float, 1 decimal>
+        }
+    ]
+}

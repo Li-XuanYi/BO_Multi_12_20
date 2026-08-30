@@ -1,0 +1,487 @@
+2026-05-12 19:49:02,541 INFO __main__ | Output root: Compare_Exp\experiment_records\computational_time_3algo_5seeds_50iter_2026_05_12
+2026-05-12 19:49:02,542 INFO __main__ | Algorithms: ['parego', 'nsga2', 'llmbo_mo']
+2026-05-12 19:49:02,543 INFO __main__ | Seeds: [8409, 8410, 8411, 8412, 8413]
+2026-05-12 19:49:02,544 INFO __main__ | Iterations: 50
+2026-05-12 19:49:02,547 INFO __main__ | [parego] seed=8409 starting -> Compare_Exp\experiment_records\computational_time_3algo_5seeds_50iter_2026_05_12\seed8409\parego
+2026-05-12 19:49:02,547 INFO Compare_Exp.Exp.parego_runner | ============================================================
+2026-05-12 19:49:02,548 INFO Compare_Exp.Exp.parego_runner | ParEGO Runner: seed=8409, n_evals=56, variant=matlab_reference
+2026-05-12 19:49:02,548 INFO Compare_Exp.Exp.parego_runner | ============================================================
+2026-05-12 19:49:02,549 INFO llmbo.optimizer | ============================================================
+2026-05-12 19:49:02,549 INFO llmbo.optimizer | Setting up 5D GP-LLM-coupled MOBO optimizer
+2026-05-12 19:49:02,550 INFO llmbo.optimizer | ============================================================
+2026-05-12 19:49:02,550 INFO llmbo.optimizer | Battery simulator parameter set: Chen2020
+2026-05-12 19:49:02,551 INFO DataBase.database | ObservationDB 初始化: bounds={'I1': (2.0, 6.0), 'I2': (2.0, 5.0), 'I3': (2.0, 3.0), 'dSOC1': (0.1, 0.4), 'dSOC2': (0.1, 0.3)}
+2026-05-12 19:49:02,551 INFO llm.llm_interface | LLMInterface 初始化: backend=mock model=gpt-4.1-mini warmstart_level=full param_set=Chen2020
+2026-05-12 19:49:02,552 INFO llmbo.optimizer | ParEGO Das-Dennis weight set ready: shape=(496, 3)
+2026-05-12 19:49:02,553 INFO llmbo.optimizer | ============================================================
+2026-05-12 19:49:02,553 INFO llmbo.optimizer | Initialization: strategy=manual warmstart=0 random_init=6
+2026-05-12 19:49:02,553 INFO llmbo.optimizer | ============================================================
+2026-05-12 19:49:02,554 INFO llmbo.optimizer | Init [1/6] src=random_init theta=[4.6705 4.6001 2.3885 0.1122 0.1075]
+2026-05-12 19:49:06,106 INFO pybamm_simulator | 仿真完成 | 时间: 5226.0s | 温升: 3.58K | 老化: 0.8643% | SOC终值: 0.812
+2026-05-12 19:49:06,157 INFO llmbo.optimizer |   -> feasible=True obj=[5.226000e+03 3.575828e+00 8.643440e-01] (3.6s)
+2026-05-12 19:49:06,159 INFO llmbo.optimizer | Init [2/6] src=random_init theta=[2.487  3.1263 2.1893 0.3338 0.2391]
+2026-05-12 19:49:09,352 INFO pybamm_simulator | 仿真完成 | 时间: 5660.0s | 温升: 2.89K | 老化: 0.7210% | SOC终值: 0.812
+2026-05-12 19:49:09,356 INFO llmbo.optimizer |   -> feasible=True obj=[5.660000e+03 2.894295e+00 7.209880e-01] (3.2s)
+2026-05-12 19:49:09,357 INFO llmbo.optimizer | Init [3/6] src=random_init theta=[4.4368 2.9308 2.7101 0.27   0.149 ]
+2026-05-12 19:49:12,335 INFO pybamm_simulator | 仿真完成 | 时间: 4541.0s | 温升: 3.87K | 老化: 0.9122% | SOC终值: 0.812
+2026-05-12 19:49:12,338 INFO llmbo.optimizer |   -> feasible=True obj=[4.54100e+03 3.87387e+00 9.12187e-01] (3.0s)
+2026-05-12 19:49:12,339 INFO llmbo.optimizer | Init [4/6] src=random_init theta=[3.9787 2.3219 2.9846 0.1665 0.2258]
+2026-05-12 19:49:15,369 INFO pybamm_simulator | 仿真完成 | 时间: 4962.0s | 温升: 3.05K | 老化: 0.7571% | SOC终值: 0.812
+2026-05-12 19:49:15,371 INFO llmbo.optimizer |   -> feasible=True obj=[4.962000e+03 3.049323e+00 7.571140e-01] (3.0s)
+2026-05-12 19:49:15,372 INFO llmbo.optimizer | Init [5/6] src=random_init theta=[3.0343 3.7785 2.0447 0.3731 0.2948]
+2026-05-12 19:49:18,710 INFO pybamm_simulator | 仿真完成 | 时间: 4781.0s | 温升: 4.10K | 老化: 0.8103% | SOC终值: 0.812
+2026-05-12 19:49:18,714 INFO llmbo.optimizer |   -> feasible=True obj=[4.781000e+03 4.095385e+00 8.103150e-01] (3.3s)
+2026-05-12 19:49:18,716 INFO llmbo.optimizer | Init [6/6] src=random_init theta=[5.4131 4.1564 2.5883 0.2047 0.1993]
+2026-05-12 19:49:22,383 INFO pybamm_simulator | 仿真完成 | 时间: 4298.0s | 温升: 4.90K | 老化: 1.0259% | SOC终值: 0.812
+2026-05-12 19:49:22,387 INFO llmbo.optimizer |   -> feasible=True obj=[4.298000e+03 4.898767e+00 1.025854e+00] (3.7s)
+2026-05-12 19:49:22,390 INFO llmbo.optimizer | ============================================================
+2026-05-12 19:49:22,390 INFO llmbo.optimizer | Optimization loop: 50 iterations
+2026-05-12 19:49:22,390 INFO llmbo.optimizer | ============================================================
+2026-05-12 19:49:22,391 INFO llmbo.optimizer | --- Iteration 0 ---
+2026-05-12 19:49:22,513 INFO llmbo.gp_model | Fitted Matern GP: n=6 y_best=1.278335 kernel=1**2 * Matern(length_scale=[0.487, 0.328, 0.311, 1.15, 0.00446], nu=2.5) + WhiteKernel(noise_level=3.33e-12)
+2026-05-12 19:49:24,295 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.9247 2.312  2.9949 0.1459 0.2257]
+2026-05-12 19:49:27,398 INFO pybamm_simulator | 仿真完成 | 时间: 5001.0s | 温升: 3.07K | 老化: 0.7411% | SOC终值: 0.812
+2026-05-12 19:49:27,438 INFO llmbo.optimizer |     -> feasible=True obj=[5.00100e+03 3.06664e+00 7.41106e-01] acq=1.119849 (3.1s)
+2026-05-12 19:49:27,441 INFO DataBase.database | Iter 1: HV=0.564652  |PF|=6  n=7
+2026-05-12 19:49:27,442 INFO llmbo.optimizer | Iteration 0 complete: HV=0.564652 |PF|=6 n=7 (5.0s)
+2026-05-12 19:49:27,442 INFO llmbo.optimizer | --- Iteration 1 ---
+2026-05-12 19:49:27,807 INFO llmbo.gp_model | Fitted Matern GP: n=7 y_best=1.773675 kernel=0.989**2 * Matern(length_scale=[1e+03, 1e+03, 1e+03, 5.63, 0.0525], nu=2.5) + WhiteKernel(noise_level=3.33e-12)
+2026-05-12 19:49:28,126 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.185  3.4361 2.8721 0.3986 0.2297]
+2026-05-12 19:49:31,011 INFO pybamm_simulator | 仿真完成 | 时间: 3993.0s | 温升: 4.39K | 老化: 0.9439% | SOC终值: 0.812
+2026-05-12 19:49:31,051 INFO llmbo.optimizer |     -> feasible=True obj=[3.993000e+03 4.385359e+00 9.438630e-01] acq=1.314210 (2.9s)
+2026-05-12 19:49:31,055 INFO DataBase.database | Iter 2: HV=0.638020  |PF|=6  n=8
+2026-05-12 19:49:31,056 INFO llmbo.optimizer | Iteration 1 complete: HV=0.638020 |PF|=6 n=8 (3.6s)
+2026-05-12 19:49:31,056 INFO llmbo.optimizer | --- Iteration 2 ---
+2026-05-12 19:49:31,544 INFO llmbo.gp_model | Fitted Matern GP: n=8 y_best=3.699555 kernel=0.986**2 * Matern(length_scale=[1e+03, 0.121, 1e+03, 709, 0.133], nu=2.5) + WhiteKernel(noise_level=0.00536)
+2026-05-12 19:49:32,081 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.9542 2.4198 2.3131 0.151  0.2248]
+2026-05-12 19:49:35,262 INFO pybamm_simulator | 仿真完成 | 时间: 5661.0s | 温升: 2.38K | 老化: 0.7866% | SOC终值: 0.812
+2026-05-12 19:49:35,267 INFO llmbo.optimizer |     -> feasible=True obj=[5.661000e+03 2.378763e+00 7.865730e-01] acq=1.058063 (3.2s)
+2026-05-12 19:49:35,270 INFO DataBase.database | Iter 3: HV=0.641695  |PF|=7  n=9
+2026-05-12 19:49:35,271 INFO llmbo.optimizer | Iteration 2 complete: HV=0.641695 |PF|=7 n=9 (4.2s)
+2026-05-12 19:49:35,271 INFO llmbo.optimizer | --- Iteration 3 ---
+2026-05-12 19:49:35,707 INFO llmbo.gp_model | Fitted Matern GP: n=9 y_best=1.383874 kernel=0.972**2 * Matern(length_scale=[1e+03, 92.1, 1e+03, 1e+03, 0.00804], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-12 19:49:36,209 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.0611 2.0539 2.384  0.3661 0.2261]
+2026-05-12 19:49:39,298 INFO pybamm_simulator | 仿真完成 | 时间: 5173.0s | 温升: 4.07K | 老化: 0.8936% | SOC终值: 0.812
+2026-05-12 19:49:39,301 INFO llmbo.optimizer |     -> feasible=True obj=[5.17300e+03 4.06734e+00 8.93586e-01] acq=1.332728 (3.1s)
+2026-05-12 19:49:39,305 INFO DataBase.database | Iter 4: HV=0.641695  |PF|=7  n=10
+2026-05-12 19:49:39,306 INFO llmbo.optimizer | Iteration 3 complete: HV=0.641695 |PF|=7 n=10 (4.0s)
+2026-05-12 19:49:39,306 INFO llmbo.optimizer | --- Iteration 4 ---
+2026-05-12 19:49:39,748 INFO llmbo.gp_model | Fitted Matern GP: n=10 y_best=2.018211 kernel=1.11**2 * Matern(length_scale=[1e+03, 1e+03, 0.124, 6.57, 1e+03], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-12 19:49:40,006 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.0168 3.0223 2.7418 0.2721 0.1268]
+2026-05-12 19:49:43,423 INFO pybamm_simulator | 仿真完成 | 时间: 4608.0s | 温升: 3.47K | 老化: 0.8757% | SOC终值: 0.812
+2026-05-12 19:49:43,427 INFO llmbo.optimizer |     -> feasible=True obj=[4.60800e+03 3.47361e+00 8.75712e-01] acq=1.522300 (3.4s)
+2026-05-12 19:49:43,431 INFO DataBase.database | Iter 5: HV=0.643398  |PF|=8  n=11
+2026-05-12 19:49:43,432 INFO llmbo.optimizer | Iteration 4 complete: HV=0.643398 |PF|=8 n=11 (4.1s)
+2026-05-12 19:49:43,432 INFO llmbo.optimizer | --- Iteration 5 ---
+2026-05-12 19:49:44,057 INFO llmbo.gp_model | Fitted Matern GP: n=11 y_best=1.785855 kernel=1.53**2 * Matern(length_scale=[0.199, 1e+03, 4.44, 1.14, 1e+03], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-12 19:49:44,377 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0065 2.1124 2.316  0.2111 0.2047]
+2026-05-12 19:49:47,702 INFO pybamm_simulator | 仿真完成 | 时间: 6624.0s | 温升: 1.96K | 老化: 0.6220% | SOC终值: 0.812
+2026-05-12 19:49:47,745 INFO llmbo.optimizer |     -> feasible=True obj=[6.624000e+03 1.964178e+00 6.219730e-01] acq=1.874979 (3.4s)
+2026-05-12 19:49:47,749 INFO DataBase.database | Iter 6: HV=0.652038  |PF|=9  n=12
+2026-05-12 19:49:47,750 INFO llmbo.optimizer | Iteration 5 complete: HV=0.652038 |PF|=9 n=12 (4.3s)
+2026-05-12 19:49:47,751 INFO llmbo.optimizer | --- Iteration 6 ---
+2026-05-12 19:49:48,246 INFO llmbo.gp_model | Fitted Matern GP: n=12 y_best=1.650484 kernel=1.3**2 * Matern(length_scale=[0.2, 1e+03, 1.76, 0.866, 1e+03], nu=2.5) + WhiteKernel(noise_level=0.00108)
+2026-05-12 19:49:48,869 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.9766 2.1153 2.0062 0.1092 0.2583]
+2026-05-12 19:49:52,175 INFO pybamm_simulator | 仿真完成 | 时间: 6572.0s | 温升: 1.89K | 老化: 0.7398% | SOC终值: 0.812
+2026-05-12 19:49:52,215 INFO llmbo.optimizer |     -> feasible=True obj=[6.572000e+03 1.891565e+00 7.398260e-01] acq=1.857798 (3.3s)
+2026-05-12 19:49:52,224 INFO DataBase.database | Iter 7: HV=0.652345  |PF|=10  n=13
+2026-05-12 19:49:52,225 INFO llmbo.optimizer | Iteration 6 complete: HV=0.652345 |PF|=10 n=13 (4.5s)
+2026-05-12 19:49:52,226 INFO llmbo.optimizer | --- Iteration 7 ---
+2026-05-12 19:49:52,591 INFO llmbo.gp_model | Fitted Matern GP: n=13 y_best=13.103774 kernel=2.48**2 * Matern(length_scale=[1.61, 1.53, 1.8, 2.11, 1e+03], nu=2.5) + WhiteKernel(noise_level=6.55e-11)
+2026-05-12 19:49:53,147 INFO llmbo.optimizer |   Evaluate rank=0 theta=[5.8902 4.996  2.5404 0.3991 0.2689]
+2026-05-12 19:49:55,961 INFO pybamm_simulator | 仿真完成 | 时间: 3124.0s | 温升: 7.42K | 老化: 1.2742% | SOC终值: 0.812
+2026-05-12 19:49:55,964 INFO llmbo.optimizer |     -> feasible=True obj=[3.124000e+03 7.424547e+00 1.274248e+00] acq=2.700806 (2.8s)
+2026-05-12 19:49:55,971 INFO DataBase.database | Iter 8: HV=0.827492  |PF|=11  n=14
+2026-05-12 19:49:55,972 INFO llmbo.optimizer | Iteration 7 complete: HV=0.827492 |PF|=11 n=14 (3.7s)
+2026-05-12 19:49:55,972 INFO llmbo.optimizer | --- Iteration 8 ---
+2026-05-12 19:49:56,453 INFO llmbo.gp_model | Fitted Matern GP: n=14 y_best=3.155988 kernel=3.21**2 * Matern(length_scale=[0.981, 1e+03, 3.05, 2.09, 7.39], nu=2.5) + WhiteKernel(noise_level=6.57e-11)
+2026-05-12 19:49:57,082 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.6106 2.6018 2.9525 0.2493 0.1003]
+2026-05-12 19:50:00,374 INFO pybamm_simulator | 仿真完成 | 时间: 4683.0s | 温升: 3.12K | 老化: 0.8034% | SOC终值: 0.812
+2026-05-12 19:50:00,377 INFO llmbo.optimizer |     -> feasible=True obj=[4.683000e+03 3.121711e+00 8.034170e-01] acq=1.230397 (3.3s)
+2026-05-12 19:50:00,384 INFO DataBase.database | Iter 9: HV=0.829348  |PF|=11  n=15
+2026-05-12 19:50:00,386 INFO llmbo.optimizer | Iteration 8 complete: HV=0.829348 |PF|=11 n=15 (4.4s)
+2026-05-12 19:50:00,386 INFO llmbo.optimizer | --- Iteration 9 ---
+2026-05-12 19:50:00,913 INFO llmbo.gp_model | Fitted Matern GP: n=15 y_best=1.617357 kernel=1.77**2 * Matern(length_scale=[0.91, 2.8, 1.54, 1.39, 1e+03], nu=2.5) + WhiteKernel(noise_level=0.000462)
+2026-05-12 19:50:01,617 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.4907 2.049  2.3706 0.1439 0.1743]
+2026-05-12 19:50:05,123 INFO pybamm_simulator | 仿真完成 | 时间: 5931.0s | 温升: 2.09K | 老化: 0.7230% | SOC终值: 0.812
+2026-05-12 19:50:05,137 INFO llmbo.optimizer |     -> feasible=True obj=[5.931000e+03 2.088723e+00 7.230140e-01] acq=1.238004 (3.5s)
+2026-05-12 19:50:05,142 INFO DataBase.database | Iter 10: HV=0.830344  |PF|=12  n=16
+2026-05-12 19:50:05,143 INFO llmbo.optimizer | Iteration 9 complete: HV=0.830344 |PF|=12 n=16 (4.8s)
+2026-05-12 19:50:05,143 INFO llmbo.optimizer | --- Iteration 10 ---
+2026-05-12 19:50:05,615 INFO llmbo.gp_model | Fitted Matern GP: n=16 y_best=4.087941 kernel=1.93**2 * Matern(length_scale=[1.48, 0.883, 1.31, 3.86, 3.03], nu=2.5) + WhiteKernel(noise_level=3.56e-11)
+2026-05-12 19:50:06,292 INFO llmbo.optimizer |   Evaluate rank=0 theta=[5.7469 3.7278 2.851  0.3992 0.297 ]
+2026-05-12 19:50:09,552 INFO pybamm_simulator | 仿真完成 | 时间: 3339.0s | 温升: 6.51K | 老化: 1.1758% | SOC终值: 0.812
+2026-05-12 19:50:09,553 INFO llmbo.optimizer |     -> feasible=True obj=[3.339000e+03 6.514519e+00 1.175762e+00] acq=1.987244 (3.2s)
+2026-05-12 19:50:09,561 INFO DataBase.database | Iter 11: HV=0.841631  |PF|=13  n=17
+2026-05-12 19:50:09,562 INFO llmbo.optimizer | Iteration 10 complete: HV=0.841631 |PF|=13 n=17 (4.4s)
+2026-05-12 19:50:09,562 INFO llmbo.optimizer | --- Iteration 11 ---
+2026-05-12 19:50:10,266 INFO llmbo.gp_model | Fitted Matern GP: n=17 y_best=2.626096 kernel=5.55**2 * Matern(length_scale=[3.32, 9.55, 32.5, 4.07, 57.1], nu=2.5) + WhiteKernel(noise_level=0.00153)
+2026-05-12 19:50:11,140 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0006 2.0267 2.9697 0.1012 0.2837]
+2026-05-12 19:50:14,592 INFO pybamm_simulator | 仿真完成 | 时间: 5946.0s | 温升: 2.90K | 老化: 0.5782% | SOC终值: 0.812
+2026-05-12 19:50:14,634 INFO llmbo.optimizer |     -> feasible=True obj=[5.946000e+03 2.895077e+00 5.782470e-01] acq=2.012011 (3.5s)
+2026-05-12 19:50:14,640 INFO DataBase.database | Iter 12: HV=0.859410  |PF|=14  n=18
+2026-05-12 19:50:14,640 INFO llmbo.optimizer | Iteration 11 complete: HV=0.859410 |PF|=14 n=18 (5.1s)
+2026-05-12 19:50:14,640 INFO llmbo.optimizer | --- Iteration 12 ---
+2026-05-12 19:50:15,205 INFO llmbo.gp_model | Fitted Matern GP: n=18 y_best=1.885047 kernel=2.57**2 * Matern(length_scale=[1.73, 5.19, 2.87, 2.3, 1e+03], nu=2.5) + WhiteKernel(noise_level=0.000716)
+2026-05-12 19:50:15,840 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.5888 2.0334 2.0167 0.1049 0.1206]
+2026-05-12 19:50:19,285 INFO pybamm_simulator | 仿真完成 | 时间: 6924.0s | 温升: 1.56K | 老化: 0.6766% | SOC终值: 0.812
+2026-05-12 19:50:19,335 INFO llmbo.optimizer |     -> feasible=True obj=[6.924000e+03 1.558252e+00 6.766020e-01] acq=1.472640 (3.5s)
+2026-05-12 19:50:19,340 INFO DataBase.database | Iter 13: HV=0.859831  |PF|=15  n=19
+2026-05-12 19:50:19,340 INFO llmbo.optimizer | Iteration 12 complete: HV=0.859831 |PF|=15 n=19 (4.7s)
+2026-05-12 19:50:19,340 INFO llmbo.optimizer | --- Iteration 13 ---
+2026-05-12 19:50:19,904 INFO llmbo.gp_model | Fitted Matern GP: n=19 y_best=1.480218 kernel=4.09**2 * Matern(length_scale=[2.44, 9.46, 27.8, 3.59, 31], nu=2.5) + WhiteKernel(noise_level=0.0021)
+2026-05-12 19:50:20,713 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0417 2.0549 2.9794 0.108  0.2986]
+2026-05-12 19:50:24,174 INFO pybamm_simulator | 仿真完成 | 时间: 5944.0s | 温升: 2.89K | 老化: 0.5825% | SOC终值: 0.812
+2026-05-12 19:50:24,177 INFO llmbo.optimizer |     -> feasible=True obj=[5.944000e+03 2.889041e+00 5.824530e-01] acq=1.509071 (3.4s)
+2026-05-12 19:50:24,185 INFO DataBase.database | Iter 14: HV=0.859877  |PF|=16  n=20
+2026-05-12 19:50:24,187 INFO llmbo.optimizer | Iteration 13 complete: HV=0.859877 |PF|=16 n=20 (4.8s)
+2026-05-12 19:50:24,188 INFO llmbo.optimizer | --- Iteration 14 ---
+2026-05-12 19:50:24,943 INFO llmbo.gp_model | Fitted Matern GP: n=20 y_best=2.281038 kernel=1.37**2 * Matern(length_scale=[0.682, 0.879, 1.2, 1.25, 3.06], nu=2.5) + WhiteKernel(noise_level=9.5e-11)
+2026-05-12 19:50:25,658 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.9008 3.3576 2.9888 0.3781 0.1046]
+2026-05-12 19:50:29,075 INFO pybamm_simulator | 仿真完成 | 时间: 4217.0s | 温升: 3.93K | 老化: 0.8906% | SOC终值: 0.812
+2026-05-12 19:50:29,079 INFO llmbo.optimizer |     -> feasible=True obj=[4.217000e+03 3.933424e+00 8.905550e-01] acq=1.480188 (3.4s)
+2026-05-12 19:50:29,088 INFO DataBase.database | Iter 15: HV=0.863461  |PF|=17  n=21
+2026-05-12 19:50:29,090 INFO llmbo.optimizer | Iteration 14 complete: HV=0.863461 |PF|=17 n=21 (4.9s)
+2026-05-12 19:50:29,090 INFO llmbo.optimizer | --- Iteration 15 ---
+2026-05-12 19:50:29,772 INFO llmbo.gp_model | Fitted Matern GP: n=21 y_best=1.382741 kernel=2.15**2 * Matern(length_scale=[0.826, 1.8, 2.74, 1.54, 1e+03], nu=2.5) + WhiteKernel(noise_level=0.000297)
+2026-05-12 19:50:30,245 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.3808 4.998  2.9867 0.1463 0.2981]
+2026-05-12 19:50:33,234 INFO pybamm_simulator | 仿真完成 | 时间: 3996.0s | 温升: 5.35K | 老化: 0.9283% | SOC终值: 0.812
+2026-05-12 19:50:33,319 INFO llmbo.optimizer |     -> feasible=True obj=[3.996000e+03 5.348845e+00 9.282830e-01] acq=1.732696 (3.1s)
+2026-05-12 19:50:33,322 INFO DataBase.database | Iter 16: HV=0.863958  |PF|=18  n=22
+2026-05-12 19:50:33,327 INFO llmbo.optimizer | Iteration 15 complete: HV=0.863958 |PF|=18 n=22 (4.2s)
+2026-05-12 19:50:33,327 INFO llmbo.optimizer | --- Iteration 16 ---
+2026-05-12 19:50:34,142 INFO llmbo.gp_model | Fitted Matern GP: n=22 y_best=1.156675 kernel=2.63**2 * Matern(length_scale=[1.93, 2.57, 17.8, 1.38, 1e+03], nu=2.5) + WhiteKernel(noise_level=0.000347)
+2026-05-12 19:50:34,918 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0145 2.0216 2.9634 0.2061 0.2198]
+2026-05-12 19:50:38,164 INFO pybamm_simulator | 仿真完成 | 时间: 6070.0s | 温升: 2.83K | 老化: 0.5765% | SOC终值: 0.812
+2026-05-12 19:50:38,168 INFO llmbo.optimizer |     -> feasible=True obj=[6.070000e+03 2.831107e+00 5.765340e-01] acq=1.461667 (3.2s)
+2026-05-12 19:50:38,178 INFO DataBase.database | Iter 17: HV=0.864284  |PF|=19  n=23
+2026-05-12 19:50:38,179 INFO llmbo.optimizer | Iteration 16 complete: HV=0.864284 |PF|=19 n=23 (4.8s)
+2026-05-12 19:50:38,180 INFO llmbo.optimizer | --- Iteration 17 ---
+2026-05-12 19:50:38,820 INFO llmbo.gp_model | Fitted Matern GP: n=23 y_best=13.425339 kernel=1.67**2 * Matern(length_scale=[0.609, 1.15, 1.71, 1.56, 11.4], nu=2.5) + WhiteKernel(noise_level=3.33e-12)
+2026-05-12 19:50:39,477 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.1412 4.9313 2.0628 0.3899 0.1042]
+2026-05-12 19:50:43,068 INFO pybamm_simulator | 仿真完成 | 时间: 5283.0s | 温升: 4.10K | 老化: 0.8494% | SOC终值: 0.812
+2026-05-12 19:50:43,072 INFO llmbo.optimizer |     -> feasible=True obj=[5.283000e+03 4.102744e+00 8.494450e-01] acq=1.632525 (3.6s)
+2026-05-12 19:50:43,080 INFO DataBase.database | Iter 18: HV=0.864284  |PF|=19  n=24
+2026-05-12 19:50:43,081 INFO llmbo.optimizer | Iteration 17 complete: HV=0.864284 |PF|=19 n=24 (4.9s)
+2026-05-12 19:50:43,081 INFO llmbo.optimizer | --- Iteration 18 ---
+2026-05-12 19:50:44,031 INFO llmbo.gp_model | Fitted Matern GP: n=24 y_best=3.361633 kernel=1.31**2 * Matern(length_scale=[0.661, 0.932, 1.12, 1.24, 2.56], nu=2.5) + WhiteKernel(noise_level=9.97e-07)
+2026-05-12 19:50:44,843 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.256  3.2495 2.9921 0.3331 0.1098]
+2026-05-12 19:50:48,096 INFO pybamm_simulator | 仿真完成 | 时间: 4165.0s | 温升: 4.13K | 老化: 0.9241% | SOC终值: 0.812
+2026-05-12 19:50:48,105 INFO llmbo.optimizer |     -> feasible=True obj=[4.165000e+03 4.126956e+00 9.241500e-01] acq=1.582362 (3.2s)
+2026-05-12 19:50:48,119 INFO DataBase.database | Iter 19: HV=0.864406  |PF|=20  n=25
+2026-05-12 19:50:48,121 INFO llmbo.optimizer | Iteration 18 complete: HV=0.864406 |PF|=20 n=25 (5.0s)
+2026-05-12 19:50:48,121 INFO llmbo.optimizer | --- Iteration 19 ---
+2026-05-12 19:50:49,300 INFO llmbo.gp_model | Fitted Matern GP: n=25 y_best=3.193949 kernel=1.46**2 * Matern(length_scale=[0.646, 1.16, 1.54, 0.988, 1e+03], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-12 19:50:50,230 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.9244 2.0434 2.9992 0.1926 0.1702]
+2026-05-12 19:50:53,595 INFO pybamm_simulator | 仿真完成 | 时间: 5007.0s | 温升: 3.06K | 老化: 0.7497% | SOC终值: 0.812
+2026-05-12 19:50:53,600 INFO llmbo.optimizer |     -> feasible=True obj=[5.00700e+03 3.06482e+00 7.49748e-01] acq=1.314580 (3.4s)
+2026-05-12 19:50:53,613 INFO DataBase.database | Iter 20: HV=0.864406  |PF|=21  n=26
+2026-05-12 19:50:53,614 INFO llmbo.optimizer | Iteration 19 complete: HV=0.864406 |PF|=21 n=26 (5.5s)
+2026-05-12 19:50:53,615 INFO llmbo.optimizer | --- Iteration 20 ---
+2026-05-12 19:50:54,162 INFO llmbo.gp_model | Fitted Matern GP: n=26 y_best=3.130746 kernel=1.52**2 * Matern(length_scale=[0.955, 1.11, 1.46, 1.22, 4.67], nu=2.5) + WhiteKernel(noise_level=3.33e-12)
+2026-05-12 19:50:54,775 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.3134 3.4173 2.0722 0.1023 0.102 ]
+2026-05-12 19:50:58,416 INFO pybamm_simulator | 仿真完成 | 时间: 6268.0s | 温升: 2.43K | 老化: 0.7634% | SOC终值: 0.812
+2026-05-12 19:50:58,420 INFO llmbo.optimizer |     -> feasible=True obj=[6.268000e+03 2.432635e+00 7.634260e-01] acq=1.215686 (3.6s)
+2026-05-12 19:50:58,427 INFO DataBase.database | Iter 21: HV=0.864406  |PF|=21  n=27
+2026-05-12 19:50:58,428 INFO llmbo.optimizer | Iteration 20 complete: HV=0.864406 |PF|=21 n=27 (4.8s)
+2026-05-12 19:50:58,428 INFO llmbo.optimizer | --- Iteration 21 ---
+2026-05-12 19:50:59,086 INFO llmbo.gp_model | Fitted Matern GP: n=27 y_best=2.725638 kernel=1.46**2 * Matern(length_scale=[0.411, 0.977, 1.83, 1.07, 1e+03], nu=2.5) + WhiteKernel(noise_level=3.33e-12)
+2026-05-12 19:50:59,756 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.2978 2.7705 2.9442 0.3278 0.2391]
+2026-05-12 19:51:03,049 INFO pybamm_simulator | 仿真完成 | 时间: 4768.0s | 温升: 3.05K | 老化: 0.7863% | SOC终值: 0.812
+2026-05-12 19:51:03,092 INFO llmbo.optimizer |     -> feasible=True obj=[4.768000e+03 3.054477e+00 7.863180e-01] acq=1.510237 (3.3s)
+2026-05-12 19:51:03,102 INFO DataBase.database | Iter 22: HV=0.864992  |PF|=22  n=28
+2026-05-12 19:51:03,105 INFO llmbo.optimizer | Iteration 21 complete: HV=0.864992 |PF|=22 n=28 (4.7s)
+2026-05-12 19:51:03,105 INFO llmbo.optimizer | --- Iteration 22 ---
+2026-05-12 19:51:03,747 INFO llmbo.gp_model | Fitted Matern GP: n=28 y_best=2.511315 kernel=2.66**2 * Matern(length_scale=[2.3, 2.64, 2.74, 2.6, 4.05], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-12 19:51:04,541 INFO llmbo.optimizer |   Evaluate rank=0 theta=[5.9066 4.9569 2.8494 0.3926 0.2999]
+2026-05-12 19:51:07,267 INFO pybamm_simulator | 仿真完成 | 时间: 2964.0s | 温升: 7.41K | 老化: 1.2505% | SOC终值: 0.812
+2026-05-12 19:51:07,343 INFO llmbo.optimizer |     -> feasible=True obj=[2.964000e+03 7.407887e+00 1.250525e+00] acq=2.258321 (2.8s)
+2026-05-12 19:51:07,350 INFO DataBase.database | Iter 23: HV=0.903724  |PF|=22  n=29
+2026-05-12 19:51:07,353 INFO llmbo.optimizer | Iteration 22 complete: HV=0.903724 |PF|=22 n=29 (4.2s)
+2026-05-12 19:51:07,353 INFO llmbo.optimizer | --- Iteration 23 ---
+2026-05-12 19:51:07,974 INFO llmbo.gp_model | Fitted Matern GP: n=29 y_best=2.852603 kernel=1.78**2 * Matern(length_scale=[1.35, 1.61, 1.93, 2.23, 2.69], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-12 19:51:08,392 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.1503 4.5706 2.925  0.3721 0.2805]
+2026-05-12 19:51:11,496 INFO pybamm_simulator | 仿真完成 | 时间: 3626.0s | 温升: 5.67K | 老化: 0.9551% | SOC终值: 0.812
+2026-05-12 19:51:11,539 INFO llmbo.optimizer |     -> feasible=True obj=[3.62600e+03 5.67406e+00 9.55150e-01] acq=1.610163 (3.1s)
+2026-05-12 19:51:11,547 INFO DataBase.database | Iter 24: HV=0.916624  |PF|=23  n=30
+2026-05-12 19:51:11,549 INFO llmbo.optimizer | Iteration 23 complete: HV=0.916624 |PF|=23 n=30 (4.2s)
+2026-05-12 19:51:11,549 INFO llmbo.optimizer | --- Iteration 24 ---
+2026-05-12 19:51:12,114 INFO llmbo.gp_model | Fitted Matern GP: n=30 y_best=1.362800 kernel=1.17**2 * Matern(length_scale=[0.868, 0.909, 5.56, 1.09, 1.95], nu=2.5) + WhiteKernel(noise_level=3.33e-12)
+2026-05-12 19:51:12,788 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0869 2.9466 2.9946 0.3566 0.2265]
+2026-05-12 19:51:16,699 INFO pybamm_simulator | 仿真完成 | 时间: 5764.0s | 温升: 2.96K | 老化: 0.5930% | SOC终值: 0.812
+2026-05-12 19:51:16,704 INFO llmbo.optimizer |     -> feasible=True obj=[5.764000e+03 2.957519e+00 5.930260e-01] acq=1.139469 (3.9s)
+2026-05-12 19:51:16,712 INFO DataBase.database | Iter 25: HV=0.920190  |PF|=24  n=31
+2026-05-12 19:51:16,714 INFO llmbo.optimizer | Iteration 24 complete: HV=0.920190 |PF|=24 n=31 (5.2s)
+2026-05-12 19:51:16,715 INFO llmbo.optimizer | --- Iteration 25 ---
+2026-05-12 19:51:17,312 INFO llmbo.gp_model | Fitted Matern GP: n=31 y_best=2.307664 kernel=1.4**2 * Matern(length_scale=[0.771, 0.957, 1.5, 1.68, 1.81], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-12 19:51:18,122 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.3796 3.3255 2.9983 0.3861 0.1902]
+2026-05-12 19:51:21,111 INFO pybamm_simulator | 仿真完成 | 时间: 3959.0s | 温升: 4.58K | 老化: 0.9615% | SOC终值: 0.812
+2026-05-12 19:51:21,116 INFO llmbo.optimizer |     -> feasible=True obj=[3.959000e+03 4.584817e+00 9.615410e-01] acq=1.622835 (3.0s)
+2026-05-12 19:51:21,124 INFO DataBase.database | Iter 26: HV=0.920436  |PF|=25  n=32
+2026-05-12 19:51:21,125 INFO llmbo.optimizer | Iteration 25 complete: HV=0.920436 |PF|=25 n=32 (4.4s)
+2026-05-12 19:51:21,125 INFO llmbo.optimizer | --- Iteration 26 ---
+2026-05-12 19:51:22,301 INFO llmbo.gp_model | Fitted Matern GP: n=32 y_best=8.469799 kernel=1.36**2 * Matern(length_scale=[0.675, 1.47, 2.71, 0.88, 24.2], nu=2.5) + WhiteKernel(noise_level=1.67e-12)
+2026-05-12 19:51:23,542 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.9826 2.0482 2.9946 0.1684 0.2403]
+2026-05-12 19:51:27,195 INFO pybamm_simulator | 仿真完成 | 时间: 5225.0s | 温升: 2.98K | 老化: 0.7239% | SOC终值: 0.812
+2026-05-12 19:51:27,199 INFO llmbo.optimizer |     -> feasible=True obj=[5.225000e+03 2.976899e+00 7.238990e-01] acq=1.185984 (3.7s)
+2026-05-12 19:51:27,209 INFO DataBase.database | Iter 27: HV=0.921729  |PF|=26  n=33
+2026-05-12 19:51:27,210 INFO llmbo.optimizer | Iteration 26 complete: HV=0.921729 |PF|=26 n=33 (6.1s)
+2026-05-12 19:51:27,210 INFO llmbo.optimizer | --- Iteration 27 ---
+2026-05-12 19:51:27,918 INFO llmbo.gp_model | Fitted Matern GP: n=33 y_best=1.229732 kernel=3.35**2 * Matern(length_scale=[2.47, 2.84, 11.5, 2.48, 5.87], nu=2.5) + WhiteKernel(noise_level=3.33e-12)
+2026-05-12 19:51:29,460 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.006  2.0741 2.9885 0.3996 0.2979]
+2026-05-12 19:51:32,949 INFO pybamm_simulator | 仿真完成 | 时间: 6788.0s | 温升: 2.17K | 老化: 0.6053% | SOC终值: 0.812
+2026-05-12 19:51:32,955 INFO llmbo.optimizer |     -> feasible=True obj=[6.788000e+03 2.171507e+00 6.052590e-01] acq=1.596808 (3.5s)
+2026-05-12 19:51:32,965 INFO DataBase.database | Iter 28: HV=0.921746  |PF|=27  n=34
+2026-05-12 19:51:32,966 INFO llmbo.optimizer | Iteration 27 complete: HV=0.921746 |PF|=27 n=34 (5.7s)
+2026-05-12 19:51:32,968 INFO llmbo.optimizer | --- Iteration 28 ---
+2026-05-12 19:51:33,673 INFO llmbo.gp_model | Fitted Matern GP: n=34 y_best=2.489765 kernel=1.64**2 * Matern(length_scale=[0.62, 0.997, 1.77, 1.55, 2.7], nu=2.5) + WhiteKernel(noise_level=3.33e-12)
+2026-05-12 19:51:34,372 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.2125 4.1902 2.98   0.3813 0.2361]
+2026-05-12 19:51:37,389 INFO pybamm_simulator | 仿真完成 | 时间: 4253.0s | 温升: 4.48K | 老化: 0.7909% | SOC终值: 0.812
+2026-05-12 19:51:37,393 INFO llmbo.optimizer |     -> feasible=True obj=[4.25300e+03 4.47852e+00 7.90854e-01] acq=1.612699 (3.0s)
+2026-05-12 19:51:37,401 INFO DataBase.database | Iter 29: HV=0.928262  |PF|=28  n=35
+2026-05-12 19:51:37,403 INFO llmbo.optimizer | Iteration 28 complete: HV=0.928262 |PF|=28 n=35 (4.4s)
+2026-05-12 19:51:37,404 INFO llmbo.optimizer | --- Iteration 29 ---
+2026-05-12 19:51:38,191 INFO llmbo.gp_model | Fitted Matern GP: n=35 y_best=1.579966 kernel=1.44**2 * Matern(length_scale=[0.887, 1.49, 2.77, 0.891, 29.3], nu=2.5) + WhiteKernel(noise_level=0.000321)
+2026-05-12 19:51:38,977 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0744 4.5708 2.9536 0.3938 0.2888]
+2026-05-12 19:51:42,728 INFO pybamm_simulator | 仿真完成 | 时间: 5269.0s | 温升: 4.49K | 老化: 0.5629% | SOC终值: 0.812
+2026-05-12 19:51:42,734 INFO llmbo.optimizer |     -> feasible=True obj=[5.269000e+03 4.493458e+00 5.628750e-01] acq=1.098495 (3.8s)
+2026-05-12 19:51:42,743 INFO DataBase.database | Iter 30: HV=0.944639  |PF|=29  n=36
+2026-05-12 19:51:42,744 INFO llmbo.optimizer | Iteration 29 complete: HV=0.944639 |PF|=29 n=36 (5.3s)
+2026-05-12 19:51:42,745 INFO llmbo.optimizer | --- Iteration 30 ---
+2026-05-12 19:51:43,380 INFO llmbo.gp_model | Fitted Matern GP: n=36 y_best=1.871051 kernel=4.09**2 * Matern(length_scale=[2.77, 2.78, 23.4, 2.79, 5.45], nu=2.5) + WhiteKernel(noise_level=1.4e-12)
+2026-05-12 19:51:44,494 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0028 4.27   2.9997 0.4    0.2681]
+2026-05-12 19:51:48,402 INFO pybamm_simulator | 仿真完成 | 时间: 5517.0s | 温升: 3.99K | 老化: 0.5539% | SOC终值: 0.812
+2026-05-12 19:51:48,405 INFO llmbo.optimizer |     -> feasible=True obj=[5.517000e+03 3.993699e+00 5.538730e-01] acq=1.549380 (3.9s)
+2026-05-12 19:51:48,415 INFO DataBase.database | Iter 31: HV=0.947254  |PF|=30  n=37
+2026-05-12 19:51:48,421 INFO llmbo.optimizer | Iteration 30 complete: HV=0.947254 |PF|=30 n=37 (5.7s)
+2026-05-12 19:51:48,422 INFO llmbo.optimizer | --- Iteration 31 ---
+2026-05-12 19:51:49,518 INFO llmbo.gp_model | Fitted Matern GP: n=37 y_best=1.461464 kernel=1.71**2 * Matern(length_scale=[0.58, 0.902, 2.4, 1.28, 3.59], nu=2.5) + WhiteKernel(noise_level=3.33e-12)
+2026-05-12 19:51:50,510 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.282  3.4245 2.9741 0.3245 0.2604]
+2026-05-12 19:51:54,477 INFO pybamm_simulator | 仿真完成 | 时间: 4450.0s | 温升: 3.65K | 老化: 0.7999% | SOC终值: 0.812
+2026-05-12 19:51:54,483 INFO llmbo.optimizer |     -> feasible=True obj=[4.450000e+03 3.646007e+00 7.999070e-01] acq=1.393287 (4.0s)
+2026-05-12 19:51:54,491 INFO DataBase.database | Iter 32: HV=0.947578  |PF|=30  n=38
+2026-05-12 19:51:54,492 INFO llmbo.optimizer | Iteration 31 complete: HV=0.947578 |PF|=30 n=38 (6.1s)
+2026-05-12 19:51:54,493 INFO llmbo.optimizer | --- Iteration 32 ---
+2026-05-12 19:51:55,009 INFO llmbo.gp_model | Fitted Matern GP: n=38 y_best=2.093715 kernel=1.75**2 * Matern(length_scale=[0.648, 1.35, 3.89, 0.936, 14.4], nu=2.5) + WhiteKernel(noise_level=0.00414)
+2026-05-12 19:51:56,164 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.8638 4.0774 2.9966 0.3724 0.2799]
+2026-05-12 19:51:59,771 INFO pybamm_simulator | 仿真完成 | 时间: 4464.0s | 温升: 4.32K | 老化: 0.7241% | SOC终值: 0.812
+2026-05-12 19:51:59,777 INFO llmbo.optimizer |     -> feasible=True obj=[4.46400e+03 4.31908e+00 7.24053e-01] acq=1.207425 (3.6s)
+2026-05-12 19:51:59,790 INFO DataBase.database | Iter 33: HV=0.953568  |PF|=31  n=39
+2026-05-12 19:51:59,792 INFO llmbo.optimizer | Iteration 32 complete: HV=0.953568 |PF|=31 n=39 (5.3s)
+2026-05-12 19:51:59,793 INFO llmbo.optimizer | --- Iteration 33 ---
+2026-05-12 19:52:00,548 INFO llmbo.gp_model | Fitted Matern GP: n=39 y_best=1.757132 kernel=2.36**2 * Matern(length_scale=[0.826, 1.5, 2.5, 2.91, 2.89], nu=2.5) + WhiteKernel(noise_level=3.33e-12)
+2026-05-12 19:52:02,106 INFO llmbo.optimizer |   Evaluate rank=0 theta=[5.9762 4.0326 2.987  0.1394 0.1092]
+2026-05-12 19:52:05,718 INFO pybamm_simulator | 仿真完成 | 时间: 4230.0s | 温升: 4.04K | 老化: 0.9480% | SOC终值: 0.812
+2026-05-12 19:52:05,723 INFO llmbo.optimizer |     -> feasible=True obj=[4.23000e+03 4.04375e+00 9.47950e-01] acq=1.565347 (3.6s)
+2026-05-12 19:52:05,735 INFO DataBase.database | Iter 34: HV=0.953568  |PF|=31  n=40
+2026-05-12 19:52:05,737 INFO llmbo.optimizer | Iteration 33 complete: HV=0.953568 |PF|=31 n=40 (5.9s)
+2026-05-12 19:52:05,738 INFO llmbo.optimizer | --- Iteration 34 ---
+2026-05-12 19:52:06,355 INFO llmbo.gp_model | Fitted Matern GP: n=40 y_best=4.729389 kernel=6.26**2 * Matern(length_scale=[2.21, 2.97, 6.15, 5.67, 6.88], nu=2.5) + WhiteKernel(noise_level=1.16e-12)
+2026-05-12 19:52:07,279 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.8427 4.81   2.823  0.3999 0.2985]
+2026-05-12 19:52:10,436 INFO pybamm_simulator | 仿真完成 | 时间: 3252.0s | 温升: 6.55K | 老化: 1.0683% | SOC终值: 0.813
+2026-05-12 19:52:10,438 INFO llmbo.optimizer |     -> feasible=True obj=[3.252000e+03 6.554382e+00 1.068286e+00] acq=1.692677 (3.2s)
+2026-05-12 19:52:10,452 INFO DataBase.database | Iter 35: HV=0.960534  |PF|=32  n=41
+2026-05-12 19:52:10,454 INFO llmbo.optimizer | Iteration 34 complete: HV=0.960534 |PF|=32 n=41 (4.7s)
+2026-05-12 19:52:10,455 INFO llmbo.optimizer | --- Iteration 35 ---
+2026-05-12 19:52:11,008 INFO llmbo.gp_model | Fitted Matern GP: n=41 y_best=1.336531 kernel=1.62**2 * Matern(length_scale=[0.965, 1.2, 3.43, 1.61, 3.91], nu=2.5) + WhiteKernel(noise_level=0.00147)
+2026-05-12 19:52:11,824 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0056 4.052  2.8715 0.3884 0.1023]
+2026-05-12 19:52:15,225 INFO pybamm_simulator | 仿真完成 | 时间: 5879.0s | 温升: 2.90K | 老化: 0.5832% | SOC终值: 0.812
+2026-05-12 19:52:15,230 INFO llmbo.optimizer |     -> feasible=True obj=[5.879000e+03 2.902863e+00 5.831910e-01] acq=1.180536 (3.4s)
+2026-05-12 19:52:15,246 INFO DataBase.database | Iter 36: HV=0.960539  |PF|=33  n=42
+2026-05-12 19:52:15,251 INFO llmbo.optimizer | Iteration 35 complete: HV=0.960539 |PF|=33 n=42 (4.8s)
+2026-05-12 19:52:15,252 INFO llmbo.optimizer | --- Iteration 36 ---
+2026-05-12 19:52:16,094 INFO llmbo.gp_model | Fitted Matern GP: n=42 y_best=2.346387 kernel=2.73**2 * Matern(length_scale=[2.43, 3.36, 6.24, 1.25, 73], nu=2.5) + WhiteKernel(noise_level=0.00113)
+2026-05-12 19:52:17,560 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0003 4.5644 2.9905 0.3925 0.2822]
+2026-05-12 19:52:20,771 INFO pybamm_simulator | 仿真完成 | 时间: 5399.0s | 温升: 4.40K | 老化: 0.5496% | SOC终值: 0.812
+2026-05-12 19:52:20,811 INFO llmbo.optimizer |     -> feasible=True obj=[5.399000e+03 4.398525e+00 5.495660e-01] acq=1.317656 (3.2s)
+2026-05-12 19:52:20,828 INFO DataBase.database | Iter 37: HV=0.962028  |PF|=34  n=43
+2026-05-12 19:52:20,831 INFO llmbo.optimizer | Iteration 36 complete: HV=0.962028 |PF|=34 n=43 (5.6s)
+2026-05-12 19:52:20,831 INFO llmbo.optimizer | --- Iteration 37 ---
+2026-05-12 19:52:21,390 INFO llmbo.gp_model | Fitted Matern GP: n=43 y_best=19.394381 kernel=4.12**2 * Matern(length_scale=[3.03, 2.78, 24.2, 2.64, 5.75], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-12 19:52:22,982 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0045 4.9518 2.9959 0.399  0.2928]
+2026-05-12 19:52:26,560 INFO pybamm_simulator | 仿真完成 | 时间: 5297.0s | 温升: 4.91K | 老化: 0.5403% | SOC终值: 0.812
+2026-05-12 19:52:26,565 INFO llmbo.optimizer |     -> feasible=True obj=[5.297000e+03 4.905628e+00 5.402740e-01] acq=1.504884 (3.6s)
+2026-05-12 19:52:26,574 INFO DataBase.database | Iter 38: HV=0.965228  |PF|=35  n=44
+2026-05-12 19:52:26,576 INFO llmbo.optimizer | Iteration 37 complete: HV=0.965228 |PF|=35 n=44 (5.7s)
+2026-05-12 19:52:26,576 INFO llmbo.optimizer | --- Iteration 38 ---
+2026-05-12 19:52:27,203 INFO llmbo.gp_model | Fitted Matern GP: n=44 y_best=1.410841 kernel=1.52**2 * Matern(length_scale=[0.889, 1.18, 3.15, 1.72, 2.77], nu=2.5) + WhiteKernel(noise_level=0.000655)
+2026-05-12 19:52:28,886 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.3157 2.0072 2.9944 0.1107 0.2376]
+2026-05-12 19:52:32,341 INFO pybamm_simulator | 仿真完成 | 时间: 5447.0s | 温升: 3.00K | 老化: 0.6558% | SOC终值: 0.812
+2026-05-12 19:52:32,390 INFO llmbo.optimizer |     -> feasible=True obj=[5.447000e+03 2.996428e+00 6.557610e-01] acq=1.217224 (3.4s)
+2026-05-12 19:52:32,406 INFO DataBase.database | Iter 39: HV=0.965325  |PF|=36  n=45
+2026-05-12 19:52:32,410 INFO llmbo.optimizer | Iteration 38 complete: HV=0.965325 |PF|=36 n=45 (5.8s)
+2026-05-12 19:52:32,410 INFO llmbo.optimizer | --- Iteration 39 ---
+2026-05-12 19:52:33,112 INFO llmbo.gp_model | Fitted Matern GP: n=45 y_best=1.520390 kernel=1.78**2 * Matern(length_scale=[1.22, 1.64, 2.68, 1.67, 3.2], nu=2.5) + WhiteKernel(noise_level=7.79e-05)
+2026-05-12 19:52:33,910 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.4189 2.0044 2.0048 0.1038 0.2602]
+2026-05-12 19:52:37,647 INFO pybamm_simulator | 仿真完成 | 时间: 7024.0s | 温升: 1.54K | 老化: 0.6661% | SOC终值: 0.812
+2026-05-12 19:52:37,654 INFO llmbo.optimizer |     -> feasible=True obj=[7.02400e+03 1.53904e+00 6.66127e-01] acq=1.791122 (3.7s)
+2026-05-12 19:52:37,672 INFO DataBase.database | Iter 40: HV=0.965342  |PF|=37  n=46
+2026-05-12 19:52:37,675 INFO llmbo.optimizer | Iteration 39 complete: HV=0.965342 |PF|=37 n=46 (5.2s)
+2026-05-12 19:52:37,675 INFO llmbo.optimizer | --- Iteration 40 ---
+2026-05-12 19:52:38,338 INFO llmbo.gp_model | Fitted Matern GP: n=46 y_best=2.301611 kernel=3.72**2 * Matern(length_scale=[2.63, 2.79, 19.1, 2.8, 5.16], nu=2.5) + WhiteKernel(noise_level=1.46e-12)
+2026-05-12 19:52:39,793 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0034 4.9529 2.9976 0.3971 0.2993]
+2026-05-12 19:52:43,370 INFO pybamm_simulator | 仿真完成 | 时间: 5278.0s | 温升: 4.96K | 老化: 0.5388% | SOC终值: 0.812
+2026-05-12 19:52:43,377 INFO llmbo.optimizer |     -> feasible=True obj=[5.27800e+03 4.96031e+00 5.38799e-01] acq=1.410271 (3.6s)
+2026-05-12 19:52:43,395 INFO DataBase.database | Iter 41: HV=0.965902  |PF|=38  n=47
+2026-05-12 19:52:43,397 INFO llmbo.optimizer | Iteration 40 complete: HV=0.965902 |PF|=38 n=47 (5.7s)
+2026-05-12 19:52:43,398 INFO llmbo.optimizer | --- Iteration 41 ---
+2026-05-12 19:52:44,528 INFO llmbo.gp_model | Fitted Matern GP: n=47 y_best=2.125283 kernel=2.28**2 * Matern(length_scale=[0.739, 1.57, 2.41, 2.01, 2.97], nu=2.5) + WhiteKernel(noise_level=3.33e-12)
+2026-05-12 19:52:45,204 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.2051 4.1886 2.9483 0.3593 0.2268]
+2026-05-12 19:52:49,663 INFO pybamm_simulator | 仿真完成 | 时间: 4299.0s | 温升: 4.40K | 老化: 0.7989% | SOC终值: 0.812
+2026-05-12 19:52:49,671 INFO llmbo.optimizer |     -> feasible=True obj=[4.299000e+03 4.403183e+00 7.988930e-01] acq=1.673328 (4.5s)
+2026-05-12 19:52:49,686 INFO DataBase.database | Iter 42: HV=0.965907  |PF|=39  n=48
+2026-05-12 19:52:49,688 INFO llmbo.optimizer | Iteration 41 complete: HV=0.965907 |PF|=39 n=48 (6.3s)
+2026-05-12 19:52:49,689 INFO llmbo.optimizer | --- Iteration 42 ---
+2026-05-12 19:52:50,431 INFO llmbo.gp_model | Fitted Matern GP: n=48 y_best=3.066235 kernel=2.01**2 * Matern(length_scale=[0.561, 1.13, 4.15, 1.16, 6.13], nu=2.5) + WhiteKernel(noise_level=3.33e-12)
+2026-05-12 19:52:51,504 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.8256 3.9723 2.9936 0.389  0.2985]
+2026-05-12 19:52:55,044 INFO pybamm_simulator | 仿真完成 | 时间: 4507.0s | 温升: 4.26K | 老化: 0.7081% | SOC终值: 0.812
+2026-05-12 19:52:55,049 INFO llmbo.optimizer |     -> feasible=True obj=[4.507000e+03 4.259003e+00 7.081150e-01] acq=1.653666 (3.5s)
+2026-05-12 19:52:55,061 INFO DataBase.database | Iter 43: HV=0.967909  |PF|=40  n=49
+2026-05-12 19:52:55,062 INFO llmbo.optimizer | Iteration 42 complete: HV=0.967909 |PF|=40 n=49 (5.4s)
+2026-05-12 19:52:55,063 INFO llmbo.optimizer | --- Iteration 43 ---
+2026-05-12 19:52:56,040 INFO llmbo.gp_model | Fitted Matern GP: n=49 y_best=3.849418 kernel=4.75**2 * Matern(length_scale=[1.69, 2.43, 5.01, 4.38, 5.88], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-12 19:52:56,712 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.3638 4.0445 2.9955 0.3995 0.2793]
+2026-05-12 19:52:59,878 INFO pybamm_simulator | 仿真完成 | 时间: 3619.0s | 温升: 5.17K | 老化: 0.9717% | SOC终值: 0.812
+2026-05-12 19:52:59,885 INFO llmbo.optimizer |     -> feasible=True obj=[3.619000e+03 5.173302e+00 9.716870e-01] acq=1.444142 (3.2s)
+2026-05-12 19:52:59,910 INFO DataBase.database | Iter 44: HV=0.969231  |PF|=41  n=50
+2026-05-12 19:52:59,914 INFO llmbo.optimizer | Iteration 43 complete: HV=0.969231 |PF|=41 n=50 (4.8s)
+2026-05-12 19:52:59,914 INFO llmbo.optimizer | --- Iteration 44 ---
+2026-05-12 19:53:00,868 INFO llmbo.gp_model | Fitted Matern GP: n=50 y_best=2.690333 kernel=4.18**2 * Matern(length_scale=[1.62, 2.16, 4.73, 4.93, 6.01], nu=2.5) + WhiteKernel(noise_level=1.4e-12)
+2026-05-12 19:53:01,820 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.3438 4.4429 2.974  0.399  0.2998]
+2026-05-12 19:53:04,969 INFO pybamm_simulator | 仿真完成 | 时间: 3480.0s | 温升: 5.75K | 老化: 0.9692% | SOC终值: 0.812
+2026-05-12 19:53:04,972 INFO llmbo.optimizer |     -> feasible=True obj=[3.480000e+03 5.745363e+00 9.692470e-01] acq=1.613091 (3.1s)
+2026-05-12 19:53:04,988 INFO DataBase.database | Iter 45: HV=0.972072  |PF|=42  n=51
+2026-05-12 19:53:04,991 INFO llmbo.optimizer | Iteration 44 complete: HV=0.972072 |PF|=42 n=51 (5.1s)
+2026-05-12 19:53:04,991 INFO llmbo.optimizer | --- Iteration 45 ---
+2026-05-12 19:53:05,878 INFO llmbo.gp_model | Fitted Matern GP: n=51 y_best=1.887636 kernel=3.55**2 * Matern(length_scale=[1.5, 1.86, 4.45, 3.64, 4.01], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-12 19:53:06,571 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.7675 4.0234 2.9971 0.3988 0.2054]
+2026-05-12 19:53:09,771 INFO pybamm_simulator | 仿真完成 | 时间: 3601.0s | 温升: 5.33K | 老化: 1.0424% | SOC终值: 0.812
+2026-05-12 19:53:09,814 INFO llmbo.optimizer |     -> feasible=True obj=[3.601000e+03 5.334007e+00 1.042393e+00] acq=1.481075 (3.2s)
+2026-05-12 19:53:09,826 INFO DataBase.database | Iter 46: HV=0.972124  |PF|=43  n=52
+2026-05-12 19:53:09,829 INFO llmbo.optimizer | Iteration 45 complete: HV=0.972124 |PF|=43 n=52 (4.8s)
+2026-05-12 19:53:09,829 INFO llmbo.optimizer | --- Iteration 46 ---
+2026-05-12 19:53:10,709 INFO llmbo.gp_model | Fitted Matern GP: n=52 y_best=1.498762 kernel=2.3**2 * Matern(length_scale=[0.785, 1.34, 2.32, 2.25, 3.61], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-12 19:53:12,178 INFO llmbo.optimizer |   Evaluate rank=0 theta=[5.2937 3.5205 2.9896 0.1273 0.1026]
+2026-05-12 19:53:15,686 INFO pybamm_simulator | 仿真完成 | 时间: 4390.0s | 温升: 3.34K | 老化: 0.8873% | SOC终值: 0.812
+2026-05-12 19:53:15,692 INFO llmbo.optimizer |     -> feasible=True obj=[4.390000e+03 3.337452e+00 8.873200e-01] acq=1.525450 (3.5s)
+2026-05-12 19:53:15,706 INFO DataBase.database | Iter 47: HV=0.972708  |PF|=44  n=53
+2026-05-12 19:53:15,709 INFO llmbo.optimizer | Iteration 46 complete: HV=0.972708 |PF|=44 n=53 (5.9s)
+2026-05-12 19:53:15,709 INFO llmbo.optimizer | --- Iteration 47 ---
+2026-05-12 19:53:16,461 INFO llmbo.gp_model | Fitted Matern GP: n=53 y_best=2.075277 kernel=4.17**2 * Matern(length_scale=[3.23, 3.04, 17.2, 2.7, 5.43], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-12 19:53:18,188 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0016 4.9506 2.989  0.3966 0.2984]
+2026-05-12 19:53:21,844 INFO pybamm_simulator | 仿真完成 | 时间: 5284.0s | 温升: 4.95K | 老化: 0.5393% | SOC终值: 0.812
+2026-05-12 19:53:21,851 INFO llmbo.optimizer |     -> feasible=True obj=[5.284000e+03 4.948278e+00 5.393140e-01] acq=1.454432 (3.7s)
+2026-05-12 19:53:21,865 INFO DataBase.database | Iter 48: HV=0.972708  |PF|=45  n=54
+2026-05-12 19:53:21,871 INFO llmbo.optimizer | Iteration 47 complete: HV=0.972708 |PF|=45 n=54 (6.1s)
+2026-05-12 19:53:21,871 INFO llmbo.optimizer | --- Iteration 48 ---
+2026-05-12 19:53:22,551 INFO llmbo.gp_model | Fitted Matern GP: n=54 y_best=2.606651 kernel=9.68**2 * Matern(length_scale=[2.82, 3.96, 7.9, 7.84, 10.3], nu=2.5) + WhiteKernel(noise_level=1.68e-06)
+2026-05-12 19:53:23,135 INFO llmbo.optimizer |   Evaluate rank=0 theta=[5.7194 4.6578 2.6937 0.3998 0.2985]
+2026-05-12 19:53:26,173 INFO pybamm_simulator | 仿真完成 | 时间: 3091.0s | 温升: 6.88K | 老化: 1.2167% | SOC终值: 0.812
+2026-05-12 19:53:26,182 INFO llmbo.optimizer |     -> feasible=True obj=[3.091000e+03 6.880126e+00 1.216738e+00] acq=1.729083 (3.0s)
+2026-05-12 19:53:26,195 INFO DataBase.database | Iter 49: HV=0.974041  |PF|=46  n=55
+2026-05-12 19:53:26,198 INFO llmbo.optimizer | Iteration 48 complete: HV=0.974041 |PF|=46 n=55 (4.3s)
+2026-05-12 19:53:26,198 INFO llmbo.optimizer | --- Iteration 49 ---
+2026-05-12 19:53:26,904 INFO llmbo.gp_model | Fitted Matern GP: n=55 y_best=1.752560 kernel=5.22**2 * Matern(length_scale=[1.93, 2.55, 5.82, 3.75, 6.36], nu=2.5) + WhiteKernel(noise_level=5.62e-06)
+2026-05-12 19:53:27,644 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.4731 4.9215 2.9826 0.2217 0.2973]
+2026-05-12 19:53:30,730 INFO pybamm_simulator | 仿真完成 | 时间: 3675.0s | 温升: 5.89K | 老化: 1.0304% | SOC终值: 0.812
+2026-05-12 19:53:30,738 INFO llmbo.optimizer |     -> feasible=True obj=[3.675000e+03 5.885345e+00 1.030397e+00] acq=1.539642 (3.1s)
+2026-05-12 19:53:30,754 INFO DataBase.database | Iter 50: HV=0.974041  |PF|=46  n=56
+2026-05-12 19:53:30,757 INFO llmbo.optimizer | Iteration 49 complete: HV=0.974041 |PF|=46 n=56 (4.5s)
+2026-05-12 19:53:30,760 INFO llmbo.optimizer | Optimization finished: HV=0.974041
+2026-05-12 19:53:30,762 INFO Compare_Exp.Exp.parego_runner | ParEGO done: 56 evals, 56 feasible, 46 Pareto, HV=0.9740
+2026-05-12 19:53:30,799 INFO DataBase.database | 数据库已保存: Compare_Exp\experiment_records\computational_time_3algo_5seeds_50iter_2026_05_12\seed8409\parego\database.json (56 条记录)
+2026-05-12 19:53:30,804 INFO Compare_Exp.Exp.parego_runner | Results saved to Compare_Exp\experiment_records\computational_time_3algo_5seeds_50iter_2026_05_12\seed8409\parego
+2026-05-12 19:53:30,805 INFO __main__ | [parego] seed=8409 finished in 268.26s
+2026-05-12 19:53:30,812 INFO __main__ | [nsga2] seed=8409 starting -> Compare_Exp\experiment_records\computational_time_3algo_5seeds_50iter_2026_05_12\seed8409\nsga2
+2026-05-12 19:53:30,813 INFO DataBase.database | ObservationDB 初始化: bounds={'I1': (2.0, 6.0), 'I2': (2.0, 5.0), 'I3': (2.0, 3.0), 'dSOC1': (0.1, 0.4), 'dSOC2': (0.1, 0.3)}
+2026-05-12 19:53:30,817 INFO Compare_Exp.Exp.nsga2_runner | NSGA-II: seed=8409, pop=20, max_evals=56
+2026-05-12 19:53:34,082 INFO pybamm_simulator | 仿真完成 | 时间: 5131.0s | 温升: 3.73K | 老化: 0.8160% | SOC终值: 0.812
+2026-05-12 19:53:37,450 INFO pybamm_simulator | 仿真完成 | 时间: 4557.0s | 温升: 4.15K | 老化: 0.8446% | SOC终值: 0.812
+2026-05-12 19:53:40,713 INFO pybamm_simulator | 仿真完成 | 时间: 5218.0s | 温升: 3.38K | 老化: 0.7065% | SOC终值: 0.812
+2026-05-12 19:53:44,205 INFO pybamm_simulator | 仿真完成 | 时间: 6167.0s | 温升: 2.23K | 老化: 0.7647% | SOC终值: 0.812
+2026-05-12 19:53:47,536 INFO pybamm_simulator | 仿真完成 | 时间: 4203.0s | 温升: 4.66K | 老化: 0.9536% | SOC终值: 0.812
+2026-05-12 19:53:50,928 INFO pybamm_simulator | 仿真完成 | 时间: 4706.0s | 温升: 4.37K | 老化: 0.9365% | SOC终值: 0.812
+2026-05-12 19:53:54,498 INFO pybamm_simulator | 仿真完成 | 时间: 5597.0s | 温升: 2.97K | 老化: 0.6071% | SOC终值: 0.812
+2026-05-12 19:53:57,775 INFO pybamm_simulator | 仿真完成 | 时间: 4785.0s | 温升: 4.36K | 老化: 0.8846% | SOC终值: 0.812
+2026-05-12 19:54:01,365 INFO pybamm_simulator | 仿真完成 | 时间: 4217.0s | 温升: 4.51K | 老化: 1.0068% | SOC终值: 0.812
+2026-05-12 19:54:04,846 INFO pybamm_simulator | 仿真完成 | 时间: 5335.0s | 温升: 2.58K | 老化: 0.7376% | SOC终值: 0.812
+2026-05-12 19:54:07,918 INFO pybamm_simulator | 仿真完成 | 时间: 3610.0s | 温升: 5.57K | 老化: 0.9920% | SOC终值: 0.812
+2026-05-12 19:54:11,287 INFO pybamm_simulator | 仿真完成 | 时间: 4672.0s | 温升: 4.79K | 老化: 1.0590% | SOC终值: 0.812
+2026-05-12 19:54:14,732 INFO pybamm_simulator | 仿真完成 | 时间: 5001.0s | 温升: 4.93K | 老化: 0.9774% | SOC终值: 0.812
+2026-05-12 19:54:18,021 INFO pybamm_simulator | 仿真完成 | 时间: 5622.0s | 温升: 3.53K | 老化: 0.8848% | SOC终值: 0.812
+2026-05-12 19:54:21,423 INFO pybamm_simulator | 仿真完成 | 时间: 4356.0s | 温升: 6.30K | 老化: 1.1317% | SOC终值: 0.812
+2026-05-12 19:54:24,663 INFO pybamm_simulator | 仿真完成 | 时间: 3797.0s | 温升: 5.80K | 老化: 1.0718% | SOC终值: 0.813
+2026-05-12 19:54:28,160 INFO pybamm_simulator | 仿真完成 | 时间: 4881.0s | 温升: 4.37K | 老化: 0.8071% | SOC终值: 0.812
+2026-05-12 19:54:31,780 INFO pybamm_simulator | 仿真完成 | 时间: 5004.0s | 温升: 3.16K | 老化: 0.8083% | SOC终值: 0.812
+2026-05-12 19:54:35,404 INFO pybamm_simulator | 仿真完成 | 时间: 5155.0s | 温升: 4.06K | 老化: 0.8517% | SOC终值: 0.812
+2026-05-12 19:54:38,920 INFO pybamm_simulator | 仿真完成 | 时间: 5597.0s | 温升: 2.53K | 老化: 0.6688% | SOC终值: 0.812
+2026-05-12 19:54:42,876 INFO pybamm_simulator | 仿真完成 | 时间: 5303.0s | 温升: 3.16K | 老化: 0.8080% | SOC终值: 0.812
+2026-05-12 19:54:46,222 INFO pybamm_simulator | 仿真完成 | 时间: 4622.0s | 温升: 4.79K | 老化: 1.0706% | SOC终值: 0.812
+2026-05-12 19:54:49,697 INFO pybamm_simulator | 仿真完成 | 时间: 5991.0s | 温升: 2.19K | 老化: 0.7574% | SOC终值: 0.812
+2026-05-12 19:54:53,115 INFO pybamm_simulator | 仿真完成 | 时间: 5325.0s | 温升: 4.21K | 老化: 0.9272% | SOC终值: 0.812
+2026-05-12 19:54:56,415 INFO pybamm_simulator | 仿真完成 | 时间: 4552.0s | 温升: 4.24K | 老化: 0.8478% | SOC终值: 0.812
+2026-05-12 19:54:59,488 INFO pybamm_simulator | 仿真完成 | 时间: 3681.0s | 温升: 5.56K | 老化: 1.0069% | SOC终值: 0.812
+2026-05-12 19:55:03,225 INFO pybamm_simulator | 仿真完成 | 时间: 6499.0s | 温升: 2.14K | 老化: 0.6980% | SOC终值: 0.812
+2026-05-12 19:55:06,681 INFO pybamm_simulator | 仿真完成 | 时间: 5133.0s | 温升: 3.61K | 老化: 0.8195% | SOC终值: 0.812
+2026-05-12 19:55:09,995 INFO pybamm_simulator | 仿真完成 | 时间: 4799.0s | 温升: 5.03K | 老化: 0.8247% | SOC终值: 0.812
+2026-05-12 19:55:13,272 INFO pybamm_simulator | 仿真完成 | 时间: 4988.0s | 温升: 3.11K | 老化: 0.7971% | SOC终值: 0.812
+2026-05-12 19:55:16,132 INFO pybamm_simulator | 仿真完成 | 时间: 3694.0s | 温升: 5.76K | 老化: 1.0572% | SOC终值: 0.812
+2026-05-12 19:55:19,334 INFO pybamm_simulator | 仿真完成 | 时间: 5653.0s | 温升: 3.43K | 老化: 0.8795% | SOC终值: 0.812
+2026-05-12 19:55:22,492 INFO pybamm_simulator | 仿真完成 | 时间: 3614.0s | 温升: 5.55K | 老化: 0.9918% | SOC终值: 0.812
+2026-05-12 19:55:25,695 INFO pybamm_simulator | 仿真完成 | 时间: 4099.0s | 温升: 4.86K | 老化: 0.9508% | SOC终值: 0.812
+2026-05-12 19:55:28,707 INFO pybamm_simulator | 仿真完成 | 时间: 3668.0s | 温升: 5.65K | 老化: 1.0425% | SOC终值: 0.812
+2026-05-12 19:55:32,011 INFO pybamm_simulator | 仿真完成 | 时间: 4628.0s | 温升: 3.45K | 老化: 0.8335% | SOC终值: 0.813
+2026-05-12 19:55:35,283 INFO pybamm_simulator | 仿真完成 | 时间: 5118.0s | 温升: 3.48K | 老化: 0.8140% | SOC终值: 0.813
+2026-05-12 19:55:38,299 INFO pybamm_simulator | 仿真完成 | 时间: 4236.0s | 温升: 6.30K | 老化: 1.1551% | SOC终值: 0.812
+2026-05-12 19:55:41,482 INFO pybamm_simulator | 仿真完成 | 时间: 3611.0s | 温升: 6.17K | 老化: 1.1535% | SOC终值: 0.812
+2026-05-12 19:55:44,489 INFO pybamm_simulator | 仿真完成 | 时间: 4035.0s | 温升: 4.84K | 老化: 0.9662% | SOC终值: 0.812
+2026-05-12 19:55:47,675 INFO pybamm_simulator | 仿真完成 | 时间: 5420.0s | 温升: 2.57K | 老化: 0.7171% | SOC终值: 0.813
+2026-05-12 19:55:50,783 INFO pybamm_simulator | 仿真完成 | 时间: 5038.0s | 温升: 3.71K | 老化: 0.7256% | SOC终值: 0.812
+2026-05-12 19:55:54,104 INFO pybamm_simulator | 仿真完成 | 时间: 4225.0s | 温升: 4.55K | 老化: 1.0084% | SOC终值: 0.813
+2026-05-12 19:55:57,375 INFO pybamm_simulator | 仿真完成 | 时间: 5448.0s | 温升: 2.78K | 老化: 0.6575% | SOC终值: 0.812
+2026-05-12 19:56:00,886 INFO pybamm_simulator | 仿真完成 | 时间: 6200.0s | 温升: 2.29K | 老化: 0.7695% | SOC终值: 0.812
+2026-05-12 19:56:04,086 INFO pybamm_simulator | 仿真完成 | 时间: 5346.0s | 温升: 3.90K | 老化: 0.9015% | SOC终值: 0.813
+2026-05-12 19:56:07,101 INFO pybamm_simulator | 仿真完成 | 时间: 4434.0s | 温升: 3.94K | 老化: 0.9339% | SOC终值: 0.812
+2026-05-12 19:56:10,380 INFO pybamm_simulator | 仿真完成 | 时间: 5475.0s | 温升: 3.22K | 老化: 0.8460% | SOC终值: 0.812
+2026-05-12 19:56:13,585 INFO pybamm_simulator | 仿真完成 | 时间: 5152.0s | 温升: 4.62K | 老化: 0.7787% | SOC终值: 0.812
+2026-05-12 19:56:16,420 INFO pybamm_simulator | 仿真完成 | 时间: 4633.0s | 温升: 3.27K | 老化: 0.7876% | SOC终值: 0.812
+2026-05-12 19:56:19,302 INFO pybamm_simulator | 仿真完成 | 时间: 3613.0s | 温升: 5.55K | 老化: 0.9917% | SOC终值: 0.812
+2026-05-12 19:56:22,436 INFO pybamm_simulator | 仿真完成 | 时间: 4906.0s | 温升: 3.23K | 老化: 0.8038% | SOC终值: 0.812
+2026-05-12 19:56:25,702 INFO pybamm_simulator | 仿真完成 | 时间: 4782.0s | 温升: 5.12K | 老化: 0.8268% | SOC终值: 0.812
+2026-05-12 19:56:28,669 INFO pybamm_simulator | 仿真完成 | 时间: 3510.0s | 温升: 6.17K | 老化: 1.1990% | SOC终值: 0.812
+2026-05-12 19:56:32,062 INFO pybamm_simulator | 仿真完成 | 时间: 6455.0s | 温升: 2.10K | 老化: 0.6966% | SOC终值: 0.812
+2026-05-12 19:56:35,094 INFO pybamm_simulator | 仿真完成 | 时间: 4816.0s | 温升: 3.81K | 老化: 0.8942% | SOC终值: 0.812
+2026-05-12 19:56:38,323 INFO pybamm_simulator | 仿真完成 | 时间: 5326.0s | 温升: 3.51K | 老化: 0.7506% | SOC终值: 0.812
+2026-05-12 19:56:41,610 INFO pybamm_simulator | 仿真完成 | 时间: 5611.0s | 温升: 2.53K | 老化: 0.6670% | SOC终值: 0.812
+2026-05-12 19:56:44,771 INFO pybamm_simulator | 仿真完成 | 时间: 5454.0s | 温升: 3.62K | 老化: 0.6510% | SOC终值: 0.812
+2026-05-12 19:56:48,106 INFO pybamm_simulator | 仿真完成 | 时间: 5198.0s | 温升: 2.62K | 老化: 0.7592% | SOC终值: 0.812
+2026-05-12 19:56:48,194 INFO Compare_Exp.Exp.nsga2_runner | NSGA-II done: 60 evals, 60 feasible, 24 Pareto, HV=0.7889
+2026-05-12 19:56:48,211 INFO DataBase.database | 数据库已保存: Compare_Exp\experiment_records\computational_time_3algo_5seeds_50iter_2026_05_12\seed8409\nsga2\database.json (60 条记录)
+2026-05-12 19:56:48,214 INFO Compare_Exp.Exp.nsga2_runner | Results saved to Compare_Exp\experiment_records\computational_time_3algo_5seeds_50iter_2026_05_12\seed8409\nsga2
+2026-05-12 19:56:48,215 INFO __main__ | [nsga2] seed=8409 finished in 197.40s
+2026-05-12 19:56:48,220 INFO __main__ | [llmbo_mo] seed=8409 starting -> Compare_Exp\experiment_records\computational_time_3algo_5seeds_50iter_2026_05_12\seed8409\llmbo_mo
+2026-05-12 19:56:48,221 INFO llmbo.optimizer | ============================================================
+2026-05-12 19:56:48,221 INFO llmbo.optimizer | Setting up 5D GP-LLM-coupled MOBO optimizer
+2026-05-12 19:56:48,222 INFO llmbo.optimizer | ============================================================
+2026-05-12 19:56:48,222 INFO llmbo.optimizer | Battery simulator parameter set: Chen2020
+2026-05-12 19:56:48,222 INFO DataBase.database | ObservationDB 初始化: bounds={'I1': (2.0, 6.0), 'I2': (2.0, 5.0), 'I3': (2.0, 3.0), 'dSOC1': (0.1, 0.4), 'dSOC2': (0.1, 0.3)}
+2026-05-12 19:56:48,223 INFO llm.llm_interface | LLMInterface 初始化: backend=openai model=deepseek-v3-thinking warmstart_level=full param_set=Chen2020
+2026-05-12 19:56:48,228 INFO llmbo.riesz_cache | Riesz 权重集合从缓存加载: .riesz_cache\riesz_21d41b81f85810f3bf242e968bc0d62f.pkl  shape=(66, 3)
+2026-05-12 19:56:48,228 INFO llmbo.optimizer | Riesz weight set ready: shape=(66, 3)
+2026-05-12 19:56:48,228 INFO llmbo.optimizer | ============================================================
+2026-05-12 19:56:48,229 INFO llmbo.optimizer | Initialization: strategy=manual warmstart=3 random_init=3
+2026-05-12 19:56:48,229 INFO llmbo.optimizer | ============================================================
+2026-05-12 19:56:48,229 INFO llm.llm_interface | === Touchpoint 1b: Warm-Start (n=3) ===
+2026-05-12 19:57:36,405 INFO httpx | HTTP Request: POST https://api.chat.csu.edu.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 19:57:36,414 INFO llm.llm_interface | ResponseParser: 共 0 个有效候选点（1 个响应）
+2026-05-12 19:57:36,414 INFO llm.llm_interface |   WarmStart 批次 1/4 第 1/4 次调用未产出有效候选点
+2026-05-12 19:58:29,144 INFO httpx | HTTP Request: POST https://api.chat.csu.edu.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 19:58:29,181 INFO llm.llm_interface | ResponseParser: 共 0 个有效候选点（1 个响应）
+2026-05-12 19:58:29,181 INFO llm.llm_interface |   WarmStart 批次 1/4 第 2/4 次调用未产出有效候选点
+2026-05-12 19:59:35,789 INFO httpx | HTTP Request: POST https://api.chat.csu.edu.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 19:59:35,827 INFO llm.llm_interface | ResponseParser: 共 0 个有效候选点（1 个响应）
+2026-05-12 19:59:35,827 INFO llm.llm_interface |   WarmStart 批次 1/4 第 3/4 次调用未产出有效候选点
+2026-05-12 20:00:39,411 INFO httpx | HTTP Request: POST https://api.chat.csu.edu.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 20:00:39,411 INFO llm.llm_interface | ResponseParser: 共 0 个有效候选点（1 个响应）
+2026-05-12 20:00:39,411 INFO llm.llm_interface |   WarmStart 批次 1/4 第 4/4 次调用未产出有效候选点
+2026-05-12 20:00:39,414 INFO llm.llm_interface |   批次 1/4: 新增 0 个有效候选点（总计 0/16）

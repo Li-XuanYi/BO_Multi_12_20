@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "iterations": 5,
+    "seeds": [
+      57161
+    ],
+    "variants": [
+      "baseline_plain_ei",
+      "llm_region_lgbo_posterior"
+    ],
+    "model": "deepseek-v3",
+    "api_key_storage": "environment variable only; summaries redact api keys"
+  },
+  "records": [
+    {
+      "seed": 57161,
+      "variant": "baseline_plain_ei",
+      "status": "ok",
+      "canonical_hv": 0.27749322998982673,
+      "region_lift_attempt_count": 0,
+      "region_lift_accept_count": 0,
+      "region_lift_fallback_reasons": {},
+      "elapsed_s": 38.22,
+      "summary_path": "Ablation_Exp\\experiment_records\\baseline_vs_llm_region_posterior_smoke_1seed_5iter_2026_05_20\\seed57161\\baseline_plain_ei\\summary.json"
+    },
+    {
+      "seed": 57161,
+      "variant": "llm_region_lgbo_posterior",
+      "status": "ok",
+      "canonical_hv": 0.2809220830962779,
+      "region_lift_attempt_count": 5,
+      "region_lift_accept_count": 5,
+      "region_lift_fallback_reasons": {},
+      "elapsed_s": 71.93,
+      "summary_path": "Ablation_Exp\\experiment_records\\baseline_vs_llm_region_posterior_smoke_1seed_5iter_2026_05_20\\seed57161\\llm_region_lgbo_posterior\\summary.json"
+    }
+  ],
+  "aggregates": {
+    "baseline_plain_ei": {
+      "values": [
+        0.27749322998982673
+      ],
+      "mean": 0.27749322998982673
+    },
+    "llm_region_lgbo_posterior": {
+      "values": [
+        0.2809220830962779
+      ],
+      "mean": 0.2809220830962779
+    }
+  },
+  "comparison_llm_region_posterior_vs_baseline": {
+    "delta_canonical_hv": 0.0034288531064511907,
+    "win": true
+  }
+}

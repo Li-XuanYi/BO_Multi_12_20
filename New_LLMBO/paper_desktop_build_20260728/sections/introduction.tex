@@ -1,0 +1,92 @@
+% ============================================================================
+% Section I: Introduction
+% ============================================================================
+\section{Introduction}
+\label{sec:introduction}
+
+Lithium-ion batteries have become a key energy-storage technology for electric
+vehicles and other high-power applications because of their high energy density
+and long cycle life~\cite{ref1}. Shortening charging time is important for
+improving vehicle availability and user convenience, but aggressive charging
+can increase heat generation, accelerate parasitic reactions, and aggravate
+long-term degradation~\cite{ref2}. Fast-charging protocol design is therefore
+inherently multiobjective: charging speed must be balanced against thermal
+stress and battery aging without violating operational constraints.
+
+The principal difficulty is that informative protocol evaluations are scarce.
+A physical cycling experiment can be slow and costly, while a high-fidelity
+electrochemical simulation can still limit the number of protocols evaluated
+within a design study. Bayesian optimization (BO) addresses this regime by
+combining a probabilistic surrogate with an acquisition rule that balances
+exploration and exploitation~\cite{ref3}. Attia \textit{et al.} demonstrated
+closed-loop optimization of fast-charging protocols using early lifetime
+prediction and BO~\cite{ref11}. Jiang and co-workers subsequently studied
+minimum-time charging under operational constraints and the effect of
+acquisition strategies and protocol dimensionality~\cite{ref12,ref14}. Wang and
+Jiang extended this line to multiple objectives through Chebyshev decomposition
+and constrained BO~\cite{ref13}. Together, these studies show that BO can reduce
+the evaluation burden of charging design while retaining explicit treatment of
+constraints and competing objectives.
+
+For multiple conflicting objectives, a common strategy is to decompose the
+vector-valued problem into a sequence of scalar subproblems. ParEGO is a
+representative approach that combines scalarization with a probabilistic
+surrogate and a single-objective acquisition rule~\cite{ref4}. Such methods
+retain BO's uncertainty-aware search while covering different Pareto
+trade-offs. Their earliest decisions, however, are dominated by a small initial
+design and generic statistical priors. Battery-specific context---for example,
+how charging stress varies with state of charge or why overly aggressive
+high-state-of-charge currents are undesirable---is not directly represented by
+those initial objective observations. This mismatch is most consequential near
+the start of optimization, when each poor query consumes a substantial fraction
+of the experimental budget.
+
+Large language models (LLMs) provide a possible interface to such contextual
+knowledge. LLAMBO showed that LLMs can support zero-shot warm starting,
+surrogate modeling, and candidate sampling in data-sparse BO~\cite{ref10}, while
+LGBO introduced region-level preferences that adjust a BO surrogate without
+changing its posterior covariance~\cite{ref16}. Nevertheless, an LLM response is
+neither a calibrated objective measurement nor a guarantee of feasibility.
+Directly delegating the next battery experiment to an LLM can therefore
+undermine the uncertainty model and constraint handling that make BO useful.
+The technical question is how to exploit an LLM's contextual suggestions while
+ensuring that evaluated data and the numerical acquisition rule remain
+authoritative.
+
+To address this question, this paper proposes LLMBO-MO, an LLM-augmented
+multi-objective Bayesian optimization framework for lithium-ion battery
+fast-charging protocol design. Its central principle is to treat LLM output as
+a fallible prior rather than as an observation or decision rule. At
+initialization, validated LLM proposals form a diverse warm-start portfolio.
+During early BO iterations, weight-conditioned point or region preferences are
+coupled to the Gaussian-process (GP) posterior through a bounded
+acquisition-time mean adjustment. Only simulator outputs enter the training
+database; infeasible or malformed guidance has zero influence and restores
+ordinary expected improvement. Augmented Tchebycheff scalarization and
+Riesz-energy weight vectors distribute the search across the three competing
+objectives.
+
+The main contributions of this paper are summarized as follows:
+\begin{enumerate}
+\item A guarded two-touchpoint architecture is formulated for constrained
+battery MOBO. It uses the LLM for initialization and early regional preference,
+while simulator observations, the GP surrogate, and the acquisition function
+retain control of evaluated decisions.
+
+\item A battery-aware warm-start portfolio is combined with a weight-conditioned
+adaptation of region-lifted preference. Feasibility checks, bounded
+posterior-covariance coupling, and a fail-open path prevent invalid LLM output
+from becoming surrogate data or an unbounded acquisition bias.
+
+\item Tests on Chen2020- and Ecker2015-based SPMe simulators show hypervolume
+gains over ParEGO under matched 56-evaluation budgets. Multi-seed and ablation
+results quantify variability and the separate contributions of both LLM
+touchpoints.
+\end{enumerate}
+
+The remainder of this paper is organized as follows. Section~\ref{sec:problem}
+formulates the charging protocol optimization problem. Section~\ref{sec:model}
+describes the electrochemical--thermal--aging simulator. Section~\ref{sec:method}
+presents the proposed LLMBO-MO framework. Section~\ref{sec:experiments} reports
+the experimental results and ablation studies. Finally,
+Section~\ref{sec:conclusion} concludes the paper.

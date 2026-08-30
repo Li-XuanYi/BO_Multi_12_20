@@ -1,0 +1,87 @@
+% ============================================================================
+% IEEE Transactions on Transportation Electrification
+% LLMBO-MO: LLM-Augmented Multi-Objective Bayesian Optimization
+% for Battery Fast-Charging Protocol Design
+% ----------------------------------------------------------------------------
+% ROOT FILE. Do NOT write section content here.
+% Each collaborator edits ONE file under sections/ to avoid merge conflicts.
+% Compile with:  latexmk -pdf main.tex
+% ============================================================================
+
+\documentclass[journal]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,backgrounds,calc,fit,positioning,shapes.geometric}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{float}
+\usepackage{subfigure}
+\usepackage{url}
+\usepackage{balance}
+
+% Search paths for split content
+\graphicspath{{figures/}}
+
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+% ---- Math shorthands (shared across all sections) --------------------------
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bw}{\boldsymbol{w}}
+\newcommand{\bD}{\mathcal{D}}
+\newcommand{\bS}{\mathcal{S}}
+\newcommand{\bL}{\mathcal{L}}
+\newcommand{\bW}{\mathcal{W}}
+\newcommand{\bP}{\mathcal{P}}
+\newcommand{\bG}{\mathcal{G}}
+\newcommand{\R}{\mathbb{R}}
+
+\begin{document}
+
+% ---- Title block -----------------------------------------------------------
+\title{
+LLMBO-MO: Large Language Model-Augmented Multi-Objective Bayesian Optimization \\
+for Battery Fast-Charging Protocol Design
+}
+
+\author{
+First~A.~Author,~\IEEEmembership{Member,~IEEE,}
+Second~B.~Author,~\IEEEmembership{Fellow,~OSA,}
+and~Third~C.~Author,~\IEEEmembership{Life~Fellow,~IEEE}%
+\thanks{Manuscript received Month Day, Year; revised Month Day, Year.
+This work was supported in part by ...}
+\thanks{First A. Author is with the ...}
+\thanks{Second B. Author is with the ...}
+\thanks{Third C. Author is with the ...}
+}
+
+\markboth{IEEE TRANSACTIONS ON TRANSPORTATION ELECTRIFICATION,~Vol.~XX, No.~XX, Month~2026}%
+{Author \MakeLowercase{\textit{et al.}}: LLMBO-MO: LLM-Augmented Multi-Objective BO for Battery Fast-Charging}
+
+\maketitle
+
+% ---- Abstract & Keywords ---------------------------------------------------
+\input{sections/abstract}
+
+\IEEEpeerreviewmaketitle
+
+% ---- Body ------------------------------------------------------------------
+\input{sections/introduction}   % Sec. I
+\input{sections/problem}        % Sec. II
+\input{sections/model}          % Sec. III
+\input{sections/method}         % Sec. IV
+\input{sections/experiments}    % Sec. V
+\input{sections/conclusion}     % Sec. VI
+
+% ---- References ------------------------------------------------------------
+\input{sections/references}
+
+\end{document}

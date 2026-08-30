@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E \"\\\\.py$|^d\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('main.py'\\).read\\(\\)\\); print\\('main.py OK'\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('llm_warmstart.py'\\).read\\(\\)\\); print\\('llm_warmstart.py OK'\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('gp_model.py'\\).read\\(\\)\\); print\\('gp_model.py OK'\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('main.py', encoding='utf-8'\\).read\\(\\)\\); print\\('main.py OK'\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('llm_warmstart.py', encoding='utf-8'\\).read\\(\\)\\); print\\('llm_warmstart.py OK'\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('gp_model.py', encoding='utf-8'\\).read\\(\\)\\); print\\('gp_model.py OK'\\)\")"
+    ]
+  }
+}

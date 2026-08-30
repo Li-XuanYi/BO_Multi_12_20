@@ -1,0 +1,86 @@
+# ============================================================================
+# LLM Coupling Inference Prompt (LLAMBO Four-Layer Structure)
+# For Touchpoint 1a: Generating Coupling Matrices for GP Surrogate Model
+# ============================================================================
+
+## 1. Role & Meta-data (Domain Role & Metadata Injection)
+
+**Parameter Definitions (3D Decision Space - Canonical Keys):**
+1. `I1` (current1): Phase 1 constant current [A]. Range [{I1_MIN}, {I1_MAX}].
+   Physical driver: Joule heating power P = I²R(SOC), dominant heat source.
+
+2. `SOC1` (switch_soc): Switching state-of-charge. Range [{SOC1_MIN}, {SOC1_MAX}].
+   Physical driver: Controls duration allocation between phases.
+   Higher SOC1 extends Phase 1, increasing cumulative thermal load.
+
+3. `I2` (current2): Phase 2 constant current [A]. Range [{I2_MIN}, {I2_MAX}].
+   Physical driver: Replenishment current after high-power phase.
+   Effectiveness depends on residual temperature from Phase 1.
+
+**Battery Specifications:**
+- Model: {BATTERY_MODEL}
+- Capacity: {Q_NOM} Ah
+- Initial voltage: {INIT_VOLTAGE} V
+- Initial temperature: {INIT_TEMP} K ({INIT_TEMP_C}°C)
+- Safety limits: Max voltage {VOLTAGE_MAX}V, Max temp {TEMP_MAX}K
+
+**Physics (Detailed):**
+- Heat generation: Q̇ = I²R(SOC) where R increases at high SOC
+- Heat accumulation: ΔT = ∫Q̇ dt / (m·Cp)
+  → High I1 combined with high SOC1 leads to superlinear heating
+- Thermal cascade: Phase1 heat affects Phase2 starting temperature
+  → I1-I2 interaction through thermal inertia
+
+## 2. In-Context History (Dynamic Context & Historical Observations)
+
+{DATA_SECTION}
+
+## 3. Algorithmic Directives (Algorithm Mechanism & Task Instructions)
+
+**Task:**
+Construct three 3x3 Symmetric Positive Semi-Definite Coupling Matrices (W_time, W_temp, W_aging) where w_{ij} represents the interaction strength between parameter i and j for each objective.
+
+**Reasoning Steps (Chain of Thought):**
+
+1. **I1 ↔ SOC1 (Current × Switch Point):**
+   Heat accumulation is the integral of power over Phase 1 duration.
+   I1 controls Power, SOC1 controls duration → their joint effect on temperature
+   is multiplicative (superlinear interaction).
+
+2. **I1 ↔ I2 (Thermal Cascade):**
+   Phase 1 residual heat affects Phase 2 starting temperature.
+   High I1 creates elevated baseline for I2's heating effects.
+   Coupling occurs through thermal inertia (time constant ~30s).
+
+3. **SOC1 ↔ I2 (Switch Point × Phase 2 Current):**
+   Higher SOC1 means shorter Phase 2, making I2 impact more critical.
+   Aging is particularly sensitive to this interaction (lithium plating risk).
+
+**Matrix Construction Rules:**
+- Diagonal elements w_ii = 1.0 (self-coupling is maximum)
+- Off-diagonal values in [0, 1] (symmetric)
+- Higher values indicate stronger interaction between parameters
+
+**Objective-Specific Coupling:**
+- W_time: Dominated by I1 and I2 magnitudes (direct time contribution)
+- W_temp: I1 dominant (Joule heating at low SOC), I1-SOC1 interaction important
+- W_aging: SOC1-I2 interaction critical (lithium plating at high SOC)
+
+## 4. Format Constraints (Strict Output Format)
+
+**Output Format:**
+You must output ONLY a JSON object with three matrices, no other text:
+
+{{
+  "W_time": [[1.0, <value>, <value>], [<value>, 1.0, <value>], [<value>, <value>, 1.0]],
+  "W_temp": [[1.0, <value>, <value>], [<value>, 1.0, <value>], [<value>, <value>, 1.0]],
+  "W_aging": [[1.0, <value>, <value>], [<value>, 1.0, <value>], [<value>, <value>, 1.0]]
+}}
+
+where rows/columns correspond to [I1, SOC1, I2] in order.
+
+**Critical:**
+- All matrices must be symmetric (w_ij = w_ji)
+- All values must be in [0, 1]
+- Diagonal must be exactly 1.0
+- Matrices should be positive semi-definite

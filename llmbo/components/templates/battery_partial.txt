@@ -1,0 +1,24 @@
+Generate initial candidate parameter sets for a Bayesian Optimization process aimed at tuning a 2-stage CC-CC battery charging protocol. 
+
+**Task Description:**
+- Battery: 5 Ah NMC lithium-ion cell (1C = 5A). SOC range: 10% → 80%.
+- Variables: I1 ∈ [3.0, 7.0] A; SOC1 ∈ [0.1, 0.7]; I2 ∈ [1.0, 5.0] A. (Constraint: I2 ≤ I1)
+- Objectives (to minimize): Charging Time, Peak Temperature, Capacity Degradation.
+
+**Domain Meta-Features:**
+- Thermal Dynamics: Higher currents exponentially increase heat generation. Prolonging Stage 1 (higher SOC1) leads to significant thermal accumulation.
+- Aging Dynamics: Elevated temperatures accelerate degradation exponentially. Early transition to Stage 2 (lower SOC1) mitigates both thermal and electrochemical stress but increases overall charging time.
+
+**Task Instructions:**
+Suggest [N_STRATEGIES] diverse yet effective configurations to warm-start the optimization. These configurations should be carefully customized to cover different regions of the feasible parameter space, representing different trade-offs between the three conflicting objectives.
+
+**Output format (strict JSON):**
+{
+    "strategies": [
+        {
+            "I1": <float>,
+            "SOC1": <float>,
+            "I2": <float>
+        }
+    ]
+}

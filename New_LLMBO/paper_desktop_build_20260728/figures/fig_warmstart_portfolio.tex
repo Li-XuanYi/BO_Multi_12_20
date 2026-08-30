@@ -1,0 +1,51 @@
+\begin{figure*}[t]
+\centering
+\resizebox{0.92\textwidth}{!}{%
+\begin{tikzpicture}[
+    x=1cm,
+    y=1cm,
+    font=\sffamily\small,
+    stage/.style={
+        draw=blue!65!black,
+        line width=0.70pt,
+        rounded corners=1.5pt,
+        fill=white,
+        align=center,
+        minimum width=2.65cm,
+        minimum height=1.18cm
+    },
+    llmstage/.style={stage, draw=orange!82!black},
+    datastage/.style={stage, draw=teal!65!black},
+    flow/.style={
+        -{Latex[length=2.1mm,width=1.3mm]},
+        line width=0.85pt,
+        draw=blue!72!black
+    }
+]
+
+\node[stage] (context) at (1.45,1.25) {\textbf{Battery context}};
+\node[llmstage] (propose) at (4.55,1.25) {\textbf{LLM proposals}};
+\node[stage, minimum width=3.05cm] (screen) at (7.90,1.25)
+    {\textbf{Screen + diversify}};
+\node[datastage] (sim) at (11.25,1.25) {\textbf{Simulator}};
+\node[datastage] (data) at (14.35,1.25) {\textbf{Initial data}};
+
+\draw[flow] (context) -- (propose);
+\draw[flow] (propose) -- (screen);
+\draw[flow] (screen) -- (sim);
+\draw[flow] (sim) -- (data);
+
+\draw[teal!65!black, line width=0.65pt]
+    (10.00,0.18) -- (15.60,0.18);
+\node[font=\sffamily\scriptsize, text=teal!65!black]
+    at (12.80,-0.15) {only simulated outputs are stored};
+
+\end{tikzpicture}%
+}
+\caption{Constraint-aware warm start. LLM proposals are parsed, repaired,
+filtered, and reduced to a risk-aware diverse portfolio; deterministic
+anchors or space-filling samples complete the set when needed. Candidate
+protocols remain unevaluated hypotheses until the battery simulator produces
+the observations stored in $\bD_0$.}
+\label{fig:warmstart_portfolio}
+\end{figure*}

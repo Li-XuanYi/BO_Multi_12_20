@@ -1,0 +1,292 @@
+
+=== Running Baseline (no LLM warmstart) ===
+[baseline] seed=8409 -> experiment_records\prompt_comparison_v3_10seeds_10iter\baseline_seed8409
+
+Compiled modules for significant speedup can not be used!
+https://pymoo.org/installation.html#installation
+
+To disable this warning:
+from pymoo.config import Config
+Config.warnings['not_compiled'] = False
+
+[baseline] seed=8410 -> experiment_records\prompt_comparison_v3_10seeds_10iter\baseline_seed8410
+[baseline] seed=8411 -> experiment_records\prompt_comparison_v3_10seeds_10iter\baseline_seed8411
+[baseline] seed=8412 -> experiment_records\prompt_comparison_v3_10seeds_10iter\baseline_seed8412
+[baseline] seed=8413 -> experiment_records\prompt_comparison_v3_10seeds_10iter\baseline_seed8413
+[baseline] seed=8414 -> experiment_records\prompt_comparison_v3_10seeds_10iter\baseline_seed8414
+[baseline] seed=8415 -> experiment_records\prompt_comparison_v3_10seeds_10iter\baseline_seed8415
+[baseline] seed=8416 -> experiment_records\prompt_comparison_v3_10seeds_10iter\baseline_seed8416
+[baseline] seed=8417 -> experiment_records\prompt_comparison_v3_10seeds_10iter\baseline_seed8417
+[baseline] seed=8418 -> experiment_records\prompt_comparison_v3_10seeds_10iter\baseline_seed8418
+
+=== Running Detailed Prompt ===
+[detailed] seed=8409 -> experiment_records\prompt_comparison_v3_10seeds_10iter\detailed_prompt_seed8409
+[detailed] seed=8410 -> experiment_records\prompt_comparison_v3_10seeds_10iter\detailed_prompt_seed8410
+[detailed] seed=8411 -> experiment_records\prompt_comparison_v3_10seeds_10iter\detailed_prompt_seed8411
+[detailed] seed=8412 -> experiment_records\prompt_comparison_v3_10seeds_10iter\detailed_prompt_seed8412
+[detailed] seed=8413 -> experiment_records\prompt_comparison_v3_10seeds_10iter\detailed_prompt_seed8413
+[detailed] seed=8414 -> experiment_records\prompt_comparison_v3_10seeds_10iter\detailed_prompt_seed8414
+[detailed] seed=8415 -> experiment_records\prompt_comparison_v3_10seeds_10iter\detailed_prompt_seed8415
+[detailed] seed=8416 -> experiment_records\prompt_comparison_v3_10seeds_10iter\detailed_prompt_seed8416
+[detailed] seed=8417 -> experiment_records\prompt_comparison_v3_10seeds_10iter\detailed_prompt_seed8417
+[detailed] seed=8418 -> experiment_records\prompt_comparison_v3_10seeds_10iter\detailed_prompt_seed8418
+
+=== Running Experimental Prompt ===
+[experimental] seed=8409 -> experiment_records\prompt_comparison_v3_10seeds_10iter\experimental_prompt_seed8409
+[experimental] seed=8410 -> experiment_records\prompt_comparison_v3_10seeds_10iter\experimental_prompt_seed8410
+[experimental] seed=8411 -> experiment_records\prompt_comparison_v3_10seeds_10iter\experimental_prompt_seed8411
+[experimental] seed=8412 -> experiment_records\prompt_comparison_v3_10seeds_10iter\experimental_prompt_seed8412
+[experimental] seed=8413 -> experiment_records\prompt_comparison_v3_10seeds_10iter\experimental_prompt_seed8413
+[experimental] seed=8414 -> experiment_records\prompt_comparison_v3_10seeds_10iter\experimental_prompt_seed8414
+[experimental] seed=8415 -> experiment_records\prompt_comparison_v3_10seeds_10iter\experimental_prompt_seed8415
+[experimental] seed=8416 -> experiment_records\prompt_comparison_v3_10seeds_10iter\experimental_prompt_seed8416
+[experimental] seed=8417 -> experiment_records\prompt_comparison_v3_10seeds_10iter\experimental_prompt_seed8417
+[experimental] seed=8418 -> experiment_records\prompt_comparison_v3_10seeds_10iter\experimental_prompt_seed8418
+
+[report] experiment_records\prompt_comparison_v3_10seeds_10iter\report.json
+{
+  "meta": {
+    "iterations": 10,
+    "seeds": [
+      8409,
+      8410,
+      8411,
+      8412,
+      8413,
+      8414,
+      8415,
+      8416,
+      8417,
+      8418
+    ],
+    "output_root": "experiment_records\\prompt_comparison_v3_10seeds_10iter",
+    "model": "deepseek-v3",
+    "model_display": "deepseek-v3",
+    "api_base": "https://api.chat.csu.edu.cn/v1"
+  },
+  "baseline": {
+    "mean_hv": 0.776538237940476,
+    "std_hv": 0.10204995502920938,
+    "min_hv": 0.6277769840778842,
+    "max_hv": 0.9278861457590359,
+    "mean_init_hv": 0.6319927067678244,
+    "runs": [
+      {
+        "seed": 8409,
+        "hypervolume": 0.6336899948249644,
+        "warmstart_hv_last": 0.581828333785634,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8410,
+        "hypervolume": 0.8905684979594343,
+        "warmstart_hv_last": 0.6698092468160205,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8411,
+        "hypervolume": 0.7719887960809969,
+        "warmstart_hv_last": 0.5795069695558119,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8412,
+        "hypervolume": 0.9278861457590359,
+        "warmstart_hv_last": 0.7046116392459904,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8413,
+        "hypervolume": 0.8298419296993483,
+        "warmstart_hv_last": 0.6401971911758764,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8414,
+        "hypervolume": 0.6735292423814311,
+        "warmstart_hv_last": 0.5948079449053648,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8415,
+        "hypervolume": 0.7250541930472676,
+        "warmstart_hv_last": 0.6495367169748393,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8416,
+        "hypervolume": 0.8633297311032804,
+        "warmstart_hv_last": 0.6874917719046905,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8417,
+        "hypervolume": 0.6277769840778842,
+        "warmstart_hv_last": 0.5953490033104717,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8418,
+        "hypervolume": 0.8217168644711177,
+        "warmstart_hv_last": 0.6167882500035443,
+        "n_feasible": 26
+      }
+    ]
+  },
+  "detailed_prompt": {
+    "mean_hv": 0.7842870284111596,
+    "std_hv": 0.1108742686234631,
+    "min_hv": 0.6280251722353667,
+    "max_hv": 0.9340871673205842,
+    "mean_init_hv": 0.5203550621026327,
+    "runs": [
+      {
+        "seed": 8409,
+        "hypervolume": 0.6280251722353667,
+        "warmstart_hv_last": 0.5327982125417052,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8410,
+        "hypervolume": 0.9052555400161464,
+        "warmstart_hv_last": 0.5022261646288378,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8411,
+        "hypervolume": 0.7133040209934557,
+        "warmstart_hv_last": 0.5462450230515665,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8412,
+        "hypervolume": 0.8885984765924121,
+        "warmstart_hv_last": 0.5393853059465771,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8413,
+        "hypervolume": 0.672306151212676,
+        "warmstart_hv_last": 0.47218777017852775,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8414,
+        "hypervolume": 0.9005121441585234,
+        "warmstart_hv_last": 0.5304884489779785,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8415,
+        "hypervolume": 0.6628062131971494,
+        "warmstart_hv_last": 0.498106250615863,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8416,
+        "hypervolume": 0.8150670706546631,
+        "warmstart_hv_last": 0.5249586763836698,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8417,
+        "hypervolume": 0.9340871673205842,
+        "warmstart_hv_last": 0.5146371858791101,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8418,
+        "hypervolume": 0.7229083277306192,
+        "warmstart_hv_last": 0.5425175828224913,
+        "n_feasible": 26
+      }
+    ]
+  },
+  "experimental_prompt": {
+    "mean_hv": 0.9222500447041779,
+    "std_hv": 0.019535718921234287,
+    "min_hv": 0.8811236989980135,
+    "max_hv": 0.9499262294236605,
+    "mean_init_hv": 0.8356638732964161,
+    "runs": [
+      {
+        "seed": 8409,
+        "hypervolume": 0.9353552282121788,
+        "warmstart_hv_last": 0.8493882170072822,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8410,
+        "hypervolume": 0.9369962034414234,
+        "warmstart_hv_last": 0.8399139882685255,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8411,
+        "hypervolume": 0.9015602664228286,
+        "warmstart_hv_last": 0.8148462528681286,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8412,
+        "hypervolume": 0.9499262294236605,
+        "warmstart_hv_last": 0.8716974713171151,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8413,
+        "hypervolume": 0.910556637968369,
+        "warmstart_hv_last": 0.8133550117297091,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8414,
+        "hypervolume": 0.9251378807594268,
+        "warmstart_hv_last": 0.8288118181716914,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8415,
+        "hypervolume": 0.9413893693218875,
+        "warmstart_hv_last": 0.8199776434009335,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8416,
+        "hypervolume": 0.8811236989980135,
+        "warmstart_hv_last": 0.8305420461695745,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8417,
+        "hypervolume": 0.9235638502242229,
+        "warmstart_hv_last": 0.8637192265010801,
+        "n_feasible": 26
+      },
+      {
+        "seed": 8418,
+        "hypervolume": 0.9168910822697688,
+        "warmstart_hv_last": 0.8243870575301206,
+        "n_feasible": 26
+      }
+    ]
+  },
+  "detailed_vs_baseline": {
+    "mean_delta": 0.007748790470683542,
+    "mean_pct": 2.622867084058757,
+    "wins": 3,
+    "total": 10
+  },
+  "experimental_vs_baseline": {
+    "mean_delta": 0.1457118067637019,
+    "mean_pct": 20.965759331955613,
+    "wins": 10,
+    "total": 10
+  },
+  "experimental_vs_detailed": {
+    "mean_delta": 0.13796301629301838,
+    "mean_pct": 19.975079057359107,
+    "wins": 9,
+    "total": 10
+  }
+}

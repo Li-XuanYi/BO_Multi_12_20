@@ -1,0 +1,794 @@
+{
+  "version": "2.0",
+  "param_bounds": {
+    "I1": [
+      2.0,
+      6.0
+    ],
+    "I2": [
+      2.0,
+      5.0
+    ],
+    "I3": [
+      2.0,
+      3.0
+    ],
+    "dSOC1": [
+      0.1,
+      0.4
+    ],
+    "dSOC2": [
+      0.1,
+      0.3
+    ]
+  },
+  "ref_point": [
+    7200.0,
+    40.0,
+    5.0
+  ],
+  "ideal_point": [
+    1800.0,
+    0.0,
+    0.3
+  ],
+  "normalize": true,
+  "observations": [
+    {
+      "theta": [
+        5.338403086587635,
+        4.026453643605821,
+        2.1576354456411067,
+        0.2528880295655449,
+        0.1009317350241421
+      ],
+      "objectives": [
+        5026.0,
+        4.858643022703615,
+        0.9958990571284635
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T22:39:06.694661"
+    },
+    {
+      "theta": [
+        4.233727363453344,
+        3.4082820553744337,
+        2.6452197794661503,
+        0.35788846186951195,
+        0.19975391727438457
+      ],
+      "objectives": [
+        4226.0,
+        4.244806259128211,
+        0.956238150901276
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T22:39:10.293694"
+    },
+    {
+      "theta": [
+        5.1624884540383595,
+        2.105103275847648,
+        2.755572435268057,
+        0.10006136493902576,
+        0.23656500736317487
+      ],
+      "objectives": [
+        5399.0,
+        2.679097000780962,
+        0.7236491309210613
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T22:39:14.270535"
+    },
+    {
+      "theta": [
+        2.6439418597080637,
+        4.592330701164318,
+        2.325189451618055,
+        0.17403832031657368,
+        0.2750998423694627
+      ],
+      "objectives": [
+        4979.0,
+        4.5623664136245,
+        0.8339228278602534
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T22:39:18.073345"
+    },
+    {
+      "theta": [
+        3.6646463970942613,
+        2.64009061050577,
+        2.887010287731832,
+        0.2238958021087136,
+        0.1492556064966907
+      ],
+      "objectives": [
+        4779.0,
+        2.9971207781261513,
+        0.8005329364780241
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T22:39:21.742258"
+    },
+    {
+      "theta": [
+        3.0709320943075396,
+        3.600205693879046,
+        2.4643654357762603,
+        0.3185200784448573,
+        0.22298848767468726
+      ],
+      "objectives": [
+        4870.0,
+        3.6472878270553797,
+        0.8067191418373183
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T22:39:25.519956"
+    },
+    {
+      "theta": [
+        3.3772812532522405,
+        2.6400906595571234,
+        2.8870100828421026,
+        0.22389568493375475,
+        0.14925654870235935
+      ],
+      "objectives": [
+        4872.0,
+        2.9762701327093968,
+        0.7738556272286317
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 1,
+      "acq_value": 0.31581522939177376,
+      "acq_type": "EI_region_lifted_gp",
+      "gp_pred": {
+        "mean_coupled": -0.04808466943420464,
+        "mean_base": 0.2632916884490145,
+        "std": 0.025932043608583314,
+        "coupling_lambda": 3.1796493171998415,
+        "coupling_mode": "lgbo_region",
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "lgbo_lifted_gp",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": 3.053990157058492
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T22:39:29.779281"
+    },
+    {
+      "theta": [
+        5.1624884540383595,
+        2.1077774439982138,
+        2.7580419342581344,
+        0.10006158252654071,
+        0.23656500736317487
+      ],
+      "objectives": [
+        5393.0,
+        2.68330619053624,
+        0.7238295002684854
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 2,
+      "acq_value": 0.046318849830934906,
+      "acq_type": "EI_region_lifted_gp",
+      "gp_pred": {
+        "mean_coupled": 0.11993384905792809,
+        "mean_base": 0.11993384905792809,
+        "std": 0.22746147339769657,
+        "coupling_lambda": 2.8300046764815523,
+        "coupling_mode": "lgbo_region",
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "lgbo_lifted_gp",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": 0.23636469158279041
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T22:39:33.996120"
+    },
+    {
+      "theta": [
+        3.503588827983196,
+        2.640090629723872,
+        2.8870102080371427,
+        0.22389601915239665,
+        0.1492559439956512
+      ],
+      "objectives": [
+        4829.0,
+        2.986082932251924,
+        0.7857818635402023
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 3,
+      "acq_value": 0.6566499509544267,
+      "acq_type": "EI_region_lifted_gp",
+      "gp_pred": {
+        "mean_coupled": -0.39121048037136025,
+        "mean_base": 0.28898603581588583,
+        "std": 0.0120253779227241,
+        "coupling_lambda": 7.855395099124844,
+        "coupling_mode": "lgbo_region",
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "lgbo_lifted_gp",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": 6.602332010874557
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-05-17T22:39:38.656823"
+    }
+  ],
+  "pareto_indices": [
+    1,
+    2,
+    4,
+    6,
+    7,
+    8
+  ],
+  "iteration_stats": [
+    {
+      "iteration": 1,
+      "n_total": 7,
+      "n_feasible": 7,
+      "pareto_size": 4,
+      "hypervolume": 0.5839564990588875,
+      "display_hv": 0.5839564990588875,
+      "canonical_hv": 0.23358259962355502,
+      "hypervolume_canonical": 0.23358259962355502,
+      "hypervolume_raw": 6.873179650611457,
+      "best_time_s": 4226.0,
+      "best_temp_K": 2.679097000780962,
+      "best_aging_pct": 0.7236491309210613,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 0,
+      "w_vec": [
+        0.4928549194689508,
+        0.009958941557833332,
+        0.4971861389732159
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 4.26,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "region_lift_mode": "lgbo_proposition1",
+        "region_lift_control_mode": "none",
+        "anchor_weighting_mode": "uniform",
+        "lgbo_covariance_source": "posterior_standardized",
+        "lgbo_denominator_covariance_source": "posterior_standardized",
+        "lgbo_shift_kernel_source": "prior_latent_standardized",
+        "acquisition_used_lift": true,
+        "structural_fallback_reason": null,
+        "fallback_reason": null,
+        "parser_status": "ok",
+        "llm_raw_response_hash": "3627273531246954062",
+        "llm_called_for_region": true,
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_lgbo_mode",
+        "selected_source": "lgbo_lifted_gp",
+        "region_raw_lb": [
+          3.2366239999999995,
+          3.2405026666666665,
+          2.6374915,
+          0.24262766666666663,
+          0.19180733333333333
+        ],
+        "region_raw_ub": [
+          3.3566239999999996,
+          3.3305026666666664,
+          2.6674914999999997,
+          0.25162766666666664,
+          0.19780733333333334
+        ],
+        "region_normalized_lb": [
+          0.3091559999999226,
+          0.413500888888751,
+          0.6374914999993623,
+          0.47542555555397065,
+          0.4590366666643715
+        ],
+        "region_normalized_ub": [
+          0.3391559999999151,
+          0.44350088888874095,
+          0.6674914999993321,
+          0.5054255555538707,
+          0.48903666666422146
+        ],
+        "relative_volume": 2.4299999999999867e-08,
+        "per_dim_widths": [
+          0.030000000000000027,
+          0.029999999999999954,
+          0.029999999999999805,
+          0.030000000000000023,
+          0.03000000000000003
+        ],
+        "n_lgbo_anchors": 64,
+        "feasible_anchor_ratio": 1.0,
+        "lgbo_confidence": 0.72,
+        "lgbo_lambda": 3.1796493171998415,
+        "lgbo_posterior_variance": 0.05127510331295921,
+        "lgbo_protected_variance": 0.05127510331295921,
+        "lgbo_shift_min": 0.008006386194367913,
+        "lgbo_shift_max": 3.053990157058492,
+        "lgbo_shift_mean": 1.2966002448953722,
+        "max_shift_z": 3.053990157058492,
+        "mean_shift_z": 1.2966002448953722,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 3.2966239999999996,
+            "I2": 3.2855026666666665,
+            "I3": 2.6524915,
+            "dSOC1": 0.24712766666666666,
+            "dSOC2": 0.19480733333333333
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.72,
+          "preference_type": "balanced",
+          "reason": "mock fallback: weighted center of top scalarized historical points",
+          "mechanistic_thinking": "Recent good scalarized points suggest a balanced current schedule with moderate SOC splits remains plausible.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 3.2966239999999996,
+              "I2": 3.2855026666666665,
+              "I3": 2.6524915,
+              "dSOC1": 0.24712766666666666,
+              "dSOC2": 0.19480733333333333
+            },
+            "confidence": 0.72,
+            "preference_type": "balanced",
+            "reason": "mock fallback: weighted center of top scalarized historical points",
+            "mechanistic_thinking": "Recent good scalarized points suggest a balanced current schedule with moderate SOC splits remains plausible.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "3627273531246954062",
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [],
+          "parser_status": "ok"
+        },
+        "accepted": true,
+        "selected_index_before": 102,
+        "selected_index_after": 133,
+        "selected_score_before": 0.015949694793692282,
+        "selected_score_after": 0.31581522939177376,
+        "selected_changed_by_lift": true,
+        "iteration": 0,
+        "override_enabled": false,
+        "override_uses_diagnostic_pool": false,
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "acquisition_candidate_pool_size": 141,
+        "evaluated_theta": [
+          3.377281,
+          2.640091,
+          2.88701,
+          0.223896,
+          0.149257
+        ],
+        "hv_before_raw": 6.848131102863744,
+        "hv_after_raw": 6.873179650611457,
+        "hv_gain_raw": 0.025048547747712924
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 2,
+      "n_total": 8,
+      "n_feasible": 8,
+      "pareto_size": 5,
+      "hypervolume": 0.5840106756091672,
+      "display_hv": 0.5840106756091672,
+      "canonical_hv": 0.2336042702436669,
+      "hypervolume_canonical": 0.2336042702436669,
+      "hypervolume_raw": 6.873817309689698,
+      "best_time_s": 4226.0,
+      "best_temp_K": 2.679097000780962,
+      "best_aging_pct": 0.7236491309210613,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 1,
+      "w_vec": [
+        0.009962740174934004,
+        0.876874236807607,
+        0.11316302301745898
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 4.22,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "region_lift_mode": "lgbo_proposition1",
+        "region_lift_control_mode": "none",
+        "anchor_weighting_mode": "uniform",
+        "lgbo_covariance_source": "posterior_standardized",
+        "lgbo_denominator_covariance_source": "posterior_standardized",
+        "lgbo_shift_kernel_source": "prior_latent_standardized",
+        "acquisition_used_lift": true,
+        "structural_fallback_reason": null,
+        "fallback_reason": null,
+        "parser_status": "ok",
+        "llm_raw_response_hash": "8881001382450035801",
+        "llm_called_for_region": true,
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_lgbo_mode",
+        "selected_source": "lgbo_lifted_gp",
+        "region_raw_lb": [
+          4.257778666666667,
+          2.327597,
+          2.806291,
+          0.15747850000000002,
+          0.18991083333333333
+        ],
+        "region_raw_ub": [
+          4.377778666666667,
+          2.4175969999999998,
+          2.8362909999999997,
+          0.16647850000000003,
+          0.19591083333333334
+        ],
+        "region_normalized_lb": [
+          0.5644446666665256,
+          0.10919899999996358,
+          0.8062909999991935,
+          0.1915949999993614,
+          0.4495541666644189
+        ],
+        "region_normalized_ub": [
+          0.5944446666665181,
+          0.13919899999995353,
+          0.8362909999991633,
+          0.2215949999992614,
+          0.4795541666642689
+        ],
+        "relative_volume": 2.4299999999999867e-08,
+        "per_dim_widths": [
+          0.030000000000000027,
+          0.029999999999999954,
+          0.029999999999999805,
+          0.030000000000000023,
+          0.03000000000000003
+        ],
+        "n_lgbo_anchors": 64,
+        "feasible_anchor_ratio": 1.0,
+        "lgbo_confidence": 0.72,
+        "lgbo_lambda": 2.8300046764815523,
+        "lgbo_posterior_variance": 0.06472777618979912,
+        "lgbo_protected_variance": 0.06472777618979912,
+        "lgbo_shift_min": 0.0,
+        "lgbo_shift_max": 0.23636469158279041,
+        "lgbo_shift_mean": 0.001753818896481437,
+        "max_shift_z": 0.23636469158279041,
+        "mean_shift_z": 0.001753818896481437,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 4.317778666666666,
+            "I2": 2.372597,
+            "I3": 2.821291,
+            "dSOC1": 0.16197850000000003,
+            "dSOC2": 0.19291083333333334
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.72,
+          "preference_type": "balanced",
+          "reason": "mock fallback: weighted center of top scalarized historical points",
+          "mechanistic_thinking": "Recent good scalarized points suggest a balanced current schedule with moderate SOC splits remains plausible.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 4.317778666666666,
+              "I2": 2.372597,
+              "I3": 2.821291,
+              "dSOC1": 0.16197850000000003,
+              "dSOC2": 0.19291083333333334
+            },
+            "confidence": 0.72,
+            "preference_type": "balanced",
+            "reason": "mock fallback: weighted center of top scalarized historical points",
+            "mechanistic_thinking": "Recent good scalarized points suggest a balanced current schedule with moderate SOC splits remains plausible.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "8881001382450035801",
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [],
+          "parser_status": "ok"
+        },
+        "accepted": true,
+        "selected_index_before": 133,
+        "selected_index_after": 133,
+        "selected_score_before": 0.046318849830934906,
+        "selected_score_after": 0.046318849830934906,
+        "selected_changed_by_lift": false,
+        "iteration": 1,
+        "override_enabled": false,
+        "override_uses_diagnostic_pool": false,
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "acquisition_candidate_pool_size": 135,
+        "evaluated_theta": [
+          5.162488,
+          2.107777,
+          2.758042,
+          0.100062,
+          0.236565
+        ],
+        "hv_before_raw": 6.873179650611457,
+        "hv_after_raw": 6.873817309689698,
+        "hv_gain_raw": 0.0006376590782410929
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 3,
+      "n_total": 9,
+      "n_feasible": 9,
+      "pareto_size": 6,
+      "hypervolume": 0.5841113434544952,
+      "display_hv": 0.5841113434544952,
+      "canonical_hv": 0.2336445373817981,
+      "hypervolume_canonical": 0.2336445373817981,
+      "hypervolume_raw": 6.8750021722386965,
+      "best_time_s": 4226.0,
+      "best_temp_K": 2.679097000780962,
+      "best_aging_pct": 0.7236491309210613,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 2,
+      "w_vec": [
+        0.49642727887783117,
+        0.4936137858675052,
+        0.009958935254663716
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 4.66,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "region_lift_mode": "lgbo_proposition1",
+        "region_lift_control_mode": "none",
+        "anchor_weighting_mode": "uniform",
+        "lgbo_covariance_source": "posterior_standardized",
+        "lgbo_denominator_covariance_source": "posterior_standardized",
+        "lgbo_shift_kernel_source": "prior_latent_standardized",
+        "acquisition_used_lift": true,
+        "structural_fallback_reason": null,
+        "fallback_reason": null,
+        "parser_status": "ok",
+        "llm_raw_response_hash": "6254095569906153587",
+        "llm_called_for_region": true,
+        "trust_before": 0.7,
+        "trust_after": 0.7,
+        "trust_update_reason": "skipped_lgbo_mode",
+        "selected_source": "lgbo_lifted_gp",
+        "region_raw_lb": [
+          3.409905333333333,
+          2.7551101666666664,
+          2.8015691666666664,
+          0.2351666666666667,
+          0.158545
+        ],
+        "region_raw_ub": [
+          3.5299053333333332,
+          2.8451101666666663,
+          2.8315691666666662,
+          0.2441666666666667,
+          0.164545
+        ],
+        "region_normalized_lb": [
+          0.35247633333324513,
+          0.2517033888888049,
+          0.8015691666658648,
+          0.45055555555405374,
+          0.2927249999985363
+        ],
+        "region_normalized_ub": [
+          0.38247633333323766,
+          0.28170338888879487,
+          0.8315691666658346,
+          0.48055555555395374,
+          0.32272499999838633
+        ],
+        "relative_volume": 2.4299999999999867e-08,
+        "per_dim_widths": [
+          0.030000000000000027,
+          0.029999999999999954,
+          0.029999999999999805,
+          0.030000000000000023,
+          0.03000000000000003
+        ],
+        "n_lgbo_anchors": 64,
+        "feasible_anchor_ratio": 1.0,
+        "lgbo_confidence": 0.72,
+        "lgbo_lambda": 7.855395099124844,
+        "lgbo_posterior_variance": 0.008400960176396573,
+        "lgbo_protected_variance": 0.008400960176396573,
+        "lgbo_shift_min": 0.0020807816525569124,
+        "lgbo_shift_max": 6.602332010874557,
+        "lgbo_shift_mean": 2.0815499730729896,
+        "max_shift_z": 6.602332010874557,
+        "mean_shift_z": 2.0815499730729896,
+        "preference": {
+          "kind": "point",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": {
+            "I1": 3.469905333333333,
+            "I2": 2.8001101666666663,
+            "I3": 2.8165691666666666,
+            "dSOC1": 0.2396666666666667,
+            "dSOC2": 0.161545
+          },
+          "lb": null,
+          "ub": null,
+          "confidence": 0.72,
+          "preference_type": "balanced",
+          "reason": "mock fallback: weighted center of top scalarized historical points",
+          "mechanistic_thinking": "Recent good scalarized points suggest a balanced current schedule with moderate SOC splits remains plausible.",
+          "risk_flags": [],
+          "raw_response": {
+            "kind": "point",
+            "coordinate_space": "raw",
+            "preference_direction": "promising",
+            "point": {
+              "I1": 3.469905333333333,
+              "I2": 2.8001101666666663,
+              "I3": 2.8165691666666666,
+              "dSOC1": 0.2396666666666667,
+              "dSOC2": 0.161545
+            },
+            "confidence": 0.72,
+            "preference_type": "balanced",
+            "reason": "mock fallback: weighted center of top scalarized historical points",
+            "mechanistic_thinking": "Recent good scalarized points suggest a balanced current schedule with moderate SOC splits remains plausible.",
+            "risk_flags": []
+          },
+          "raw_response_hash": "6254095569906153587",
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [],
+          "parser_status": "ok"
+        },
+        "accepted": true,
+        "selected_index_before": 40,
+        "selected_index_after": 133,
+        "selected_score_before": 0.00687352441966257,
+        "selected_score_after": 0.6566499509544267,
+        "selected_changed_by_lift": true,
+        "iteration": 2,
+        "override_enabled": false,
+        "override_uses_diagnostic_pool": false,
+        "region_pool_influenced_acquisition": false,
+        "region_influence_mode": "diagnostic_only",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "acquisition_candidate_pool_size": 143,
+        "evaluated_theta": [
+          3.503589,
+          2.640091,
+          2.88701,
+          0.223896,
+          0.149256
+        ],
+        "hv_before_raw": 6.873817309689698,
+        "hv_after_raw": 6.8750021722386965,
+        "hv_gain_raw": 0.001184862548998744
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    }
+  ],
+  "improvement_window": [
+    true,
+    true
+  ],
+  "saved_at": "2026-05-17T22:39:38.662822"
+}

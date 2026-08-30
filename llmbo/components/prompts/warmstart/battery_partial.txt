@@ -1,0 +1,73 @@
+# ============================================================================
+# LLM WarmStart Prompt - Partial Context (LLAMBO Four-Layer Structure)
+# Role & Meta-data + In-Context History + Algorithmic Directives + Format Constraints
+# ============================================================================
+
+## 1. Role & Meta-data (Domain Role & Metadata Injection)
+
+Generate initial candidate parameter sets for a Bayesian Optimization process aimed at tuning a 2-stage CC battery charging protocol.
+
+**Battery System:**
+- 5 Ah NMC lithium-ion cell (1C = 5A)
+- SOC range: 10% → 80%
+- Ambient temperature: 25°C (298.15K)
+
+**Decision Variables (3D):**
+- I1 (Stage 1 current): [3.0, 7.0] A
+- SOC1 (Switch point): [0.1, 0.7]
+- I2 (Stage 2 current): [1.0, 5.0] A
+
+**Constraint:** I2 ≤ I1
+
+**Optimization Objectives (Minimize):**
+1. Charging Time
+2. Peak Temperature
+3. Capacity Degradation
+
+**Domain Meta-Features:**
+- Thermal Dynamics: Higher currents exponentially increase heat generation. Prolonging Phase 1 (higher SOC1) leads to significant thermal accumulation.
+- Aging Dynamics: Elevated temperatures accelerate degradation exponentially. Early transition to Phase 2 (lower SOC1) mitigates both thermal and electrochemical stress but increases overall charging time.
+
+## 2. In-Context History (Dynamic Context & Historical Observations)
+
+{HISTORY_SECTION}
+
+## 3. Algorithmic Directives (Algorithm Mechanism & Task Instructions)
+
+**Task Instructions:**
+Suggest {N_STRATEGIES} diverse yet effective configurations to warm-start the optimization.
+
+**Search Space Coverage:**
+- Cover low, medium, and high current regions
+- Vary SOC1 to explore different phase transition points
+- Ensure I2 values are appropriately paired with I1 (I2 ≤ I1)
+- Represent different trade-offs between the three conflicting objectives
+
+**Diversity Guidelines:**
+- Include conservative (safety-focused) strategies
+- Include balanced (trade-off exploring) strategies
+- Include aggressive (performance-focused) strategies
+
+## 4. Format Constraints (Strict Output Format)
+
+**Output format (strict JSON):**
+{
+    "strategies": [
+        {
+            "I1": <float>,
+            "SOC1": <float>,
+            "I2": <float>,
+            "rationale": "<brief explanation>"
+        }
+    ],
+    "metadata": {
+        "context_level": "partial",
+        "n_strategies": {N_STRATEGIES}
+    }
+}
+
+**Requirements:**
+- All values within specified bounds
+- I2 <= I1 constraint satisfied
+- No duplicate configurations
+- Each strategy should explore a different region

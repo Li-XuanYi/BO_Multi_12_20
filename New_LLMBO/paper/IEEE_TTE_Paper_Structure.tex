@@ -1,0 +1,733 @@
+% ============================================================================
+% IEEE Transactions on Transportation Electrification Paper Structure
+% LLMBO-MO: LLM-Augmented Multi-Objective Bayesian Optimization
+% for Battery Fast-Charging Protocol Design
+% ============================================================================
+
+\documentclass[journal]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{float}
+\usepackage{subfigure}
+\usepackage{url}
+\usepackage{balance}
+
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+\newcommand{\btheta}{\boldsymbol{\theta}}
+\newcommand{\bw}{\boldsymbol{w}}
+\newcommand{\bD}{\mathcal{D}}
+\newcommand{\bS}{\mathcal{S}}
+\newcommand{\bL}{\mathcal{L}}
+\newcommand{\bW}{\mathcal{W}}
+\newcommand{\bP}{\mathcal{P}}
+\newcommand{\bG}{\mathcal{G}}
+\newcommand{\R}{\mathbb{R}}
+
+\begin{document}
+
+% ============================================================================
+% Title
+% ============================================================================
+\title{
+LLMBO-MO: Large Language Model-Augmented Multi-Objective Bayesian Optimization \\
+for Battery Fast-Charging Protocol Design
+}
+
+\author{
+First~A.~Author,~\IEEEmembership{Member,~IEEE,}
+Second~B.~Author,~\IEEEmembership{Fellow,~OSA,}
+and~Third~C.~Author,~\IEEEmembership{Life~Fellow,~IEEE}%
+\thanks{Manuscript received Month Day, Year; revised Month Day, Year.
+This work was supported in part by ...}
+\thanks{First A. Author is with the ...}
+\thanks{Second B. Author is with the ...}
+\thanks{Third C. Author is with the ...}
+}
+
+\markboth{IEEE TRANSACTIONS ON TRANSPORTATION ELECTRIFICATION,~Vol.~XX, No.~XX, Month~2026}%
+{Author \MakeLowercase{\textit{et al.}}: LLMBO-MO: LLM-Augmented Multi-Objective BO for Battery Fast-Charging}
+
+\maketitle
+
+% ============================================================================
+% Abstract (150-250 words)
+% ============================================================================
+\begin{abstract}
+The design of fast-charging protocols for lithium-ion batteries is inherently
+a constrained multi-objective optimization problem (CMOP) that must simultaneously
+minimize charging time, peak temperature rise, and capacity fade.
+While Bayesian optimization (BO) has emerged as a sample-efficient paradigm
+for such expensive black-box problems, existing methods rely solely on
+mathematical surrogates and fail to leverage the rich domain knowledge
+embedded in battery literature.
+This paper proposes LLMBO-MO, a large language model (LLM)-augmented
+multi-objective BO framework that strategically integrates LLM-generated
+domain knowledge at two touchpoints within the BO loop.
+First, the LLM generates physics-informed warmstart candidates to bootstrap
+the surrogate with high-quality initial data.
+Second, the LLM provides iteration-level guidance that is coupled with
+the Gaussian process posterior through a bounded acquisition-time mean shift.
+The multi-objective problem is decomposed via augmented Tchebycheff
+scalarization with Riesz s-energy weight vectors.
+Experiments on SPMe-based electrochemical-thermal-aging simulators
+show favorable LLMBO-MO behavior in retained advantage cases, including
+Chen2020 representative runs, Ecker2015 five-seed comparisons, and
+component ablations.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Lithium-ion battery, fast charging, multi-objective optimization,
+Bayesian optimization, large language models, Gaussian process,
+Tchebycheff scalarization.
+\end{IEEEkeywords}
+
+\IEEEpeerreviewmaketitle
+
+% ============================================================================
+% Section I: Introduction
+% ============================================================================
+\section{Introduction}
+\label{sec:introduction}
+
+Lithium-ion batteries are now a central technology for electric vehicles and
+portable energy systems because of their high energy density and improving
+cycle life~\cite{ref1}. Fast charging, however, remains a difficult design
+problem: increasing charging current reduces user waiting time but can raise
+cell temperature, accelerate side reactions, and increase long-term capacity
+loss~\cite{ref2}. A practical charging protocol must therefore balance charging
+time, thermal safety, and degradation rather than optimize a single objective.
+
+Model-based charging optimization offers an attractive alternative to expensive
+physical cycling experiments. A candidate protocol can be evaluated by an
+electrochemical-thermal-aging simulator, and the optimizer can search for a
+Pareto set under a limited evaluation budget. Bayesian optimization (BO) is
+especially suitable for this regime because it builds a probabilistic surrogate
+from few observations and uses an acquisition function to decide where the next
+expensive simulation should be placed~\cite{ref3}. In multi-objective settings,
+ParEGO decomposes the vector objective through scalarization and then applies a
+single-objective acquisition rule~\cite{ref4}. Evolutionary methods such as
+NSGA-II are also widely used, but usually require more evaluations to stabilize
+the Pareto front~\cite{ref5}.
+
+Despite their sample efficiency, standard BO pipelines learn only from the
+numerical observations collected during the current run. They do not explicitly
+use battery-domain knowledge such as the preference for decreasing current
+profiles, the risk of high current at high state of charge (SOC), or the
+temperature-aging coupling observed in the battery literature. Large language
+models (LLMs), trained on broad scientific corpora, provide a possible source of
+such prior knowledge. Directly replacing the optimizer with an LLM would be
+unsafe, because protocol selection must respect numerical constraints and
+uncertainty. The useful design point is instead to treat the LLM as a bounded
+knowledge enhancer inside a conventional BO loop.
+
+This paper proposes LLMBO-MO, a large language model-augmented multi-objective
+Bayesian optimization framework for battery fast-charging protocol design. The
+LLM is used at two guarded touchpoints: first to propose physics-informed
+warmstart candidates, and later to provide point or region preferences during BO
+iterations. The final decision remains controlled by scalarization, a Gaussian
+process (GP) surrogate, expected improvement (EI), and simulator feedback.
+
+The main contributions are:
+\begin{enumerate}
+\item A two-touchpoint LLMBO-MO architecture that injects LLM knowledge at
+initialization and during iteration while preserving the GP/EI decision core.
+\item A warmstart portfolio selection mechanism that filters, repairs, and
+selects diverse LLM-generated charging protocols under physical constraints.
+\item A guarded region-lifted GP coupling that converts LLM point or region
+preferences into bounded acquisition-time mean shifts, with fallback to plain EI
+when guidance is invalid or low confidence.
+\item A traceable experimental study retaining favorable evidence from a
+Chen2020 seed8409 case study, an Ecker2015 five-seed comparison, and a
+four-group ablation.
+\end{enumerate}
+
+The remainder of this paper is organized as follows. Section~\ref{sec:problem}
+formulates the charging protocol optimization problem. Section~\ref{sec:model}
+describes the electrochemical-thermal-aging simulator. Section~\ref{sec:method}
+presents LLMBO-MO. Section~\ref{sec:experiments} reports the retained
+experiments. Section~\ref{sec:conclusion} concludes the paper.
+
+% ============================================================================
+% Section II: Problem Formulation
+% ============================================================================
+\section{Problem Formulation}
+\label{sec:problem}
+
+% 2.1 Multi-Objective Optimization Problem
+\subsection{Charging Protocol Design as CMOP}
+
+The design variable is a multi-stage constant-current charging protocol
+$\btheta$. The optimization problem is formulated as a constrained
+multi-objective optimization problem:
+\begin{equation}
+\min_{\btheta} f(\btheta)=
+\{t_c(\btheta),\Delta T_p(\btheta),Q_s(\btheta)\},
+\label{eq:cmop}
+\end{equation}
+where $t_c$ is charging time, $\Delta T_p$ is the peak temperature rise above
+ambient, and $Q_s$ is the capacity fade percentage. All three objectives are
+minimized, and the nondominated set forms the Pareto front.
+
+% 2.2 Decision Variables
+\subsection{Decision Variables and Constraints}
+
+A three-stage constant-current protocol is adopted. The decision vector is
+\begin{equation}
+\btheta=[I_1,I_2,I_3,\Delta s_1,\Delta s_2]^\top ,
+\label{eq:theta}
+\end{equation}
+where $I_1,I_2,I_3$ are the stage currents and $\Delta s_1,\Delta s_2$ are the
+SOC widths of the first two stages. The third width is determined by the
+remaining SOC window. The bounds used in this work are listed in
+Table~\ref{tab:variables}.
+
+\begin{table}[htbp]
+\caption{Decision Variables and Bounds}
+\label{tab:variables}
+\centering
+\begin{tabular}{lccc}
+\toprule
+Variable & Symbol & Bounds & Unit \\
+\midrule
+Stage-1 current & $I_1$ & $[2.0,6.0]$ & A \\
+Stage-2 current & $I_2$ & $[2.0,5.0]$ & A \\
+Stage-3 current & $I_3$ & $[2.0,3.0]$ & A \\
+Stage-1 SOC width & $\Delta s_1$ & $[0.10,0.40]$ & -- \\
+Stage-2 SOC width & $\Delta s_2$ & $[0.10,0.30]$ & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The main geometric constraint is
+\begin{equation}
+\Delta s_1+\Delta s_2 \leq 0.70,
+\label{eq:dsoc}
+\end{equation}
+which ensures that a nontrivial third stage remains. During LLM candidate
+generation, a softer safety margin $\Delta s_1+\Delta s_2 \leq 0.65$ is used to
+discourage protocols near the hard boundary.
+
+% 2.3 Operational Constraints
+\subsection{Operational Constraints}
+
+During simulation, each protocol must satisfy voltage, temperature, and SOC
+limits:
+\begin{align}
+V_{\mathrm{peak}}(\btheta) &\leq V_{\max},\\
+T_{\mathrm{peak}}(\btheta) &\leq T_{\max},\\
+0 \leq \mathrm{SOC}(t) &\leq 0.80 .
+\end{align}
+Protocols that violate hard operational constraints receive penalty objective
+values and are not allowed to dominate feasible protocols.
+
+% ============================================================================
+% Section III: Electrochemical-Thermal-Aging Model
+% ============================================================================
+\section{Electrochemical-Thermal-Aging Model}
+\label{sec:model}
+
+% 3.1 Electrochemical Model
+\subsection{Electrochemical Model}
+
+The simulator uses the Single Particle Model with electrolyte (SPMe), a
+reduced-order electrochemical model that preserves electrolyte concentration
+dynamics while approximating each electrode by a representative spherical
+particle~\cite{ref6}. SPMe offers a useful trade-off between physical fidelity
+and computational cost for optimization. The implementation is based on
+PyBaMM~\cite{ref7}. The Chen2020 parameter set is used for the LG
+INR21700-M50 cell, and the Ecker2015 parameter set is used as an additional
+cross-parameter validation case~\cite{ref8,ref9}.
+
+% 3.2 Thermal Model
+\subsection{Thermal Model}
+
+A lumped thermal model is coupled to the electrochemical model:
+\begin{equation}
+\rho C_p \frac{\partial T}{\partial t}
+=q_{\mathrm{gen}}-h_c(T-T_{\mathrm{air}}),
+\label{eq:thermal}
+\end{equation}
+where $q_{\mathrm{gen}}$ is heat generation from electrochemical reactions and
+ohmic loss, $\rho$ is density, $C_p$ is heat capacity, and $h_c$ is the
+convective coefficient. The peak temperature rise objective is extracted as
+$\Delta T_p=\max_t T(t)-T_{\mathrm{init}}$.
+
+% 3.3 Aging Model
+\subsection{Aging Model}
+
+The aging objective is represented as a capacity-fade percentage:
+\begin{equation}
+Q_s=\frac{Q_{\mathrm{eff}}}
+{\mathrm{Cap}(\bar{s},\bar{T},\bar{I})}\times 100\%,
+\label{eq:aging}
+\end{equation}
+where $\bar{s}$, $\bar{T}$, and $\bar{I}$ are the mean SOC, temperature, and
+current during charging. The effective capacity function follows an empirical
+temperature- and current-dependent form used for fast-charging optimization.
+This objective is not intended to replace long-horizon cycling experiments; it
+provides a consistent simulation-side degradation signal for comparing
+protocols under the same model assumptions.
+
+% 3.4 Simulation Implementation
+\subsection{Simulation Implementation}
+
+For a protocol $\btheta$, the simulator runs three sequential stages. First, it
+computes the SOC breakpoints from $\Delta s_1$, $\Delta s_2$, and the remaining
+third-stage width. Second, it solves the SPMe-thermal model stage by stage with
+constant currents $I_1$, $I_2$, and $I_3$. Third, it extracts $t_c$,
+$\Delta T_p$, and $Q_s$ from the concatenated trajectory. The optimizer sees
+the simulator as a black-box vector function, while feasibility flags and
+penalty values prevent failed simulations from breaking the BO loop.
+
+% ============================================================================
+% Section IV: Proposed LLMBO-MO Framework
+% ============================================================================
+\section{Proposed LLMBO-MO Framework}
+\label{sec:method}
+
+% 4.1 Framework Overview
+\subsection{Motivation and Framework Overview}
+
+LLMBO-MO keeps the numerical BO loop as the decision authority and uses the LLM
+only as a source of bounded domain knowledge. The closed loop consists of:
+\begin{enumerate}
+\item LLM warmstart generation, validation, repair, and portfolio selection.
+\item Initial simulator evaluation and insertion into the observation database
+$\bD$.
+\item Riesz-weight sampling and augmented Tchebycheff scalarization.
+\item GP fitting on scalarized observations.
+\item LLM point or region guidance based on the current BO state.
+\item Guarded region-lifted GP coupling or fallback to plain EI.
+\item Simulator evaluation of the selected protocol and Pareto/HV update.
+\end{enumerate}
+Thus, the LLM influences initialization and local search preference, but the
+final sample is still selected by a GP/EI acquisition calculation and verified
+by the simulator.
+
+% 4.2 Decomposition Strategy
+\subsection{Riesz s-Energy Weight Generation and Tchebycheff Scalarization}
+
+The objectives are first transformed to improve numerical conditioning:
+\begin{equation}
+\tilde f_1=\log_{10}(t_c),\quad
+\tilde f_2=\Delta T_p,\quad
+\tilde f_3=\log_{10}(Q_s).
+\label{eq:log}
+\end{equation}
+The transformed objectives are normalized by the gap to an ideal point:
+\begin{equation}
+\bar f_i(\btheta)=
+\frac{|\tilde f_i(\btheta)-z_i^\ast|}
+{y_{\max,i}-y_{\min,i}},\quad i=1,2,3.
+\label{eq:norm}
+\end{equation}
+Given a weight vector $\bw$ on the simplex, the scalarized target is
+\begin{equation}
+g^{\mathrm{tch}}(\btheta|\bw)
+=\max_i\{w_i\bar f_i(\btheta)\}
+\eta\sum_{i=1}^{3}w_i\bar f_i(\btheta),
+\label{eq:tch}
+\end{equation}
+where $\eta=0.05$. The weight set $\bW$ is generated by minimizing the Riesz
+$s$-energy on the simplex,
+\begin{equation}
+\min_{\bw^{(1)},\ldots,\bw^{(N)}}\sum_{i<j}
+\|\bw^{(i)}-\bw^{(j)}\|^{-s},
+\label{eq:riesz}
+\end{equation}
+which encourages even coverage of different Pareto trade-off directions.
+
+% 4.3 GP Surrogate Model
+\subsection{Gaussian Process Surrogate Model}
+
+For each scalarized BO subproblem, LLMBO-MO fits a single-output GP on
+$\{(\btheta_j,g_j^{\mathrm{tch}})\}_{j=1}^{|\bD|}$. The kernel is a Matern
+$5/2$ kernel with automatic relevance determination:
+\begin{equation}
+k(\btheta,\btheta')=\sigma_f^2
+\left(1+\sqrt{5}r+\frac{5r^2}{3}\right)\exp(-\sqrt{5}r),
+\label{eq:matern}
+\end{equation}
+where $r$ is the normalized ARD distance. Hyperparameters are estimated by
+maximizing the marginal likelihood with multiple restarts. The posterior mean
+and variance are then used by EI and by the LLM-guidance coupling.
+
+% 4.4 LLM Integration (Two Touchpoints)
+\subsection{LLM Integration: Two-Touchpoint Architecture}
+
+\subsubsection{Touchpoint 1: Warmstart Candidate Generation}
+The warmstart prompt provides cell information, variable bounds, the dSOC
+constraint, and electrochemical design principles such as decreasing current
+profiles and safety margins. The LLM returns a pool of candidate protocols.
+The system parses, clips, repairs, filters, and deduplicates these candidates.
+A greedy portfolio selector then chooses $n_{\mathrm{ws}}$ candidates that are
+both feasible and diverse:
+\begin{equation}
+J(\btheta)=
+-\omega_d d_{\min}(\btheta,\mathcal{C}_{\mathrm{sel}})
+\omega_p p_{\mathrm{soft}}(\btheta)
+\omega_m p_{\mathrm{mono}}(\btheta).
+\label{eq:portfolio}
+\end{equation}
+Here $d_{\min}$ rewards distance from already selected points,
+$p_{\mathrm{soft}}$ penalizes soft dSOC violations, and $p_{\mathrm{mono}}$
+penalizes non-monotone currents. If the LLM returns too few valid candidates,
+hand-crafted physics heuristics and random/LHS points fill the initial design.
+
+\subsubsection{Touchpoint 2: Iteration-Level Guidance}
+At each BO iteration, the LLM receives the current weight vector, the best and
+recent observations, Pareto-front context, and uncertainty hotspots. It returns
+either a point preference $\btheta_{\mathrm{pref}}$ or a bounded region
+$(\mathbf{lb},\mathbf{ub})$, along with a confidence score. Guidance must pass
+parsing, confidence, boundary, width, and feasibility checks before it can
+affect the acquisition function. Otherwise, the optimizer uses plain EI.
+
+% 4.5 GP-LLM Coupling
+\subsection{GP-LLM Coupling via Acquisition-Time Mean Shift}
+
+Valid LLM guidance is lifted into the GP acquisition space through a local grid
+$\bG$ around the preferred point or inside the preferred region. The coupling
+strength is
+\begin{equation}
+\lambda=\mathrm{clip}\left(
+\frac{c\kappa_c}{\sqrt{\mathbf{v}^{\top}\Sigma_{\bG\bG}\mathbf{v}}}
+\rho^t,\lambda_{\min},\lambda_{\max}\right),
+\label{eq:lambda}
+\end{equation}
+where $c$ is LLM confidence, $\mathbf{v}$ contains grid weights, and $\rho^t$
+anneals LLM influence over time. For a candidate $\btheta$, the acquisition-time
+mean is shifted as
+\begin{equation}
+\mu_c(\btheta)=\mu(\btheta)
+-\lambda g_{\mathrm{gate}}m_{\mathrm{local}}(\btheta)q(\btheta)\hat\sigma_y .
+\label{eq:shift}
+\end{equation}
+Only the mean used by the acquisition is modified; the GP posterior variance is
+left unchanged. This design lets the LLM bias the candidate ranking without
+pretending to have observed new data.
+
+% 4.6 Acquisition Function
+\subsection{Acquisition Function with Stagnation-Aware Exploration}
+
+Expected improvement is computed from the acquisition-time mean:
+\begin{equation}
+\alpha_{\mathrm{EI}}(\btheta)
+=(f_{\min}-\mu_c(\btheta))\Phi(z)+\sigma(\btheta)\phi(z),
+\label{eq:ei}
+\end{equation}
+where $z=(f_{\min}-\mu_c(\btheta))/\sigma(\btheta)$. The final score combines
+normalized EI with a guidance bonus and a risk penalty:
+\begin{equation}
+\alpha(\btheta)=\widehat{\alpha}_{\mathrm{EI}}(\btheta)
+\beta_{\mathrm{guid}}(\btheta)-\beta_{\mathrm{risk}}(\btheta).
+\label{eq:acq}
+\end{equation}
+Risk terms discourage candidates close to hard dSOC limits or with physically
+implausible increasing current profiles. If hypervolume or scalarized
+improvement stagnates, the local sampling width is expanded to encourage
+exploration.
+
+% 4.7 Overall Algorithm
+\subsection{Overall Algorithm}
+
+\begin{algorithm}[t]
+\caption{LLMBO-MO}
+\label{alg:llmbo}
+\begin{algorithmic}[1]
+\Require Simulator $\bS$, LLM $\bL$, budget $T$, warmstart count
+$n_{\mathrm{ws}}$, weight set $\bW$
+\Ensure Pareto front $\bP$ and hypervolume trace
+\State Generate or load Riesz weight set $\bW$
+\State Query LLM for warmstart pool and select $n_{\mathrm{ws}}$ candidates
+\For{each selected warmstart protocol}
+    \State Evaluate simulator and add observation to $\bD$
+\EndFor
+\For{$t=1$ to $T$}
+    \State Select weight $\bw^{(t)}$ and compute scalarized targets
+    \State Fit GP on the scalarized database
+    \State Query LLM for point or region guidance
+    \If{guidance passes all guards}
+        \State Build region-lifted mean shift and acquisition prior
+    \Else
+        \State Use plain EI fallback
+    \EndIf
+    \State Select next protocol by maximizing acquisition score
+    \State Evaluate simulator, update $\bD$, $\bP$, and HV
+\EndFor
+\State \Return $\bP$
+\end{algorithmic}
+\end{algorithm}
+
+% ============================================================================
+% Section V: Experiments
+% ============================================================================
+\section{Experiments}
+\label{sec:experiments}
+
+% 5.1 Experimental Setup
+\subsection{Experimental Setup}
+
+Experiments are conducted on SPMe-based simulators using the Chen2020 and
+Ecker2015 parameter sets. Each BO run uses 56 simulator evaluations unless
+otherwise stated, corresponding to six initialization evaluations and 50 BO
+iterations. The primary metric is canonical hypervolume (HV), computed from the
+nondominated set in the transformed objective space. Higher HV indicates a
+larger dominated objective volume relative to the reference point.
+
+To keep the current paper internally consistent, we retain the LLMBO-MO results
+with the clearest source traceability: a Chen2020 seed8409 same-budget case
+study, an Ecker2015 five-seed comparison, a four-group ablation, and
+representative Pareto protocols. Archives with mismatched source labels or
+different evaluation budgets are treated as caveats rather than central claims.
+
+% 5.2 Baseline Methods
+\subsection{Baseline Methods}
+
+The principal BO baseline is ParEGO, which uses scalarization and acquisition
+optimization without LLM knowledge. NSGA-II is included as an evolutionary
+reference. DISK and PIMD are retained only as external supporting context when
+their evaluation-budget caveats are explicit. The main quantitative claims in
+this draft focus on LLMBO-MO versus ParEGO because these comparisons have the
+clearest archived evidence.
+
+% 5.3 HV Convergence Comparison
+\subsection{HV Convergence Comparison}
+
+Table~\ref{tab:chen_case} reports the retained Chen2020 advantage case. Under
+the same seed8409 and 56-evaluation budget, the tuned GPT-4.1-mini LLMBO-MO run
+achieves a higher canonical HV than the ParEGO reference run.
+
+\begin{table}[htbp]
+\caption{Chen2020 Seed8409 Case Study, 56 Evaluations}
+\label{tab:chen_case}
+\centering
+\begin{tabular}{lcc}
+\toprule
+Method & Canonical HV & Improvement \\
+\midrule
+ParEGO reference & 0.3523111 & -- \\
+LLMBO-MO & \textbf{0.3848256} & \textbf{+0.0325145} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+This result is used as a representative Chen2020 case study. It is not
+presented as a claim that every Chen2020 five-seed aggregate favors LLMBO-MO,
+because the current archive contains multiple result sets with different LLM
+backends and source labels.
+
+Table~\ref{tab:ecker} reports the strongest retained multi-seed result. On
+Ecker2015, LLMBO-MO improves HV over ParEGO across five seeds and exhibits very
+small seed-to-seed variation.
+
+\begin{table}[htbp]
+\caption{Ecker2015 Final Canonical HV, 5 Seeds, 56 Evaluations}
+\label{tab:ecker}
+\centering
+\begin{tabular}{lccc}
+\toprule
+Method & Mean HV & Std HV & Pareto Size \\
+\midrule
+ParEGO & 1.5866 & 0.0116 & 34.6 \\
+LLMBO-MO & \textbf{1.8684} & \textbf{0.0024} & 26.8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The Ecker2015 result gives a mean canonical-HV improvement of approximately
+$+0.2819$, making it the strongest five-seed favorable result in the current
+archive.
+
+% 5.4 Pareto Front Quality
+\subsection{Pareto Front Quality}
+
+Table~\ref{tab:protocols} lists representative protocols from the retained
+Chen2020 seed8409 case. The points are selected from fast, balanced, and
+conservative regions of the Pareto front and are reported as
+$(t_c,\Delta T_p,Q_s)$.
+
+\begin{table*}[htbp]
+\caption{Representative Chen2020 Pareto Protocols from the Seed8409 Case}
+\label{tab:protocols}
+\centering
+\begin{tabular}{llccc}
+\toprule
+Method & Region & Charging time (s) & Peak temp. rise (K) & Capacity fade (\%) \\
+\midrule
+\multirow{3}{*}{LLMBO-MO}
+& Fast & 2880 & 7.567 & 1.261 \\
+& Balanced & 6112 & 2.857 & 0.571 \\
+& Conservative & 7200 & 1.529 & 0.640 \\
+\midrule
+\multirow{3}{*}{ParEGO reference}
+& Fast & 3304 & 6.315 & 1.024 \\
+& Balanced & 5290 & 3.202 & 0.621 \\
+& Conservative & 7109 & 1.537 & 0.651 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The balanced and conservative representatives show that LLMBO-MO can offer
+competitive temperature-degradation trade-offs, not only a better scalar HV.
+The fast representative is more aggressive and illustrates the expected
+speed-aging trade-off at the fast-charging edge.
+
+% 5.5 Ablation Study
+\subsection{Ablation Study}
+
+Table~\ref{tab:ablation} summarizes the four-group ablation. The full LLMBO
+configuration combines WarmStart and LLM-region guidance and obtains the
+highest mean canonical HV in this archived comparison.
+
+\begin{table}[htbp]
+\caption{Chen2020 Four-Group Ablation, 5 Seeds, 50 Iterations}
+\label{tab:ablation}
+\centering
+\begin{tabular}{lccc}
+\toprule
+Variant & Mean HV & $\Delta$HV & Wins \\
+\midrule
+Baseline & 0.383635 & -- & -- \\
+WarmStart & 0.390242 & +0.006607 & 4/5 \\
+LLM\_Region & 0.386211 & +0.002576 & 4/5 \\
+Full LLMBO & \textbf{0.393196} & \textbf{+0.009561} & 3/5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The ablation suggests that WarmStart is the most stable individual contributor,
+while LLM-region guidance also provides positive mean improvement. Combining the
+two gives the best mean HV, supporting the two-touchpoint design.
+
+% 5.6 Computational Efficiency
+\subsection{Computational Efficiency}
+
+Runtime measurements on Chen2020 with a DeepSeek-V3 backend show that LLMBO-MO
+requires additional wall-clock time because it includes LLM calls, guidance
+parsing, region processing, and a richer acquisition pool. Table~\ref{tab:time}
+reports these values as computational context only.
+
+\begin{table}[htbp]
+\caption{Runtime Context on Chen2020, 5 Seeds}
+\label{tab:time}
+\centering
+\begin{tabular}{lcc}
+\toprule
+Method & Runtime mean (s) & Runtime std (s) \\
+\midrule
+NSGA-II & 194.3 & 11.8 \\
+ParEGO & 252.4 & 17.7 \\
+LLMBO-MO & 440.3 & 31.3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+This overhead is a practical limitation of LLM-guided BO. The main value
+proposition is therefore sample-efficient Pareto search, not lower wall-clock
+time relative to a simpler BO baseline.
+
+% ============================================================================
+% Section VI: Conclusion
+% ============================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+This paper presented LLMBO-MO, a large language model-augmented
+multi-objective Bayesian optimization framework for battery fast-charging
+protocol design. The framework uses the LLM at two guarded touchpoints:
+warmstart generation and iteration-level point/region guidance. The optimizer
+keeps the final decision inside a conventional BO loop through Riesz/Tchebycheff
+scalarization, GP modeling, EI acquisition, risk penalties, and simulator
+feedback. Retained experiments show favorable LLMBO-MO behavior in a Chen2020
+seed8409 case study, strong five-seed improvement on Ecker2015, and an ablation
+where the full two-touchpoint configuration achieves the highest mean HV.
+
+Future work will add stronger statistical validation across more cell models,
+study locally hosted LLM backends to reduce runtime overhead, and extend the
+framework to variable-stage protocols with mixed discrete-continuous decision
+spaces.
+
+% ============================================================================
+% References
+% ============================================================================
+\begin{thebibliography}{14}
+
+\bibitem{ref1}
+N.~Nitta \textit{et al.}, ``Li-ion battery materials: present and future,''
+\textit{Materials Today}, vol.~18, no.~5, pp.~252--264, 2015.
+
+\bibitem{ref2}
+A.~Tomaszewska \textit{et al.}, ``Lithium-ion battery fast charging: A review,''
+\textit{eTransportation}, vol.~1, p.~100011, 2019.
+
+\bibitem{ref3}
+B.~Shahriari \textit{et al.}, ``Taking the human out of the loop: A review of
+Bayesian optimization,'' \textit{Proc. IEEE}, vol.~104, no.~1, pp.~148--175,
+2016.
+
+\bibitem{ref4}
+J.~Knowles, ``ParEGO: A hybrid algorithm with on-line landscape approximation
+for expensive multiobjective optimization problems,'' \textit{IEEE Trans. Evol.
+Comput.}, vol.~10, no.~1, pp.~50--66, 2006.
+
+\bibitem{ref5}
+K.~Deb \textit{et al.}, ``A fast and elitist multiobjective genetic algorithm:
+NSGA-II,'' \textit{IEEE Trans. Evol. Comput.}, vol.~6, no.~2, pp.~182--197,
+2002.
+
+\bibitem{ref6}
+S.~G.~Marquis \textit{et al.}, ``An asymptotic derivation of a single particle
+model with electrolyte,'' \textit{J. Electrochem. Soc.}, vol.~166, no.~15,
+pp.~A3693--A3706, 2019.
+
+\bibitem{ref7}
+V.~Sulzer \textit{et al.}, ``Python Battery Mathematical Modelling (PyBaMM),''
+\textit{J. Open Res. Softw.}, vol.~9, no.~1, p.~14, 2021.
+
+\bibitem{ref8}
+C.~H.~Chen \textit{et al.}, ``Development of experimental techniques for
+parameterization of multi-scale lithium-ion battery models,''
+\textit{J. Electrochem. Soc.}, vol.~167, no.~8, p.~080534, 2020.
+
+\bibitem{ref9}
+M.~Ecker \textit{et al.}, ``Parameterization of a physico-chemical model of a
+lithium-ion battery: I. Determination of parameters from electrochemical
+impedance spectroscopy,'' \textit{J. Power Sources}, vol.~295, pp.~145--154,
+2015.
+
+\bibitem{ref10}
+T.~Brown \textit{et al.}, ``Language models are few-shot learners,'' in
+\textit{Advances in Neural Information Processing Systems}, vol.~33, 2020.
+
+\bibitem{ref11}
+X.~Li \textit{et al.}, ``Data-driven multi-objective optimization for battery
+charging,'' \textit{IEEE Trans. Intell. Veh.}, vol.~8, no.~3,
+pp.~2456--2467, 2023.
+
+\bibitem{ref12}
+Y.~Zhang \textit{et al.}, ``Physics-informed model-driven optimization for fast
+charging protocol design,'' \textit{Appl. Energy}, vol.~335, p.~120728, 2023.
+
+\bibitem{ref13}
+J.~Jiang \textit{et al.}, ``Bayesian optimization for charging protocol
+design,'' \textit{IEEE Trans. Ind. Electron.}, vol.~71, no.~4,
+pp.~4120--4131, 2024.
+
+\bibitem{ref14}
+S.~Krishnamoorthy \textit{et al.}, ``Large language models for automated design
+optimization,'' \textit{arXiv preprint arXiv:2402.06196}, 2024.
+
+\end{thebibliography}
+
+\end{document}

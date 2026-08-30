@@ -1,0 +1,379 @@
+{
+  "meta": {
+    "experiment": "ablation_4way_exp_prompt",
+    "variant_set": "lgbo_smoke",
+    "iterations": 10,
+    "seeds": [
+      8409,
+      8410
+    ],
+    "output_root": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\lgbo_prop1_mock_smoke_2seeds_10iter_2026_05_17",
+    "api_base": "https://api.chat.csu.edu.cn/v1",
+    "model": "deepseek-v3",
+    "model_display": "deepseek-v3",
+    "llm_backend": "mock",
+    "warmstart_prompt_version": "experimental",
+    "hv_metric": "canonical_hv",
+    "created_at": "2026-05-17T22:33:11.308012"
+  },
+  "variants": [
+    {
+      "key": "lgbo_region",
+      "label": "LGBO Proposition1",
+      "preset": "warmstart_region_lgbo_proposition1",
+      "needs_llm": true,
+      "overrides": {
+        "n_warmstart": 0,
+        "n_random_init": 6,
+        "region_lift_active_until": 10,
+        "region_lift_mode": "lgbo_proposition1",
+        "region_lift_external_influence_mode": "diagnostic_only",
+        "region_lift_apply_override": false
+      }
+    },
+    {
+      "key": "warmstart_lgbo",
+      "label": "WarmStart+LGBO Proposition1",
+      "preset": "warmstart_region_lgbo_proposition1",
+      "needs_llm": true,
+      "overrides": {
+        "n_warmstart": 6,
+        "n_random_init": 0,
+        "region_lift_active_until": 10,
+        "warmstart_prompt_version": "experimental",
+        "region_lift_mode": "lgbo_proposition1",
+        "region_lift_external_influence_mode": "diagnostic_only",
+        "region_lift_apply_override": false
+      }
+    }
+  ],
+  "records": [
+    {
+      "seed": 8409,
+      "variant": "lgbo_region",
+      "label": "LGBO Proposition1",
+      "preset": "warmstart_region_lgbo_proposition1",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\lgbo_prop1_mock_smoke_2seeds_10iter_2026_05_17\\seed8409\\lgbo_region\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\lgbo_prop1_mock_smoke_2seeds_10iter_2026_05_17\\seed8409\\lgbo_region",
+      "status": "ok",
+      "display_hv": 0.5877921372135149,
+      "canonical_hv": 0.23511685488540596,
+      "hypervolume_raw": 6.918325188256779,
+      "pareto_size": 13,
+      "n_total": 16,
+      "n_feasible": 16,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 1.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 8410,
+      "variant": "lgbo_region",
+      "label": "LGBO Proposition1",
+      "preset": "warmstart_region_lgbo_proposition1",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\lgbo_prop1_mock_smoke_2seeds_10iter_2026_05_17\\seed8410\\lgbo_region\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\lgbo_prop1_mock_smoke_2seeds_10iter_2026_05_17\\seed8410\\lgbo_region",
+      "status": "ok",
+      "display_hv": 0.6968396820369027,
+      "canonical_hv": 0.2787358728147611,
+      "hypervolume_raw": 8.201816967588218,
+      "pareto_size": 13,
+      "n_total": 16,
+      "n_feasible": 16,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 1.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 8409,
+      "variant": "warmstart_lgbo",
+      "label": "WarmStart+LGBO Proposition1",
+      "preset": "warmstart_region_lgbo_proposition1",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\lgbo_prop1_mock_smoke_2seeds_10iter_2026_05_17\\seed8409\\warmstart_lgbo\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\lgbo_prop1_mock_smoke_2seeds_10iter_2026_05_17\\seed8409\\warmstart_lgbo",
+      "status": "ok",
+      "display_hv": 0.6032925837161184,
+      "canonical_hv": 0.24131703348644737,
+      "hypervolume_raw": 7.100765753005666,
+      "pareto_size": 13,
+      "n_total": 16,
+      "n_feasible": 16,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 1.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 8410,
+      "variant": "warmstart_lgbo",
+      "label": "WarmStart+LGBO Proposition1",
+      "preset": "warmstart_region_lgbo_proposition1",
+      "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\lgbo_prop1_mock_smoke_2seeds_10iter_2026_05_17\\seed8410\\warmstart_lgbo\\summary.json",
+      "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\lgbo_prop1_mock_smoke_2seeds_10iter_2026_05_17\\seed8410\\warmstart_lgbo",
+      "status": "ok",
+      "display_hv": 0.6110808042608497,
+      "canonical_hv": 0.24443232170433987,
+      "hypervolume_raw": 7.1924332642822595,
+      "pareto_size": 13,
+      "n_total": 16,
+      "n_feasible": 16,
+      "hv_violations": 0,
+      "region_lift_accept_rate": 1.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "fallback_distribution": {}
+    }
+  ],
+  "aggregates": {
+    "lgbo_region": {
+      "n_runs": 2,
+      "n_missing_or_failed": 0,
+      "canonical_hv": {
+        "mean": 0.2569263638500835,
+        "std": 0.030843303366544613,
+        "median": 0.2569263638500835,
+        "min": 0.23511685488540596,
+        "max": 0.2787358728147611,
+        "values": [
+          0.23511685488540596,
+          0.2787358728147611
+        ]
+      },
+      "display_hv": {
+        "mean": 0.6423159096252088,
+        "std": 0.07710825841636154,
+        "values": [
+          0.5877921372135149,
+          0.6968396820369027
+        ]
+      },
+      "hypervolume_raw": {
+        "mean": 7.560071077922499,
+        "std": 0.9075657407624484,
+        "values": [
+          6.918325188256779,
+          8.201816967588218
+        ]
+      },
+      "pareto_size": {
+        "mean": 13.0,
+        "std": 0.0,
+        "values": [
+          13.0,
+          13.0
+        ]
+      },
+      "n_feasible": {
+        "mean": 16.0,
+        "std": 0.0,
+        "values": [
+          16.0,
+          16.0
+        ]
+      },
+      "hv_violations_total": 0,
+      "region_lift_accept_rate_mean": 1.0,
+      "effective_lift_accept_rate_mean": 0.0,
+      "effective_lift_accept_count_total": 0,
+      "region_pool_influenced_acquisition_count_total": 0,
+      "plain_candidate_inside_region_count_total": 0,
+      "diagnostic_override_candidate_count_total": 0,
+      "fallback_distribution": {},
+      "runs": [
+        {
+          "seed": 8409,
+          "variant": "lgbo_region",
+          "label": "LGBO Proposition1",
+          "preset": "warmstart_region_lgbo_proposition1",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\lgbo_prop1_mock_smoke_2seeds_10iter_2026_05_17\\seed8409\\lgbo_region\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\lgbo_prop1_mock_smoke_2seeds_10iter_2026_05_17\\seed8409\\lgbo_region",
+          "status": "ok",
+          "display_hv": 0.5877921372135149,
+          "canonical_hv": 0.23511685488540596,
+          "hypervolume_raw": 6.918325188256779,
+          "pareto_size": 13,
+          "n_total": 16,
+          "n_feasible": 16,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 1.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {}
+        },
+        {
+          "seed": 8410,
+          "variant": "lgbo_region",
+          "label": "LGBO Proposition1",
+          "preset": "warmstart_region_lgbo_proposition1",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\lgbo_prop1_mock_smoke_2seeds_10iter_2026_05_17\\seed8410\\lgbo_region\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\lgbo_prop1_mock_smoke_2seeds_10iter_2026_05_17\\seed8410\\lgbo_region",
+          "status": "ok",
+          "display_hv": 0.6968396820369027,
+          "canonical_hv": 0.2787358728147611,
+          "hypervolume_raw": 8.201816967588218,
+          "pareto_size": 13,
+          "n_total": 16,
+          "n_feasible": 16,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 1.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {}
+        }
+      ],
+      "missing_or_failed_runs": []
+    },
+    "warmstart_lgbo": {
+      "n_runs": 2,
+      "n_missing_or_failed": 0,
+      "canonical_hv": {
+        "mean": 0.2428746775953936,
+        "std": 0.002202841424222344,
+        "median": 0.2428746775953936,
+        "min": 0.24131703348644737,
+        "max": 0.24443232170433987,
+        "values": [
+          0.24131703348644737,
+          0.24443232170433987
+        ]
+      },
+      "display_hv": {
+        "mean": 0.607186693988484,
+        "std": 0.00550710356055587,
+        "values": [
+          0.6032925837161184,
+          0.6110808042608497
+        ]
+      },
+      "hypervolume_raw": {
+        "mean": 7.146599508643963,
+        "std": 0.0648187188381737,
+        "values": [
+          7.100765753005666,
+          7.1924332642822595
+        ]
+      },
+      "pareto_size": {
+        "mean": 13.0,
+        "std": 0.0,
+        "values": [
+          13.0,
+          13.0
+        ]
+      },
+      "n_feasible": {
+        "mean": 16.0,
+        "std": 0.0,
+        "values": [
+          16.0,
+          16.0
+        ]
+      },
+      "hv_violations_total": 0,
+      "region_lift_accept_rate_mean": 1.0,
+      "effective_lift_accept_rate_mean": 0.0,
+      "effective_lift_accept_count_total": 0,
+      "region_pool_influenced_acquisition_count_total": 0,
+      "plain_candidate_inside_region_count_total": 0,
+      "diagnostic_override_candidate_count_total": 0,
+      "fallback_distribution": {},
+      "runs": [
+        {
+          "seed": 8409,
+          "variant": "warmstart_lgbo",
+          "label": "WarmStart+LGBO Proposition1",
+          "preset": "warmstart_region_lgbo_proposition1",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\lgbo_prop1_mock_smoke_2seeds_10iter_2026_05_17\\seed8409\\warmstart_lgbo\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\lgbo_prop1_mock_smoke_2seeds_10iter_2026_05_17\\seed8409\\warmstart_lgbo",
+          "status": "ok",
+          "display_hv": 0.6032925837161184,
+          "canonical_hv": 0.24131703348644737,
+          "hypervolume_raw": 7.100765753005666,
+          "pareto_size": 13,
+          "n_total": 16,
+          "n_feasible": 16,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 1.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {}
+        },
+        {
+          "seed": 8410,
+          "variant": "warmstart_lgbo",
+          "label": "WarmStart+LGBO Proposition1",
+          "preset": "warmstart_region_lgbo_proposition1",
+          "summary_path": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\lgbo_prop1_mock_smoke_2seeds_10iter_2026_05_17\\seed8410\\warmstart_lgbo\\summary.json",
+          "run_dir": "D:\\Users\\aa133\\Desktop\\BO_Multi_12_20\\New_LLMBO\\Ablation_Exp\\experiment_records\\lgbo_prop1_mock_smoke_2seeds_10iter_2026_05_17\\seed8410\\warmstart_lgbo",
+          "status": "ok",
+          "display_hv": 0.6110808042608497,
+          "canonical_hv": 0.24443232170433987,
+          "hypervolume_raw": 7.1924332642822595,
+          "pareto_size": 13,
+          "n_total": 16,
+          "n_feasible": 16,
+          "hv_violations": 0,
+          "region_lift_accept_rate": 1.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "region_pool_influenced_acquisition_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "fallback_distribution": {}
+        }
+      ],
+      "missing_or_failed_runs": []
+    }
+  },
+  "comparisons": {
+    "warmstart_lgbo_vs_lgbo_region": {
+      "lhs": "WarmStart+LGBO Proposition1",
+      "rhs": "LGBO Proposition1",
+      "shared_seeds": [
+        8409,
+        8410
+      ],
+      "mean_canonical_hv_delta": -0.014051686254689902,
+      "std_canonical_hv_delta": 0.028640461942322268,
+      "mean_canonical_hv_pct_delta": -4.8348839059225295,
+      "wins": 1,
+      "total": 2,
+      "per_seed_delta": [
+        {
+          "seed": 8409,
+          "delta": 0.006200178601041412
+        },
+        {
+          "seed": 8410,
+          "delta": -0.034303551110421215
+        }
+      ]
+    }
+  }
+}

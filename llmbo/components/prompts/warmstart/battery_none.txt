@@ -1,0 +1,53 @@
+# ============================================================================
+# LLM WarmStart Prompt - None Context (LLAMBO Four-Layer Structure)
+# Role & Meta-data + In-Context History + Algorithmic Directives + Format Constraints
+# ============================================================================
+
+## 1. Role & Meta-data (Domain Role & Metadata Injection)
+
+You are assisting me with an automated Bayesian Optimization process for a 3-variable black-box optimization problem.
+
+**Variables and Allowed Ranges (3D):**
+- Variable 1 (I1):   Continuous, range [3.0, 7.0]
+- Variable 2 (SOC1): Continuous, range [0.1, 0.7]
+- Variable 3 (I2):   Continuous, range [1.0, 5.0]
+
+**Constraint:**
+- I2 must be less than or equal to I1.
+
+## 2. In-Context History (Dynamic Context & Historical Observations)
+
+{HISTORY_SECTION}
+
+## 3. Algorithmic Directives (Algorithm Mechanism & Task Instructions)
+
+**Task Instructions:**
+Please suggest {N_STRATEGIES} diverse yet effective parameter configurations to initialize the search space.
+
+**Space-Filling Requirements:**
+- The combinations should maximize space-filling properties (avoiding clustering)
+- Cover the feasible bounds appropriately
+- Ensure uniform distribution across the parameter space
+- Each configuration should be unique
+
+## 4. Format Constraints (Strict Output Format)
+
+**Output format (strict JSON):**
+{
+    "strategies": [
+        {
+            "I1": <float>,
+            "SOC1": <float>,
+            "I2": <float>
+        }
+    ],
+    "metadata": {
+        "context_level": "none",
+        "n_strategies": {N_STRATEGIES}
+    }
+}
+
+**Requirements:**
+- All values within specified bounds
+- I2 <= I1 constraint satisfied
+- No duplicate configurations

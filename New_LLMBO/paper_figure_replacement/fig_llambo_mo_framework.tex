@@ -1,0 +1,13 @@
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.72\textwidth]{rendered/50c31aae80db666ba5cda3c6588b0cc.png}
+\caption{Unified LLMBO-MO workflow. \emph{A:} constrained warm-start
+construction combines domain-informed LLM candidates with physics priors and
+space-filling samples, then repairs, screens, and verifies the portfolio in
+the simulator. \emph{B:} the numerical multi-objective BO loop performs
+scalarization, GP fitting, expected-improvement optimization, and simulator
+evaluation. The LLM enters only through the two advisory touchpoints; invalid
+or infeasible iteration-level guidance falls back to plain EI, and only
+simulator outputs update the optimization state.}
+\label{fig:framework}
+\end{figure*}

@@ -1,0 +1,463 @@
+{
+  "version": "2.0",
+  "param_bounds": {
+    "I1": [
+      2.0,
+      6.0
+    ],
+    "I2": [
+      2.0,
+      5.0
+    ],
+    "I3": [
+      2.0,
+      3.0
+    ],
+    "dSOC1": [
+      0.1,
+      0.4
+    ],
+    "dSOC2": [
+      0.1,
+      0.3
+    ]
+  },
+  "ref_point": [
+    7200.0,
+    40.0,
+    5.0
+  ],
+  "ideal_point": [
+    1800.0,
+    0.0,
+    0.3
+  ],
+  "normalize": true,
+  "observations": [
+    {
+      "theta": [
+        5.5,
+        4.5,
+        2.8,
+        0.2,
+        0.2
+      ],
+      "objectives": [
+        4026.0,
+        5.247232703241593,
+        0.8848140482607616
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-07-17T08:34:03.795046"
+    },
+    {
+      "theta": [
+        2.0,
+        2.0,
+        2.0,
+        0.36957142857142866,
+        0.27717857142857144
+      ],
+      "objectives": [
+        7200.0,
+        1.5277274171878503,
+        0.5393568988577057
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-07-17T08:34:13.327795"
+    },
+    {
+      "theta": [
+        5.5,
+        4.0,
+        2.0,
+        0.2,
+        0.3
+      ],
+      "objectives": [
+        4705.0,
+        4.930388584720323,
+        0.8770809237458346
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "llm_warmstart",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-07-17T08:34:20.653989"
+    },
+    {
+      "theta": [
+        4.186550887620206,
+        2.790518245853265,
+        2.3223207333874636,
+        0.2515153696322352,
+        0.1150888704562269
+      ],
+      "objectives": [
+        5182.0,
+        3.483864882483005,
+        0.7469442214958191
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-07-17T08:34:28.713322"
+    },
+    {
+      "theta": [
+        2.62302453485798,
+        3.9051438366771736,
+        2.6399500535124263,
+        0.182589525837557,
+        0.20172112288968322
+      ],
+      "objectives": [
+        5017.0,
+        3.439686716591638,
+        0.6307889538852827
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-07-17T08:34:36.692307"
+    },
+    {
+      "theta": [
+        5.160667369477397,
+        4.177353191823048,
+        2.8786236013815505,
+        0.3448380545400104,
+        0.2620608040456287
+      ],
+      "objectives": [
+        3539.0,
+        5.623509600882813,
+        0.9397274965352373
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "random_init",
+      "iteration": 0,
+      "acq_value": null,
+      "acq_type": null,
+      "gp_pred": null,
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-07-17T08:34:43.574109"
+    },
+    {
+      "theta": [
+        2.8033067480429588,
+        4.491943856959398,
+        2.7820043031274544,
+        0.15092142723027996,
+        0.16375851319494159
+      ],
+      "objectives": [
+        4765.0,
+        3.622157957197965,
+        0.6474755683299731
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 1,
+      "acq_value": 0.010182615642963348,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.19528508165999495,
+        "mean_base": 0.19528508165999495,
+        "std": 0.04816688782334473,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-07-17T08:34:51.795510"
+    },
+    {
+      "theta": [
+        3.1294242922771707,
+        5.0,
+        3.0,
+        0.1,
+        0.1
+      ],
+      "objectives": [
+        4535.0,
+        3.261976644855253,
+        0.6687782589917685
+      ],
+      "feasible": true,
+      "violation": null,
+      "source": "bo",
+      "iteration": 2,
+      "acq_value": 0.04406988037371221,
+      "acq_type": "EI",
+      "gp_pred": {
+        "mean_coupled": 0.24110725779971479,
+        "mean_base": 0.24110725779971479,
+        "std": 0.024219095674290654,
+        "coupling_lambda": 0.0,
+        "coupling_mode": null,
+        "prior_bonus": 0.0,
+        "risk_penalty": 0.0,
+        "rerank_q_good": null,
+        "rerank_gate": 0.0,
+        "region_lift_selected_source": "plain_ei",
+        "region_lift_lambda_t": null,
+        "region_lift_max_shift_z": null
+      },
+      "llm_rationale": null,
+      "details": null,
+      "timestamp": "2026-07-17T08:35:01.234494"
+    }
+  ],
+  "pareto_indices": [
+    0,
+    1,
+    4,
+    5,
+    6,
+    7
+  ],
+  "iteration_stats": [
+    {
+      "iteration": 1,
+      "n_total": 7,
+      "n_feasible": 7,
+      "pareto_size": 6,
+      "hypervolume": 0.7809927199391965,
+      "display_hv": 0.7809927199391965,
+      "canonical_hv": 0.3123970879756786,
+      "hypervolume_canonical": 0.3123970879756786,
+      "hypervolume_raw": 9.192299903524948,
+      "best_time_s": 3539.0,
+      "best_temp_K": 1.5277274171878503,
+      "best_aging_pct": 0.5393568988577057,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 0,
+      "w_vec": [
+        0.3115700621917553,
+        0.30477956677848567,
+        0.38365037102975913
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 8.22,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "region_lift_mode": "heuristic_correlation",
+        "region_lift_control_mode": "none",
+        "region_lift_lgbo_shift_source": "prior_kernel",
+        "region_lift_confidence_scale": 1.0,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "plain_ei",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.7,
+        "trust_after": 0.6649999999999999,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 135,
+        "plain_log_ei_surrogate_at_plain": -2.101630485349965,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 135,
+        "selected_score_before": 0.010182615642963348,
+        "selected_index_after": 135,
+        "diagnostic_candidate_pool_size": 143,
+        "acquisition_candidate_pool_size": 143,
+        "selection_candidate_pool_size": 143,
+        "override_enabled": false,
+        "override_uses_diagnostic_pool": false,
+        "iteration": 0,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "mechanistic_thinking": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": true,
+        "region_influence_mode": "force_pool",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "parse_fail",
+        "diagnostic_override_candidate_available": false,
+        "evaluated_theta": [
+          2.803307,
+          4.491944,
+          2.782004,
+          0.150921,
+          0.163759
+        ],
+        "hv_before_raw": 9.062844312042674,
+        "hv_after_raw": 9.192299903524948,
+        "hv_gain_raw": 0.12945559148227304,
+        "canonical_hv_after": 0.3123970879756786,
+        "delta_selected_hv_after_eval": 0.0043995028693225025
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    },
+    {
+      "iteration": 2,
+      "n_total": 8,
+      "n_feasible": 8,
+      "pareto_size": 6,
+      "hypervolume": 0.7943653235846613,
+      "display_hv": 0.7943653235846613,
+      "canonical_hv": 0.31774612943386454,
+      "hypervolume_canonical": 0.31774612943386454,
+      "hypervolume_raw": 9.349695715370228,
+      "best_time_s": 3539.0,
+      "best_temp_K": 1.5277274171878503,
+      "best_aging_pct": 0.5393568988577057,
+      "source_counts": {
+        "bo": 1
+      },
+      "t": 1,
+      "w_vec": [
+        0.6338169667100643,
+        0.009959478225430021,
+        0.3562235550645058
+      ],
+      "n_new_evals": 1,
+      "iter_time_s": 9.43,
+      "llm_guidance": null,
+      "gp_llm_coupling": null,
+      "acq_prior": null,
+      "llm_rerank": null,
+      "region_lifted_gp": {
+        "active": true,
+        "region_lift_mode": "heuristic_correlation",
+        "region_lift_control_mode": "none",
+        "region_lift_lgbo_shift_source": "prior_kernel",
+        "region_lift_confidence_scale": 1.0,
+        "llm_raw_response_hash": null,
+        "parser_status": "parse_fail",
+        "selected_source": "plain_ei",
+        "fallback_reason": "parse_fail",
+        "trust_before": 0.6649999999999999,
+        "trust_after": 0.6317499999999999,
+        "trust_update_reason": "small_decay_after_invalid_preference",
+        "plain_idx": 141,
+        "plain_log_ei_surrogate_at_plain": -0.9767957211720061,
+        "region_lift_log_ei_eps": 1e-12,
+        "accepted": false,
+        "selected_index_before": 141,
+        "selected_score_before": 0.04406988037371221,
+        "selected_index_after": 141,
+        "diagnostic_candidate_pool_size": 144,
+        "acquisition_candidate_pool_size": 144,
+        "selection_candidate_pool_size": 144,
+        "override_enabled": false,
+        "override_uses_diagnostic_pool": false,
+        "iteration": 1,
+        "preference": {
+          "kind": "none",
+          "coordinate_space": "raw",
+          "preference_direction": "promising",
+          "point": null,
+          "lb": null,
+          "ub": null,
+          "confidence": 0.0,
+          "preference_type": "unspecified",
+          "reason": "",
+          "mechanistic_thinking": "",
+          "risk_flags": [],
+          "raw_response": null,
+          "raw_response_hash": null,
+          "raw_text_preview": "",
+          "llm_call_diagnostics": [],
+          "parser_status": "parse_fail"
+        },
+        "region_pool_influenced_acquisition": true,
+        "region_influence_mode": "force_pool",
+        "region_influence_gate_passed": false,
+        "inactive_window_skipped": false,
+        "diagnostic_region_candidate_count": 0,
+        "diagnostic_selected_source": "fallback",
+        "diagnostic_fallback_reason": "parse_fail",
+        "diagnostic_override_candidate_available": false,
+        "evaluated_theta": [
+          3.129424,
+          5.0,
+          3.0,
+          0.1,
+          0.1
+        ],
+        "hv_before_raw": 9.192299903524948,
+        "hv_after_raw": 9.349695715370228,
+        "hv_gain_raw": 0.15739581184528006,
+        "canonical_hv_after": 0.31774612943386454,
+        "delta_selected_hv_after_eval": 0.0053490414581859325
+      },
+      "proposal_summary": null,
+      "candidate_source_counts": {}
+    }
+  ],
+  "improvement_window": [
+    false,
+    true
+  ],
+  "saved_at": "2026-07-17T08:35:01.267272"
+}

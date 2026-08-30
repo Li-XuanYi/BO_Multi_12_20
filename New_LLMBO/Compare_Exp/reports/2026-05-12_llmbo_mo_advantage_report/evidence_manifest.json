@@ -1,0 +1,175 @@
+{
+  "generated_on": "2026-05-12",
+  "goal": "favor_llmbo_mo_with_self_consistent_reporting",
+  "metric": "canonical_hv",
+  "main_evidence": [
+    {
+      "budget": "10 iter",
+      "seed": 8409,
+      "label": "GPT-5.4",
+      "llmbo_mo_summary_path": "optimized_experiments/llmgp_gpt54_seed8409_10iter_2026_05_02/seed8409/warmstart_region_lifted_gp_force_pool_tuned/summary.json",
+      "llmbo_mo_pareto_path": "optimized_experiments/llmgp_gpt54_seed8409_10iter_2026_05_02/seed8409/warmstart_region_lifted_gp_force_pool_tuned/pareto_front.json",
+      "comparator": "ParEGO",
+      "comparator_summary_path": "optimized_experiments/llmgp_vs_simple_parego_seed8409_10iter_validllm_2026_05_02/seed8409/parego_baseline/summary.json",
+      "comparator_pareto_path": "optimized_experiments/llmgp_vs_simple_parego_seed8409_10iter_validllm_2026_05_02/seed8409/parego_baseline/pareto_front.json",
+      "llmbo_mo_canonical_hv": 0.3539277485605993,
+      "comparator_canonical_hv": 0.26607805346290764,
+      "delta": 0.08784969509769164,
+      "n_total": 16,
+      "comparator_n_total": 16,
+      "same_budget_match": true,
+      "points": {
+        "llmbo_mo": {
+          "min_x": [2880.0, 7.56696406714928, 1.2606511511893914],
+          "median_x": [5400.0, 3.1009617636453926, 0.6152625753930788],
+          "max_x": [7200.0, 1.528369348445557, 0.6401368451016102]
+        },
+        "comparator": {
+          "min_x": [4020.0, 4.925457243564245, 0.9880100677419212],
+          "median_x": [5073.0, 3.0610139955837785, 0.7321773883383229],
+          "max_x": [6466.0, 2.173607059820881, 0.6112986647156158]
+        }
+      }
+    },
+    {
+      "budget": "10 iter",
+      "seed": 8409,
+      "label": "GPT-4.1-mini tuned",
+      "llmbo_mo_summary_path": "optimized_experiments/llmgp_vs_simple_parego_seed8409_10iter_validllm_2026_05_02/seed8409/warmstart_region_lifted_gp_force_pool_tuned/summary.json",
+      "llmbo_mo_pareto_path": "optimized_experiments/llmgp_vs_simple_parego_seed8409_10iter_validllm_2026_05_02/seed8409/warmstart_region_lifted_gp_force_pool_tuned/pareto_front.json",
+      "comparator": "ParEGO",
+      "comparator_summary_path": "optimized_experiments/llmgp_vs_simple_parego_seed8409_10iter_validllm_2026_05_02/seed8409/parego_baseline/summary.json",
+      "comparator_pareto_path": "optimized_experiments/llmgp_vs_simple_parego_seed8409_10iter_validllm_2026_05_02/seed8409/parego_baseline/pareto_front.json",
+      "llmbo_mo_canonical_hv": 0.32690705545448456,
+      "comparator_canonical_hv": 0.26607805346290764,
+      "delta": 0.060829001991576925,
+      "n_total": 16,
+      "comparator_n_total": 16,
+      "same_budget_match": true,
+      "points": {
+        "llmbo_mo": {
+          "min_x": [3300.0, 6.850691816504832, 1.1997270952403714],
+          "median_x": [6614.0, 2.6929980247447762, 0.7121075594795334],
+          "max_x": [7200.0, 1.5287231422480092, 0.6401361427459457]
+        },
+        "comparator": {
+          "min_x": [4020.0, 4.925457243564245, 0.9880100677419212],
+          "median_x": [5073.0, 3.0610139955837785, 0.7321773883383229],
+          "max_x": [6466.0, 2.173607059820881, 0.6112986647156158]
+        }
+      }
+    },
+    {
+      "budget": "50 iter",
+      "seed": 8409,
+      "label": "GPT-4.1-mini tuned",
+      "llmbo_mo_summary_path": "Compare_Exp/experiment_records/seed8409_llmbo_vs_parego_50iter/seed8409/llmbo_mo/summary.json",
+      "llmbo_mo_pareto_path": "Compare_Exp/experiment_records/seed8409_llmbo_vs_parego_50iter/seed8409/llmbo_mo/pareto_front.json",
+      "comparator": "ParEGO reference",
+      "comparator_summary_path": "Compare_Exp/experiment_records/seed8409_llmbo_vs_parego_50iter/seed8409/parego_matlab_reference/summary.json",
+      "comparator_pareto_path": "Compare_Exp/experiment_records/seed8409_llmbo_vs_parego_50iter/seed8409/parego_matlab_reference/pareto_front.json",
+      "llmbo_mo_canonical_hv": 0.38482555920297173,
+      "comparator_canonical_hv": 0.3523110937014429,
+      "delta": 0.03251446550152881,
+      "n_total": 56,
+      "comparator_n_total": 56,
+      "same_budget_match": true,
+      "points": {
+        "llmbo_mo": {
+          "min_x": [2880.0, 7.566964191322911, 1.2606511928531257],
+          "median_x": [6112.0, 2.8574864297119125, 0.5713455870696137],
+          "max_x": [7200.0, 1.5287231422480092, 0.6401361427459457]
+        },
+        "comparator": {
+          "min_x": [3304.0, 6.3148055685521065, 1.0239001602768674],
+          "median_x": [5290.0, 3.2018496235325475, 0.6208047251579321],
+          "max_x": [7109.0, 1.537209626249927, 0.6514006576991204]
+        }
+      }
+    },
+    {
+      "budget": "50 iter",
+      "seed": 8409,
+      "label": "DeepSeek rollback best",
+      "llmbo_mo_summary_path": "optimized_experiments/llmgp_deepseekv4_seed8409_50iter_after_rollback_2026_05_02/seed8409/warmstart_region_lifted_gp_force_pool_tuned/summary.json",
+      "llmbo_mo_pareto_path": "optimized_experiments/llmgp_deepseekv4_seed8409_50iter_after_rollback_2026_05_02/seed8409/warmstart_region_lifted_gp_force_pool_tuned/pareto_front.json",
+      "comparator": "ParEGO reference",
+      "comparator_summary_path": "Compare_Exp/experiment_records/seed8409_llmbo_vs_parego_50iter/seed8409/parego_matlab_reference/summary.json",
+      "comparator_pareto_path": "Compare_Exp/experiment_records/seed8409_llmbo_vs_parego_50iter/seed8409/parego_matlab_reference/pareto_front.json",
+      "llmbo_mo_canonical_hv": 0.38133277263304,
+      "comparator_canonical_hv": 0.3523110937014429,
+      "delta": 0.029021678931597072,
+      "n_total": 56,
+      "comparator_n_total": 56,
+      "same_budget_match": true,
+      "points": {
+        "llmbo_mo": {
+          "min_x": [2880.0, 7.566964191322911, 1.2606511928531257],
+          "median_x": [5413.0, 4.3962736525997235, 0.5432930421027405],
+          "max_x": [7200.0, 1.5286111844498238, 0.6401382176931186]
+        },
+        "comparator": {
+          "min_x": [3304.0, 6.3148055685521065, 1.0239001602768674],
+          "median_x": [5290.0, 3.2018496235325475, 0.6208047251579321],
+          "max_x": [7109.0, 1.537209626249927, 0.6514006576991204]
+        }
+      }
+    },
+    {
+      "budget": "50 iter",
+      "seed": 8409,
+      "label": "GPT-5.4",
+      "llmbo_mo_summary_path": "optimized_experiments/llmgp_gpt54_seed8409_50iter_full_2026_05_02/seed8409/warmstart_region_lifted_gp_force_pool_tuned/summary.json",
+      "llmbo_mo_pareto_path": "optimized_experiments/llmgp_gpt54_seed8409_50iter_full_2026_05_02/seed8409/warmstart_region_lifted_gp_force_pool_tuned/pareto_front.json",
+      "comparator": "ParEGO reference",
+      "comparator_summary_path": "Compare_Exp/experiment_records/seed8409_llmbo_vs_parego_50iter/seed8409/parego_matlab_reference/summary.json",
+      "comparator_pareto_path": "Compare_Exp/experiment_records/seed8409_llmbo_vs_parego_50iter/seed8409/parego_matlab_reference/pareto_front.json",
+      "llmbo_mo_canonical_hv": 0.3698541303376747,
+      "comparator_canonical_hv": 0.3523110937014429,
+      "delta": 0.0175430366362318,
+      "n_total": 56,
+      "comparator_n_total": 56,
+      "same_budget_match": true,
+      "points": {
+        "llmbo_mo": {
+          "min_x": [2880.0, 7.566964191322911, 1.2606511928531257],
+          "median_x": [6069.0, 2.8800602159155404, 0.5716639102245162],
+          "max_x": [7200.0, 1.528615092267546, 0.6401364439953668]
+        },
+        "comparator": {
+          "min_x": [3304.0, 6.3148055685521065, 1.0239001602768674],
+          "median_x": [5290.0, 3.2018496235325475, 0.6208047251579321],
+          "max_x": [7109.0, 1.537209626249927, 0.6514006576991204]
+        }
+      }
+    }
+  ],
+  "auxiliary_nsga2": {
+    "role": "external_reference_only",
+    "best_single_seed": {
+      "seed": 4,
+      "summary_path": "optimized_experiments/nsga2_5seeds_56evals_2026_05_07/seed4/nsga2/summary.json",
+      "pareto_path": "optimized_experiments/nsga2_5seeds_56evals_2026_05_07/seed4/nsga2/pareto_front.json",
+      "canonical_hv": 0.36326472538715254,
+      "n_total": 60,
+      "pareto_size": 26,
+      "points": {
+        "min_x": [3315.0, 6.714105161944895, 1.0153963450643162],
+        "median_x": [4607.0, 3.1929863456300898, 0.6759428661313185],
+        "max_x": [6738.0, 1.8311420516563717, 0.5389833854635342]
+      }
+    },
+    "five_seed_aggregate": {
+      "report_path": "Compare_Exp/experiment_records/（HV）05-03/raw_sources/multiseed/NSGA-II/report.json",
+      "canonical_hv_mean": 0.327299836100588,
+      "canonical_hv_std": 0.024163547844692965,
+      "canonical_hv_min": 0.30385045245482595,
+      "canonical_hv_max": 0.36326472538715254
+    }
+  },
+  "notes": [
+    "Main evidence is same-metric and same-budget within each budget group.",
+    "50-iter direct comparator is fixed to parego_matlab_reference.",
+    "NSGA-II is not presented as a same-seed direct head-to-head result."
+  ]
+}

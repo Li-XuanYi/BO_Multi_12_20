@@ -1,0 +1,490 @@
+{
+  "meta": {
+    "iterations": 10,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "backend": "real_api",
+    "model": "gpt-4.1-mini",
+    "api_base": "https://api.nuwaapi.com/v1"
+  },
+  "baseline_strict": {
+    "mean_canonical_hv": 0.35401423631460066,
+    "std_canonical_hv": 0.01960347964546036,
+    "min_canonical_hv": 0.32477871862060564,
+    "max_canonical_hv": 0.37014511864051075,
+    "runs": [
+      {
+        "seed": 0,
+        "display_hv": 0.9253627966012768,
+        "canonical_hv": 0.37014511864051075,
+        "hypervolume_raw": 10.89153858769098,
+        "n_feasible": 26,
+        "pareto_size": 19,
+        "warmstart_selected": null,
+        "warmstart_selected_count": null,
+        "pool_collected": null,
+        "selector_enabled": null,
+        "disk_cache": null
+      },
+      {
+        "seed": 1,
+        "display_hv": 0.811946796551514,
+        "canonical_hv": 0.32477871862060564,
+        "hypervolume_raw": 9.556630003143884,
+        "n_feasible": 26,
+        "pareto_size": 17,
+        "warmstart_selected": null,
+        "warmstart_selected_count": null,
+        "pool_collected": null,
+        "selector_enabled": null,
+        "disk_cache": null
+      },
+      {
+        "seed": 2,
+        "display_hv": 0.8400800885611548,
+        "canonical_hv": 0.3360320354244619,
+        "hypervolume_raw": 9.887759411682023,
+        "n_feasible": 26,
+        "pareto_size": 17,
+        "warmstart_selected": null,
+        "warmstart_selected_count": null,
+        "pool_collected": null,
+        "selector_enabled": null,
+        "disk_cache": null
+      },
+      {
+        "seed": 3,
+        "display_hv": 0.9240307065527278,
+        "canonical_hv": 0.36961228262109114,
+        "hypervolume_raw": 10.87585986122895,
+        "n_feasible": 26,
+        "pareto_size": 17,
+        "warmstart_selected": null,
+        "warmstart_selected_count": null,
+        "pool_collected": null,
+        "selector_enabled": null,
+        "disk_cache": null
+      },
+      {
+        "seed": 4,
+        "display_hv": 0.9237575656658346,
+        "canonical_hv": 0.36950302626633386,
+        "hypervolume_raw": 10.872644987537894,
+        "n_feasible": 26,
+        "pareto_size": 14,
+        "warmstart_selected": null,
+        "warmstart_selected_count": null,
+        "pool_collected": null,
+        "selector_enabled": null,
+        "disk_cache": null
+      }
+    ]
+  },
+  "old_warmstart_top3": {
+    "mean_canonical_hv": 0.36670966891723467,
+    "std_canonical_hv": 0.006129135964323053,
+    "min_canonical_hv": 0.35632019357966466,
+    "max_canonical_hv": 0.3727595957066193,
+    "runs": [
+      {
+        "seed": 0,
+        "display_hv": 0.9080946742004284,
+        "canonical_hv": 0.3632378696801714,
+        "hypervolume_raw": 10.688292442334166,
+        "n_feasible": 26,
+        "pareto_size": 15,
+        "warmstart_selected": [
+          [
+            5.65,
+            4.15,
+            2.45,
+            0.185,
+            0.195
+          ],
+          [
+            3.75,
+            3.15,
+            2.05,
+            0.31,
+            0.21
+          ],
+          [
+            2.95,
+            2.6,
+            2.0,
+            0.23,
+            0.22
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 3,
+        "selector_enabled": false,
+        "disk_cache": "miss"
+      },
+      {
+        "seed": 1,
+        "display_hv": 0.9250313324879219,
+        "canonical_hv": 0.3700125329951688,
+        "hypervolume_raw": 10.887637248460248,
+        "n_feasible": 26,
+        "pareto_size": 17,
+        "warmstart_selected": [
+          [
+            5.65,
+            4.15,
+            2.45,
+            0.185,
+            0.195
+          ],
+          [
+            3.75,
+            3.15,
+            2.05,
+            0.31,
+            0.21
+          ],
+          [
+            3.35,
+            2.85,
+            2.0,
+            0.235,
+            0.22
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 3,
+        "selector_enabled": false,
+        "disk_cache": "miss"
+      },
+      {
+        "seed": 2,
+        "display_hv": 0.8908004839491616,
+        "canonical_hv": 0.35632019357966466,
+        "hypervolume_raw": 10.48473947785757,
+        "n_feasible": 26,
+        "pareto_size": 19,
+        "warmstart_selected": [
+          [
+            5.65,
+            4.15,
+            2.45,
+            0.185,
+            0.195
+          ],
+          [
+            3.75,
+            3.15,
+            2.05,
+            0.31,
+            0.21
+          ],
+          [
+            3.35,
+            2.85,
+            2.0,
+            0.235,
+            0.22
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 3,
+        "selector_enabled": false,
+        "disk_cache": "miss"
+      },
+      {
+        "seed": 3,
+        "display_hv": 0.9280453815613732,
+        "canonical_hv": 0.37121815262454927,
+        "hypervolume_raw": 10.92311266621992,
+        "n_feasible": 26,
+        "pareto_size": 19,
+        "warmstart_selected": [
+          [
+            5.65,
+            4.15,
+            2.45,
+            0.185,
+            0.195
+          ],
+          [
+            3.75,
+            3.15,
+            2.05,
+            0.31,
+            0.21
+          ],
+          [
+            3.35,
+            2.85,
+            2.0,
+            0.235,
+            0.22
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 3,
+        "selector_enabled": false,
+        "disk_cache": "miss"
+      },
+      {
+        "seed": 4,
+        "display_hv": 0.9318989892665482,
+        "canonical_hv": 0.3727595957066193,
+        "hypervolume_raw": 10.96846970583389,
+        "n_feasible": 26,
+        "pareto_size": 18,
+        "warmstart_selected": [
+          [
+            5.5,
+            4.5,
+            2.8,
+            0.2,
+            0.2
+          ],
+          [
+            2.5,
+            2.5,
+            2.0,
+            0.35,
+            0.25
+          ],
+          [
+            4.0,
+            3.5,
+            2.5,
+            0.25,
+            0.2
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 3,
+        "selector_enabled": false,
+        "disk_cache": "miss"
+      }
+    ]
+  },
+  "warmstart_portfolio": {
+    "mean_canonical_hv": 0.3551984672765342,
+    "std_canonical_hv": 0.016268321886116145,
+    "min_canonical_hv": 0.3267863534219443,
+    "max_canonical_hv": 0.3721560545100313,
+    "runs": [
+      {
+        "seed": 0,
+        "display_hv": 0.8729066851390089,
+        "canonical_hv": 0.3491626740556036,
+        "hypervolume_raw": 10.274129108673762,
+        "n_feasible": 26,
+        "pareto_size": 19,
+        "warmstart_selected": [
+          [
+            5.5,
+            4.5,
+            2.8,
+            0.2,
+            0.2
+          ],
+          [
+            2.0,
+            2.0,
+            2.0,
+            0.36957142857142866,
+            0.27717857142857144
+          ],
+          [
+            5.5,
+            4.0,
+            2.0,
+            0.2,
+            0.3
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 16,
+        "selector_enabled": true,
+        "disk_cache": "miss"
+      },
+      {
+        "seed": 1,
+        "display_hv": 0.9303901362750783,
+        "canonical_hv": 0.3721560545100313,
+        "hypervolume_raw": 10.950710476005213,
+        "n_feasible": 26,
+        "pareto_size": 18,
+        "warmstart_selected": [
+          [
+            5.5,
+            4.5,
+            2.8,
+            0.2,
+            0.2
+          ],
+          [
+            2.0,
+            2.0,
+            2.0,
+            0.36957142857142866,
+            0.27717857142857144
+          ],
+          [
+            5.5,
+            4.0,
+            2.0,
+            0.2,
+            0.3
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 16,
+        "selector_enabled": true,
+        "disk_cache": "miss"
+      },
+      {
+        "seed": 2,
+        "display_hv": 0.8169658835548607,
+        "canonical_hv": 0.3267863534219443,
+        "hypervolume_raw": 9.615704757362128,
+        "n_feasible": 26,
+        "pareto_size": 15,
+        "warmstart_selected": [
+          [
+            5.5,
+            4.5,
+            2.8,
+            0.2,
+            0.2
+          ],
+          [
+            2.0,
+            2.0,
+            2.0,
+            0.36957142857142866,
+            0.27717857142857144
+          ],
+          [
+            5.5,
+            4.0,
+            2.0,
+            0.2,
+            0.3
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 16,
+        "selector_enabled": true,
+        "disk_cache": "miss"
+      },
+      {
+        "seed": 3,
+        "display_hv": 0.9209124982574768,
+        "canonical_hv": 0.3683649993029907,
+        "hypervolume_raw": 10.839158487349511,
+        "n_feasible": 26,
+        "pareto_size": 19,
+        "warmstart_selected": [
+          [
+            5.5,
+            4.5,
+            2.8,
+            0.2,
+            0.2
+          ],
+          [
+            2.0,
+            2.0,
+            2.0,
+            0.36957142857142866,
+            0.27717857142857144
+          ],
+          [
+            5.5,
+            4.0,
+            2.0,
+            0.2,
+            0.3
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 16,
+        "selector_enabled": true,
+        "disk_cache": "miss"
+      },
+      {
+        "seed": 4,
+        "display_hv": 0.8988056377302531,
+        "canonical_hv": 0.3595222550921013,
+        "hypervolume_raw": 10.578960297656453,
+        "n_feasible": 26,
+        "pareto_size": 16,
+        "warmstart_selected": [
+          [
+            5.5,
+            4.5,
+            2.8,
+            0.2,
+            0.2
+          ],
+          [
+            2.0,
+            2.0,
+            2.0,
+            0.36957142857142866,
+            0.27717857142857144
+          ],
+          [
+            5.5,
+            4.0,
+            2.0,
+            0.2,
+            0.3
+          ]
+        ],
+        "warmstart_selected_count": 3,
+        "pool_collected": 16,
+        "selector_enabled": true,
+        "disk_cache": "miss"
+      }
+    ]
+  },
+  "old_warmstart_top3_vs_baseline": {
+    "mean_delta_canonical_hv": 0.012695432602634027,
+    "wins": 4,
+    "total": 5,
+    "deltas_by_seed": [
+      -0.0069072489603393405,
+      0.04523381437456314,
+      0.02028815815520274,
+      0.001605870003458132,
+      0.0032565694402854617
+    ]
+  },
+  "warmstart_portfolio_vs_baseline": {
+    "mean_delta_canonical_hv": 0.0011842309619335746,
+    "wins": 1,
+    "total": 5,
+    "deltas_by_seed": [
+      -0.020982444584907167,
+      0.047377335889425665,
+      -0.00924568200251763,
+      -0.0012472833181004228,
+      -0.009980771174232572
+    ]
+  },
+  "warmstart_portfolio_vs_old_warmstart": {
+    "mean_delta_canonical_hv": -0.011511201640700453,
+    "wins": 1,
+    "total": 5,
+    "deltas_by_seed": [
+      -0.014075195624567827,
+      0.002143521514862523,
+      -0.02953384015772037,
+      -0.0028531533215585547,
+      -0.013237340614518034
+    ]
+  }
+}

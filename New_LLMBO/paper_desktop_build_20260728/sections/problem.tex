@@ -1,0 +1,72 @@
+% ============================================================================
+% Section II: Problem Formulation
+% ============================================================================
+\section{Problem Formulation}
+\label{sec:problem}
+
+% 2.1 Multi-Objective Optimization Problem
+\subsection{Charging Protocol Design as CMOP}
+
+The design variable is a multi-stage constant-current charging protocol
+$\btheta$. The optimization problem is formulated as a constrained
+multi-objective optimization problem:
+\begin{equation}
+\min_{\btheta} f(\btheta)=
+\{t_c(\btheta),\Delta T_p(\btheta),Q_s(\btheta)\},
+\label{eq:cmop}
+\end{equation}
+where $t_c$ is charging time, $\Delta T_p$ is the peak temperature rise above
+ambient, and $Q_s$ is the capacity fade percentage. All three objectives are
+minimized, and the nondominated set forms the Pareto front.
+
+% 2.2 Decision Variables
+\subsection{Decision Variables and Constraints}
+
+A three-stage constant-current protocol is adopted. The decision vector is
+\begin{equation}
+\btheta=[I_1,I_2,I_3,\Delta s_1,\Delta s_2]^\top ,
+\label{eq:theta}
+\end{equation}
+where $I_1,I_2,I_3$ are the stage currents and $\Delta s_1,\Delta s_2$ are the
+SOC widths of the first two stages. The third width is determined by the
+remaining SOC window. The bounds used in this work are listed in
+Table~\ref{tab:variables}.
+
+\begin{table}[htbp]
+\caption{Decision Variables and Bounds}
+\label{tab:variables}
+\centering
+\begin{tabular}{lccc}
+\toprule
+Variable & Symbol & Bounds & Unit \\
+\midrule
+Stage-1 current & $I_1$ & $[2.0,6.0]$ & A \\
+Stage-2 current & $I_2$ & $[2.0,5.0]$ & A \\
+Stage-3 current & $I_3$ & $[2.0,3.0]$ & A \\
+Stage-1 SOC width & $\Delta s_1$ & $[0.10,0.40]$ & -- \\
+Stage-2 SOC width & $\Delta s_2$ & $[0.10,0.30]$ & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The main geometric constraint is
+\begin{equation}
+\Delta s_1+\Delta s_2 \leq 0.70,
+\label{eq:dsoc}
+\end{equation}
+which ensures that a nontrivial third stage remains. During LLM candidate
+generation, a softer safety margin $\Delta s_1+\Delta s_2 \leq 0.65$ is used to
+discourage protocols near the hard boundary.
+
+% 2.3 Operational Constraints
+\subsection{Operational Constraints}
+
+During simulation, each protocol must satisfy voltage, temperature, and SOC
+limits:
+\begin{align}
+V_{\mathrm{peak}}(\btheta) &\leq V_{\max},\\
+T_{\mathrm{peak}}(\btheta) &\leq T_{\max},\\
+0 \leq \mathrm{SOC}(t) &\leq 0.80 .
+\end{align}
+Protocols that violate hard operational constraints receive penalty objective
+values and are not allowed to dominate feasible protocols.

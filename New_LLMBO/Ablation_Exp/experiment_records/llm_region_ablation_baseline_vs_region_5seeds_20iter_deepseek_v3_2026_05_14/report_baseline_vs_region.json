@@ -1,0 +1,400 @@
+{
+  "experiment": "baseline_vs_llm_region_focused_ablation",
+  "output_root": "Ablation_Exp\\experiment_records\\llm_region_ablation_baseline_vs_region_5seeds_20iter_deepseek_v3_2026_05_14",
+  "model": "deepseek-v3",
+  "api_base": "https://api.chat.csu.edu.cn/v1",
+  "iterations": 20,
+  "seeds": [
+    8409,
+    8410,
+    8411,
+    8412,
+    8413
+  ],
+  "variants": {
+    "baseline": "Baseline",
+    "baseline_llm_region": "Baseline+LLM_Region"
+  },
+  "aggregates": {
+    "baseline": {
+      "label": "Baseline",
+      "n_runs": 5,
+      "canonical_hv": {
+        "mean": 0.3239937175247743,
+        "std": 0.04859967105172082,
+        "stderr": 0.02173443363115529,
+        "min": 0.2576009907938201,
+        "max": 0.36024806582394925
+      },
+      "display_hv_mean": 0.8099842938119357,
+      "pareto_size_mean": 21.2,
+      "n_total_mean": 26.0,
+      "n_feasible_mean": 26.0
+    },
+    "baseline_llm_region": {
+      "label": "Baseline+LLM_Region",
+      "n_runs": 5,
+      "canonical_hv": {
+        "mean": 0.35261320795228396,
+        "std": 0.04374688430823131,
+        "stderr": 0.01956420142340481,
+        "min": 0.2762516745007628,
+        "max": 0.3864054910122533
+      },
+      "display_hv_mean": 0.8815330198807099,
+      "pareto_size_mean": 20.6,
+      "n_total_mean": 26.0,
+      "n_feasible_mean": 26.0
+    }
+  },
+  "comparison": {
+    "metric": "canonical_hv",
+    "higher_is_better": true,
+    "mean_delta_llm_region_minus_baseline": 0.028619490427509664,
+    "mean_pct_delta_llm_region_minus_baseline": 9.611005614798769,
+    "wins_llm_region": 5,
+    "wins_baseline": 0,
+    "ties": 0,
+    "total": 5,
+    "per_seed": [
+      {
+        "seed": 8409,
+        "baseline_canonical_hv": 0.2576009907938201,
+        "llm_region_canonical_hv": 0.2762516745007628,
+        "delta": 0.018650683706942728,
+        "pct_delta": 7.24014439908364,
+        "winner": "LLM_Region"
+      },
+      {
+        "seed": 8410,
+        "baseline_canonical_hv": 0.36024806582394925,
+        "llm_region_canonical_hv": 0.3602484767765648,
+        "delta": 4.1095261554824347e-07,
+        "pct_delta": 0.00011407489853091207,
+        "winner": "LLM_Region"
+      },
+      {
+        "seed": 8411,
+        "baseline_canonical_hv": 0.286272982044566,
+        "llm_region_canonical_hv": 0.3726944383144566,
+        "delta": 0.08642145626989056,
+        "pct_delta": 30.188478022853293,
+        "winner": "LLM_Region"
+      },
+      {
+        "seed": 8412,
+        "baseline_canonical_hv": 0.3580915248075783,
+        "llm_region_canonical_hv": 0.3674659591573822,
+        "delta": 0.00937443434980395,
+        "pct_delta": 2.617887802522368,
+        "winner": "LLM_Region"
+      },
+      {
+        "seed": 8413,
+        "baseline_canonical_hv": 0.35775502415395777,
+        "llm_region_canonical_hv": 0.3864054910122533,
+        "delta": 0.02865046685829553,
+        "pct_delta": 8.008403774636012,
+        "winner": "LLM_Region"
+      }
+    ]
+  },
+  "region_telemetry": [
+    {
+      "seed": 8409,
+      "attempt_count": 20,
+      "accept_count": 0,
+      "effective_accept_count": 0,
+      "pool_influenced_acquisition_count": 16,
+      "fallback_count": 20,
+      "fallback_reasons": {
+        "too_close_to_existing": 6,
+        "same_as_plain": 3,
+        "outside_region": 6,
+        "override_disabled": 1,
+        "inactive_window_skipped": 4
+      }
+    },
+    {
+      "seed": 8410,
+      "attempt_count": 20,
+      "accept_count": 0,
+      "effective_accept_count": 0,
+      "pool_influenced_acquisition_count": 16,
+      "fallback_count": 20,
+      "fallback_reasons": {
+        "same_as_plain": 6,
+        "outside_region": 5,
+        "parse_fail": 4,
+        "too_close_to_existing": 1,
+        "inactive_window_skipped": 4
+      }
+    },
+    {
+      "seed": 8411,
+      "attempt_count": 20,
+      "accept_count": 0,
+      "effective_accept_count": 0,
+      "pool_influenced_acquisition_count": 16,
+      "fallback_count": 20,
+      "fallback_reasons": {
+        "too_close_to_existing": 4,
+        "same_as_plain": 7,
+        "override_disabled": 1,
+        "outside_region": 4,
+        "inactive_window_skipped": 4
+      }
+    },
+    {
+      "seed": 8412,
+      "attempt_count": 20,
+      "accept_count": 0,
+      "effective_accept_count": 0,
+      "pool_influenced_acquisition_count": 16,
+      "fallback_count": 20,
+      "fallback_reasons": {
+        "same_as_plain": 11,
+        "too_close_to_existing": 1,
+        "outside_region": 4,
+        "inactive_window_skipped": 4
+      }
+    },
+    {
+      "seed": 8413,
+      "attempt_count": 20,
+      "accept_count": 0,
+      "effective_accept_count": 0,
+      "pool_influenced_acquisition_count": 16,
+      "fallback_count": 20,
+      "fallback_reasons": {
+        "same_as_plain": 7,
+        "too_close_to_existing": 1,
+        "outside_region": 6,
+        "plain_ei_gap": 1,
+        "override_disabled": 1,
+        "inactive_window_skipped": 4
+      }
+    }
+  ],
+  "region_fallback_reason_totals": {
+    "too_close_to_existing": 13,
+    "same_as_plain": 34,
+    "outside_region": 25,
+    "override_disabled": 3,
+    "inactive_window_skipped": 20,
+    "parse_fail": 4,
+    "plain_ei_gap": 1
+  },
+  "records": [
+    {
+      "seed": 8409,
+      "variant": "baseline",
+      "label": "Baseline",
+      "canonical_hv": 0.2576009907938201,
+      "display_hv": 0.6440024769845502,
+      "raw_hv": 7.57992200940848,
+      "pareto_size": 20,
+      "n_total": 26,
+      "n_feasible": 26,
+      "region_lift_attempt_count": 0,
+      "region_lift_accept_count": 0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "region_lift_fallback_count": 0,
+      "region_lift_fallback_reasons": {},
+      "summary_path": "seed8409\\baseline\\summary.json"
+    },
+    {
+      "seed": 8409,
+      "variant": "baseline_llm_region",
+      "label": "Baseline+LLM_Region",
+      "canonical_hv": 0.2762516745007628,
+      "display_hv": 0.6906291862519071,
+      "raw_hv": 8.128719308227575,
+      "pareto_size": 19,
+      "n_total": 26,
+      "n_feasible": 26,
+      "region_lift_attempt_count": 20,
+      "region_lift_accept_count": 0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 16,
+      "region_lift_fallback_count": 20,
+      "region_lift_fallback_reasons": {
+        "too_close_to_existing": 6,
+        "same_as_plain": 3,
+        "outside_region": 6,
+        "override_disabled": 1,
+        "inactive_window_skipped": 4
+      },
+      "summary_path": "seed8409\\baseline_llm_region\\summary.json"
+    },
+    {
+      "seed": 8410,
+      "variant": "baseline",
+      "label": "Baseline",
+      "canonical_hv": 0.36024806582394925,
+      "display_hv": 0.900620164559873,
+      "raw_hv": 10.600317314661883,
+      "pareto_size": 23,
+      "n_total": 26,
+      "n_feasible": 26,
+      "region_lift_attempt_count": 0,
+      "region_lift_accept_count": 0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "region_lift_fallback_count": 0,
+      "region_lift_fallback_reasons": {},
+      "summary_path": "seed8410\\baseline\\summary.json"
+    },
+    {
+      "seed": 8410,
+      "variant": "baseline_llm_region",
+      "label": "Baseline+LLM_Region",
+      "canonical_hv": 0.3602484767765648,
+      "display_hv": 0.900621191941412,
+      "raw_hv": 10.600329406963104,
+      "pareto_size": 23,
+      "n_total": 26,
+      "n_feasible": 26,
+      "region_lift_attempt_count": 20,
+      "region_lift_accept_count": 0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 16,
+      "region_lift_fallback_count": 20,
+      "region_lift_fallback_reasons": {
+        "same_as_plain": 6,
+        "outside_region": 5,
+        "parse_fail": 4,
+        "too_close_to_existing": 1,
+        "inactive_window_skipped": 4
+      },
+      "summary_path": "seed8410\\baseline_llm_region\\summary.json"
+    },
+    {
+      "seed": 8411,
+      "variant": "baseline",
+      "label": "Baseline",
+      "canonical_hv": 0.286272982044566,
+      "display_hv": 0.715682455111415,
+      "raw_hv": 8.423596782806557,
+      "pareto_size": 21,
+      "n_total": 26,
+      "n_feasible": 26,
+      "region_lift_attempt_count": 0,
+      "region_lift_accept_count": 0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "region_lift_fallback_count": 0,
+      "region_lift_fallback_reasons": {},
+      "summary_path": "seed8411\\baseline\\summary.json"
+    },
+    {
+      "seed": 8411,
+      "variant": "baseline_llm_region",
+      "label": "Baseline+LLM_Region",
+      "canonical_hv": 0.3726944383144566,
+      "display_hv": 0.9317360957861415,
+      "raw_hv": 10.966552446317891,
+      "pareto_size": 22,
+      "n_total": 26,
+      "n_feasible": 26,
+      "region_lift_attempt_count": 20,
+      "region_lift_accept_count": 0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 16,
+      "region_lift_fallback_count": 20,
+      "region_lift_fallback_reasons": {
+        "too_close_to_existing": 4,
+        "same_as_plain": 7,
+        "override_disabled": 1,
+        "outside_region": 4,
+        "inactive_window_skipped": 4
+      },
+      "summary_path": "seed8411\\baseline_llm_region\\summary.json"
+    },
+    {
+      "seed": 8412,
+      "variant": "baseline",
+      "label": "Baseline",
+      "canonical_hv": 0.3580915248075783,
+      "display_hv": 0.8952288120189457,
+      "raw_hv": 10.536860987635308,
+      "pareto_size": 21,
+      "n_total": 26,
+      "n_feasible": 26,
+      "region_lift_attempt_count": 0,
+      "region_lift_accept_count": 0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "region_lift_fallback_count": 0,
+      "region_lift_fallback_reasons": {},
+      "summary_path": "seed8412\\baseline\\summary.json"
+    },
+    {
+      "seed": 8412,
+      "variant": "baseline_llm_region",
+      "label": "Baseline+LLM_Region",
+      "canonical_hv": 0.3674659591573822,
+      "display_hv": 0.9186648978934555,
+      "raw_hv": 10.812704186199351,
+      "pareto_size": 20,
+      "n_total": 26,
+      "n_feasible": 26,
+      "region_lift_attempt_count": 20,
+      "region_lift_accept_count": 0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 16,
+      "region_lift_fallback_count": 20,
+      "region_lift_fallback_reasons": {
+        "same_as_plain": 11,
+        "too_close_to_existing": 1,
+        "outside_region": 4,
+        "inactive_window_skipped": 4
+      },
+      "summary_path": "seed8412\\baseline_llm_region\\summary.json"
+    },
+    {
+      "seed": 8413,
+      "variant": "baseline",
+      "label": "Baseline",
+      "canonical_hv": 0.35775502415395777,
+      "display_hv": 0.8943875603848944,
+      "raw_hv": 10.526959439109822,
+      "pareto_size": 21,
+      "n_total": 26,
+      "n_feasible": 26,
+      "region_lift_attempt_count": 0,
+      "region_lift_accept_count": 0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 0,
+      "region_lift_fallback_count": 0,
+      "region_lift_fallback_reasons": {},
+      "summary_path": "seed8413\\baseline\\summary.json"
+    },
+    {
+      "seed": 8413,
+      "variant": "baseline_llm_region",
+      "label": "Baseline+LLM_Region",
+      "canonical_hv": 0.3864054910122533,
+      "display_hv": 0.9660137275306332,
+      "raw_hv": 11.370000856185895,
+      "pareto_size": 19,
+      "n_total": 26,
+      "n_feasible": 26,
+      "region_lift_attempt_count": 20,
+      "region_lift_accept_count": 0,
+      "effective_lift_accept_count": 0,
+      "region_pool_influenced_acquisition_count": 16,
+      "region_lift_fallback_count": 20,
+      "region_lift_fallback_reasons": {
+        "same_as_plain": 7,
+        "too_close_to_existing": 1,
+        "outside_region": 6,
+        "plain_ei_gap": 1,
+        "override_disabled": 1,
+        "inactive_window_skipped": 4
+      },
+      "summary_path": "seed8413\\baseline_llm_region\\summary.json"
+    }
+  ]
+}

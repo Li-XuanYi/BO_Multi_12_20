@@ -1,0 +1,107 @@
+# ============================================================================
+# LLM Sensitivity Ranking Prompt (LLAMBO Four-Layer Structure)
+# For ARD Length Scale Adaptation in GP Surrogate Model
+# ============================================================================
+
+## 1. Role & Meta-data (Domain Role & Metadata Injection)
+
+You are an expert in battery fast-charging physics and parameter sensitivity analysis.
+
+**Decision Variables (4D Parameter Space):**
+| Variable | Symbol | Physical Meaning | Range | Unit |
+|----------|--------|------------------|-------|------|
+| current1 | I1 | Phase 1 constant current | [3.0, 6.0] | A |
+| time1 | T1 | Phase 1 duration | [2.0, 40.0] | min |
+| current2 | I2 | Phase 2 constant current | [1.0, 4.0] | A |
+| v_switch | V_sw | CC-to-CV transition voltage | [3.8, 4.2] | V |
+
+**Optimization Objectives (Minimize):**
+1. Charging time (s)
+2. Peak temperature (K)
+3. Capacity fade (aging, %)
+
+**Physical Mechanisms:**
+
+1. **current1 (I1):** Higher current accelerates charging but increases heat generation (Joule heating ∝ I²R).
+   - Direct impact on power dissipation and thermal stress
+   - Dominant heat source during Phase 1
+
+2. **time1 (T1):** Duration of high-current Phase 1.
+   - Controls total energy input and cumulative heat accumulation
+   - Longer duration extends exposure to high-power conditions
+   - Integral effect: Q_total = ∫₀^{T1} I1²·R(SOC)·dt
+
+3. **current2 (I2):** Phase 2 tapering current.
+   - Determines charging rate during final stage
+   - Lower values reduce thermal and electrical stress
+   - Effectiveness depends on residual temperature from Phase 1
+
+4. **v_switch (V_sw):** Voltage threshold for phase switch.
+   - Controls when transition from constant current to constant voltage occurs
+   - Higher thresholds extend high-current phase duration
+   - Affects lithium plating risk near full charge
+
+## 2. In-Context History (Dynamic Context & Historical Observations)
+
+**Top-10 Observations (by charging time):**
+{TOP_10_TIME}
+
+**Top-5 Observations (by temperature):**
+{TOP_5_TEMP}
+
+**Top-5 Observations (by aging):**
+{TOP_5_AGING}
+
+**Data Summary:**
+{DATA_SUMMARY}
+
+**Failed Experiments (constraint violations):**
+{FAILURE_SECTION}
+
+## 3. Algorithmic Directives (Algorithm Mechanism & Task Instructions)
+
+**Task:**
+Rank the 4 parameters by their sensitivity to the objectives (time, temperature, aging).
+
+**Sensitivity Ranking Definition:**
+- Rank 1 = MOST sensitive (smallest changes cause largest objective variations)
+- Rank 4 = LEAST sensitive (largest changes cause smallest objective variations)
+- Each rank from 1 to 4 must be used EXACTLY ONCE (permutation)
+
+**Analysis Guidelines:**
+
+1. **Examine the experimental data above:**
+   - Which parameter shows strongest correlation with objective variations?
+   - Which parameter changes cause the most dramatic effects?
+
+2. **Consider physical mechanisms:**
+   - I²R heating makes current parameters highly influential
+   - Cumulative effects (time1) may amplify small variations
+   - Interaction effects may mask individual sensitivities
+
+3. **Data-driven reasoning:**
+   - Analyze patterns in Top-10/Top-5 observations
+   - Compare failed experiments to identify critical parameters
+   - Look for threshold behaviors or tipping points
+
+**ARD Length Scale Application:**
+- Rank 1 (most sensitive) → shorter length scale → GP requires smoother predictions
+- Rank 4 (least sensitive) → longer length scale → GP allows larger variations
+
+## 4. Format Constraints (Strict Output Format)
+
+**Output JSON:**
+{
+  "ranking": {
+    "current1": <rank 1-4, where 1=most sensitive>,
+    "time1": <rank 1-4>,
+    "current2": <rank 1-4>,
+    "v_switch": <rank 1-4>
+  },
+  "reasoning": "<brief explanation based on observed data patterns>"
+}
+
+**CRITICAL Constraints:**
+- The 4 ranks MUST be a permutation of [1,2,3,4] (each used exactly once)
+- All values must be integers from 1 to 4
+- reasoning must reference observed data patterns

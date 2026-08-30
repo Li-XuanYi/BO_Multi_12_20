@@ -1,0 +1,207 @@
+{
+  "metadata": {
+    "iterations": 20,
+    "seeds": [
+      57161,
+      26695,
+      96532
+    ],
+    "variants": [
+      "baseline_plain_ei",
+      "llm_region_lgbo_posterior"
+    ],
+    "model": "deepseek-v3",
+    "api_base": "https://api.chat.csu.edu.cn/v1",
+    "api_key_storage": "environment variable only; summaries redact api keys"
+  },
+  "records": [
+    {
+      "seed": 57161,
+      "variant": "baseline_plain_ei",
+      "status": "ok",
+      "skipped_existing": false,
+      "canonical_hv": 0.35943351215149083,
+      "raw_hv": 10.576349032200369,
+      "pareto_size": 22,
+      "n_total": 26,
+      "region_lift_attempt_count": 0,
+      "region_lift_accept_count": 0,
+      "lift_accept_rate": 0.0,
+      "region_lift_fallback_reasons": {},
+      "parser_status_counts": {},
+      "selected_changed_count": 0,
+      "selected_changed_total": 0,
+      "lgbo_shift_mean_avg": null,
+      "summary_path": "Ablation_Exp\\experiment_records\\baseline_vs_llm_region_posterior_deepseek_v3_3seeds_20iter_2026_05_20\\seed57161\\baseline_plain_ei\\summary.json",
+      "elapsed_s": 107.25
+    },
+    {
+      "seed": 57161,
+      "variant": "llm_region_lgbo_posterior",
+      "status": "ok",
+      "skipped_existing": false,
+      "canonical_hv": 0.38717693659943214,
+      "raw_hv": 11.392700681086794,
+      "pareto_size": 22,
+      "n_total": 26,
+      "region_lift_attempt_count": 20,
+      "region_lift_accept_count": 16,
+      "lift_accept_rate": 0.8,
+      "region_lift_fallback_reasons": {
+        "missing_lgbo_lift": 4
+      },
+      "parser_status_counts": {
+        "ok": 16
+      },
+      "selected_changed_count": 10,
+      "selected_changed_total": 20,
+      "lgbo_shift_mean_avg": 0.024012923787922424,
+      "summary_path": "Ablation_Exp\\experiment_records\\baseline_vs_llm_region_posterior_deepseek_v3_3seeds_20iter_2026_05_20\\seed57161\\llm_region_lgbo_posterior\\summary.json",
+      "elapsed_s": 211.64
+    },
+    {
+      "seed": 26695,
+      "variant": "baseline_plain_ei",
+      "status": "ok",
+      "skipped_existing": false,
+      "canonical_hv": 0.36716415634703686,
+      "raw_hv": 10.803823623443794,
+      "pareto_size": 17,
+      "n_total": 26,
+      "region_lift_attempt_count": 0,
+      "region_lift_accept_count": 0,
+      "lift_accept_rate": 0.0,
+      "region_lift_fallback_reasons": {},
+      "parser_status_counts": {},
+      "selected_changed_count": 0,
+      "selected_changed_total": 0,
+      "lgbo_shift_mean_avg": null,
+      "summary_path": "Ablation_Exp\\experiment_records\\baseline_vs_llm_region_posterior_deepseek_v3_3seeds_20iter_2026_05_20\\seed26695\\baseline_plain_ei\\summary.json",
+      "elapsed_s": 103.59
+    },
+    {
+      "seed": 26695,
+      "variant": "llm_region_lgbo_posterior",
+      "status": "ok",
+      "skipped_existing": false,
+      "canonical_hv": 0.3629640636880291,
+      "raw_hv": 10.680235687351384,
+      "pareto_size": 21,
+      "n_total": 26,
+      "region_lift_attempt_count": 20,
+      "region_lift_accept_count": 16,
+      "lift_accept_rate": 0.8,
+      "region_lift_fallback_reasons": {
+        "missing_lgbo_lift": 4
+      },
+      "parser_status_counts": {
+        "ok": 16
+      },
+      "selected_changed_count": 10,
+      "selected_changed_total": 20,
+      "lgbo_shift_mean_avg": 0.02334921901146574,
+      "summary_path": "Ablation_Exp\\experiment_records\\baseline_vs_llm_region_posterior_deepseek_v3_3seeds_20iter_2026_05_20\\seed26695\\llm_region_lgbo_posterior\\summary.json",
+      "elapsed_s": 224.22
+    },
+    {
+      "seed": 96532,
+      "variant": "baseline_plain_ei",
+      "status": "ok",
+      "skipped_existing": false,
+      "canonical_hv": 0.3432226240413006,
+      "raw_hv": 10.09934284057109,
+      "pareto_size": 22,
+      "n_total": 26,
+      "region_lift_attempt_count": 0,
+      "region_lift_accept_count": 0,
+      "lift_accept_rate": 0.0,
+      "region_lift_fallback_reasons": {},
+      "parser_status_counts": {},
+      "selected_changed_count": 0,
+      "selected_changed_total": 0,
+      "lgbo_shift_mean_avg": null,
+      "summary_path": "Ablation_Exp\\experiment_records\\baseline_vs_llm_region_posterior_deepseek_v3_3seeds_20iter_2026_05_20\\seed96532\\baseline_plain_ei\\summary.json",
+      "elapsed_s": 108.55
+    },
+    {
+      "seed": 96532,
+      "variant": "llm_region_lgbo_posterior",
+      "status": "ok",
+      "skipped_existing": false,
+      "canonical_hv": 0.2751009937678598,
+      "raw_hv": 8.09486047023842,
+      "pareto_size": 18,
+      "n_total": 26,
+      "region_lift_attempt_count": 20,
+      "region_lift_accept_count": 16,
+      "lift_accept_rate": 0.8,
+      "region_lift_fallback_reasons": {
+        "missing_lgbo_lift": 4
+      },
+      "parser_status_counts": {
+        "ok": 16
+      },
+      "selected_changed_count": 11,
+      "selected_changed_total": 20,
+      "lgbo_shift_mean_avg": 0.01890554454041556,
+      "summary_path": "Ablation_Exp\\experiment_records\\baseline_vs_llm_region_posterior_deepseek_v3_3seeds_20iter_2026_05_20\\seed96532\\llm_region_lgbo_posterior\\summary.json",
+      "elapsed_s": 218.02
+    }
+  ],
+  "aggregates": {
+    "baseline_plain_ei": {
+      "values": [
+        0.35943351215149083,
+        0.36716415634703686,
+        0.3432226240413006
+      ],
+      "mean": 0.3566067641799428,
+      "median": 0.35943351215149083,
+      "min": 0.3432226240413006,
+      "max": 0.36716415634703686
+    },
+    "llm_region_lgbo_posterior": {
+      "values": [
+        0.38717693659943214,
+        0.3629640636880291,
+        0.2751009937678598
+      ],
+      "mean": 0.34174733135177365,
+      "median": 0.3629640636880291,
+      "min": 0.2751009937678598,
+      "max": 0.38717693659943214
+    }
+  },
+  "comparison_llm_region_posterior_vs_baseline": {
+    "lhs": "llm_region_lgbo_posterior",
+    "rhs": "baseline_plain_ei",
+    "shared_seeds": [
+      26695,
+      57161,
+      96532
+    ],
+    "wins": 1,
+    "total": 3,
+    "mean_delta_canonical_hv": -0.014859432828169095,
+    "per_seed_delta": [
+      {
+        "seed": 26695,
+        "delta_canonical_hv": -0.004200092659007781,
+        "lhs": 0.3629640636880291,
+        "rhs": 0.36716415634703686
+      },
+      {
+        "seed": 57161,
+        "delta_canonical_hv": 0.02774342444794131,
+        "lhs": 0.38717693659943214,
+        "rhs": 0.35943351215149083
+      },
+      {
+        "seed": 96532,
+        "delta_canonical_hv": -0.06812163027344081,
+        "lhs": 0.2751009937678598,
+        "rhs": 0.3432226240413006
+      }
+    ]
+  }
+}

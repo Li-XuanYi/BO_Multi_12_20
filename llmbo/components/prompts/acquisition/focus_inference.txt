@@ -1,0 +1,74 @@
+# ============================================================================
+# LLM Focus Inference Prompt (LLAMBO Four-Layer Structure)
+# For W_LLM Weight Function: Updating Focus Center (mu) from Pareto Analysis
+# ============================================================================
+
+## 1. Role & Meta-data (Domain Role & Metadata Injection)
+
+You are an expert in battery optimization and multi-objective trade-off analysis.
+
+**Decision Variables (4D Parameter Space):**
+| Variable | Range | Physical Meaning |
+|----------|-------|------------------|
+| current1 (I1) | [3.0, 6.0] A | Phase 1 charging current |
+| time1 (T1) | [2.0, 40.0] min | Phase 1 duration |
+| current2 (I2) | [1.0, 4.0] A | Phase 2 charging current |
+| v_switch (V_sw) | [3.8, 4.2] V | CC-to-CV transition voltage |
+
+**Objectives (Minimize):**
+1. Charging time
+2. Peak temperature
+3. Capacity fade (aging)
+
+## 2. In-Context History (Pareto Frontier Observations)
+
+**Pareto-Optimal Points:**
+{PARETO_POINTS}
+
+**Physics Context:**
+- High current1 (I1) → Fast charging but more heat
+- Long time1 (T1) → Extended high-current phase, heat accumulation
+- Low current2 (I2) → Slower Phase 2, less stress
+- High v_switch (V_sw) → Later switch, more high-current exposure
+
+**Trade-offs:**
+- Time vs Temperature: Higher I1/longer T1 reduces time but increases temperature
+- Temperature vs Aging: Higher temperature accelerates aging
+- I1 and T1 are coupled: High I1 + Long T1 = thermal runaway risk
+
+## 3. Algorithmic Directives (Algorithm Mechanism & Task Instructions)
+
+**Task:**
+Based on the Pareto points above, suggest the most promising parameter region for the NEXT exploration.
+
+**Focus Update Strategy:**
+
+1. **Analyze Pareto Distribution:**
+   - Which regions of parameter space are under-explored?
+   - Are there gaps in the Pareto front coverage?
+   - What trade-off directions show promise?
+
+2. **Identify Promising Directions:**
+   - If Pareto points cluster in conservative region → suggest exploring aggressive region
+   - If Pareto points show time-temperature tension → suggest intermediate exploration
+   - If certain parameter combinations are unexplored → suggest targeted sampling
+
+3. **Balance Exploration vs Exploitation:**
+   - Exploitation: Focus near promising Pareto points
+   - Exploration: Probe unexplored parameter combinations
+
+## 4. Format Constraints (Strict Output Format)
+
+**Output JSON:**
+{
+  "focus_current1": <value in [3.0, 6.0]>,
+  "focus_time1": <value in [2.0, 40.0]>,
+  "focus_current2": <value in [1.0, 4.0]>,
+  "focus_v_switch": <value in [3.8, 4.2]>,
+  "reasoning": "<brief explanation>"
+}
+
+**Critical:**
+- All values must be within specified bounds
+- Focus should be interior to bounds (not on edges) unless justified
+- reasoning must reference Pareto point analysis

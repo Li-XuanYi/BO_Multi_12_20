@@ -1,0 +1,155 @@
+{
+  "archive_name": "Ecker2015_HV05-12",
+  "created_for": "Compare_Exp/images/Ecker2015_HV05-12/hv_convergence_parego_vs_llmbo.png",
+  "generation_script": "Compare_Exp/plot_ecker2015_hv_convergence.py",
+  "seeds": [
+    8409,
+    8410,
+    8411,
+    8412,
+    8413
+  ],
+  "max_evals": 56,
+  "curve_method": "Canonical HV traces recomputed from each seed database.json by replaying prefix observations.",
+  "plot_band_notes": {
+    "ParEGO": "Centerline is mean across 5 seeds; plotted band is +/- 1.00x raw standard deviation.",
+    "LLMBO-MO": "Centerline is mean across 5 seeds; plotted band is +/- 1.00x raw standard deviation.",
+    "common_origin": "Disabled; plotted curves start from the first actual evaluation point.",
+    "y_axis": "Axis label is HV; tick labels are displayed as plotted canonical values multiplied by 0.3."
+  },
+  "lines": {
+    "ParEGO": {
+      "label_in_plot": "ParEGO",
+      "color": "#1f77b4",
+      "source_root": "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11",
+      "variant_dir": "parego_matlab_reference_Ecker2015",
+      "report": "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/report.json",
+      "archived_raw_source": "Compare_Exp/experiment_records/Ecker2015_HV05-12/raw_sources/ParEGO",
+      "seed_sources": [
+        {
+          "seed": 8409,
+          "source_dir": "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8409/parego_matlab_reference_Ecker2015",
+          "copied_files": [
+            "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8409/parego_matlab_reference_Ecker2015/summary.json",
+            "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8409/parego_matlab_reference_Ecker2015/database.json",
+            "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8409/parego_matlab_reference_Ecker2015/pareto_front.json"
+          ]
+        },
+        {
+          "seed": 8410,
+          "source_dir": "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8410/parego_matlab_reference_Ecker2015",
+          "copied_files": [
+            "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8410/parego_matlab_reference_Ecker2015/summary.json",
+            "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8410/parego_matlab_reference_Ecker2015/database.json",
+            "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8410/parego_matlab_reference_Ecker2015/pareto_front.json"
+          ]
+        },
+        {
+          "seed": 8411,
+          "source_dir": "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8411/parego_matlab_reference_Ecker2015",
+          "copied_files": [
+            "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8411/parego_matlab_reference_Ecker2015/summary.json",
+            "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8411/parego_matlab_reference_Ecker2015/database.json",
+            "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8411/parego_matlab_reference_Ecker2015/pareto_front.json"
+          ]
+        },
+        {
+          "seed": 8412,
+          "source_dir": "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8412/parego_matlab_reference_Ecker2015",
+          "copied_files": [
+            "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8412/parego_matlab_reference_Ecker2015/summary.json",
+            "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8412/parego_matlab_reference_Ecker2015/database.json",
+            "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8412/parego_matlab_reference_Ecker2015/pareto_front.json"
+          ]
+        },
+        {
+          "seed": 8413,
+          "source_dir": "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8413/parego_matlab_reference_Ecker2015",
+          "copied_files": [
+            "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8413/parego_matlab_reference_Ecker2015/summary.json",
+            "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8413/parego_matlab_reference_Ecker2015/database.json",
+            "optimized_experiments/parego_ecker_5seeds_56evals_2026_05_11/seed8413/parego_matlab_reference_Ecker2015/pareto_front.json"
+          ]
+        }
+      ],
+      "curve_csv": "curve_data/parego_curve.csv",
+      "per_seed_csv_dir": "curve_data/per_seed_traces/ParEGO",
+      "plot_band_scale": 1.0,
+      "final_mean_hv": 1.5865626975702702,
+      "final_std_hv": 0.011620830370040322
+    },
+    "LLMBO-MO": {
+      "label_in_plot": "LLMBO-MO",
+      "color": "#d62728",
+      "source_root": "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11",
+      "variant_dir": "minmax",
+      "report": "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/report_5seeds.json",
+      "archived_raw_source": "Compare_Exp/experiment_records/Ecker2015_HV05-12/raw_sources/LLMBO-MO",
+      "seed_sources": [
+        {
+          "seed": 8409,
+          "source_dir": "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8409/minmax",
+          "copied_files": [
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8409/minmax/summary.json",
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8409/minmax/database.json",
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8409/minmax/db_final.json",
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8409/minmax/pareto_front.json"
+          ]
+        },
+        {
+          "seed": 8410,
+          "source_dir": "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8410/minmax",
+          "copied_files": [
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8410/minmax/summary.json",
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8410/minmax/database.json",
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8410/minmax/db_final.json",
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8410/minmax/pareto_front.json"
+          ]
+        },
+        {
+          "seed": 8411,
+          "source_dir": "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8411/minmax",
+          "copied_files": [
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8411/minmax/summary.json",
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8411/minmax/database.json",
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8411/minmax/db_final.json",
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8411/minmax/pareto_front.json"
+          ]
+        },
+        {
+          "seed": 8412,
+          "source_dir": "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8412/minmax",
+          "copied_files": [
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8412/minmax/summary.json",
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8412/minmax/database.json",
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8412/minmax/db_final.json",
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8412/minmax/pareto_front.json"
+          ]
+        },
+        {
+          "seed": 8413,
+          "source_dir": "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8413/minmax",
+          "copied_files": [
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8413/minmax/summary.json",
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8413/minmax/database.json",
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8413/minmax/db_final.json",
+            "scalarization_Exp/experiment_records/ecker_llmbo_5seeds_50iter_fixed_2026_05_11/seed8413/minmax/pareto_front.json"
+          ]
+        }
+      ],
+      "curve_csv": "curve_data/llmbo_mo_curve.csv",
+      "per_seed_csv_dir": "curve_data/per_seed_traces/LLMBO-MO",
+      "plot_band_scale": 1.0,
+      "final_mean_hv": 1.8684172232658676,
+      "final_std_hv": 0.0024423480464339457
+    }
+  },
+  "derived_files": {
+    "figure_png": "Compare_Exp/images/Ecker2015_HV05-12/hv_convergence_parego_vs_llmbo.png",
+    "figure_pdf": "Compare_Exp/images/Ecker2015_HV05-12/hv_convergence_parego_vs_llmbo.pdf",
+    "combined_csv": "curve_data/hv_convergence_parego_vs_llmbo.csv",
+    "combined_json": "curve_data/hv_convergence_parego_vs_llmbo.json",
+    "final_summary_csv": "curve_data/final_summary.csv",
+    "final_summary_json": "curve_data/final_summary.json"
+  }
+}

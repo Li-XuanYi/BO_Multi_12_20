@@ -1,0 +1,167 @@
+{
+  "meta": {
+    "iterations": 8,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "backend": "real_api",
+    "model": "gpt-4.1-mini",
+    "api_base": "https://api.nuwaapi.com/v1"
+  },
+  "baseline_strict": {
+    "mean_canonical_hv": 0.34057187915472215,
+    "std_canonical_hv": 0.022466788987337605,
+    "runs": [
+      {
+        "seed": 0,
+        "canonical_hv": 0.37013618354498595,
+        "display_hv": 0.9253404588624649,
+        "hypervolume_raw": 10.891275672059265,
+        "n_feasible": 22,
+        "pareto_size": 18,
+        "warmstart_selected": null,
+        "pool_collected": null,
+        "disk_cache": null
+      },
+      {
+        "seed": 1,
+        "canonical_hv": 0.31571010193967,
+        "display_hv": 0.7892752548491749,
+        "hypervolume_raw": 9.28978550474779,
+        "n_feasible": 22,
+        "pareto_size": 14,
+        "warmstart_selected": null,
+        "pool_collected": null,
+        "disk_cache": null
+      },
+      {
+        "seed": 2,
+        "canonical_hv": 0.3358693519795105,
+        "display_hv": 0.8396733799487762,
+        "hypervolume_raw": 9.882972443195785,
+        "n_feasible": 22,
+        "pareto_size": 16,
+        "warmstart_selected": null,
+        "pool_collected": null,
+        "disk_cache": null
+      }
+    ]
+  },
+  "warmstart_portfolio_api": {
+    "mean_canonical_hv": 0.31279112195363606,
+    "std_canonical_hv": 0.036591469961171186,
+    "runs": [
+      {
+        "seed": 0,
+        "canonical_hv": 0.36290516431285813,
+        "display_hv": 0.9072629107821453,
+        "hypervolume_raw": 10.678502570297669,
+        "n_feasible": 22,
+        "pareto_size": 14,
+        "warmstart_selected": [
+          [
+            5.85,
+            4.1,
+            2.55,
+            0.185,
+            0.195
+          ],
+          [
+            2.1,
+            2.0,
+            2.0,
+            0.1,
+            0.15
+          ],
+          [
+            3.75,
+            3.25,
+            2.05,
+            0.295,
+            0.205
+          ]
+        ],
+        "pool_collected": 16,
+        "disk_cache": "miss"
+      },
+      {
+        "seed": 1,
+        "canonical_hv": 0.2765608926540395,
+        "display_hv": 0.6914022316350987,
+        "hypervolume_raw": 8.137818067818941,
+        "n_feasible": 22,
+        "pareto_size": 17,
+        "warmstart_selected": [
+          [
+            5.85,
+            4.1,
+            2.55,
+            0.185,
+            0.195
+          ],
+          [
+            2.1,
+            2.0,
+            2.0,
+            0.1,
+            0.15
+          ],
+          [
+            3.9,
+            3.1,
+            2.0,
+            0.32,
+            0.18
+          ]
+        ],
+        "pool_collected": 16,
+        "disk_cache": "miss"
+      },
+      {
+        "seed": 2,
+        "canonical_hv": 0.29890730889401046,
+        "display_hv": 0.7472682722350261,
+        "hypervolume_raw": 8.79536248085395,
+        "n_feasible": 22,
+        "pareto_size": 17,
+        "warmstart_selected": [
+          [
+            5.85,
+            4.1,
+            2.55,
+            0.185,
+            0.195
+          ],
+          [
+            2.1,
+            2.0,
+            2.0,
+            0.1,
+            0.1
+          ],
+          [
+            3.6,
+            3.1,
+            2.05,
+            0.31,
+            0.18
+          ]
+        ],
+        "pool_collected": 16,
+        "disk_cache": "miss"
+      }
+    ]
+  },
+  "warmstart_portfolio_api_vs_baseline": {
+    "mean_delta_canonical_hv": -0.02778075720108612,
+    "wins": 0,
+    "total": 3,
+    "deltas_by_seed": [
+      -0.007231019232127822,
+      -0.03914920928563048,
+      -0.03696204308550005
+    ]
+  }
+}

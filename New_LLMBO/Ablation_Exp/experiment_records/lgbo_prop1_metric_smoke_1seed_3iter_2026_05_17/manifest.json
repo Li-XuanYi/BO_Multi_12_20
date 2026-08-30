@@ -1,0 +1,46 @@
+{
+  "created_at": "2026-05-17T22:39:03.103411",
+  "experiment": "ablation_4way_exp_prompt",
+  "variant_set": "lgbo_smoke",
+  "iterations": 3,
+  "seeds": [
+    8409
+  ],
+  "api_base": "https://api.chat.csu.edu.cn/v1",
+  "model": "deepseek-v3",
+  "model_display": "deepseek-v3",
+  "llm_backend": "mock",
+  "api_key_storage": "not written to disk; read from LLM_API_KEY/OPENAI_API_KEY at runtime",
+  "warmstart_prompt_version": "experimental",
+  "variants": [
+    {
+      "key": "lgbo_region",
+      "label": "LGBO Proposition1",
+      "preset": "warmstart_region_lgbo_proposition1",
+      "needs_llm": true,
+      "overrides": {
+        "n_warmstart": 0,
+        "n_random_init": 6,
+        "region_lift_active_until": 10,
+        "region_lift_mode": "lgbo_proposition1",
+        "region_lift_external_influence_mode": "diagnostic_only",
+        "region_lift_apply_override": false
+      }
+    },
+    {
+      "key": "warmstart_lgbo",
+      "label": "WarmStart+LGBO Proposition1",
+      "preset": "warmstart_region_lgbo_proposition1",
+      "needs_llm": true,
+      "overrides": {
+        "n_warmstart": 6,
+        "n_random_init": 0,
+        "region_lift_active_until": 10,
+        "warmstart_prompt_version": "experimental",
+        "region_lift_mode": "lgbo_proposition1",
+        "region_lift_external_influence_mode": "diagnostic_only",
+        "region_lift_apply_override": false
+      }
+    }
+  ]
+}

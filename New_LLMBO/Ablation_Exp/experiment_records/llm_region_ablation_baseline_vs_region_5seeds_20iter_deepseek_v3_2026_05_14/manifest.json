@@ -1,0 +1,60 @@
+{
+  "created_at": "2026-05-14T13:08:44.218610",
+  "experiment": "ablation_4way",
+  "iterations": 20,
+  "seeds": [
+    8409,
+    8410,
+    8411,
+    8412,
+    8413
+  ],
+  "api_base": "https://api.chat.csu.edu.cn/v1",
+  "model": "deepseek-v3",
+  "model_display": "deepseek-v3",
+  "api_key_storage": "not written to disk; read from LLM_API_KEY/OPENAI_API_KEY at runtime",
+  "variants": [
+    {
+      "key": "baseline",
+      "label": "Baseline",
+      "preset": "strict_baseline",
+      "needs_llm": false,
+      "overrides": {
+        "n_warmstart": 0,
+        "n_random_init": 6
+      }
+    },
+    {
+      "key": "baseline_warmstart",
+      "label": "Baseline+WarmStart",
+      "preset": "warmstart_plain_ei",
+      "needs_llm": true,
+      "overrides": {
+        "n_warmstart": 3,
+        "n_random_init": 3
+      }
+    },
+    {
+      "key": "baseline_llm_region",
+      "label": "Baseline+LLM_Region",
+      "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+      "needs_llm": true,
+      "overrides": {
+        "n_warmstart": 0,
+        "n_random_init": 6,
+        "region_lift_active_until": 16
+      }
+    },
+    {
+      "key": "llmbo_mo",
+      "label": "LLMBO-MO",
+      "preset": "warmstart_region_lifted_gp_force_pool_tuned",
+      "needs_llm": true,
+      "overrides": {
+        "n_warmstart": 3,
+        "n_random_init": 3,
+        "region_lift_active_until": 16
+      }
+    }
+  ]
+}

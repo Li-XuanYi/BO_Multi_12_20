@@ -1,0 +1,65 @@
+You are guiding a battery charging Bayesian optimization loop.
+
+Battery: [BATTERY_NAME], 5Ah, 3-stage CC charging from 0% to 80% SOC.
+Decision variables:
+  I1 in [[I1_MIN], [I1_MAX]]
+  I2 in [[I2_MIN], [I2_MAX]]
+  I3 in [[I3_MIN], [I3_MAX]]
+  dSOC1 in [[DSOC1_MIN], [DSOC1_MAX]]
+  dSOC2 in [[DSOC2_MIN], [DSOC2_MAX]]
+Practical hard limit: keep dSOC1 + dSOC2 strictly below [DSOC_HARD_LIMIT] because points at exactly [DSOC_HARD_LIMIT] can be rejected by the simulator.
+Safety margin: dSOC1 + dSOC2 <= [DSOC_SAFE_LIMIT] is strongly recommended.
+Physical risk: exceeding the safety margin increases lithium plating, internal polarization, and thermal stress in the high-SOC region.
+Objectives to minimize: charging time [s], temperature rise [K], aging [%].
+
+Iteration [ITERATION]/[MAX_ITERATIONS]
+Weight vector: [WEIGHT_VECTOR]
+Current focus: [FOCUS_TEXT]
+Current optimization target:
+[SCALARIZATION_FORMULA]
+
+Current normalization / scalarization context:
+  ideal_raw=[IDEAL_POINT]
+  y_min_tilde=[Y_MIN_TILDE]
+  y_max_tilde=[Y_MAX_TILDE]
+  eta=[ETA_VALUE]
+  IMPORTANT: optimize the current scalarized target f_w, not any single raw objective in isolation.
+
+Current scalarized best value: [F_MIN]
+Current best protocol: [BEST_PROTOCOL]
+Stagnation count: [STAGNATION_COUNT]
+Current hypervolume: [CURRENT_HV]
+HV delta over last 3 iterations: [HV_DELTA_LAST_3]
+Pareto size: [PARETO_SIZE]
+HV feedback summary: [HV_FEEDBACK_SUMMARY]
+Previous guidance: [PREVIOUS_GUIDANCE]
+Top protocols under current weight:
+[TOP_SCALAR_PROTOCOLS]
+Similar-weight guidance reliability:
+[SIMILAR_WEIGHT_GUIDANCE_SUCCESS]
+Boundary / failure stats:
+[BOUNDARY_FAILURE_STATS]
+Selective history summary:
+[SELECTIVE_HISTORY_SUMMARY]
+Proposal sampler summary: [PROPOSAL_SUMMARY]
+
+High-uncertainty hotspots from the current GP:
+[HOTSPOTS_BLOCK]
+
+Parameter sensitivity:
+[SENSITIVITY_SUMMARY]
+
+Observed optimization history:
+[PARETO_CONTEXT]
+
+Task:
+Return exactly one JSON value in one of these formats:
+["region", [[lb1, lb2, lb3, lb4, lb5], [ub1, ub2, ub3, ub4, ub5]], confidence]
+["point", [I1, I2, I3, dSOC1, dSOC2], confidence]
+
+Rules:
+1. confidence must be in [0, 1].
+2. Use "region" when broad exploration is better, and "point" when a precise promising protocol is clear.
+3. Respect all bounds, treat dSOC1 + dSOC2 < [DSOC_HARD_LIMIT] as a practical hard limit, and avoid points above [DSOC_SAFE_LIMIT] unless there is a very strong reason.
+4. Make recommendations that are good for the current weighted scalarized target and still help Pareto / HV progress.
+5. Output JSON only, with no markdown, prose, or explanation.

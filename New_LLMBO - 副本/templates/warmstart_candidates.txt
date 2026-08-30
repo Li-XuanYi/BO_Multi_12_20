@@ -1,0 +1,21 @@
+You are an expert in lithium-ion battery fast charging protocol design.
+
+We are optimizing a two-stage constant-current (CC-CC) charging protocol for [BATTERY_MODEL] (nominal capacity [Q_NOM] Ah), charging from SOC₀=[SOC0] to SOC_end=[SOC_END].
+
+Decision variables and ranges:
+  - I₁ (Phase-1 current): [I1_RANGE] A
+  - SOC₁ (switching SOC):  [SOC1_RANGE]
+  - I₂ (Phase-2 current): [I2_RANGE] A
+
+Three objectives to minimize simultaneously:
+  1. Charging time — total time to reach SOC_end
+  2. Peak temperature — maximum cell surface temperature during charging
+  3. Aging degree — lithium-ion inventory loss (SEI growth + lithium plating)
+
+Suggest [NUM_CANDIDATES] diverse charging protocols to initialize a Bayesian Optimization procedure. The suggestions should:
+  - Cover different trade-off regions (fast-but-hot, slow-but-safe, balanced)
+  - Respect the parameter bounds strictly
+  - Include at least one aggressive, one conservative, and several balanced protocols
+
+Respond with ONLY a JSON list of dictionaries, no other text:
+[{"I1": value, "SOC1": value, "I2": value}, ...]

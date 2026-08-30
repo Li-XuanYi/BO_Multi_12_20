@@ -1,0 +1,307 @@
+% ============================================================================
+% Section IV: Proposed LLMBO-MO Framework
+% ============================================================================
+\section{Proposed LLMBO-MO Framework}
+\label{sec:method}
+
+% 4.1 Framework Overview
+\subsection{Framework Overview}
+
+LLMBO-MO is designed to incorporate battery-domain knowledge without replacing
+the numerical decision mechanism of Bayesian optimization (BO). The LLM is used
+at two controlled touchpoints: it first proposes a pool of physically plausible
+initial protocols, and, during the early BO iterations, it expresses a coarse
+preference for a promising point or region. All objective values entering the
+surrogate are obtained from the simulator; unevaluated LLM suggestions are
+never inserted as observations. The next protocol is selected by scalarization,
+a Gaussian-process (GP) surrogate, and expected improvement (EI), followed by
+simulator evaluation and Pareto-set update.
+
+At iteration $t$, a weight vector $\bw^{(t)}$ specifies the current objective
+trade-off. The evaluated multi-objective database is re-scalarized under
+$\bw^{(t)}$, a GP is fitted to the resulting scalar targets, and the LLM may
+provide a point/region preference from the current optimization state. Following
+the region-lifted preference principle of LGBO~\cite{ref16}, the valid
+preference is converted into a mean adjustment used only during acquisition.
+In the configuration evaluated in Section~\ref{sec:experiments}, this adjustment
+uses GP posterior cross-covariance; no separate LLM acquisition bonus, LLM
+reranking, or direct insertion of LLM-generated iteration candidates is used.
+If a preference cannot be converted into a valid feasible region, the method
+fails open to ordinary EI.
+
+Figure~\ref{fig:framework} separates the evaluated-data path from the two
+advisory LLM paths and makes the numerical decision boundary explicit.
+\input{figures/fig_llambo_mo_framework}
+
+% 4.2 Decomposition Strategy
+\subsection{Objective Transformation and Scalar Decomposition}
+
+The three objectives in~\eqref{eq:cmop} have substantially different numerical
+scales. We therefore transform charging time and capacity fade logarithmically,
+while retaining the temperature-rise objective in its original scale:
+\begin{equation}
+\tilde{\mathbf f}(\btheta)=
+\begin{bmatrix}
+\log_{10} t_c(\btheta) &
+\Delta T_p(\btheta) &
+\log_{10} Q_s(\btheta)
+\end{bmatrix}^{\top}.
+\label{eq:log}
+\end{equation}
+Let $\tilde z_i^{\ast}$ denote the corresponding transformed ideal value. For
+objective $i$, the ideal-point gap is scaled as
+\begin{equation}
+\bar f_i(\btheta)=
+\frac{\left|\tilde f_i(\btheta)-\tilde z_i^{\ast}\right|}{s_i},
+\qquad
+s_i=\max\!\left(y_{\max,i}-y_{\min,i},\epsilon_i\right),
+\label{eq:norm}
+\end{equation}
+where $y_{\min,i}$ and $y_{\max,i}$ are computed from the transformed feasible
+observations. The small range floor $\epsilon_i$ prevents unstable scaling when
+the early observations occupy only a narrow objective interval.
+
+Following the decomposition strategy of ParEGO~\cite{ref4}, the vector-valued
+problem is converted at each iteration into an augmented Tchebycheff
+subproblem:
+\begin{equation}
+g^{\mathrm{tch}}(\btheta\mid\bw)
+=
+\max_{i\in\{1,2,3\}}
+\left\{w_i\bar f_i(\btheta)\right\}
++\eta\sum_{i=1}^{3} w_i\bar f_i(\btheta),
+\label{eq:tch}
+\end{equation}
+where $\bw\in\mathbb{R}_{+}^{3}$, $\sum_i w_i=1$, and $\eta=0.05$. The
+augmentation term reduces ties around the maximum weighted deviation.
+
+To distribute the scalar subproblems over distinct trade-off directions, a
+Riesz $s$-energy reference set is used~\cite{ref15}. For a weight set
+$\bW=\{\bw^{(1)},\ldots,\bw^{(N)}\}$ on the simplex, its energy is
+\begin{equation}
+E_s(\bW)=\sum_{p<q}
+\left\|\bw^{(p)}-\bw^{(q)}\right\|^{-s}.
+\label{eq:riesz}
+\end{equation}
+The implementation initializes $\bW$ from a Das--Dennis simplex lattice and
+applies projected repulsive-gradient relaxation to reduce~\eqref{eq:riesz},
+rather than assuming that the global minimum of the energy is available in
+closed form. Weight vectors are then visited without replacement before the set
+is reshuffled, which provides dispersed coverage of the three-objective
+trade-off space.
+
+% 4.3 GP Surrogate Model
+\subsection{Gaussian-Process Surrogate}
+
+For the current weight vector, a single-output GP is fitted to
+$\{(\btheta_j,g_j^{\mathrm{tch}})\}_{j=1}^{|\bD|}$. Each decision variable is
+first mapped to $[0,1]$. The covariance model is an automatic-relevance-
+determination Mat\'{e}rn-$5/2$ kernel with a white-noise term,
+\begin{align}
+k(\btheta,\btheta')
+&=\sigma_f^2
+\left(1+\sqrt{5}r+\frac{5r^2}{3}\right)e^{-\sqrt{5}r}
++\sigma_n^2\delta_{\btheta\btheta'},
+\label{eq:matern}\\
+r^2
+&=\sum_{d=1}^{5}
+\frac{(x_d-x_d')^2}{\ell_d^2},
+\nonumber
+\end{align}
+where $x_d$ denotes the normalized coordinate and $\ell_d$ is its learned
+length scale. Kernel hyperparameters are estimated by marginal-likelihood
+optimization with multiple restarts. The scalar targets are standardized during
+GP fitting. The posterior mean $\mu_t(\btheta)$, standard deviation
+$\sigma_t(\btheta)$, and posterior covariance are subsequently used by EI and
+the region-lift mechanism.
+
+% 4.4 LLM Integration (Two Touchpoints)
+\subsection{LLM Integration Through Two Controlled Touchpoints}
+
+\subsubsection{Touchpoint 1: Constrained Warm-Start Portfolio}
+
+The warm-start prompt provides the cell/model context, decision-variable
+bounds, the hard constraint in~\eqref{eq:dsoc}, and battery-design heuristics
+such as avoiding unnecessarily aggressive high-SOC charging and considering
+decreasing current profiles. The LLM overgenerates a candidate pool. Candidate
+responses are parsed and repaired, after which nonfinite or malformed points,
+out-of-bound protocols, hard $\Delta s_1+\Delta s_2$ violations, and duplicates
+are removed.
+
+The remaining candidates are selected greedily to balance the LLM's reported
+confidence, distance from the soft $\Delta s_1+\Delta s_2$ limit, monotone-current
+structure, and geometric diversity. For candidate $\btheta$, define
+\begin{equation}
+p_{\mathrm{soft}}(\btheta)=
+\frac{[\Delta s_1+\Delta s_2-s_{\mathrm{soft}}]_+}
+{s_{\mathrm{hard}}-s_{\mathrm{soft}}},
+\label{eq:softpen}
+\end{equation}
+with $s_{\mathrm{soft}}=0.65$ and $s_{\mathrm{hard}}=0.70$, and let
+$\mathbb{I}_{\mathrm{mono}}(\btheta)=1$ when $I_1\ge I_2\ge I_3$. The score used
+when extending a selected portfolio $\mathcal C_{\mathrm{sel}}$ is
+\begin{equation}
+J_{\mathrm{ws}}(\btheta)=
+c_{\mathrm{ws}}(\btheta)
+-\omega_p p_{\mathrm{soft}}(\btheta)
++\omega_m\mathbb{I}_{\mathrm{mono}}(\btheta)
++\omega_d d_{\min}(\btheta,\mathcal C_{\mathrm{sel}}),
+\label{eq:portfolio}
+\end{equation}
+where $c_{\mathrm{ws}}\in[0,1]$ is the candidate confidence and $d_{\min}$ is
+the minimum Euclidean distance in normalized decision space to an already
+selected protocol. A small number of near-boundary probes can be retained to
+avoid collapsing the initial design into only conservative schedules. If too
+few valid LLM candidates remain, deterministic battery heuristics and
+Latin-hypercube/random samples complete the initialization. Only after simulator
+evaluation are these protocols added to $\bD$.
+
+The complete hypothesis-to-observation path is summarized in
+Fig.~\ref{fig:warmstart_portfolio}.
+\input{figures/fig_warmstart_portfolio}
+
+\subsubsection{Touchpoint 2: Weight-Conditioned Point/Region Preference}
+
+During an early guidance window, the LLM receives the current weight vector
+$\bw^{(t)}$, ideal point and objective scaling, the best scalarized observations,
+recent evaluated protocols, short-horizon hypervolume feedback, boundary-failure
+statistics, and feedback on the previously adopted region. The prompt explicitly
+asks for a preference rather than the next experiment. The output is restricted
+to either a raw-coordinate point $\btheta_{\mathrm{pref}}$, a hyper-rectangular
+region $[\mathbf{lb},\mathbf{ub}]$, or no preference, together with a confidence
+$c_t\in[0,1]$ and a short mechanistic rationale.
+
+The interface checks the output format, coordinate system, direction of the
+preference, and parameter bounds. A region is clipped/repaired to admissible
+width and volume limits and to the $\Delta s$ safety geometry. A point
+preference is converted to a small local box before the same processing. Low
+confidence does not by itself create a hard rejection in the reported
+region-lift variant; instead, $c_t$ directly scales the strength of the lift.
+If the response is absent, unparsable, structurally invalid, or yields no
+feasible anchors, its influence is set to zero and acquisition reduces to
+ordinary EI.
+
+% 4.5 GP-LLM Coupling
+\subsection{Posterior-Covariance Region Lift for Battery MOBO}
+
+The general region-lift idea follows LGBO~\cite{ref16}; here it is specialized
+to a sequentially scalarized, constrained battery-charging problem and to a
+posterior-cross-covariance coupling. Let a valid preferred region be represented
+by $M$ feasible Sobol anchors
+$\mathcal{G}=\{\mathbf g_1,\ldots,\mathbf g_M\}$. The reported configuration uses
+uniform anchor weights,
+\begin{equation}
+\mathbf v=\frac{1}{M}\mathbf 1_M.
+\label{eq:anchorweight}
+\end{equation}
+All quantities in the following lift are expressed in the standardized GP target
+space. Let $\boldsymbol{\Sigma}_{GG,t}$ be the posterior covariance matrix among
+the anchors. The posterior variance of the regional average is
+\begin{equation}
+V_{G,t}=\mathbf v^{\top}\boldsymbol{\Sigma}_{GG,t}\mathbf v.
+\label{eq:regionvar}
+\end{equation}
+The confidence-normalized lift strength is
+\begin{equation}
+\lambda_t=
+\frac{c_t}{\sqrt{\max(V_{G,t},\varepsilon_v)}},
+\label{eq:lambda}
+\end{equation}
+where $\varepsilon_v>0$ prevents numerical division by a vanishing regional
+variance. For any candidate $\btheta$, let
+$\boldsymbol{\Sigma}_{\theta G,t}$ denote the GP posterior cross-covariance
+between $\btheta$ and the anchors. The acquisition-time mean becomes
+\begin{equation}
+\mu_t^{\mathrm{L}}(\btheta)=
+\mu_t(\btheta)-
+\lambda_t\boldsymbol{\Sigma}_{\theta G,t}\mathbf v,
+\label{eq:shift}
+\end{equation}
+while the predictive variance is unchanged,
+\begin{equation}
+\left(\sigma_t^{\mathrm{L}}(\btheta)\right)^2
+=\sigma_t^2(\btheta).
+\label{eq:variance_unchanged}
+\end{equation}
+For this minimization problem, the negative mean shift makes points that are
+posterior-correlated with the preferred region more competitive under EI. The
+operation is an acquisition-time preference transformation only: it neither
+modifies the training targets nor treats LLM statements as pseudo-observations.
+In the reported configuration, the lift is active only during the first
+$T_{\mathrm L}=16$ BO iterations; subsequent iterations use the unmodified GP
+posterior.
+
+Figure~\ref{fig:guarded_region_lift} shows how this optional advisory branch
+joins the otherwise conventional MOBO loop without changing the observation
+database or GP variance.
+\input{figures/fig_guarded_region_lift}
+
+% 4.6 Acquisition Function
+\subsection{Expected Improvement and Stagnation-Aware Search}
+
+Let $g_{\min,t}$ be the best scalarized value observed for the current weight
+vector. EI is evaluated using the lifted mean when a valid coupling is active:
+\begin{align}
+z_t(\btheta)
+&=\frac{g_{\min,t}-\mu_t^{\mathrm L}(\btheta)}
+{\sigma_t(\btheta)},\label{eq:ei_z}\\
+\alpha_{\mathrm{EI}}(\btheta)
+&=\left(g_{\min,t}-\mu_t^{\mathrm L}(\btheta)\right)\Phi(z_t)
++\sigma_t(\btheta)\phi(z_t).
+\label{eq:ei}
+\end{align}
+When no valid lift is available, $\mu_t^{\mathrm L}=\mu_t$, giving standard EI.
+The next protocol is selected as
+\begin{equation}
+\btheta_{t+1}=\arg\max_{\btheta\in\Theta_{\mathrm{feas}}}
+\alpha_{\mathrm{EI}}(\btheta).
+\label{eq:next_theta}
+\end{equation}
+
+Acquisition optimization uses a mixed candidate pool containing the current
+best protocol, Gaussian and uniform samples, and multi-start L-BFGS-B solutions
+of EI. Each proposed point is repaired to satisfy the decision bounds and the
+hard $\Delta s_1+\Delta s_2$ constraint. Stagnation does not add an LLM-specific
+bonus to~\eqref{eq:ei}; instead, it expands the Gaussian restart dispersion,
+thereby increasing exploration while preserving EI as the ranking criterion. If
+EI is numerically flat over the candidate pool, the implementation falls back
+to the point with largest predictive uncertainty.
+
+% 4.7 Overall Algorithm
+\subsection{Overall Algorithm}
+
+\raggedbottom
+\begin{algorithm}[H]
+\caption{LLMBO-MO}
+\label{alg:llmbo}
+\footnotesize
+\begin{algorithmic}[1]
+\Require Simulator $\bS$, LLM $\bL$, BO budget $T$, warm-start count
+$n_{\mathrm{ws}}$, weight set $\bW$, guidance horizon $T_{\mathrm L}$
+\Ensure Nondominated set $\bP$ and hypervolume trace
+\State Generate or load the Riesz-relaxed weight set $\bW$
+\State Query $\bL$ for an overgenerated warm-start pool
+\State Repair/filter the pool and select $n_{\mathrm{ws}}$ protocols by
+$J_{\mathrm{ws}}$
+\For{each selected warm-start protocol}
+    \State Evaluate $\bS$ and add the resulting observation to $\bD$
+\EndFor
+\For{$t=1$ to $T$}
+    \State Select $\bw^{(t)}\in\bW$ and update transformed objective scaling
+    \State Compute $g^{\mathrm{tch}}(\cdot\mid\bw^{(t)})$ for all feasible observations
+    \State Fit the GP to the current scalarized database
+    \State Set the region-lift coupling to inactive
+    \If{$t\le T_{\mathrm L}$}
+        \State Query $\bL$ for a point/region preference conditioned on $\bw^{(t)}$
+        \State Repair the region and construct feasible Sobol anchors
+        \If{the preference and regional covariance are valid}
+            \State Build $\lambda_t$ and the posterior-covariance mean lift in~\eqref{eq:shift}
+        \EndIf
+    \EndIf
+    \State Maximize EI using the lifted mean if active, otherwise plain EI
+    \State Evaluate $\bS(\btheta_{t+1})$ and update $\bD$, $\bP$, and HV
+\EndFor
+\State \Return $\bP$
+\end{algorithmic}
+\end{algorithm}
+\flushbottom

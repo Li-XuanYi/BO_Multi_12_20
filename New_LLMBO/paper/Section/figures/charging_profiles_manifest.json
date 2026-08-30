@@ -1,0 +1,80 @@
+{
+  "figure": "charging_profiles",
+  "source_database": "optimized_experiments/region_lift_force_pool_local_sweep_seed8409_2026_05_01/seed8409/wider_active16_ext32/database.json",
+  "battery_parameter_set": "Chen2020",
+  "simulator": "PyBaMMSimulator (SPMe, lumped thermal)",
+  "aging_mode": "empirical",
+  "note": "The figure contains current, voltage, temperature, and SOC only. No physical lithium-loss trajectory is presented as empirical capacity fade.",
+  "environment": {
+    "python": "3.10.18",
+    "numpy": "1.24.4",
+    "matplotlib": "3.10.5",
+    "pybamm": "24.1"
+  },
+  "protocols": {
+    "Fast": {
+      "theta": [
+        6.0,
+        5.0,
+        3.0,
+        0.4,
+        0.2999951281178859
+      ],
+      "archived_objectives": [
+        2880.0,
+        7.566964191322911,
+        1.2606511928531257
+      ],
+      "replayed_objectives": [
+        2880.0,
+        7.566964191145957,
+        1.2606511927769755
+      ],
+      "n_time_points": 2881
+    },
+    "Intermediate": {
+      "theta": [
+        2.0,
+        2.0,
+        3.0,
+        0.31974642677374054,
+        0.11767167837384315
+      ],
+      "archived_objectives": [
+        6112.0,
+        2.8574864297119125,
+        0.5713455870696137
+      ],
+      "replayed_objectives": [
+        6112.0,
+        2.857486429686526,
+        0.5713455870386077
+      ],
+      "n_time_points": 6113
+    },
+    "Low-temperature": {
+      "theta": [
+        2.0,
+        2.0,
+        2.0,
+        0.1,
+        0.3
+      ],
+      "archived_objectives": [
+        7200.0,
+        1.5285791733729015,
+        0.6401557211840261
+      ],
+      "replayed_objectives": [
+        7200.0,
+        1.5285791733352598,
+        0.640155721148913
+      ],
+      "n_time_points": 7201
+    }
+  },
+  "artifacts": {
+    "pdf": "Section/figures/charging_profiles.pdf",
+    "png": "Section/figures/charging_profiles.png"
+  }
+}

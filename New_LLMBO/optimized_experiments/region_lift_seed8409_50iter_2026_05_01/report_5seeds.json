@@ -1,0 +1,241 @@
+{
+  "meta": {
+    "iterations": 50,
+    "seeds": [
+      8409
+    ],
+    "variants": [
+      "strict_baseline",
+      "warmstart_plain_ei",
+      "warmstart_region_lifted_gp"
+    ],
+    "output_root": "optimized_experiments\\region_lift_seed8409_50iter_2026_05_01",
+    "api_base": "https://api.nuwaapi.com/v1",
+    "model": "gpt-4.1-mini"
+  },
+  "records": [
+    {
+      "seed": 8409,
+      "variant": "strict_baseline",
+      "status": "ok",
+      "summary_path": "optimized_experiments\\region_lift_seed8409_50iter_2026_05_01\\seed8409\\strict_baseline\\summary.json",
+      "display_hv": 0.9284655168570001,
+      "canonical_hv": 0.37138620674280004,
+      "hypervolume_raw": 10.928057667036008,
+      "hv_violations": 0,
+      "pareto_size": 29,
+      "n_total": 56,
+      "n_feasible": 56,
+      "lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "zero_shift_accept_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 8409,
+      "variant": "warmstart_plain_ei",
+      "status": "ok",
+      "summary_path": "optimized_experiments\\region_lift_seed8409_50iter_2026_05_01\\seed8409\\warmstart_plain_ei\\summary.json",
+      "display_hv": 0.9561578264897865,
+      "canonical_hv": 0.38246313059591464,
+      "hypervolume_raw": 11.253996704195874,
+      "hv_violations": 0,
+      "pareto_size": 27,
+      "n_total": 56,
+      "n_feasible": 56,
+      "lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "zero_shift_accept_count": 0,
+      "fallback_distribution": {}
+    },
+    {
+      "seed": 8409,
+      "variant": "warmstart_region_lifted_gp",
+      "status": "ok",
+      "summary_path": "optimized_experiments\\region_lift_seed8409_50iter_2026_05_01\\seed8409\\warmstart_region_lifted_gp\\summary.json",
+      "display_hv": 0.942211134588262,
+      "canonical_hv": 0.37688445383530483,
+      "hypervolume_raw": 11.089843862117068,
+      "hv_violations": 0,
+      "pareto_size": 28,
+      "n_total": 56,
+      "n_feasible": 56,
+      "lift_accept_rate": 0.0,
+      "effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count": 0,
+      "plain_candidate_inside_region_count": 0,
+      "diagnostic_override_candidate_count": 0,
+      "zero_shift_accept_count": 0,
+      "fallback_distribution": {
+        "override_disabled": 50
+      }
+    }
+  ],
+  "aggregates": {
+    "strict_baseline": {
+      "n_runs": 1,
+      "mean_canonical_hv": 0.37138620674280004,
+      "median_canonical_hv": 0.37138620674280004,
+      "worst_quartile_canonical_hv": 0.37138620674280004,
+      "variance_canonical_hv": 0.0,
+      "mean_display_hv": 0.9284655168570001,
+      "mean_raw_hv": 10.928057667036008,
+      "hv_violations_total": 0,
+      "mean_lift_accept_rate": 0.0,
+      "mean_effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count_total": 0,
+      "plain_candidate_inside_region_count_total": 0,
+      "diagnostic_override_candidate_count_total": 0,
+      "zero_shift_accept_count_total": 0,
+      "fallback_distribution": {},
+      "runs": [
+        {
+          "seed": 8409,
+          "variant": "strict_baseline",
+          "status": "ok",
+          "summary_path": "optimized_experiments\\region_lift_seed8409_50iter_2026_05_01\\seed8409\\strict_baseline\\summary.json",
+          "display_hv": 0.9284655168570001,
+          "canonical_hv": 0.37138620674280004,
+          "hypervolume_raw": 10.928057667036008,
+          "hv_violations": 0,
+          "pareto_size": 29,
+          "n_total": 56,
+          "n_feasible": 56,
+          "lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "zero_shift_accept_count": 0,
+          "fallback_distribution": {}
+        }
+      ],
+      "missing_runs": []
+    },
+    "warmstart_plain_ei": {
+      "n_runs": 1,
+      "mean_canonical_hv": 0.38246313059591464,
+      "median_canonical_hv": 0.38246313059591464,
+      "worst_quartile_canonical_hv": 0.38246313059591464,
+      "variance_canonical_hv": 0.0,
+      "mean_display_hv": 0.9561578264897865,
+      "mean_raw_hv": 11.253996704195874,
+      "hv_violations_total": 0,
+      "mean_lift_accept_rate": 0.0,
+      "mean_effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count_total": 0,
+      "plain_candidate_inside_region_count_total": 0,
+      "diagnostic_override_candidate_count_total": 0,
+      "zero_shift_accept_count_total": 0,
+      "fallback_distribution": {},
+      "runs": [
+        {
+          "seed": 8409,
+          "variant": "warmstart_plain_ei",
+          "status": "ok",
+          "summary_path": "optimized_experiments\\region_lift_seed8409_50iter_2026_05_01\\seed8409\\warmstart_plain_ei\\summary.json",
+          "display_hv": 0.9561578264897865,
+          "canonical_hv": 0.38246313059591464,
+          "hypervolume_raw": 11.253996704195874,
+          "hv_violations": 0,
+          "pareto_size": 27,
+          "n_total": 56,
+          "n_feasible": 56,
+          "lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "zero_shift_accept_count": 0,
+          "fallback_distribution": {}
+        }
+      ],
+      "missing_runs": []
+    },
+    "warmstart_region_lifted_gp": {
+      "n_runs": 1,
+      "mean_canonical_hv": 0.37688445383530483,
+      "median_canonical_hv": 0.37688445383530483,
+      "worst_quartile_canonical_hv": 0.37688445383530483,
+      "variance_canonical_hv": 0.0,
+      "mean_display_hv": 0.942211134588262,
+      "mean_raw_hv": 11.089843862117068,
+      "hv_violations_total": 0,
+      "mean_lift_accept_rate": 0.0,
+      "mean_effective_lift_accept_rate": 0.0,
+      "effective_lift_accept_count_total": 0,
+      "plain_candidate_inside_region_count_total": 0,
+      "diagnostic_override_candidate_count_total": 0,
+      "zero_shift_accept_count_total": 0,
+      "fallback_distribution": {
+        "override_disabled": 50
+      },
+      "runs": [
+        {
+          "seed": 8409,
+          "variant": "warmstart_region_lifted_gp",
+          "status": "ok",
+          "summary_path": "optimized_experiments\\region_lift_seed8409_50iter_2026_05_01\\seed8409\\warmstart_region_lifted_gp\\summary.json",
+          "display_hv": 0.942211134588262,
+          "canonical_hv": 0.37688445383530483,
+          "hypervolume_raw": 11.089843862117068,
+          "hv_violations": 0,
+          "pareto_size": 28,
+          "n_total": 56,
+          "n_feasible": 56,
+          "lift_accept_rate": 0.0,
+          "effective_lift_accept_rate": 0.0,
+          "effective_lift_accept_count": 0,
+          "plain_candidate_inside_region_count": 0,
+          "diagnostic_override_candidate_count": 0,
+          "zero_shift_accept_count": 0,
+          "fallback_distribution": {
+            "override_disabled": 50
+          }
+        }
+      ],
+      "missing_runs": []
+    }
+  },
+  "comparisons": {
+    "warmstart_plain_ei_vs_strict_baseline": {
+      "lhs": "warmstart_plain_ei",
+      "rhs": "strict_baseline",
+      "shared_seeds": [
+        8409
+      ],
+      "mean_canonical_hv_delta": 0.011076923853114595,
+      "mean_canonical_hv_pct_delta": 2.982588920106506,
+      "wins": 1,
+      "total": 1
+    },
+    "warmstart_region_lifted_gp_vs_warmstart_plain_ei": {
+      "lhs": "warmstart_region_lifted_gp",
+      "rhs": "warmstart_plain_ei",
+      "shared_seeds": [
+        8409
+      ],
+      "mean_canonical_hv_delta": -0.005578676760609802,
+      "mean_canonical_hv_pct_delta": -1.4586181815532606,
+      "wins": 0,
+      "total": 1
+    },
+    "warmstart_region_lifted_gp_vs_strict_baseline": {
+      "lhs": "warmstart_region_lifted_gp",
+      "rhs": "strict_baseline",
+      "shared_seeds": [
+        8409
+      ],
+      "mean_canonical_hv_delta": 0.005498247092504793,
+      "mean_canonical_hv_pct_delta": 1.4804661542835789,
+      "wins": 1,
+      "total": 1
+    }
+  }
+}

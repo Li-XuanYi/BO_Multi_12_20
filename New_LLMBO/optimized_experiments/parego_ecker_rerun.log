@@ -1,0 +1,1275 @@
+2026-05-11 18:32:59,035 INFO __main__ | Output root: optimized_experiments\parego_ecker_5seeds_56evals_2026_05_11_rerun
+2026-05-11 18:32:59,036 INFO __main__ | Variant: matlab_reference
+2026-05-11 18:32:59,036 INFO __main__ | Param set: Ecker2015
+2026-05-11 18:32:59,037 INFO __main__ | === Seed 8409 ===
+2026-05-11 18:32:59,037 INFO Compare_Exp.Exp.parego_runner | ============================================================
+2026-05-11 18:32:59,037 INFO Compare_Exp.Exp.parego_runner | ParEGO Runner: seed=8409, n_evals=56, variant=matlab_reference
+2026-05-11 18:32:59,037 INFO Compare_Exp.Exp.parego_runner | ============================================================
+2026-05-11 18:32:59,038 INFO llmbo.optimizer | ============================================================
+2026-05-11 18:32:59,038 INFO llmbo.optimizer | Setting up 5D GP-LLM-coupled MOBO optimizer
+2026-05-11 18:32:59,038 INFO llmbo.optimizer | ============================================================
+2026-05-11 18:32:59,038 INFO llmbo.optimizer | Battery simulator parameter set: Ecker2015
+2026-05-11 18:32:59,038 INFO DataBase.database | ObservationDB 初始化: bounds={'I1': (2.0, 6.0), 'I2': (2.0, 5.0), 'I3': (2.0, 3.0), 'dSOC1': (0.1, 0.4), 'dSOC2': (0.1, 0.3)}
+2026-05-11 18:32:59,039 INFO llm.llm_interface | LLMInterface 初始化: backend=mock model=gpt-4.1-mini warmstart_level=full param_set=Ecker2015
+2026-05-11 18:32:59,039 INFO llmbo.optimizer | ParEGO Das-Dennis weight set ready: shape=(496, 3)
+2026-05-11 18:32:59,039 INFO llmbo.optimizer | ============================================================
+2026-05-11 18:32:59,040 INFO llmbo.optimizer | Initialization: strategy=manual warmstart=0 random_init=6
+2026-05-11 18:32:59,040 INFO llmbo.optimizer | ============================================================
+2026-05-11 18:32:59,040 INFO llmbo.optimizer | Init [1/6] src=random_init theta=[4.6705 4.6001 2.3885 0.1122 0.1075]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:33:04,689 INFO pybamm_simulator | 仿真完成 | 时间: 5226.0s | 温升: 0.02K | 老化: 0.0065% | SOC终值: 0.395
+2026-05-11 18:33:04,711 INFO llmbo.optimizer |   -> feasible=True obj=[5.2260e+03 2.1084e-02 6.5130e-03] (5.6s)
+2026-05-11 18:33:04,712 INFO llmbo.optimizer | Init [2/6] src=random_init theta=[2.487  3.1263 2.1893 0.3338 0.2391]
+2026-05-11 18:33:10,457 INFO pybamm_simulator | 仿真完成 | 时间: 5660.0s | 温升: 0.01K | 老化: 0.0059% | SOC终值: 0.395
+2026-05-11 18:33:10,460 INFO llmbo.optimizer |   -> feasible=True obj=[5.660e+03 7.498e-03 5.855e-03] (5.7s)
+2026-05-11 18:33:10,460 INFO llmbo.optimizer | Init [3/6] src=random_init theta=[4.4368 2.9308 2.7101 0.27   0.149 ]
+2026-05-11 18:33:15,239 INFO pybamm_simulator | 仿真完成 | 时间: 4541.0s | 温升: 0.02K | 老化: 0.0065% | SOC终值: 0.395
+2026-05-11 18:33:15,241 INFO llmbo.optimizer |   -> feasible=True obj=[4.5410e+03 1.9364e-02 6.4680e-03] (4.8s)
+2026-05-11 18:33:15,241 INFO llmbo.optimizer | Init [4/6] src=random_init theta=[3.9787 2.3219 2.9846 0.1665 0.2258]
+2026-05-11 18:33:19,679 INFO pybamm_simulator | 仿真完成 | 时间: 4962.0s | 温升: 0.02K | 老化: 0.0058% | SOC终值: 0.395
+2026-05-11 18:33:19,679 INFO llmbo.optimizer |   -> feasible=True obj=[4.9620e+03 1.6173e-02 5.8360e-03] (4.4s)
+2026-05-11 18:33:19,679 INFO llmbo.optimizer | Init [5/6] src=random_init theta=[3.0343 3.7785 2.0447 0.3731 0.2948]
+2026-05-11 18:33:24,374 INFO pybamm_simulator | 仿真完成 | 时间: 4781.0s | 温升: 0.01K | 老化: 0.0060% | SOC终值: 0.395
+2026-05-11 18:33:24,377 INFO llmbo.optimizer |   -> feasible=True obj=[4.7810e+03 1.0365e-02 6.0380e-03] (4.7s)
+2026-05-11 18:33:24,378 INFO llmbo.optimizer | Init [6/6] src=random_init theta=[5.4131 4.1564 2.5883 0.2047 0.1993]
+2026-05-11 18:33:29,556 INFO pybamm_simulator | 仿真完成 | 时间: 4298.0s | 温升: 0.03K | 老化: 0.0069% | SOC终值: 0.395
+2026-05-11 18:33:29,559 INFO llmbo.optimizer |   -> feasible=True obj=[4.2980e+03 2.6951e-02 6.8690e-03] (5.2s)
+2026-05-11 18:33:29,563 INFO llmbo.optimizer | ============================================================
+2026-05-11 18:33:29,563 INFO llmbo.optimizer | Optimization loop: 50 iterations
+2026-05-11 18:33:29,563 INFO llmbo.optimizer | ============================================================
+2026-05-11 18:33:29,563 INFO llmbo.optimizer | --- Iteration 0 ---
+2026-05-11 18:33:29,755 INFO llmbo.gp_model | Fitted Matern GP: n=6 y_best=1.503893 kernel=2.47**2 * Matern(length_scale=[1.14, 1e+03, 69.9, 1e+03, 1e+03], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:33:29,968 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.3599 3.4853 2.0051 0.2231 0.2513]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:33:35,404 INFO pybamm_simulator | 仿真完成 | 时间: 5922.0s | 温升: 0.01K | 老化: 0.0061% | SOC终值: 0.395
+2026-05-11 18:33:35,406 INFO llmbo.optimizer |     -> feasible=True obj=[5.922e+03 8.088e-03 6.115e-03] acq=1.300160 (5.4s)
+2026-05-11 18:33:35,408 INFO DataBase.database | Iter 1: HV=2.222699  |PF|=5  n=7
+2026-05-11 18:33:35,410 INFO llmbo.optimizer | Iteration 0 complete: HV=2.222699 |PF|=5 n=7 (5.8s)
+2026-05-11 18:33:35,410 INFO llmbo.optimizer | --- Iteration 1 ---
+2026-05-11 18:33:35,596 INFO llmbo.gp_model | Fitted Matern GP: n=7 y_best=2.386260 kernel=1.85**2 * Matern(length_scale=[0.627, 1e+03, 1e+03, 1e+03, 1e+03], nu=2.5) + WhiteKernel(noise_level=9.38e-11)
+2026-05-11 18:33:35,834 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.8422 3.3822 2.4688 0.3038 0.1141]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:33:40,340 INFO pybamm_simulator | 仿真完成 | 时间: 5317.0s | 温升: 0.01K | 老化: 0.0060% | SOC终值: 0.395
+2026-05-11 18:33:40,345 INFO llmbo.optimizer |     -> feasible=True obj=[5.317e+03 9.316e-03 5.985e-03] acq=1.155820 (4.5s)
+2026-05-11 18:33:40,348 INFO DataBase.database | Iter 2: HV=2.222706  |PF|=6  n=8
+2026-05-11 18:33:40,349 INFO llmbo.optimizer | Iteration 1 complete: HV=2.222706 |PF|=6 n=8 (4.9s)
+2026-05-11 18:33:40,349 INFO llmbo.optimizer | --- Iteration 2 ---
+2026-05-11 18:33:40,498 INFO llmbo.gp_model | Fitted Matern GP: n=8 y_best=1.942887 kernel=1.13**2 * Matern(length_scale=[0.158, 4.65, 1e+03, 1e+03, 0.486], nu=2.5) + WhiteKernel(noise_level=9.99e-07)
+2026-05-11 18:33:40,848 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.2289 2.7901 2.5913 0.3882 0.2791]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:33:45,174 INFO pybamm_simulator | 仿真完成 | 时间: 4887.0s | 温升: 0.01K | 老化: 0.0061% | SOC终值: 0.395
+2026-05-11 18:33:45,177 INFO llmbo.optimizer |     -> feasible=True obj=[4.8870e+03 1.1474e-02 6.0540e-03] acq=1.936793 (4.3s)
+2026-05-11 18:33:45,181 INFO DataBase.database | Iter 3: HV=2.222706  |PF|=6  n=9
+2026-05-11 18:33:45,182 INFO llmbo.optimizer | Iteration 2 complete: HV=2.222706 |PF|=6 n=9 (4.8s)
+2026-05-11 18:33:45,182 INFO llmbo.optimizer | --- Iteration 3 ---
+2026-05-11 18:33:45,324 INFO llmbo.gp_model | Fitted Matern GP: n=9 y_best=0.745069 kernel=1.71**2 * Matern(length_scale=[0.355, 1e+03, 14.1, 1e+03, 4.73], nu=2.5) + WhiteKernel(noise_level=9.99e-07)
+2026-05-11 18:33:45,826 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.9981 2.2584 2.0038 0.2315 0.2992]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:33:50,244 INFO pybamm_simulator | 仿真完成 | 时间: 6194.0s | 温升: 0.01K | 老化: 0.0063% | SOC终值: 0.395
+2026-05-11 18:33:50,250 INFO llmbo.optimizer |     -> feasible=True obj=[6.1940e+03 1.0164e-02 6.2860e-03] acq=1.322783 (4.4s)
+2026-05-11 18:33:50,254 INFO DataBase.database | Iter 4: HV=2.222706  |PF|=6  n=10
+2026-05-11 18:33:50,254 INFO llmbo.optimizer | Iteration 3 complete: HV=2.222706 |PF|=6 n=10 (5.1s)
+2026-05-11 18:33:50,255 INFO llmbo.optimizer | --- Iteration 4 ---
+2026-05-11 18:33:50,588 INFO llmbo.gp_model | Fitted Matern GP: n=10 y_best=1.380395 kernel=0.923**2 * Matern(length_scale=[0.554, 268, 0.00598, 0.0727, 2.39], nu=2.5) + WhiteKernel(noise_level=1e-06)
+2026-05-11 18:33:50,617 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.5747 3.7431 2.6919 0.2489 0.2406]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:33:54,684 INFO pybamm_simulator | 仿真完成 | 时间: 4212.0s | 温升: 0.02K | 老化: 0.0066% | SOC终值: 0.395
+2026-05-11 18:33:54,687 INFO llmbo.optimizer |     -> feasible=True obj=[4.2120e+03 2.0371e-02 6.5910e-03] acq=0.441032 (4.1s)
+2026-05-11 18:33:54,690 INFO DataBase.database | Iter 5: HV=2.310075  |PF|=6  n=11
+2026-05-11 18:33:54,690 INFO llmbo.optimizer | Iteration 4 complete: HV=2.310075 |PF|=6 n=11 (4.4s)
+2026-05-11 18:33:54,691 INFO llmbo.optimizer | --- Iteration 5 ---
+2026-05-11 18:33:54,961 INFO llmbo.gp_model | Fitted Matern GP: n=11 y_best=1.052013 kernel=1.84**2 * Matern(length_scale=[0.606, 13.7, 19.8, 1e+03, 1e+03], nu=2.5) + WhiteKernel(noise_level=2.12e-12)
+2026-05-11 18:33:55,355 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.6881 4.9709 2.9719 0.2333 0.1888]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:33:59,485 INFO pybamm_simulator | 仿真完成 | 时间: 4535.0s | 温升: 0.02K | 老化: 0.0057% | SOC终值: 0.395
+2026-05-11 18:33:59,487 INFO llmbo.optimizer |     -> feasible=True obj=[4.5350e+03 1.6016e-02 5.6960e-03] acq=1.230461 (4.1s)
+2026-05-11 18:33:59,490 INFO DataBase.database | Iter 6: HV=2.321622  |PF|=5  n=12
+2026-05-11 18:33:59,491 INFO llmbo.optimizer | Iteration 5 complete: HV=2.321622 |PF|=5 n=12 (4.8s)
+2026-05-11 18:33:59,491 INFO llmbo.optimizer | --- Iteration 6 ---
+2026-05-11 18:33:59,680 INFO llmbo.gp_model | Fitted Matern GP: n=12 y_best=1.424052 kernel=1.43**2 * Matern(length_scale=[0.541, 3.9, 1.2, 1e+03, 1e+03], nu=2.5) + WhiteKernel(noise_level=9.94e-07)
+2026-05-11 18:34:00,229 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.9148 4.9829 2.2498 0.1188 0.1768]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:34:04,520 INFO pybamm_simulator | 仿真完成 | 时间: 5408.0s | 温升: 0.02K | 老化: 0.0065% | SOC终值: 0.395
+2026-05-11 18:34:04,529 INFO llmbo.optimizer |     -> feasible=True obj=[5.4080e+03 1.7563e-02 6.4520e-03] acq=1.292260 (4.3s)
+2026-05-11 18:34:04,532 INFO DataBase.database | Iter 7: HV=2.321622  |PF|=5  n=13
+2026-05-11 18:34:04,533 INFO llmbo.optimizer | Iteration 6 complete: HV=2.321622 |PF|=5 n=13 (5.0s)
+2026-05-11 18:34:04,533 INFO llmbo.optimizer | --- Iteration 7 ---
+2026-05-11 18:34:04,758 INFO llmbo.gp_model | Fitted Matern GP: n=13 y_best=10.463469 kernel=4.61**2 * Matern(length_scale=[2.3, 2.23, 5.95, 3.5, 12.8], nu=2.5) + WhiteKernel(noise_level=9.99e-07)
+2026-05-11 18:34:05,712 INFO llmbo.optimizer |   Evaluate rank=0 theta=[5.8565 4.9171 2.9585 0.3985 0.2994]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:34:09,298 INFO pybamm_simulator | 仿真完成 | 时间: 2942.0s | 温升: 0.03K | 老化: 0.0066% | SOC终值: 0.395
+2026-05-11 18:34:09,300 INFO llmbo.optimizer |     -> feasible=True obj=[2.9420e+03 3.0742e-02 6.5760e-03] acq=3.875744 (3.6s)
+2026-05-11 18:34:09,303 INFO DataBase.database | Iter 8: HV=3.846437  |PF|=6  n=14
+2026-05-11 18:34:09,304 INFO llmbo.optimizer | Iteration 7 complete: HV=3.846437 |PF|=6 n=14 (4.8s)
+2026-05-11 18:34:09,304 INFO llmbo.optimizer | --- Iteration 8 ---
+2026-05-11 18:34:09,587 INFO llmbo.gp_model | Fitted Matern GP: n=14 y_best=3.644174 kernel=1.7**2 * Matern(length_scale=[0.371, 2.31, 7.29, 2.63, 1e+03], nu=2.5) + WhiteKernel(noise_level=9.98e-07)
+2026-05-11 18:34:10,203 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.3974 4.9946 2.9277 0.3969 0.247 ]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:34:14,153 INFO pybamm_simulator | 仿真完成 | 时间: 3953.0s | 温升: 0.02K | 老化: 0.0057% | SOC终值: 0.395
+2026-05-11 18:34:14,155 INFO llmbo.optimizer |     -> feasible=True obj=[3.9530e+03 1.5105e-02 5.7060e-03] acq=1.955874 (3.9s)
+2026-05-11 18:34:14,157 INFO DataBase.database | Iter 9: HV=3.859087  |PF|=6  n=15
+2026-05-11 18:34:14,158 INFO llmbo.optimizer | Iteration 8 complete: HV=3.859087 |PF|=6 n=15 (4.9s)
+2026-05-11 18:34:14,158 INFO llmbo.optimizer | --- Iteration 9 ---
+2026-05-11 18:34:14,538 INFO llmbo.gp_model | Fitted Matern GP: n=15 y_best=1.620783 kernel=1.44**2 * Matern(length_scale=[0.709, 1.33, 1e+03, 3.15, 1e+03], nu=2.5) + WhiteKernel(noise_level=1.59e-11)
+2026-05-11 18:34:14,913 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.593  2.7206 2.4364 0.1688 0.1394]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:34:19,671 INFO pybamm_simulator | 仿真完成 | 时间: 5727.0s | 温升: 0.01K | 老化: 0.0058% | SOC终值: 0.395
+2026-05-11 18:34:19,675 INFO llmbo.optimizer |     -> feasible=True obj=[5.727e+03 8.023e-03 5.840e-03] acq=1.103027 (4.8s)
+2026-05-11 18:34:19,680 INFO DataBase.database | Iter 10: HV=3.859087  |PF|=7  n=16
+2026-05-11 18:34:19,681 INFO llmbo.optimizer | Iteration 9 complete: HV=3.859087 |PF|=7 n=16 (5.5s)
+2026-05-11 18:34:19,681 INFO llmbo.optimizer | --- Iteration 10 ---
+2026-05-11 18:34:20,015 INFO llmbo.gp_model | Fitted Matern GP: n=16 y_best=4.791114 kernel=1.39**2 * Matern(length_scale=[1.05, 1.36, 2.26, 0.787, 1e+03], nu=2.5) + WhiteKernel(noise_level=9.98e-07)
+2026-05-11 18:34:20,566 INFO llmbo.optimizer |   Evaluate rank=0 theta=[5.209  4.9732 2.9718 0.3214 0.111 ]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:34:24,553 INFO pybamm_simulator | 仿真完成 | 时间: 3739.0s | 温升: 0.03K | 老化: 0.0067% | SOC终值: 0.395
+2026-05-11 18:34:24,556 INFO llmbo.optimizer |     -> feasible=True obj=[3.7390e+03 2.5279e-02 6.7330e-03] acq=1.882230 (4.0s)
+2026-05-11 18:34:24,560 INFO DataBase.database | Iter 11: HV=3.859119  |PF|=8  n=17
+2026-05-11 18:34:24,561 INFO llmbo.optimizer | Iteration 10 complete: HV=3.859119 |PF|=8 n=17 (4.9s)
+2026-05-11 18:34:24,561 INFO llmbo.optimizer | --- Iteration 11 ---
+2026-05-11 18:34:24,885 INFO llmbo.gp_model | Fitted Matern GP: n=17 y_best=1.316403 kernel=1.11**2 * Matern(length_scale=[0.259, 5.56, 0.532, 1.44, 1e+03], nu=2.5) + WhiteKernel(noise_level=9.68e-07)
+2026-05-11 18:34:25,290 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0732 2.1805 2.6141 0.246  0.1904]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:34:30,427 INFO pybamm_simulator | 仿真完成 | 时间: 6212.0s | 温升: 0.01K | 老化: 0.0053% | SOC终值: 0.395
+2026-05-11 18:34:30,429 INFO llmbo.optimizer |     -> feasible=True obj=[6.212e+03 5.585e-03 5.336e-03] acq=1.859170 (5.1s)
+2026-05-11 18:34:30,435 INFO DataBase.database | Iter 12: HV=3.865321  |PF|=9  n=18
+2026-05-11 18:34:30,436 INFO llmbo.optimizer | Iteration 11 complete: HV=3.865321 |PF|=9 n=18 (5.9s)
+2026-05-11 18:34:30,436 INFO llmbo.optimizer | --- Iteration 12 ---
+2026-05-11 18:34:30,910 INFO llmbo.gp_model | Fitted Matern GP: n=18 y_best=1.211540 kernel=2.34**2 * Matern(length_scale=[1.33, 1.78, 1e+03, 6.7, 1e+03], nu=2.5) + WhiteKernel(noise_level=3.25e-12)
+2026-05-11 18:34:31,425 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.001  2.2398 2.1298 0.2719 0.1348]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:34:36,226 INFO pybamm_simulator | 仿真完成 | 时间: 6853.0s | 温升: 0.01K | 老化: 0.0056% | SOC终值: 0.395
+2026-05-11 18:34:36,229 INFO llmbo.optimizer |     -> feasible=True obj=[6.853e+03 5.275e-03 5.618e-03] acq=1.429066 (4.8s)
+2026-05-11 18:34:36,233 INFO DataBase.database | Iter 13: HV=3.865323  |PF|=10  n=19
+2026-05-11 18:34:36,233 INFO llmbo.optimizer | Iteration 12 complete: HV=3.865323 |PF|=10 n=19 (5.8s)
+2026-05-11 18:34:36,233 INFO llmbo.optimizer | --- Iteration 13 ---
+2026-05-11 18:34:36,615 INFO llmbo.gp_model | Fitted Matern GP: n=19 y_best=1.057147 kernel=2.22**2 * Matern(length_scale=[0.946, 2.53, 2.6, 1.14, 1e+03], nu=2.5) + WhiteKernel(noise_level=9.92e-07)
+2026-05-11 18:34:37,677 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0022 2.1146 2.9989 0.2015 0.1418]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:34:41,998 INFO pybamm_simulator | 仿真完成 | 时间: 5760.0s | 温升: 0.01K | 老化: 0.0051% | SOC终值: 0.395
+2026-05-11 18:34:42,001 INFO llmbo.optimizer |     -> feasible=True obj=[5.760e+03 5.656e-03 5.057e-03] acq=2.668507 (4.3s)
+2026-05-11 18:34:42,006 INFO DataBase.database | Iter 14: HV=3.876164  |PF|=11  n=20
+2026-05-11 18:34:42,006 INFO llmbo.optimizer | Iteration 13 complete: HV=3.876164 |PF|=11 n=20 (5.8s)
+2026-05-11 18:34:42,006 INFO llmbo.optimizer | --- Iteration 14 ---
+2026-05-11 18:34:42,356 INFO llmbo.gp_model | Fitted Matern GP: n=20 y_best=1.844274 kernel=1.5**2 * Matern(length_scale=[0.607, 1.17, 2.04, 1.01, 5.09], nu=2.5) + WhiteKernel(noise_level=2.81e-09)
+2026-05-11 18:34:43,151 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.2692 4.9863 2.9852 0.3857 0.2977]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:34:47,140 INFO pybamm_simulator | 仿真完成 | 时间: 3902.0s | 温升: 0.02K | 老化: 0.0055% | SOC终值: 0.396
+2026-05-11 18:34:47,144 INFO llmbo.optimizer |     -> feasible=True obj=[3.902e+03 1.511e-02 5.499e-03] acq=2.076197 (4.0s)
+2026-05-11 18:34:47,149 INFO DataBase.database | Iter 15: HV=3.886313  |PF|=11  n=21
+2026-05-11 18:34:47,150 INFO llmbo.optimizer | Iteration 14 complete: HV=3.886313 |PF|=11 n=21 (5.1s)
+2026-05-11 18:34:47,150 INFO llmbo.optimizer | --- Iteration 15 ---
+2026-05-11 18:34:47,858 INFO llmbo.gp_model | Fitted Matern GP: n=21 y_best=1.586259 kernel=2.09**2 * Matern(length_scale=[0.719, 1.73, 2.57, 1.58, 18.6], nu=2.5) + WhiteKernel(noise_level=6.78e-10)
+2026-05-11 18:34:48,925 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.0556 4.9622 2.0634 0.3986 0.2994]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:34:52,791 INFO pybamm_simulator | 仿真完成 | 时间: 4324.0s | 温升: 0.01K | 老化: 0.0057% | SOC终值: 0.395
+2026-05-11 18:34:52,794 INFO llmbo.optimizer |     -> feasible=True obj=[4.3240e+03 1.4906e-02 5.7340e-03] acq=1.693472 (3.9s)
+2026-05-11 18:34:52,799 INFO DataBase.database | Iter 16: HV=3.886315  |PF|=12  n=22
+2026-05-11 18:34:52,800 INFO llmbo.optimizer | Iteration 15 complete: HV=3.886315 |PF|=12 n=22 (5.6s)
+2026-05-11 18:34:52,800 INFO llmbo.optimizer | --- Iteration 16 ---
+2026-05-11 18:34:53,268 INFO llmbo.gp_model | Fitted Matern GP: n=22 y_best=1.083607 kernel=3.28**2 * Matern(length_scale=[2.08, 3.27, 4.96, 1.37, 4.41], nu=2.5) + WhiteKernel(noise_level=9.75e-11)
+2026-05-11 18:34:54,679 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0168 4.9905 2.9986 0.3926 0.2966]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:34:58,915 INFO pybamm_simulator | 仿真完成 | 时间: 5239.0s | 温升: 0.02K | 老化: 0.0047% | SOC终值: 0.395
+2026-05-11 18:34:58,918 INFO llmbo.optimizer |     -> feasible=True obj=[5.2390e+03 1.5104e-02 4.6670e-03] acq=2.497083 (4.2s)
+2026-05-11 18:34:58,923 INFO DataBase.database | Iter 17: HV=3.907770  |PF|=13  n=23
+2026-05-11 18:34:58,924 INFO llmbo.optimizer | Iteration 16 complete: HV=3.907770 |PF|=13 n=23 (6.1s)
+2026-05-11 18:34:58,924 INFO llmbo.optimizer | --- Iteration 17 ---
+2026-05-11 18:34:59,792 INFO llmbo.gp_model | Fitted Matern GP: n=23 y_best=12.284519 kernel=1.32**2 * Matern(length_scale=[0.249, 1.42, 1.68, 1.04, 1e+03], nu=2.5) + WhiteKernel(noise_level=0.0111)
+2026-05-11 18:35:00,578 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.8474 4.9684 2.9908 0.399  0.1332]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:35:04,619 INFO pybamm_simulator | 仿真完成 | 时间: 4617.0s | 温升: 0.01K | 老化: 0.0056% | SOC终值: 0.396
+2026-05-11 18:35:04,623 INFO llmbo.optimizer |     -> feasible=True obj=[4.6170e+03 1.4939e-02 5.5610e-03] acq=2.396169 (4.0s)
+2026-05-11 18:35:04,632 INFO DataBase.database | Iter 18: HV=3.907770  |PF|=14  n=24
+2026-05-11 18:35:04,633 INFO llmbo.optimizer | Iteration 17 complete: HV=3.907770 |PF|=14 n=24 (5.7s)
+2026-05-11 18:35:04,633 INFO llmbo.optimizer | --- Iteration 18 ---
+2026-05-11 18:35:05,156 INFO llmbo.gp_model | Fitted Matern GP: n=24 y_best=3.188485 kernel=1.5**2 * Matern(length_scale=[0.523, 1.56, 2.11, 1.03, 5.51], nu=2.5) + WhiteKernel(noise_level=7.77e-10)
+2026-05-11 18:35:05,895 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.6618 4.9432 2.9841 0.3604 0.2949]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:35:09,967 INFO pybamm_simulator | 仿真完成 | 时间: 3718.0s | 温升: 0.01K | 老化: 0.0058% | SOC终值: 0.395
+2026-05-11 18:35:09,972 INFO llmbo.optimizer |     -> feasible=True obj=[3.7180e+03 1.4983e-02 5.8010e-03] acq=1.841719 (4.1s)
+2026-05-11 18:35:09,981 INFO DataBase.database | Iter 19: HV=3.911709  |PF|=14  n=25
+2026-05-11 18:35:09,982 INFO llmbo.optimizer | Iteration 18 complete: HV=3.911709 |PF|=14 n=25 (5.3s)
+2026-05-11 18:35:09,982 INFO llmbo.optimizer | --- Iteration 19 ---
+2026-05-11 18:35:10,823 INFO llmbo.gp_model | Fitted Matern GP: n=25 y_best=3.726418 kernel=1.39**2 * Matern(length_scale=[0.755, 1.56, 2.06, 0.889, 7.2], nu=2.5) + WhiteKernel(noise_level=0.0213)
+2026-05-11 18:35:11,712 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0212 4.9777 2.9988 0.3554 0.286 ]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:35:16,189 INFO pybamm_simulator | 仿真完成 | 时间: 5151.0s | 温升: 0.02K | 老化: 0.0048% | SOC终值: 0.395
+2026-05-11 18:35:16,193 INFO llmbo.optimizer |     -> feasible=True obj=[5.1510e+03 1.5215e-02 4.7650e-03] acq=1.583765 (4.5s)
+2026-05-11 18:35:16,197 INFO DataBase.database | Iter 20: HV=3.913264  |PF|=15  n=26
+2026-05-11 18:35:16,199 INFO llmbo.optimizer | Iteration 19 complete: HV=3.913264 |PF|=15 n=26 (6.2s)
+2026-05-11 18:35:16,199 INFO llmbo.optimizer | --- Iteration 20 ---
+2026-05-11 18:35:16,951 INFO llmbo.gp_model | Fitted Matern GP: n=26 y_best=2.894441 kernel=1.64**2 * Matern(length_scale=[0.706, 1.17, 8.38, 3.49, 1e+03], nu=2.5) + WhiteKernel(noise_level=1.1e-12)
+2026-05-11 18:35:17,500 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.5853 3.3881 2.9823 0.3179 0.2494]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:35:21,810 INFO pybamm_simulator | 仿真完成 | 时间: 4942.0s | 温升: 0.01K | 老化: 0.0055% | SOC终值: 0.395
+2026-05-11 18:35:21,813 INFO llmbo.optimizer |     -> feasible=True obj=[4.942e+03 7.985e-03 5.451e-03] acq=1.174964 (4.3s)
+2026-05-11 18:35:21,818 INFO DataBase.database | Iter 21: HV=3.913526  |PF|=14  n=27
+2026-05-11 18:35:21,819 INFO llmbo.optimizer | Iteration 20 complete: HV=3.913526 |PF|=14 n=27 (5.6s)
+2026-05-11 18:35:21,819 INFO llmbo.optimizer | --- Iteration 21 ---
+2026-05-11 18:35:22,350 INFO llmbo.gp_model | Fitted Matern GP: n=27 y_best=3.075132 kernel=1.24**2 * Matern(length_scale=[0.442, 1.02, 1.76, 0.912, 4.69], nu=2.5) + WhiteKernel(noise_level=0.02)
+2026-05-11 18:35:23,019 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.7718 4.7257 2.9987 0.3501 0.2992]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:35:27,219 INFO pybamm_simulator | 仿真完成 | 时间: 4318.0s | 温升: 0.01K | 老化: 0.0053% | SOC终值: 0.395
+2026-05-11 18:35:27,223 INFO llmbo.optimizer |     -> feasible=True obj=[4.3180e+03 1.3767e-02 5.3220e-03] acq=1.614194 (4.2s)
+2026-05-11 18:35:27,227 INFO DataBase.database | Iter 22: HV=3.917001  |PF|=13  n=28
+2026-05-11 18:35:27,228 INFO llmbo.optimizer | Iteration 21 complete: HV=3.917001 |PF|=13 n=28 (5.4s)
+2026-05-11 18:35:27,229 INFO llmbo.optimizer | --- Iteration 22 ---
+2026-05-11 18:35:27,917 INFO llmbo.gp_model | Fitted Matern GP: n=28 y_best=2.188683 kernel=3.49**2 * Matern(length_scale=[1.5, 3.35, 5.64, 2.19, 12.2], nu=2.5) + WhiteKernel(noise_level=4.74e-05)
+2026-05-11 18:35:28,751 INFO llmbo.optimizer |   Evaluate rank=0 theta=[5.9862 4.6698 2.9831 0.3965 0.2955]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:35:32,536 INFO pybamm_simulator | 仿真完成 | 时间: 2982.0s | 温升: 0.03K | 老化: 0.0067% | SOC终值: 0.395
+2026-05-11 18:35:32,540 INFO llmbo.optimizer |     -> feasible=True obj=[2.982e+03 3.189e-02 6.659e-03] acq=2.279423 (3.8s)
+2026-05-11 18:35:32,544 INFO DataBase.database | Iter 23: HV=3.917001  |PF|=13  n=29
+2026-05-11 18:35:32,546 INFO llmbo.optimizer | Iteration 22 complete: HV=3.917001 |PF|=13 n=29 (5.3s)
+2026-05-11 18:35:32,546 INFO llmbo.optimizer | --- Iteration 23 ---
+2026-05-11 18:35:33,492 INFO llmbo.gp_model | Fitted Matern GP: n=29 y_best=2.187059 kernel=2.98**2 * Matern(length_scale=[1.29, 3.1, 5.18, 1.54, 11.1], nu=2.5) + WhiteKernel(noise_level=4.94e-11)
+2026-05-11 18:35:34,283 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.194  4.9893 2.971  0.3592 0.299 ]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:35:38,068 INFO pybamm_simulator | 仿真完成 | 时间: 3480.0s | 温升: 0.02K | 老化: 0.0061% | SOC终值: 0.396
+2026-05-11 18:35:38,071 INFO llmbo.optimizer |     -> feasible=True obj=[3.4800e+03 1.7643e-02 6.0540e-03] acq=1.672608 (3.8s)
+2026-05-11 18:35:38,076 INFO DataBase.database | Iter 24: HV=3.920602  |PF|=14  n=30
+2026-05-11 18:35:38,076 INFO llmbo.optimizer | Iteration 23 complete: HV=3.920602 |PF|=14 n=30 (5.5s)
+2026-05-11 18:35:38,077 INFO llmbo.optimizer | --- Iteration 24 ---
+2026-05-11 18:35:39,029 INFO llmbo.gp_model | Fitted Matern GP: n=30 y_best=1.376684 kernel=1.37**2 * Matern(length_scale=[0.684, 1.29, 1.9, 1.71, 9.16], nu=2.5) + WhiteKernel(noise_level=3.33e-12)
+2026-05-11 18:35:39,868 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0245 2.3548 2.9915 0.2503 0.2964]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:35:44,123 INFO pybamm_simulator | 仿真完成 | 时间: 6015.0s | 温升: 0.01K | 老化: 0.0052% | SOC终值: 0.395
+2026-05-11 18:35:44,125 INFO llmbo.optimizer |     -> feasible=True obj=[6.015e+03 5.375e-03 5.157e-03] acq=1.474989 (4.3s)
+2026-05-11 18:35:44,127 INFO DataBase.database | Iter 25: HV=3.920605  |PF|=14  n=31
+2026-05-11 18:35:44,127 INFO llmbo.optimizer | Iteration 24 complete: HV=3.920605 |PF|=14 n=31 (6.1s)
+2026-05-11 18:35:44,127 INFO llmbo.optimizer | --- Iteration 25 ---
+2026-05-11 18:35:44,744 INFO llmbo.gp_model | Fitted Matern GP: n=31 y_best=1.756458 kernel=1.68**2 * Matern(length_scale=[0.722, 1.74, 2.57, 1.31, 2.8], nu=2.5) + WhiteKernel(noise_level=3.33e-12)
+2026-05-11 18:35:45,295 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.6663 4.9919 2.9059 0.331  0.296 ]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:35:49,189 INFO pybamm_simulator | 仿真完成 | 时间: 3764.0s | 温升: 0.02K | 老化: 0.0059% | SOC终值: 0.395
+2026-05-11 18:35:49,193 INFO llmbo.optimizer |     -> feasible=True obj=[3.7640e+03 1.5436e-02 5.9240e-03] acq=1.753871 (3.9s)
+2026-05-11 18:35:49,199 INFO DataBase.database | Iter 26: HV=3.920605  |PF|=14  n=32
+2026-05-11 18:35:49,199 INFO llmbo.optimizer | Iteration 25 complete: HV=3.920605 |PF|=14 n=32 (5.1s)
+2026-05-11 18:35:49,199 INFO llmbo.optimizer | --- Iteration 26 ---
+2026-05-11 18:35:50,142 INFO llmbo.gp_model | Fitted Matern GP: n=32 y_best=8.983395 kernel=1.38**2 * Matern(length_scale=[0.615, 1.73, 2.37, 1.04, 2.61], nu=2.5) + WhiteKernel(noise_level=3.33e-12)
+2026-05-11 18:35:50,831 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.3466 4.7997 2.9997 0.3804 0.2962]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:35:54,553 INFO pybamm_simulator | 仿真完成 | 时间: 4770.0s | 温升: 0.01K | 老化: 0.0050% | SOC终值: 0.396
+2026-05-11 18:35:54,556 INFO llmbo.optimizer |     -> feasible=True obj=[4.7700e+03 1.4044e-02 4.9580e-03] acq=1.598631 (3.7s)
+2026-05-11 18:35:54,560 INFO DataBase.database | Iter 27: HV=3.924093  |PF|=15  n=33
+2026-05-11 18:35:54,561 INFO llmbo.optimizer | Iteration 26 complete: HV=3.924093 |PF|=15 n=33 (5.4s)
+2026-05-11 18:35:54,561 INFO llmbo.optimizer | --- Iteration 27 ---
+2026-05-11 18:35:55,755 INFO llmbo.gp_model | Fitted Matern GP: n=33 y_best=1.338965 kernel=2.91**2 * Matern(length_scale=[2.07, 3.57, 6.06, 1.37, 6.42], nu=2.5) + WhiteKernel(noise_level=0.00239)
+2026-05-11 18:35:57,420 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0148 4.9568 2.9966 0.3807 0.2991]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:36:01,548 INFO pybamm_simulator | 仿真完成 | 时间: 5209.0s | 温升: 0.01K | 老化: 0.0047% | SOC终值: 0.395
+2026-05-11 18:36:01,551 INFO llmbo.optimizer |     -> feasible=True obj=[5.2090e+03 1.4958e-02 4.6840e-03] acq=1.898224 (4.1s)
+2026-05-11 18:36:01,559 INFO DataBase.database | Iter 28: HV=3.924156  |PF|=16  n=34
+2026-05-11 18:36:01,560 INFO llmbo.optimizer | Iteration 27 complete: HV=3.924156 |PF|=16 n=34 (7.0s)
+2026-05-11 18:36:01,560 INFO llmbo.optimizer | --- Iteration 28 ---
+2026-05-11 18:36:02,272 INFO llmbo.gp_model | Fitted Matern GP: n=34 y_best=2.085417 kernel=2.12**2 * Matern(length_scale=[0.549, 2.3, 2.68, 1.44, 2.61], nu=2.5) + WhiteKernel(noise_level=0.000275)
+2026-05-11 18:36:03,662 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.1179 4.9578 2.9942 0.3998 0.299 ]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:36:07,464 INFO pybamm_simulator | 仿真完成 | 时间: 4002.0s | 温升: 0.01K | 老化: 0.0054% | SOC终值: 0.395
+2026-05-11 18:36:07,466 INFO llmbo.optimizer |     -> feasible=True obj=[4.0020e+03 1.4876e-02 5.3660e-03] acq=1.947115 (3.8s)
+2026-05-11 18:36:07,470 INFO DataBase.database | Iter 29: HV=3.925346  |PF|=17  n=35
+2026-05-11 18:36:07,470 INFO llmbo.optimizer | Iteration 28 complete: HV=3.925346 |PF|=17 n=35 (5.9s)
+2026-05-11 18:36:07,470 INFO llmbo.optimizer | --- Iteration 29 ---
+2026-05-11 18:36:08,508 INFO llmbo.gp_model | Fitted Matern GP: n=35 y_best=1.304578 kernel=1.2**2 * Matern(length_scale=[0.488, 1.61, 2.29, 1.07, 2.54], nu=2.5) + WhiteKernel(noise_level=1.99e-12)
+2026-05-11 18:36:09,191 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.4335 4.9031 2.9833 0.3986 0.2919]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:36:13,014 INFO pybamm_simulator | 仿真完成 | 时间: 4681.0s | 温升: 0.01K | 老化: 0.0050% | SOC终值: 0.396
+2026-05-11 18:36:13,018 INFO llmbo.optimizer |     -> feasible=True obj=[4.6810e+03 1.4559e-02 4.9800e-03] acq=1.556963 (3.8s)
+2026-05-11 18:36:13,023 INFO DataBase.database | Iter 30: HV=3.926147  |PF|=18  n=36
+2026-05-11 18:36:13,024 INFO llmbo.optimizer | Iteration 29 complete: HV=3.926147 |PF|=18 n=36 (5.5s)
+2026-05-11 18:36:13,024 INFO llmbo.optimizer | --- Iteration 30 ---
+2026-05-11 18:36:13,963 INFO llmbo.gp_model | Fitted Matern GP: n=36 y_best=1.877752 kernel=5.31**2 * Matern(length_scale=[3.37, 6.76, 11.4, 1.78, 6.24], nu=2.5) + WhiteKernel(noise_level=1.01e-06)
+2026-05-11 18:36:15,361 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0007 4.9901 2.995  0.3975 0.2971]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:36:19,175 INFO pybamm_simulator | 仿真完成 | 时间: 5282.0s | 温升: 0.02K | 老化: 0.0046% | SOC终值: 0.396
+2026-05-11 18:36:19,178 INFO llmbo.optimizer |     -> feasible=True obj=[5.282e+03 1.508e-02 4.647e-03] acq=1.899980 (3.8s)
+2026-05-11 18:36:19,180 INFO DataBase.database | Iter 31: HV=3.926976  |PF|=19  n=37
+2026-05-11 18:36:19,180 INFO llmbo.optimizer | Iteration 30 complete: HV=3.926976 |PF|=19 n=37 (6.2s)
+2026-05-11 18:36:19,180 INFO llmbo.optimizer | --- Iteration 31 ---
+2026-05-11 18:36:19,760 INFO llmbo.gp_model | Fitted Matern GP: n=37 y_best=1.202350 kernel=1.5**2 * Matern(length_scale=[0.36, 1.41, 1.99, 1.24, 3.42], nu=2.5) + WhiteKernel(noise_level=1.55e-12)
+2026-05-11 18:36:20,942 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.884  4.979  2.9996 0.3969 0.2978]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:36:24,718 INFO pybamm_simulator | 仿真完成 | 时间: 4186.0s | 温升: 0.02K | 老化: 0.0052% | SOC终值: 0.396
+2026-05-11 18:36:24,721 INFO llmbo.optimizer |     -> feasible=True obj=[4.1860e+03 1.5012e-02 5.2370e-03] acq=1.804523 (3.8s)
+2026-05-11 18:36:24,727 INFO DataBase.database | Iter 32: HV=3.928285  |PF|=20  n=38
+2026-05-11 18:36:24,728 INFO llmbo.optimizer | Iteration 31 complete: HV=3.928285 |PF|=20 n=38 (5.5s)
+2026-05-11 18:36:24,729 INFO llmbo.optimizer | --- Iteration 32 ---
+2026-05-11 18:36:25,605 INFO llmbo.gp_model | Fitted Matern GP: n=38 y_best=1.764784 kernel=1.53**2 * Matern(length_scale=[0.513, 1.84, 2.9, 1.18, 3.13], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:36:26,755 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.6355 4.9688 2.9955 0.3985 0.2984]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:36:30,426 INFO pybamm_simulator | 仿真完成 | 时间: 4423.0s | 温升: 0.01K | 老化: 0.0051% | SOC终值: 0.396
+2026-05-11 18:36:30,430 INFO llmbo.optimizer |     -> feasible=True obj=[4.4230e+03 1.4943e-02 5.0810e-03] acq=1.513052 (3.7s)
+2026-05-11 18:36:30,435 INFO DataBase.database | Iter 33: HV=3.929388  |PF|=21  n=39
+2026-05-11 18:36:30,437 INFO llmbo.optimizer | Iteration 32 complete: HV=3.929388 |PF|=21 n=39 (5.7s)
+2026-05-11 18:36:30,437 INFO llmbo.optimizer | --- Iteration 33 ---
+2026-05-11 18:36:31,745 INFO llmbo.gp_model | Fitted Matern GP: n=39 y_best=1.356645 kernel=2.7**2 * Matern(length_scale=[0.806, 2.48, 4.04, 1.87, 4.43], nu=2.5) + WhiteKernel(noise_level=1.87e-12)
+2026-05-11 18:36:32,592 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.8176 4.7601 2.9748 0.3639 0.2981]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:36:36,395 INFO pybamm_simulator | 仿真完成 | 时间: 3678.0s | 温升: 0.02K | 老化: 0.0059% | SOC终值: 0.395
+2026-05-11 18:36:36,401 INFO llmbo.optimizer |     -> feasible=True obj=[3.6780e+03 1.5108e-02 5.8840e-03] acq=1.611124 (3.8s)
+2026-05-11 18:36:36,407 INFO DataBase.database | Iter 34: HV=3.929588  |PF|=22  n=40
+2026-05-11 18:36:36,408 INFO llmbo.optimizer | Iteration 33 complete: HV=3.929588 |PF|=22 n=40 (6.0s)
+2026-05-11 18:36:36,408 INFO llmbo.optimizer | --- Iteration 34 ---
+2026-05-11 18:36:37,294 INFO llmbo.gp_model | Fitted Matern GP: n=40 y_best=4.521691 kernel=6.18**2 * Matern(length_scale=[1.84, 5.06, 7.7, 3.63, 7.14], nu=2.5) + WhiteKernel(noise_level=1.03e-06)
+2026-05-11 18:36:38,087 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.9152 4.9088 2.9856 0.3985 0.2971]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:36:41,665 INFO pybamm_simulator | 仿真完成 | 时间: 3177.0s | 温升: 0.02K | 老化: 0.0062% | SOC终值: 0.395
+2026-05-11 18:36:41,669 INFO llmbo.optimizer |     -> feasible=True obj=[3.1770e+03 2.2951e-02 6.2330e-03] acq=1.683277 (3.6s)
+2026-05-11 18:36:41,675 INFO DataBase.database | Iter 35: HV=3.932787  |PF|=23  n=41
+2026-05-11 18:36:41,675 INFO llmbo.optimizer | Iteration 34 complete: HV=3.932787 |PF|=23 n=41 (5.3s)
+2026-05-11 18:36:41,678 INFO llmbo.optimizer | --- Iteration 35 ---
+2026-05-11 18:36:42,686 INFO llmbo.gp_model | Fitted Matern GP: n=41 y_best=1.234861 kernel=1.19**2 * Matern(length_scale=[0.649, 1.56, 1.94, 1.12, 2.84], nu=2.5) + WhiteKernel(noise_level=0.000426)
+2026-05-11 18:36:43,547 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.3147 4.7391 2.9965 0.3916 0.2939]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:36:47,345 INFO pybamm_simulator | 仿真完成 | 时间: 4848.0s | 温升: 0.01K | 老化: 0.0049% | SOC终值: 0.395
+2026-05-11 18:36:47,349 INFO llmbo.optimizer |     -> feasible=True obj=[4.848e+03 1.365e-02 4.924e-03] acq=1.299541 (3.8s)
+2026-05-11 18:36:47,352 INFO DataBase.database | Iter 36: HV=3.933050  |PF|=24  n=42
+2026-05-11 18:36:47,357 INFO llmbo.optimizer | Iteration 35 complete: HV=3.933050 |PF|=24 n=42 (5.7s)
+2026-05-11 18:36:47,357 INFO llmbo.optimizer | --- Iteration 36 ---
+2026-05-11 18:36:48,206 INFO llmbo.gp_model | Fitted Matern GP: n=42 y_best=2.329968 kernel=1.34**2 * Matern(length_scale=[0.769, 1.93, 3.22, 1.18, 2.46], nu=2.5) + WhiteKernel(noise_level=1.48e-05)
+2026-05-11 18:36:49,127 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0118 4.8417 2.9984 0.3761 0.2766]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:36:53,145 INFO pybamm_simulator | 仿真完成 | 时间: 5278.0s | 温升: 0.01K | 老化: 0.0048% | SOC终值: 0.395
+2026-05-11 18:36:53,151 INFO llmbo.optimizer |     -> feasible=True obj=[5.2780e+03 1.4307e-02 4.7550e-03] acq=1.583258 (4.0s)
+2026-05-11 18:36:53,164 INFO DataBase.database | Iter 37: HV=3.933051  |PF|=25  n=43
+2026-05-11 18:36:53,166 INFO llmbo.optimizer | Iteration 36 complete: HV=3.933051 |PF|=25 n=43 (5.8s)
+2026-05-11 18:36:53,166 INFO llmbo.optimizer | --- Iteration 37 ---
+2026-05-11 18:36:53,897 INFO llmbo.gp_model | Fitted Matern GP: n=43 y_best=18.865916 kernel=3.76**2 * Matern(length_scale=[2.53, 4.42, 8.96, 1.74, 5.1], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:36:55,329 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0001 4.9718 2.9703 0.3872 0.2999]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:36:59,226 INFO pybamm_simulator | 仿真完成 | 时间: 5255.0s | 温升: 0.02K | 老化: 0.0047% | SOC终值: 0.395
+2026-05-11 18:36:59,231 INFO llmbo.optimizer |     -> feasible=True obj=[5.2550e+03 1.5019e-02 4.6650e-03] acq=1.654300 (3.9s)
+2026-05-11 18:36:59,240 INFO DataBase.database | Iter 38: HV=3.933052  |PF|=26  n=44
+2026-05-11 18:36:59,242 INFO llmbo.optimizer | Iteration 37 complete: HV=3.933052 |PF|=26 n=44 (6.1s)
+2026-05-11 18:36:59,242 INFO llmbo.optimizer | --- Iteration 38 ---
+2026-05-11 18:36:59,913 INFO llmbo.gp_model | Fitted Matern GP: n=44 y_best=1.181220 kernel=1.14**2 * Matern(length_scale=[0.626, 1.27, 1.86, 1.13, 2.99], nu=2.5) + WhiteKernel(noise_level=0.000294)
+2026-05-11 18:37:00,843 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0722 4.1817 2.9869 0.3874 0.2984]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:37:04,777 INFO pybamm_simulator | 仿真完成 | 时间: 5337.0s | 温升: 0.01K | 老化: 0.0048% | SOC终值: 0.395
+2026-05-11 18:37:04,780 INFO llmbo.optimizer |     -> feasible=True obj=[5.3370e+03 1.0694e-02 4.8360e-03] acq=1.327157 (3.9s)
+2026-05-11 18:37:04,789 INFO DataBase.database | Iter 39: HV=3.933052  |PF|=27  n=45
+2026-05-11 18:37:04,791 INFO llmbo.optimizer | Iteration 38 complete: HV=3.933052 |PF|=27 n=45 (5.5s)
+2026-05-11 18:37:04,791 INFO llmbo.optimizer | --- Iteration 39 ---
+2026-05-11 18:37:05,335 INFO llmbo.gp_model | Fitted Matern GP: n=45 y_best=3.497784 kernel=1.54**2 * Matern(length_scale=[0.654, 1.37, 4.44, 7.33, 1e+03], nu=2.5) + WhiteKernel(noise_level=3.33e-12)
+2026-05-11 18:37:05,852 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0013 2.4473 2.4978 0.3845 0.2446]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:37:09,746 INFO pybamm_simulator | 仿真完成 | 时间: 6489.0s | 温升: 0.01K | 老化: 0.0053% | SOC终值: 0.395
+2026-05-11 18:37:09,750 INFO llmbo.optimizer |     -> feasible=True obj=[6.489e+03 5.276e-03 5.346e-03] acq=1.630657 (3.9s)
+2026-05-11 18:37:09,758 INFO DataBase.database | Iter 40: HV=3.933053  |PF|=28  n=46
+2026-05-11 18:37:09,760 INFO llmbo.optimizer | Iteration 39 complete: HV=3.933053 |PF|=28 n=46 (5.0s)
+2026-05-11 18:37:09,760 INFO llmbo.optimizer | --- Iteration 40 ---
+2026-05-11 18:37:10,353 INFO llmbo.gp_model | Fitted Matern GP: n=46 y_best=2.380975 kernel=3.47**2 * Matern(length_scale=[2.44, 4.24, 7.25, 1.78, 5.02], nu=2.5) + WhiteKernel(noise_level=1.03e-07)
+2026-05-11 18:37:11,696 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0016 4.9945 2.9631 0.3995 0.2967]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:37:15,705 INFO pybamm_simulator | 仿真完成 | 时间: 5292.0s | 温升: 0.02K | 老化: 0.0047% | SOC终值: 0.395
+2026-05-11 18:37:15,710 INFO llmbo.optimizer |     -> feasible=True obj=[5.2920e+03 1.5096e-02 4.6520e-03] acq=1.569837 (4.0s)
+2026-05-11 18:37:15,717 INFO DataBase.database | Iter 41: HV=3.933053  |PF|=28  n=47
+2026-05-11 18:37:15,717 INFO llmbo.optimizer | Iteration 40 complete: HV=3.933053 |PF|=28 n=47 (6.0s)
+2026-05-11 18:37:15,717 INFO llmbo.optimizer | --- Iteration 41 ---
+2026-05-11 18:37:16,281 INFO llmbo.gp_model | Fitted Matern GP: n=47 y_best=1.816824 kernel=1.45**2 * Matern(length_scale=[0.253, 1.67, 1.84, 1.5, 2.57], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:37:17,560 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.0903 4.9319 2.9781 0.3988 0.299 ]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:37:22,008 INFO pybamm_simulator | 仿真完成 | 时间: 4031.0s | 温升: 0.01K | 老化: 0.0054% | SOC终值: 0.395
+2026-05-11 18:37:22,011 INFO llmbo.optimizer |     -> feasible=True obj=[4.0310e+03 1.4728e-02 5.3610e-03] acq=1.884496 (4.4s)
+2026-05-11 18:37:22,027 INFO DataBase.database | Iter 42: HV=3.933079  |PF|=29  n=48
+2026-05-11 18:37:22,030 INFO llmbo.optimizer | Iteration 41 complete: HV=3.933079 |PF|=29 n=48 (6.3s)
+2026-05-11 18:37:22,030 INFO llmbo.optimizer | --- Iteration 42 ---
+2026-05-11 18:37:23,516 INFO llmbo.gp_model | Fitted Matern GP: n=48 y_best=2.931246 kernel=1.94**2 * Matern(length_scale=[0.435, 2.09, 3.39, 1.37, 3.83], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:37:24,975 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.8524 4.9457 2.9959 0.3994 0.299 ]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:37:28,822 INFO pybamm_simulator | 仿真完成 | 时间: 4219.0s | 温升: 0.01K | 老化: 0.0052% | SOC终值: 0.395
+2026-05-11 18:37:28,825 INFO llmbo.optimizer |     -> feasible=True obj=[4.2190e+03 1.4804e-02 5.2130e-03] acq=1.545595 (3.8s)
+2026-05-11 18:37:28,832 INFO DataBase.database | Iter 43: HV=3.933220  |PF|=30  n=49
+2026-05-11 18:37:28,834 INFO llmbo.optimizer | Iteration 42 complete: HV=3.933220 |PF|=30 n=49 (6.8s)
+2026-05-11 18:37:28,834 INFO llmbo.optimizer | --- Iteration 43 ---
+2026-05-11 18:37:29,577 INFO llmbo.gp_model | Fitted Matern GP: n=49 y_best=2.586053 kernel=6.01**2 * Matern(length_scale=[1.62, 5.05, 9.02, 2.99, 6.25], nu=2.5) + WhiteKernel(noise_level=6e-07)
+2026-05-11 18:37:30,630 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.3934 4.9947 2.9992 0.3529 0.2951]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:37:34,518 INFO pybamm_simulator | 仿真完成 | 时间: 3421.0s | 温升: 0.02K | 老化: 0.0062% | SOC终值: 0.395
+2026-05-11 18:37:34,522 INFO llmbo.optimizer |     -> feasible=True obj=[3.4210e+03 1.9051e-02 6.1560e-03] acq=1.632165 (3.9s)
+2026-05-11 18:37:34,532 INFO DataBase.database | Iter 44: HV=3.933363  |PF|=31  n=50
+2026-05-11 18:37:34,533 INFO llmbo.optimizer | Iteration 43 complete: HV=3.933363 |PF|=31 n=50 (5.7s)
+2026-05-11 18:37:34,534 INFO llmbo.optimizer | --- Iteration 44 ---
+2026-05-11 18:37:35,226 INFO llmbo.gp_model | Fitted Matern GP: n=50 y_best=2.068867 kernel=6.52**2 * Matern(length_scale=[1.81, 5.51, 9.53, 3.35, 6.82], nu=2.5) + WhiteKernel(noise_level=3.42e-07)
+2026-05-11 18:37:36,348 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.8437 4.9929 2.9966 0.3117 0.2971]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:37:40,222 INFO pybamm_simulator | 仿真完成 | 时间: 3377.0s | 温升: 0.02K | 老化: 0.0064% | SOC终值: 0.395
+2026-05-11 18:37:40,230 INFO llmbo.optimizer |     -> feasible=True obj=[3.3770e+03 2.2398e-02 6.4410e-03] acq=1.638302 (3.9s)
+2026-05-11 18:37:40,240 INFO DataBase.database | Iter 45: HV=3.933364  |PF|=32  n=51
+2026-05-11 18:37:40,240 INFO llmbo.optimizer | Iteration 44 complete: HV=3.933364 |PF|=32 n=51 (5.7s)
+2026-05-11 18:37:40,240 INFO llmbo.optimizer | --- Iteration 45 ---
+2026-05-11 18:37:40,970 INFO llmbo.gp_model | Fitted Matern GP: n=51 y_best=1.445636 kernel=4.55**2 * Matern(length_scale=[1.18, 4.15, 6.19, 3.3, 5.23], nu=2.5) + WhiteKernel(noise_level=4.52e-07)
+2026-05-11 18:37:42,032 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.053  4.9459 2.8734 0.3986 0.2992]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:37:46,590 INFO pybamm_simulator | 仿真完成 | 时间: 3499.0s | 温升: 0.02K | 老化: 0.0059% | SOC终值: 0.395
+2026-05-11 18:37:46,596 INFO llmbo.optimizer |     -> feasible=True obj=[3.4990e+03 1.6675e-02 5.8950e-03] acq=1.563123 (4.6s)
+2026-05-11 18:37:46,604 INFO DataBase.database | Iter 46: HV=3.934220  |PF|=33  n=52
+2026-05-11 18:37:46,606 INFO llmbo.optimizer | Iteration 45 complete: HV=3.934220 |PF|=33 n=52 (6.4s)
+2026-05-11 18:37:46,606 INFO llmbo.optimizer | --- Iteration 46 ---
+2026-05-11 18:37:47,416 INFO llmbo.gp_model | Fitted Matern GP: n=52 y_best=1.202851 kernel=2.03**2 * Matern(length_scale=[0.477, 2.38, 3.48, 1.76, 3.34], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:37:48,853 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.3601 4.9828 2.9904 0.3947 0.2999]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:37:52,951 INFO pybamm_simulator | 仿真完成 | 时间: 3831.0s | 温升: 0.02K | 老化: 0.0055% | SOC终值: 0.395
+2026-05-11 18:37:52,955 INFO llmbo.optimizer |     -> feasible=True obj=[3.8310e+03 1.5045e-02 5.5080e-03] acq=1.646053 (4.1s)
+2026-05-11 18:37:52,968 INFO DataBase.database | Iter 47: HV=3.934829  |PF|=33  n=53
+2026-05-11 18:37:52,970 INFO llmbo.optimizer | Iteration 46 complete: HV=3.934829 |PF|=33 n=53 (6.4s)
+2026-05-11 18:37:52,970 INFO llmbo.optimizer | --- Iteration 47 ---
+2026-05-11 18:37:53,846 INFO llmbo.gp_model | Fitted Matern GP: n=53 y_best=1.332094 kernel=3.91**2 * Matern(length_scale=[2.7, 4.66, 7.2, 1.9, 5.18], nu=2.5) + WhiteKernel(noise_level=1.59e-06)
+2026-05-11 18:37:55,626 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0087 4.9675 2.9963 0.3999 0.2984]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:38:00,207 INFO pybamm_simulator | 仿真完成 | 时间: 5275.0s | 温升: 0.01K | 老化: 0.0046% | SOC终值: 0.395
+2026-05-11 18:38:00,211 INFO llmbo.optimizer |     -> feasible=True obj=[5.2750e+03 1.4935e-02 4.6470e-03] acq=1.593477 (4.6s)
+2026-05-11 18:38:00,221 INFO DataBase.database | Iter 48: HV=3.934847  |PF|=33  n=54
+2026-05-11 18:38:00,222 INFO llmbo.optimizer | Iteration 47 complete: HV=3.934847 |PF|=33 n=54 (7.2s)
+2026-05-11 18:38:00,222 INFO llmbo.optimizer | --- Iteration 48 ---
+2026-05-11 18:38:01,369 INFO llmbo.gp_model | Fitted Matern GP: n=54 y_best=2.051385 kernel=9.75**2 * Matern(length_scale=[2.3, 6.07, 10.4, 5.74, 8.94], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:38:02,513 INFO llmbo.optimizer |   Evaluate rank=0 theta=[5.3154 4.7252 2.9747 0.3992 0.2984]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:38:06,431 INFO pybamm_simulator | 仿真完成 | 时间: 3108.0s | 温升: 0.03K | 老化: 0.0064% | SOC终值: 0.395
+2026-05-11 18:38:06,441 INFO llmbo.optimizer |     -> feasible=True obj=[3.1080e+03 2.6145e-02 6.4110e-03] acq=1.720924 (3.9s)
+2026-05-11 18:38:06,453 INFO DataBase.database | Iter 49: HV=3.935215  |PF|=34  n=55
+2026-05-11 18:38:06,453 INFO llmbo.optimizer | Iteration 48 complete: HV=3.935215 |PF|=34 n=55 (6.2s)
+2026-05-11 18:38:06,453 INFO llmbo.optimizer | --- Iteration 49 ---
+2026-05-11 18:38:07,446 INFO llmbo.gp_model | Fitted Matern GP: n=55 y_best=1.669800 kernel=3.54**2 * Matern(length_scale=[0.845, 3.44, 4.99, 3.56, 4.09], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:38:08,868 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.7862 4.987  2.9504 0.3981 0.2981]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:38:12,762 INFO pybamm_simulator | 仿真完成 | 时间: 3602.0s | 温升: 0.02K | 老化: 0.0057% | SOC终值: 0.395
+2026-05-11 18:38:12,769 INFO llmbo.optimizer |     -> feasible=True obj=[3.6020e+03 1.5059e-02 5.7390e-03] acq=1.420503 (3.9s)
+2026-05-11 18:38:12,776 INFO DataBase.database | Iter 50: HV=3.935958  |PF|=34  n=56
+2026-05-11 18:38:12,781 INFO llmbo.optimizer | Iteration 49 complete: HV=3.935958 |PF|=34 n=56 (6.3s)
+2026-05-11 18:38:12,785 INFO llmbo.optimizer | Optimization finished: HV=3.935958
+2026-05-11 18:38:12,785 INFO Compare_Exp.Exp.parego_runner | ParEGO done: 56 evals, 56 feasible, 34 Pareto, HV=3.9360
+2026-05-11 18:38:12,834 INFO DataBase.database | 数据库已保存: optimized_experiments\parego_ecker_5seeds_56evals_2026_05_11_rerun\seed8409\parego_matlab_reference_Ecker2015\database.json (56 条记录)
+2026-05-11 18:38:12,851 INFO Compare_Exp.Exp.parego_runner | Results saved to optimized_experiments\parego_ecker_5seeds_56evals_2026_05_11_rerun\seed8409\parego_matlab_reference_Ecker2015
+2026-05-11 18:38:12,851 INFO __main__ | Seed 8409 done: canonical_hv=1.574383, pareto=34
+2026-05-11 18:38:12,851 INFO __main__ | === Seed 8410 ===
+2026-05-11 18:38:12,851 INFO Compare_Exp.Exp.parego_runner | ============================================================
+2026-05-11 18:38:12,851 INFO Compare_Exp.Exp.parego_runner | ParEGO Runner: seed=8410, n_evals=56, variant=matlab_reference
+2026-05-11 18:38:12,851 INFO Compare_Exp.Exp.parego_runner | ============================================================
+2026-05-11 18:38:12,851 INFO llmbo.optimizer | ============================================================
+2026-05-11 18:38:12,851 INFO llmbo.optimizer | Setting up 5D GP-LLM-coupled MOBO optimizer
+2026-05-11 18:38:12,851 INFO llmbo.optimizer | ============================================================
+2026-05-11 18:38:12,851 INFO llmbo.optimizer | Battery simulator parameter set: Ecker2015
+2026-05-11 18:38:12,851 INFO DataBase.database | ObservationDB 初始化: bounds={'I1': (2.0, 6.0), 'I2': (2.0, 5.0), 'I3': (2.0, 3.0), 'dSOC1': (0.1, 0.4), 'dSOC2': (0.1, 0.3)}
+2026-05-11 18:38:12,851 INFO llm.llm_interface | LLMInterface 初始化: backend=mock model=gpt-4.1-mini warmstart_level=full param_set=Ecker2015
+2026-05-11 18:38:12,851 INFO llmbo.optimizer | ParEGO Das-Dennis weight set ready: shape=(496, 3)
+2026-05-11 18:38:12,851 INFO llmbo.optimizer | ============================================================
+2026-05-11 18:38:12,851 INFO llmbo.optimizer | Initialization: strategy=manual warmstart=0 random_init=6
+2026-05-11 18:38:12,851 INFO llmbo.optimizer | ============================================================
+2026-05-11 18:38:12,857 INFO llmbo.optimizer | Init [1/6] src=random_init theta=[2.3153 3.2603 2.0788 0.2452 0.2388]
+2026-05-11 18:38:18,041 INFO pybamm_simulator | 仿真完成 | 时间: 5961.0s | 温升: 0.01K | 老化: 0.0060% | SOC终值: 0.395
+2026-05-11 18:38:18,045 INFO llmbo.optimizer |   -> feasible=True obj=[5.961e+03 7.003e-03 5.967e-03] (5.2s)
+2026-05-11 18:38:18,047 INFO llmbo.optimizer | Init [2/6] src=random_init theta=[3.5455 4.1055 2.8114 0.1441 0.2889]
+2026-05-11 18:38:23,017 INFO pybamm_simulator | 仿真完成 | 时间: 4348.0s | 温升: 0.01K | 老化: 0.0062% | SOC终值: 0.395
+2026-05-11 18:38:23,019 INFO llmbo.optimizer |   -> feasible=True obj=[4.3480e+03 1.3377e-02 6.2500e-03] (5.0s)
+2026-05-11 18:38:23,020 INFO llmbo.optimizer | Init [3/6] src=random_init theta=[5.3836 4.6326 2.4426 0.3814 0.1321]
+2026-05-11 18:38:27,389 INFO pybamm_simulator | 仿真完成 | 时间: 3899.0s | 温升: 0.03K | 老化: 0.0071% | SOC终值: 0.395
+2026-05-11 18:38:27,391 INFO llmbo.optimizer |   -> feasible=True obj=[3.8990e+03 2.6707e-02 7.1340e-03] (4.4s)
+2026-05-11 18:38:27,392 INFO llmbo.optimizer | Init [4/6] src=random_init theta=[4.2813 2.6493 2.9395 0.3012 0.2302]
+2026-05-11 18:38:31,648 INFO pybamm_simulator | 仿真完成 | 时间: 4475.0s | 温升: 0.02K | 老化: 0.0063% | SOC终值: 0.395
+2026-05-11 18:38:31,650 INFO llmbo.optimizer |   -> feasible=True obj=[4.4750e+03 1.8255e-02 6.3080e-03] (4.3s)
+2026-05-11 18:38:31,650 INFO llmbo.optimizer | Init [5/6] src=random_init theta=[3.2206 3.9956 2.5264 0.1985 0.1339]
+2026-05-11 18:38:36,086 INFO pybamm_simulator | 仿真完成 | 时间: 5044.0s | 温升: 0.01K | 老化: 0.0062% | SOC终值: 0.395
+2026-05-11 18:38:36,092 INFO llmbo.optimizer |   -> feasible=True obj=[5.0440e+03 1.1426e-02 6.2060e-03] (4.4s)
+2026-05-11 18:38:36,092 INFO llmbo.optimizer | Init [6/6] src=random_init theta=[4.7892 2.4322 2.3157 0.2817 0.1812]
+2026-05-11 18:38:40,352 INFO pybamm_simulator | 仿真完成 | 时间: 5021.0s | 温升: 0.02K | 老化: 0.0068% | SOC终值: 0.396
+2026-05-11 18:38:40,352 INFO llmbo.optimizer |   -> feasible=True obj=[5.0210e+03 2.1981e-02 6.7780e-03] (4.3s)
+2026-05-11 18:38:40,357 INFO llmbo.optimizer | ============================================================
+2026-05-11 18:38:40,357 INFO llmbo.optimizer | Optimization loop: 50 iterations
+2026-05-11 18:38:40,357 INFO llmbo.optimizer | ============================================================
+2026-05-11 18:38:40,357 INFO llmbo.optimizer | --- Iteration 0 ---
+2026-05-11 18:38:40,523 INFO llmbo.gp_model | Fitted Matern GP: n=6 y_best=2.350000 kernel=1.54**2 * Matern(length_scale=[0.837, 1.39, 1.05, 1e+03, 1e+03], nu=2.5) + WhiteKernel(noise_level=1e-06)
+2026-05-11 18:38:41,058 INFO llmbo.optimizer |   Evaluate rank=0 theta=[5.8296 4.9818 2.996  0.2226 0.246 ]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:38:45,555 INFO pybamm_simulator | 仿真完成 | 时间: 3567.0s | 温升: 0.03K | 老化: 0.0069% | SOC终值: 0.395
+2026-05-11 18:38:45,558 INFO llmbo.optimizer |     -> feasible=True obj=[3.5670e+03 3.0506e-02 6.8570e-03] acq=2.119726 (4.5s)
+2026-05-11 18:38:45,560 INFO DataBase.database | Iter 1: HV=3.002886  |PF|=5  n=7
+2026-05-11 18:38:45,561 INFO llmbo.optimizer | Iteration 0 complete: HV=3.002886 |PF|=5 n=7 (5.2s)
+2026-05-11 18:38:45,561 INFO llmbo.optimizer | --- Iteration 1 ---
+2026-05-11 18:38:45,664 INFO llmbo.gp_model | Fitted Matern GP: n=7 y_best=2.923818 kernel=1.3**2 * Matern(length_scale=[0.826, 1.32, 1.2, 1e+03, 1e+03], nu=2.5) + WhiteKernel(noise_level=9.98e-07)
+2026-05-11 18:38:46,426 INFO llmbo.optimizer |   Evaluate rank=0 theta=[5.388  4.9693 2.9834 0.2098 0.1868]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:38:51,054 INFO pybamm_simulator | 仿真完成 | 时间: 3812.0s | 温升: 0.03K | 老化: 0.0067% | SOC终值: 0.396
+2026-05-11 18:38:51,055 INFO llmbo.optimizer |     -> feasible=True obj=[3.8120e+03 2.6743e-02 6.7330e-03] acq=1.442994 (4.6s)
+2026-05-11 18:38:51,059 INFO DataBase.database | Iter 2: HV=3.004426  |PF|=6  n=8
+2026-05-11 18:38:51,060 INFO llmbo.optimizer | Iteration 1 complete: HV=3.004426 |PF|=6 n=8 (5.5s)
+2026-05-11 18:38:51,060 INFO llmbo.optimizer | --- Iteration 2 ---
+2026-05-11 18:38:51,280 INFO llmbo.gp_model | Fitted Matern GP: n=8 y_best=1.167340 kernel=2.28**2 * Matern(length_scale=[1.15, 4.2, 1.99, 3.51, 1e+03], nu=2.5) + WhiteKernel(noise_level=9.88e-07)
+2026-05-11 18:38:51,788 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.2311 2.0958 2.9994 0.1037 0.225 ]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:38:56,006 INFO pybamm_simulator | 仿真完成 | 时间: 5598.0s | 温升: 0.01K | 老化: 0.0052% | SOC终值: 0.395
+2026-05-11 18:38:56,009 INFO llmbo.optimizer |     -> feasible=True obj=[5.598e+03 6.288e-03 5.170e-03] acq=2.253283 (4.2s)
+2026-05-11 18:38:56,009 INFO DataBase.database | Iter 3: HV=3.029206  |PF|=6  n=9
+2026-05-11 18:38:56,012 INFO llmbo.optimizer | Iteration 2 complete: HV=3.029206 |PF|=6 n=9 (4.9s)
+2026-05-11 18:38:56,012 INFO llmbo.optimizer | --- Iteration 3 ---
+2026-05-11 18:38:56,222 INFO llmbo.gp_model | Fitted Matern GP: n=9 y_best=2.672368 kernel=3.26**2 * Matern(length_scale=[2.07, 10.7, 2.68, 1e+03, 1e+03], nu=2.5) + WhiteKernel(noise_level=2.98e-11)
+2026-05-11 18:38:56,646 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0023 2.0658 2.7772 0.3191 0.1019]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:39:01,117 INFO pybamm_simulator | 仿真完成 | 时间: 6213.0s | 温升: 0.01K | 老化: 0.0052% | SOC终值: 0.395
+2026-05-11 18:39:01,120 INFO llmbo.optimizer |     -> feasible=True obj=[6.213e+03 5.280e-03 5.170e-03] acq=1.629802 (4.5s)
+2026-05-11 18:39:01,124 INFO DataBase.database | Iter 4: HV=3.029222  |PF|=7  n=10
+2026-05-11 18:39:01,124 INFO llmbo.optimizer | Iteration 3 complete: HV=3.029222 |PF|=7 n=10 (5.1s)
+2026-05-11 18:39:01,124 INFO llmbo.optimizer | --- Iteration 4 ---
+2026-05-11 18:39:01,375 INFO llmbo.gp_model | Fitted Matern GP: n=10 y_best=3.712183 kernel=1.75**2 * Matern(length_scale=[1.11, 1.96, 2.22, 1e+03, 5.08], nu=2.5) + WhiteKernel(noise_level=1.3e-10)
+2026-05-11 18:39:01,997 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.4093 4.9334 2.9969 0.1865 0.2983]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:39:05,837 INFO pybamm_simulator | 仿真完成 | 时间: 3742.0s | 温升: 0.02K | 老化: 0.0065% | SOC终值: 0.395
+2026-05-11 18:39:05,839 INFO llmbo.optimizer |     -> feasible=True obj=[3.7420e+03 1.9166e-02 6.4790e-03] acq=1.338981 (3.8s)
+2026-05-11 18:39:05,841 INFO DataBase.database | Iter 5: HV=3.033262  |PF|=6  n=11
+2026-05-11 18:39:05,842 INFO llmbo.optimizer | Iteration 4 complete: HV=3.033262 |PF|=6 n=11 (4.7s)
+2026-05-11 18:39:05,842 INFO llmbo.optimizer | --- Iteration 5 ---
+2026-05-11 18:39:06,029 INFO llmbo.gp_model | Fitted Matern GP: n=11 y_best=2.560125 kernel=1.61**2 * Matern(length_scale=[0.813, 1.84, 1.76, 1e+03, 4.3], nu=2.5) + WhiteKernel(noise_level=9.95e-07)
+2026-05-11 18:39:06,698 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.0376 4.5279 2.9928 0.1619 0.2997]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:39:10,650 INFO pybamm_simulator | 仿真完成 | 时间: 3949.0s | 温升: 0.02K | 老化: 0.0063% | SOC终值: 0.396
+2026-05-11 18:39:10,652 INFO llmbo.optimizer |     -> feasible=True obj=[3.949e+03 1.657e-02 6.342e-03] acq=1.286366 (4.0s)
+2026-05-11 18:39:10,657 INFO DataBase.database | Iter 6: HV=3.034607  |PF|=7  n=12
+2026-05-11 18:39:10,657 INFO llmbo.optimizer | Iteration 5 complete: HV=3.034607 |PF|=7 n=12 (4.8s)
+2026-05-11 18:39:10,657 INFO llmbo.optimizer | --- Iteration 6 ---
+2026-05-11 18:39:11,038 INFO llmbo.gp_model | Fitted Matern GP: n=12 y_best=3.025319 kernel=3.13**2 * Matern(length_scale=[2.23, 7.87, 2.9, 12.3, 44.5], nu=2.5) + WhiteKernel(noise_level=3.04e-12)
+2026-05-11 18:39:11,918 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0052 2.2065 2.9961 0.1079 0.1002]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:39:16,244 INFO pybamm_simulator | 仿真完成 | 时间: 5342.0s | 温升: 0.01K | 老化: 0.0052% | SOC终值: 0.395
+2026-05-11 18:39:16,247 INFO llmbo.optimizer |     -> feasible=True obj=[5.342e+03 6.089e-03 5.203e-03] acq=1.930431 (4.3s)
+2026-05-11 18:39:16,254 INFO DataBase.database | Iter 7: HV=3.039922  |PF|=8  n=13
+2026-05-11 18:39:16,258 INFO llmbo.optimizer | Iteration 6 complete: HV=3.039922 |PF|=8 n=13 (5.6s)
+2026-05-11 18:39:16,258 INFO llmbo.optimizer | --- Iteration 7 ---
+2026-05-11 18:39:16,794 INFO llmbo.gp_model | Fitted Matern GP: n=13 y_best=2.255008 kernel=1.17**2 * Matern(length_scale=[0.252, 1e+03, 1.83, 0.662, 1.98], nu=2.5) + WhiteKernel(noise_level=9.99e-07)
+2026-05-11 18:39:17,256 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.7164 4.1547 2.9895 0.2675 0.1703]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:39:21,452 INFO pybamm_simulator | 仿真完成 | 时间: 4215.0s | 温升: 0.01K | 老化: 0.0061% | SOC终值: 0.396
+2026-05-11 18:39:21,452 INFO llmbo.optimizer |     -> feasible=True obj=[4.2150e+03 1.4453e-02 6.1420e-03] acq=1.653002 (4.2s)
+2026-05-11 18:39:21,458 INFO DataBase.database | Iter 8: HV=3.042610  |PF|=9  n=14
+2026-05-11 18:39:21,458 INFO llmbo.optimizer | Iteration 7 complete: HV=3.042610 |PF|=9 n=14 (5.2s)
+2026-05-11 18:39:21,458 INFO llmbo.optimizer | --- Iteration 8 ---
+2026-05-11 18:39:21,888 INFO llmbo.gp_model | Fitted Matern GP: n=14 y_best=1.575077 kernel=5.6**2 * Matern(length_scale=[3.38, 1e+03, 1e+03, 447, 1e+03], nu=2.5) + WhiteKernel(noise_level=0.000631)
+2026-05-11 18:39:22,348 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0047 3.0329 2.7697 0.3315 0.2002]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:39:26,561 INFO pybamm_simulator | 仿真完成 | 时间: 5908.0s | 温升: 0.01K | 老化: 0.0052% | SOC终值: 0.395
+2026-05-11 18:39:26,564 INFO llmbo.optimizer |     -> feasible=True obj=[5.908e+03 5.810e-03 5.154e-03] acq=1.289256 (4.2s)
+2026-05-11 18:39:26,570 INFO DataBase.database | Iter 9: HV=3.043001  |PF|=10  n=15
+2026-05-11 18:39:26,571 INFO llmbo.optimizer | Iteration 8 complete: HV=3.043001 |PF|=10 n=15 (5.1s)
+2026-05-11 18:39:26,571 INFO llmbo.optimizer | --- Iteration 9 ---
+2026-05-11 18:39:26,945 INFO llmbo.gp_model | Fitted Matern GP: n=15 y_best=1.553643 kernel=1.06**2 * Matern(length_scale=[0.565, 1.02, 0.826, 1.6, 2.67], nu=2.5) + WhiteKernel(noise_level=1.12e-12)
+2026-05-11 18:39:27,452 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.9862 4.5207 2.9959 0.1741 0.1997]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:39:31,474 INFO pybamm_simulator | 仿真完成 | 时间: 4142.0s | 温升: 0.02K | 老化: 0.0063% | SOC终值: 0.395
+2026-05-11 18:39:31,479 INFO llmbo.optimizer |     -> feasible=True obj=[4.1420e+03 1.6223e-02 6.2990e-03] acq=1.236610 (4.0s)
+2026-05-11 18:39:31,486 INFO DataBase.database | Iter 10: HV=3.043077  |PF|=11  n=16
+2026-05-11 18:39:31,487 INFO llmbo.optimizer | Iteration 9 complete: HV=3.043077 |PF|=11 n=16 (4.9s)
+2026-05-11 18:39:31,487 INFO llmbo.optimizer | --- Iteration 10 ---
+2026-05-11 18:39:31,895 INFO llmbo.gp_model | Fitted Matern GP: n=16 y_best=2.131142 kernel=1.1**2 * Matern(length_scale=[0.595, 0.979, 1.06, 1.75, 3.06], nu=2.5) + WhiteKernel(noise_level=1.3e-10)
+2026-05-11 18:39:32,465 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.1674 4.0868 2.996  0.2328 0.2947]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:39:36,330 INFO pybamm_simulator | 仿真完成 | 时间: 3941.0s | 温升: 0.02K | 老化: 0.0063% | SOC终值: 0.395
+2026-05-11 18:39:36,333 INFO llmbo.optimizer |     -> feasible=True obj=[3.9410e+03 1.7458e-02 6.2810e-03] acq=1.239411 (3.9s)
+2026-05-11 18:39:36,337 INFO DataBase.database | Iter 11: HV=3.043445  |PF|=12  n=17
+2026-05-11 18:39:36,339 INFO llmbo.optimizer | Iteration 10 complete: HV=3.043445 |PF|=12 n=17 (4.8s)
+2026-05-11 18:39:36,339 INFO llmbo.optimizer | --- Iteration 11 ---
+2026-05-11 18:39:37,153 INFO llmbo.gp_model | Fitted Matern GP: n=17 y_best=3.032756 kernel=1.38**2 * Matern(length_scale=[0.918, 1.76, 2.32, 1.75, 2.48], nu=2.5) + WhiteKernel(noise_level=9.99e-07)
+2026-05-11 18:39:38,088 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.807  4.9878 2.9874 0.3922 0.2699]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:39:41,772 INFO pybamm_simulator | 仿真完成 | 时间: 3274.0s | 温升: 0.02K | 老化: 0.0063% | SOC终值: 0.396
+2026-05-11 18:39:41,774 INFO llmbo.optimizer |     -> feasible=True obj=[3.2740e+03 2.2117e-02 6.2930e-03] acq=1.476243 (3.7s)
+2026-05-11 18:39:41,780 INFO DataBase.database | Iter 12: HV=3.413760  |PF|=12  n=18
+2026-05-11 18:39:41,780 INFO llmbo.optimizer | Iteration 11 complete: HV=3.413760 |PF|=12 n=18 (5.4s)
+2026-05-11 18:39:41,780 INFO llmbo.optimizer | --- Iteration 12 ---
+2026-05-11 18:39:42,414 INFO llmbo.gp_model | Fitted Matern GP: n=18 y_best=1.812261 kernel=1.34**2 * Matern(length_scale=[0.227, 1.7, 15.2, 1.88, 37.9], nu=2.5) + WhiteKernel(noise_level=9.94e-07)
+2026-05-11 18:39:42,940 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.6279 3.1502 2.75   0.1164 0.2559]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:39:46,880 INFO pybamm_simulator | 仿真完成 | 时间: 4839.0s | 温升: 0.01K | 老化: 0.0061% | SOC终值: 0.395
+2026-05-11 18:39:46,883 INFO llmbo.optimizer |     -> feasible=True obj=[4.8390e+03 1.3892e-02 6.0720e-03] acq=1.750513 (3.9s)
+2026-05-11 18:39:46,888 INFO DataBase.database | Iter 13: HV=3.414483  |PF|=13  n=19
+2026-05-11 18:39:46,889 INFO llmbo.optimizer | Iteration 12 complete: HV=3.414483 |PF|=13 n=19 (5.1s)
+2026-05-11 18:39:46,889 INFO llmbo.optimizer | --- Iteration 13 ---
+2026-05-11 18:39:47,678 INFO llmbo.gp_model | Fitted Matern GP: n=19 y_best=1.682321 kernel=1.25**2 * Matern(length_scale=[0.33, 1.08, 0.608, 2.27, 1e+03], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:39:48,443 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.6396 4.8481 2.8845 0.3956 0.204 ]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:39:52,443 INFO pybamm_simulator | 仿真完成 | 时间: 3965.0s | 温升: 0.01K | 老化: 0.0060% | SOC终值: 0.396
+2026-05-11 18:39:52,448 INFO llmbo.optimizer |     -> feasible=True obj=[3.9650e+03 1.4258e-02 5.9740e-03] acq=1.488273 (4.0s)
+2026-05-11 18:39:52,452 INFO DataBase.database | Iter 14: HV=3.419933  |PF|=12  n=20
+2026-05-11 18:39:52,454 INFO llmbo.optimizer | Iteration 13 complete: HV=3.419933 |PF|=12 n=20 (5.6s)
+2026-05-11 18:39:52,454 INFO llmbo.optimizer | --- Iteration 14 ---
+2026-05-11 18:39:53,437 INFO llmbo.gp_model | Fitted Matern GP: n=20 y_best=6.057264 kernel=1.21**2 * Matern(length_scale=[0.743, 1.57, 1.67, 1.66, 2.32], nu=2.5) + WhiteKernel(noise_level=4.9e-11)
+2026-05-11 18:39:54,461 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.1633 4.9897 2.9698 0.2984 0.295 ]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:39:58,833 INFO pybamm_simulator | 仿真完成 | 时间: 3606.0s | 温升: 0.02K | 老化: 0.0062% | SOC终值: 0.395
+2026-05-11 18:39:58,836 INFO llmbo.optimizer |     -> feasible=True obj=[3.606e+03 1.743e-02 6.218e-03] acq=1.240744 (4.4s)
+2026-05-11 18:39:58,841 INFO DataBase.database | Iter 15: HV=3.420683  |PF|=11  n=21
+2026-05-11 18:39:58,842 INFO llmbo.optimizer | Iteration 14 complete: HV=3.420683 |PF|=11 n=21 (6.4s)
+2026-05-11 18:39:58,842 INFO llmbo.optimizer | --- Iteration 15 ---
+2026-05-11 18:39:59,699 INFO llmbo.gp_model | Fitted Matern GP: n=21 y_best=1.245765 kernel=2.91**2 * Matern(length_scale=[1.91, 1.77, 2.46, 2.46, 68.5], nu=2.5) + WhiteKernel(noise_level=1e-06)
+2026-05-11 18:40:01,573 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0213 4.9838 2.9805 0.3977 0.115 ]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:40:06,488 INFO pybamm_simulator | 仿真完成 | 时间: 5692.0s | 温升: 0.02K | 老化: 0.0050% | SOC终值: 0.395
+2026-05-11 18:40:06,491 INFO llmbo.optimizer |     -> feasible=True obj=[5.6920e+03 1.5041e-02 4.9950e-03] acq=2.042728 (4.9s)
+2026-05-11 18:40:06,496 INFO DataBase.database | Iter 16: HV=3.425463  |PF|=12  n=22
+2026-05-11 18:40:06,496 INFO llmbo.optimizer | Iteration 15 complete: HV=3.425463 |PF|=12 n=22 (7.7s)
+2026-05-11 18:40:06,496 INFO llmbo.optimizer | --- Iteration 16 ---
+2026-05-11 18:40:07,571 INFO llmbo.gp_model | Fitted Matern GP: n=22 y_best=3.864101 kernel=2.11**2 * Matern(length_scale=[1.34, 2.83, 4.33, 2.81, 2.72], nu=2.5) + WhiteKernel(noise_level=3.78e-12)
+2026-05-11 18:40:08,420 INFO llmbo.optimizer |   Evaluate rank=0 theta=[5.8122 4.9898 2.993  0.3925 0.2974]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:40:12,217 INFO pybamm_simulator | 仿真完成 | 时间: 2951.0s | 温升: 0.03K | 老化: 0.0066% | SOC终值: 0.396
+2026-05-11 18:40:12,221 INFO llmbo.optimizer |     -> feasible=True obj=[2.9510e+03 3.0353e-02 6.5680e-03] acq=1.734551 (3.8s)
+2026-05-11 18:40:12,225 INFO DataBase.database | Iter 17: HV=3.866877  |PF|=13  n=23
+2026-05-11 18:40:12,226 INFO llmbo.optimizer | Iteration 16 complete: HV=3.866877 |PF|=13 n=23 (5.7s)
+2026-05-11 18:40:12,226 INFO llmbo.optimizer | --- Iteration 17 ---
+2026-05-11 18:40:13,137 INFO llmbo.gp_model | Fitted Matern GP: n=23 y_best=7.750065 kernel=2.23**2 * Matern(length_scale=[0.906, 2.19, 2.19, 130, 1e+03], nu=2.5) + WhiteKernel(noise_level=3.45e-11)
+2026-05-11 18:40:13,605 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.1009 4.7686 2.0173 0.3438 0.1116]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:40:17,983 INFO pybamm_simulator | 仿真完成 | 时间: 5491.0s | 温升: 0.01K | 老化: 0.0065% | SOC终值: 0.395
+2026-05-11 18:40:17,986 INFO llmbo.optimizer |     -> feasible=True obj=[5.4910e+03 1.4044e-02 6.5080e-03] acq=1.397617 (4.4s)
+2026-05-11 18:40:17,986 INFO DataBase.database | Iter 18: HV=3.866877  |PF|=13  n=24
+2026-05-11 18:40:17,994 INFO llmbo.optimizer | Iteration 17 complete: HV=3.866877 |PF|=13 n=24 (5.8s)
+2026-05-11 18:40:17,994 INFO llmbo.optimizer | --- Iteration 18 ---
+2026-05-11 18:40:18,925 INFO llmbo.gp_model | Fitted Matern GP: n=24 y_best=3.427277 kernel=1.18**2 * Matern(length_scale=[0.34, 1.17, 1.23, 2.13, 4.32], nu=2.5) + WhiteKernel(noise_level=1.3e-10)
+2026-05-11 18:40:19,778 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.6726 4.9499 2.99   0.3937 0.2894]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:40:24,006 INFO pybamm_simulator | 仿真完成 | 时间: 3686.0s | 温升: 0.01K | 老化: 0.0057% | SOC终值: 0.395
+2026-05-11 18:40:24,008 INFO llmbo.optimizer |     -> feasible=True obj=[3.686e+03 1.486e-02 5.716e-03] acq=1.640738 (4.2s)
+2026-05-11 18:40:24,015 INFO DataBase.database | Iter 19: HV=3.879266  |PF|=13  n=25
+2026-05-11 18:40:24,016 INFO llmbo.optimizer | Iteration 18 complete: HV=3.879266 |PF|=13 n=25 (6.0s)
+2026-05-11 18:40:24,016 INFO llmbo.optimizer | --- Iteration 19 ---
+2026-05-11 18:40:24,671 INFO llmbo.gp_model | Fitted Matern GP: n=25 y_best=1.582623 kernel=2.55**2 * Matern(length_scale=[1.11, 3.16, 3.44, 1.52, 4.51], nu=2.5) + WhiteKernel(noise_level=1e-06)
+2026-05-11 18:40:26,398 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.7861 4.9732 2.99   0.3962 0.2972]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:40:30,450 INFO pybamm_simulator | 仿真完成 | 时间: 4278.0s | 温升: 0.01K | 老化: 0.0052% | SOC终值: 0.396
+2026-05-11 18:40:30,454 INFO llmbo.optimizer |     -> feasible=True obj=[4.278e+03 1.498e-02 5.186e-03] acq=1.786547 (4.1s)
+2026-05-11 18:40:30,463 INFO DataBase.database | Iter 20: HV=3.893225  |PF|=14  n=26
+2026-05-11 18:40:30,465 INFO llmbo.optimizer | Iteration 19 complete: HV=3.893225 |PF|=14 n=26 (6.4s)
+2026-05-11 18:40:30,465 INFO llmbo.optimizer | --- Iteration 20 ---
+2026-05-11 18:40:31,360 INFO llmbo.gp_model | Fitted Matern GP: n=26 y_best=1.175593 kernel=1.59**2 * Matern(length_scale=[0.463, 1e+03, 2.18, 0.991, 2.19], nu=2.5) + WhiteKernel(noise_level=1.3e-10)
+2026-05-11 18:40:32,204 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.4108 3.1265 2.9865 0.3995 0.2996]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:40:36,680 INFO pybamm_simulator | 仿真完成 | 时间: 4441.0s | 温升: 0.01K | 老化: 0.0059% | SOC终值: 0.395
+2026-05-11 18:40:36,684 INFO llmbo.optimizer |     -> feasible=True obj=[4.4410e+03 1.2552e-02 5.9180e-03] acq=2.170467 (4.5s)
+2026-05-11 18:40:36,687 INFO DataBase.database | Iter 21: HV=3.893237  |PF|=14  n=27
+2026-05-11 18:40:36,689 INFO llmbo.optimizer | Iteration 20 complete: HV=3.893237 |PF|=14 n=27 (6.2s)
+2026-05-11 18:40:36,689 INFO llmbo.optimizer | --- Iteration 21 ---
+2026-05-11 18:40:37,417 INFO llmbo.gp_model | Fitted Matern GP: n=27 y_best=2.907279 kernel=3.53**2 * Matern(length_scale=[2.55, 3, 5.52, 1.95, 6.06], nu=2.5) + WhiteKernel(noise_level=1.15e-12)
+2026-05-11 18:40:39,108 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0074 4.9793 2.9994 0.3951 0.299 ]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:40:43,987 INFO pybamm_simulator | 仿真完成 | 时间: 5260.0s | 温升: 0.02K | 老化: 0.0047% | SOC终值: 0.396
+2026-05-11 18:40:43,991 INFO llmbo.optimizer |     -> feasible=True obj=[5.2600e+03 1.5027e-02 4.6520e-03] acq=2.431322 (4.9s)
+2026-05-11 18:40:43,996 INFO DataBase.database | Iter 22: HV=3.909433  |PF|=14  n=28
+2026-05-11 18:40:43,998 INFO llmbo.optimizer | Iteration 21 complete: HV=3.909433 |PF|=14 n=28 (7.3s)
+2026-05-11 18:40:43,998 INFO llmbo.optimizer | --- Iteration 22 ---
+2026-05-11 18:40:44,920 INFO llmbo.gp_model | Fitted Matern GP: n=28 y_best=2.486277 kernel=1.85**2 * Matern(length_scale=[0.794, 1.83, 3.07, 2.92, 3.33], nu=2.5) + WhiteKernel(noise_level=9.58e-11)
+2026-05-11 18:40:46,129 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.8409 4.9625 2.997  0.389  0.2985]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:40:50,056 INFO pybamm_simulator | 仿真完成 | 时间: 3582.0s | 温升: 0.02K | 老化: 0.0058% | SOC终值: 0.396
+2026-05-11 18:40:50,060 INFO llmbo.optimizer |     -> feasible=True obj=[3.582e+03 1.526e-02 5.783e-03] acq=1.354383 (3.9s)
+2026-05-11 18:40:50,068 INFO DataBase.database | Iter 23: HV=3.910824  |PF|=14  n=29
+2026-05-11 18:40:50,068 INFO llmbo.optimizer | Iteration 22 complete: HV=3.910824 |PF|=14 n=29 (6.1s)
+2026-05-11 18:40:50,068 INFO llmbo.optimizer | --- Iteration 23 ---
+2026-05-11 18:40:50,760 INFO llmbo.gp_model | Fitted Matern GP: n=29 y_best=4.097710 kernel=1.27**2 * Matern(length_scale=[0.779, 1.51, 0.937, 1.8, 22], nu=2.5) + WhiteKernel(noise_level=0.00147)
+2026-05-11 18:40:52,045 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.023  4.9356 2.9958 0.395  0.2844]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:40:56,485 INFO pybamm_simulator | 仿真完成 | 时间: 5275.0s | 温升: 0.01K | 老化: 0.0047% | SOC终值: 0.395
+2026-05-11 18:40:56,488 INFO llmbo.optimizer |     -> feasible=True obj=[5.2750e+03 1.4766e-02 4.7040e-03] acq=1.768121 (4.4s)
+2026-05-11 18:40:56,492 INFO DataBase.database | Iter 24: HV=3.910824  |PF|=15  n=30
+2026-05-11 18:40:56,492 INFO llmbo.optimizer | Iteration 23 complete: HV=3.910824 |PF|=15 n=30 (6.4s)
+2026-05-11 18:40:56,492 INFO llmbo.optimizer | --- Iteration 24 ---
+2026-05-11 18:40:57,412 INFO llmbo.gp_model | Fitted Matern GP: n=30 y_best=3.124916 kernel=2.33**2 * Matern(length_scale=[1.08, 3.4, 3.92, 3.06, 3.28], nu=2.5) + WhiteKernel(noise_level=0.000274)
+2026-05-11 18:40:58,614 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.3252 4.9932 2.9942 0.3974 0.2925]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:41:06,470 INFO pybamm_simulator | 仿真完成 | 时间: 3370.0s | 温升: 0.02K | 老化: 0.0060% | SOC终值: 0.395
+2026-05-11 18:41:06,476 INFO llmbo.optimizer |     -> feasible=True obj=[3.3700e+03 1.8564e-02 5.9950e-03] acq=1.311295 (7.9s)
+2026-05-11 18:41:06,487 INFO DataBase.database | Iter 25: HV=3.912748  |PF|=16  n=31
+2026-05-11 18:41:06,487 INFO llmbo.optimizer | Iteration 24 complete: HV=3.912748 |PF|=16 n=31 (10.0s)
+2026-05-11 18:41:06,487 INFO llmbo.optimizer | --- Iteration 25 ---
+2026-05-11 18:41:12,165 INFO llmbo.gp_model | Fitted Matern GP: n=31 y_best=1.516088 kernel=1.6**2 * Matern(length_scale=[0.511, 1.67, 1.47, 0.989, 3.31], nu=2.5) + WhiteKernel(noise_level=5.87e-11)
+2026-05-11 18:41:14,896 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.7989 4.9878 2.9943 0.3911 0.2967]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:41:22,607 INFO pybamm_simulator | 仿真完成 | 时间: 4260.0s | 温升: 0.02K | 老化: 0.0052% | SOC终值: 0.395
+2026-05-11 18:41:22,615 INFO llmbo.optimizer |     -> feasible=True obj=[4.260e+03 1.509e-02 5.204e-03] acq=2.355355 (7.7s)
+2026-05-11 18:41:22,622 INFO DataBase.database | Iter 26: HV=3.913002  |PF|=17  n=32
+2026-05-11 18:41:22,624 INFO llmbo.optimizer | Iteration 25 complete: HV=3.913002 |PF|=17 n=32 (16.1s)
+2026-05-11 18:41:22,624 INFO llmbo.optimizer | --- Iteration 26 ---
+2026-05-11 18:41:28,471 INFO llmbo.gp_model | Fitted Matern GP: n=32 y_best=3.296782 kernel=1.82**2 * Matern(length_scale=[0.57, 1.98, 1.94, 1, 3.48], nu=2.5) + WhiteKernel(noise_level=9.47e-12)
+2026-05-11 18:41:30,937 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.8878 4.9868 2.9999 0.3866 0.2973]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:41:38,969 INFO pybamm_simulator | 仿真完成 | 时间: 4179.0s | 温升: 0.02K | 老化: 0.0053% | SOC终值: 0.395
+2026-05-11 18:41:38,973 INFO llmbo.optimizer |     -> feasible=True obj=[4.1790e+03 1.5106e-02 5.2670e-03] acq=2.239942 (8.0s)
+2026-05-11 18:41:38,981 INFO DataBase.database | Iter 27: HV=3.914008  |PF|=18  n=33
+2026-05-11 18:41:38,985 INFO llmbo.optimizer | Iteration 26 complete: HV=3.914008 |PF|=18 n=33 (16.4s)
+2026-05-11 18:41:38,985 INFO llmbo.optimizer | --- Iteration 27 ---
+2026-05-11 18:41:44,003 INFO llmbo.gp_model | Fitted Matern GP: n=33 y_best=1.467566 kernel=2.05**2 * Matern(length_scale=[0.808, 2.56, 3.46, 3.25, 3.79], nu=2.5) + WhiteKernel(noise_level=1.13e-12)
+2026-05-11 18:41:46,029 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.3945 4.9923 2.9777 0.3995 0.2986]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:41:53,260 INFO pybamm_simulator | 仿真完成 | 时间: 3329.0s | 温升: 0.02K | 老化: 0.0060% | SOC终值: 0.395
+2026-05-11 18:41:53,264 INFO llmbo.optimizer |     -> feasible=True obj=[3.3290e+03 1.9059e-02 6.0030e-03] acq=1.398779 (7.2s)
+2026-05-11 18:41:53,283 INFO DataBase.database | Iter 28: HV=3.914383  |PF|=19  n=34
+2026-05-11 18:41:53,284 INFO llmbo.optimizer | Iteration 27 complete: HV=3.914383 |PF|=19 n=34 (14.3s)
+2026-05-11 18:41:53,284 INFO llmbo.optimizer | --- Iteration 28 ---
+2026-05-11 18:41:57,253 INFO llmbo.gp_model | Fitted Matern GP: n=34 y_best=5.266456 kernel=4.09**2 * Matern(length_scale=[1.69, 4.14, 5.41, 5.22, 5.17], nu=2.5) + WhiteKernel(noise_level=2.93e-06)
+2026-05-11 18:41:59,440 INFO llmbo.optimizer |   Evaluate rank=0 theta=[5.9835 4.9953 2.9665 0.3992 0.2997]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:42:06,630 INFO pybamm_simulator | 仿真完成 | 时间: 2894.0s | 温升: 0.03K | 老化: 0.0066% | SOC终值: 0.395
+2026-05-11 18:42:06,635 INFO llmbo.optimizer |     -> feasible=True obj=[2.8940e+03 3.1866e-02 6.6000e-03] acq=1.763025 (7.2s)
+2026-05-11 18:42:06,646 INFO DataBase.database | Iter 29: HV=3.997208  |PF|=20  n=35
+2026-05-11 18:42:06,648 INFO llmbo.optimizer | Iteration 28 complete: HV=3.997208 |PF|=20 n=35 (13.4s)
+2026-05-11 18:42:06,648 INFO llmbo.optimizer | --- Iteration 29 ---
+2026-05-11 18:42:10,767 INFO llmbo.gp_model | Fitted Matern GP: n=35 y_best=1.422476 kernel=2.24**2 * Matern(length_scale=[0.889, 2.68, 3.9, 3.5, 3.87], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:42:12,750 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.3183 4.982  2.9939 0.3949 0.2948]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:42:19,770 INFO pybamm_simulator | 仿真完成 | 时间: 3375.0s | 温升: 0.02K | 老化: 0.0060% | SOC终值: 0.395
+2026-05-11 18:42:19,774 INFO llmbo.optimizer |     -> feasible=True obj=[3.3750e+03 1.8516e-02 5.9960e-03] acq=1.280488 (7.0s)
+2026-05-11 18:42:19,788 INFO DataBase.database | Iter 30: HV=3.997208  |PF|=21  n=36
+2026-05-11 18:42:19,790 INFO llmbo.optimizer | Iteration 29 complete: HV=3.997208 |PF|=21 n=36 (13.1s)
+2026-05-11 18:42:19,790 INFO llmbo.optimizer | --- Iteration 30 ---
+2026-05-11 18:42:24,673 INFO llmbo.gp_model | Fitted Matern GP: n=36 y_best=4.706229 kernel=1.24**2 * Matern(length_scale=[0.491, 0.451, 20.6, 129, 1e+03], nu=2.5) + WhiteKernel(noise_level=4.65e-11)
+2026-05-11 18:42:25,276 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.342  2.4862 2.8585 0.2143 0.2468]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:42:31,782 INFO pybamm_simulator | 仿真完成 | 时间: 5567.0s | 温升: 0.01K | 老化: 0.0054% | SOC终值: 0.395
+2026-05-11 18:42:31,787 INFO llmbo.optimizer |     -> feasible=True obj=[5.567e+03 6.802e-03 5.405e-03] acq=1.643881 (6.5s)
+2026-05-11 18:42:31,792 INFO DataBase.database | Iter 31: HV=3.997208  |PF|=21  n=37
+2026-05-11 18:42:31,794 INFO llmbo.optimizer | Iteration 30 complete: HV=3.997208 |PF|=21 n=37 (12.0s)
+2026-05-11 18:42:31,794 INFO llmbo.optimizer | --- Iteration 31 ---
+2026-05-11 18:42:32,665 INFO llmbo.gp_model | Fitted Matern GP: n=37 y_best=3.108006 kernel=1.15**2 * Matern(length_scale=[0.367, 1.24, 0.574, 25.7, 3.91], nu=2.5) + WhiteKernel(noise_level=1.12e-12)
+2026-05-11 18:42:33,443 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.0957 3.8935 2.8436 0.3827 0.2999]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:42:37,517 INFO pybamm_simulator | 仿真完成 | 时间: 4354.0s | 温升: 0.01K | 老化: 0.0056% | SOC终值: 0.395
+2026-05-11 18:42:37,522 INFO llmbo.optimizer |     -> feasible=True obj=[4.354e+03 1.071e-02 5.625e-03] acq=1.453614 (4.1s)
+2026-05-11 18:42:37,528 INFO DataBase.database | Iter 32: HV=3.997245  |PF|=20  n=38
+2026-05-11 18:42:37,529 INFO llmbo.optimizer | Iteration 31 complete: HV=3.997245 |PF|=20 n=38 (5.7s)
+2026-05-11 18:42:37,529 INFO llmbo.optimizer | --- Iteration 32 ---
+2026-05-11 18:42:38,346 INFO llmbo.gp_model | Fitted Matern GP: n=38 y_best=1.386516 kernel=1.33**2 * Matern(length_scale=[0.426, 1.02, 1.31, 28, 107], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:42:38,935 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.7089 3.6309 2.9886 0.3611 0.1287]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:42:43,131 INFO pybamm_simulator | 仿真完成 | 时间: 4905.0s | 温升: 0.01K | 老化: 0.0055% | SOC终值: 0.395
+2026-05-11 18:42:43,136 INFO llmbo.optimizer |     -> feasible=True obj=[4.905e+03 8.615e-03 5.539e-03] acq=1.462232 (4.2s)
+2026-05-11 18:42:43,141 INFO DataBase.database | Iter 33: HV=3.997264  |PF|=21  n=39
+2026-05-11 18:42:43,141 INFO llmbo.optimizer | Iteration 32 complete: HV=3.997264 |PF|=21 n=39 (5.6s)
+2026-05-11 18:42:43,141 INFO llmbo.optimizer | --- Iteration 33 ---
+2026-05-11 18:42:44,047 INFO llmbo.gp_model | Fitted Matern GP: n=39 y_best=6.450442 kernel=1.68**2 * Matern(length_scale=[0.79, 1.42, 2.65, 1.63, 2.91], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:42:44,810 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0032 2.9102 2.9933 0.38   0.1856]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:42:49,092 INFO pybamm_simulator | 仿真完成 | 时间: 5971.0s | 温升: 0.01K | 老化: 0.0051% | SOC终值: 0.395
+2026-05-11 18:42:49,094 INFO llmbo.optimizer |     -> feasible=True obj=[5.971e+03 5.287e-03 5.052e-03] acq=1.820466 (4.3s)
+2026-05-11 18:42:49,101 INFO DataBase.database | Iter 34: HV=3.997267  |PF|=22  n=40
+2026-05-11 18:42:49,103 INFO llmbo.optimizer | Iteration 33 complete: HV=3.997267 |PF|=22 n=40 (6.0s)
+2026-05-11 18:42:49,103 INFO llmbo.optimizer | --- Iteration 34 ---
+2026-05-11 18:42:50,061 INFO llmbo.gp_model | Fitted Matern GP: n=40 y_best=7.505460 kernel=4.15**2 * Matern(length_scale=[2.98, 3.79, 5.68, 1.96, 5.63], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:42:51,533 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0173 4.9599 2.9923 0.3976 0.2996]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:42:55,751 INFO pybamm_simulator | 仿真完成 | 时间: 5253.0s | 温升: 0.01K | 老化: 0.0047% | SOC终值: 0.395
+2026-05-11 18:42:55,757 INFO llmbo.optimizer |     -> feasible=True obj=[5.2530e+03 1.4897e-02 4.6560e-03] acq=1.997270 (4.2s)
+2026-05-11 18:42:55,759 INFO DataBase.database | Iter 35: HV=3.997359  |PF|=23  n=41
+2026-05-11 18:42:55,765 INFO llmbo.optimizer | Iteration 34 complete: HV=3.997359 |PF|=23 n=41 (6.7s)
+2026-05-11 18:42:55,765 INFO llmbo.optimizer | --- Iteration 35 ---
+2026-05-11 18:42:56,572 INFO llmbo.gp_model | Fitted Matern GP: n=41 y_best=1.235300 kernel=2.06**2 * Matern(length_scale=[1.76, 2.4, 3.65, 1.86, 2.74], nu=2.5) + WhiteKernel(noise_level=4.25e-06)
+2026-05-11 18:42:57,627 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0045 4.9183 2.9938 0.3952 0.2688]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:43:01,995 INFO pybamm_simulator | 仿真完成 | 时间: 5351.0s | 温升: 0.01K | 老化: 0.0047% | SOC终值: 0.396
+2026-05-11 18:43:02,000 INFO llmbo.optimizer |     -> feasible=True obj=[5.3510e+03 1.4664e-02 4.7310e-03] acq=1.797931 (4.3s)
+2026-05-11 18:43:02,007 INFO DataBase.database | Iter 36: HV=3.997359  |PF|=24  n=42
+2026-05-11 18:43:02,007 INFO llmbo.optimizer | Iteration 35 complete: HV=3.997359 |PF|=24 n=42 (6.2s)
+2026-05-11 18:43:02,007 INFO llmbo.optimizer | --- Iteration 36 ---
+2026-05-11 18:43:02,702 INFO llmbo.gp_model | Fitted Matern GP: n=42 y_best=1.467246 kernel=1.34**2 * Matern(length_scale=[0.494, 1.14, 3.87, 8.59, 161], nu=2.5) + WhiteKernel(noise_level=2.49e-06)
+2026-05-11 18:43:03,729 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.4524 3.229  2.9987 0.1008 0.1051]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:43:09,522 INFO pybamm_simulator | 仿真完成 | 时间: 4892.0s | 温升: 0.01K | 老化: 0.0056% | SOC终值: 0.395
+2026-05-11 18:43:09,528 INFO llmbo.optimizer |     -> feasible=True obj=[4.892e+03 7.867e-03 5.598e-03] acq=1.417122 (5.8s)
+2026-05-11 18:43:09,536 INFO DataBase.database | Iter 37: HV=3.997367  |PF|=25  n=43
+2026-05-11 18:43:09,539 INFO llmbo.optimizer | Iteration 36 complete: HV=3.997367 |PF|=25 n=43 (7.5s)
+2026-05-11 18:43:09,539 INFO llmbo.optimizer | --- Iteration 37 ---
+2026-05-11 18:43:10,279 INFO llmbo.gp_model | Fitted Matern GP: n=43 y_best=3.757744 kernel=1.64**2 * Matern(length_scale=[1.07, 2.1, 2.72, 1.46, 3.26], nu=2.5) + WhiteKernel(noise_level=3.55e-05)
+2026-05-11 18:43:11,567 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0131 4.8791 2.9875 0.4    0.2801]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:43:15,868 INFO pybamm_simulator | 仿真完成 | 时间: 5332.0s | 温升: 0.01K | 老化: 0.0047% | SOC终值: 0.395
+2026-05-11 18:43:15,877 INFO llmbo.optimizer |     -> feasible=True obj=[5.3320e+03 1.4415e-02 4.7100e-03] acq=1.504897 (4.3s)
+2026-05-11 18:43:15,887 INFO DataBase.database | Iter 38: HV=3.997367  |PF|=25  n=44
+2026-05-11 18:43:15,888 INFO llmbo.optimizer | Iteration 37 complete: HV=3.997367 |PF|=25 n=44 (6.3s)
+2026-05-11 18:43:15,888 INFO llmbo.optimizer | --- Iteration 38 ---
+2026-05-11 18:43:17,177 INFO llmbo.gp_model | Fitted Matern GP: n=44 y_best=1.633473 kernel=1.35**2 * Matern(length_scale=[0.363, 1.31, 1.15, 2.31, 3.07], nu=2.5) + WhiteKernel(noise_level=5.25e-05)
+2026-05-11 18:43:17,788 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.6043 4.4195 2.9273 0.3986 0.2394]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:43:21,541 INFO pybamm_simulator | 仿真完成 | 时间: 3962.0s | 温升: 0.01K | 老化: 0.0059% | SOC终值: 0.395
+2026-05-11 18:43:21,545 INFO llmbo.optimizer |     -> feasible=True obj=[3.9620e+03 1.3744e-02 5.8870e-03] acq=1.420565 (3.8s)
+2026-05-11 18:43:21,554 INFO DataBase.database | Iter 39: HV=3.997372  |PF|=25  n=45
+2026-05-11 18:43:21,555 INFO llmbo.optimizer | Iteration 38 complete: HV=3.997372 |PF|=25 n=45 (5.7s)
+2026-05-11 18:43:21,555 INFO llmbo.optimizer | --- Iteration 39 ---
+2026-05-11 18:43:22,760 INFO llmbo.gp_model | Fitted Matern GP: n=45 y_best=1.377946 kernel=1.37**2 * Matern(length_scale=[0.705, 1.98, 2.12, 1.1, 3.26], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:43:23,613 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.2551 4.9783 2.9902 0.3971 0.2852]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:43:27,789 INFO pybamm_simulator | 仿真完成 | 时间: 4910.0s | 温升: 0.02K | 老化: 0.0049% | SOC终值: 0.395
+2026-05-11 18:43:27,793 INFO llmbo.optimizer |     -> feasible=True obj=[4.9100e+03 1.5006e-02 4.8660e-03] acq=1.402586 (4.2s)
+2026-05-11 18:43:27,803 INFO DataBase.database | Iter 40: HV=4.000130  |PF|=26  n=46
+2026-05-11 18:43:27,805 INFO llmbo.optimizer | Iteration 39 complete: HV=4.000130 |PF|=26 n=46 (6.2s)
+2026-05-11 18:43:27,805 INFO llmbo.optimizer | --- Iteration 40 ---
+2026-05-11 18:43:28,714 INFO llmbo.gp_model | Fitted Matern GP: n=46 y_best=1.904094 kernel=2.15**2 * Matern(length_scale=[0.713, 1.98, 2.56, 2.3, 4.64], nu=2.5) + WhiteKernel(noise_level=4.31e-06)
+2026-05-11 18:43:30,051 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.7972 4.9312 2.978  0.3997 0.2979]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:43:34,274 INFO pybamm_simulator | 仿真完成 | 时间: 3601.0s | 温升: 0.01K | 老化: 0.0057% | SOC终值: 0.395
+2026-05-11 18:43:34,281 INFO llmbo.optimizer |     -> feasible=True obj=[3.6010e+03 1.4975e-02 5.7370e-03] acq=1.466802 (4.2s)
+2026-05-11 18:43:34,295 INFO DataBase.database | Iter 41: HV=4.000249  |PF|=27  n=47
+2026-05-11 18:43:34,298 INFO llmbo.optimizer | Iteration 40 complete: HV=4.000249 |PF|=27 n=47 (6.5s)
+2026-05-11 18:43:34,298 INFO llmbo.optimizer | --- Iteration 41 ---
+2026-05-11 18:43:35,276 INFO llmbo.gp_model | Fitted Matern GP: n=47 y_best=1.816846 kernel=1.49**2 * Matern(length_scale=[0.687, 1.95, 2.28, 1.25, 3.54], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:43:36,759 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.3185 4.9798 2.9877 0.3979 0.297 ]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:43:40,882 INFO pybamm_simulator | 仿真完成 | 时间: 4797.0s | 温升: 0.02K | 老化: 0.0049% | SOC终值: 0.396
+2026-05-11 18:43:40,883 INFO llmbo.optimizer |     -> feasible=True obj=[4.7970e+03 1.5011e-02 4.8780e-03] acq=1.431634 (4.1s)
+2026-05-11 18:43:40,896 INFO DataBase.database | Iter 42: HV=4.001164  |PF|=28  n=48
+2026-05-11 18:43:40,897 INFO llmbo.optimizer | Iteration 41 complete: HV=4.001164 |PF|=28 n=48 (6.6s)
+2026-05-11 18:43:40,897 INFO llmbo.optimizer | --- Iteration 42 ---
+2026-05-11 18:43:42,056 INFO llmbo.gp_model | Fitted Matern GP: n=48 y_best=1.841336 kernel=1.51**2 * Matern(length_scale=[0.522, 1.01, 2.94, 4.73, 4.79], nu=2.5) + WhiteKernel(noise_level=0.000323)
+2026-05-11 18:43:42,840 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.0199 3.6577 2.9976 0.2634 0.2958]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:43:46,854 INFO pybamm_simulator | 仿真完成 | 时间: 4472.0s | 温升: 0.01K | 老化: 0.0057% | SOC终值: 0.395
+2026-05-11 18:43:46,858 INFO llmbo.optimizer |     -> feasible=True obj=[4.4720e+03 1.0285e-02 5.7290e-03] acq=1.383870 (4.0s)
+2026-05-11 18:43:46,860 INFO DataBase.database | Iter 43: HV=4.001168  |PF|=29  n=49
+2026-05-11 18:43:46,860 INFO llmbo.optimizer | Iteration 42 complete: HV=4.001168 |PF|=29 n=49 (6.0s)
+2026-05-11 18:43:46,860 INFO llmbo.optimizer | --- Iteration 43 ---
+2026-05-11 18:43:48,016 INFO llmbo.gp_model | Fitted Matern GP: n=49 y_best=1.326475 kernel=1.34**2 * Matern(length_scale=[0.528, 1.17, 3.39, 14.2, 201], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:43:48,622 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0364 2.0538 2.9868 0.3771 0.2619]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:43:52,904 INFO pybamm_simulator | 仿真完成 | 时间: 6600.0s | 温升: 0.01K | 老化: 0.0053% | SOC终值: 0.396
+2026-05-11 18:43:52,908 INFO llmbo.optimizer |     -> feasible=True obj=[6.600e+03 5.426e-03 5.333e-03] acq=1.511533 (4.3s)
+2026-05-11 18:43:52,914 INFO DataBase.database | Iter 44: HV=4.001168  |PF|=29  n=50
+2026-05-11 18:43:52,917 INFO llmbo.optimizer | Iteration 43 complete: HV=4.001168 |PF|=29 n=50 (6.0s)
+2026-05-11 18:43:52,918 INFO llmbo.optimizer | --- Iteration 44 ---
+2026-05-11 18:43:53,894 INFO llmbo.gp_model | Fitted Matern GP: n=50 y_best=1.799128 kernel=2.18**2 * Matern(length_scale=[0.582, 1.72, 2.85, 2.98, 3.84], nu=2.5) + WhiteKernel(noise_level=4.38e-06)
+2026-05-11 18:43:55,160 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.6302 4.9991 2.9981 0.3977 0.2991]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:43:58,976 INFO pybamm_simulator | 仿真完成 | 时间: 3669.0s | 温升: 0.02K | 老化: 0.0056% | SOC终值: 0.395
+2026-05-11 18:43:58,981 INFO llmbo.optimizer |     -> feasible=True obj=[3.669e+03 1.513e-02 5.641e-03] acq=1.512400 (3.8s)
+2026-05-11 18:43:58,988 INFO DataBase.database | Iter 45: HV=4.002287  |PF|=30  n=51
+2026-05-11 18:43:58,989 INFO llmbo.optimizer | Iteration 44 complete: HV=4.002287 |PF|=30 n=51 (6.1s)
+2026-05-11 18:43:58,989 INFO llmbo.optimizer | --- Iteration 45 ---
+2026-05-11 18:43:59,823 INFO llmbo.gp_model | Fitted Matern GP: n=51 y_best=1.451370 kernel=2.71**2 * Matern(length_scale=[0.625, 1.72, 3.14, 1.67, 3.35], nu=2.5) + WhiteKernel(noise_level=2.9e-06)
+2026-05-11 18:44:01,104 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.1376 4.9988 2.9656 0.3966 0.2992]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:44:05,070 INFO pybamm_simulator | 仿真完成 | 时间: 3985.0s | 温升: 0.02K | 老化: 0.0054% | SOC终值: 0.395
+2026-05-11 18:44:05,073 INFO llmbo.optimizer |     -> feasible=True obj=[3.9850e+03 1.5132e-02 5.3890e-03] acq=1.925548 (4.0s)
+2026-05-11 18:44:05,083 INFO DataBase.database | Iter 46: HV=4.003677  |PF|=31  n=52
+2026-05-11 18:44:05,085 INFO llmbo.optimizer | Iteration 45 complete: HV=4.003677 |PF|=31 n=52 (6.1s)
+2026-05-11 18:44:05,085 INFO llmbo.optimizer | --- Iteration 46 ---
+2026-05-11 18:44:05,969 INFO llmbo.gp_model | Fitted Matern GP: n=52 y_best=1.593390 kernel=1.38**2 * Matern(length_scale=[0.57, 0.496, 23, 114, 1e+03], nu=2.5) + WhiteKernel(noise_level=1.33e-06)
+2026-05-11 18:44:06,678 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0056 2.7799 2.0599 0.333  0.2313]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:44:11,437 INFO pybamm_simulator | 仿真完成 | 时间: 6546.0s | 温升: 0.01K | 老化: 0.0056% | SOC终值: 0.395
+2026-05-11 18:44:11,444 INFO llmbo.optimizer |     -> feasible=True obj=[6.546e+03 5.294e-03 5.595e-03] acq=1.687920 (4.8s)
+2026-05-11 18:44:11,459 INFO DataBase.database | Iter 47: HV=4.003677  |PF|=31  n=53
+2026-05-11 18:44:11,459 INFO llmbo.optimizer | Iteration 46 complete: HV=4.003677 |PF|=31 n=53 (6.4s)
+2026-05-11 18:44:11,459 INFO llmbo.optimizer | --- Iteration 47 ---
+2026-05-11 18:44:13,671 INFO llmbo.gp_model | Fitted Matern GP: n=53 y_best=1.441891 kernel=1.26**2 * Matern(length_scale=[0.546, 0.624, 10.3, 15.4, 1e+03], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:44:14,487 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.009  2.0304 2.0572 0.3884 0.134 ]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:44:18,823 INFO pybamm_simulator | 仿真完成 | 时间: 7097.0s | 温升: 0.01K | 老化: 0.0057% | SOC终值: 0.395
+2026-05-11 18:44:18,829 INFO llmbo.optimizer |     -> feasible=True obj=[7.097e+03 5.308e-03 5.668e-03] acq=1.648289 (4.3s)
+2026-05-11 18:44:18,837 INFO DataBase.database | Iter 48: HV=4.003677  |PF|=31  n=54
+2026-05-11 18:44:18,840 INFO llmbo.optimizer | Iteration 47 complete: HV=4.003677 |PF|=31 n=54 (7.4s)
+2026-05-11 18:44:18,840 INFO llmbo.optimizer | --- Iteration 48 ---
+2026-05-11 18:44:19,776 INFO llmbo.gp_model | Fitted Matern GP: n=54 y_best=1.299331 kernel=1.73**2 * Matern(length_scale=[0.434, 1.08, 2.78, 4.17, 4.12], nu=2.5) + WhiteKernel(noise_level=1.99e-05)
+2026-05-11 18:44:20,952 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.1864 3.9613 2.9981 0.3999 0.2988]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:44:24,941 INFO pybamm_simulator | 仿真完成 | 时间: 4226.0s | 温升: 0.01K | 老化: 0.0056% | SOC终值: 0.396
+2026-05-11 18:44:24,945 INFO llmbo.optimizer |     -> feasible=True obj=[4.2260e+03 1.1228e-02 5.5860e-03] acq=1.347365 (4.0s)
+2026-05-11 18:44:24,955 INFO DataBase.database | Iter 49: HV=4.003686  |PF|=31  n=55
+2026-05-11 18:44:24,956 INFO llmbo.optimizer | Iteration 48 complete: HV=4.003686 |PF|=31 n=55 (6.1s)
+2026-05-11 18:44:24,956 INFO llmbo.optimizer | --- Iteration 49 ---
+2026-05-11 18:44:26,107 INFO llmbo.gp_model | Fitted Matern GP: n=55 y_best=1.931890 kernel=1.21**2 * Matern(length_scale=[0.555, 0.607, 1e+03, 6.51, 1e+03], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:44:26,718 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0019 2.6752 2.6643 0.3972 0.2502]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:44:30,937 INFO pybamm_simulator | 仿真完成 | 时间: 6286.0s | 温升: 0.01K | 老化: 0.0052% | SOC终值: 0.395
+2026-05-11 18:44:30,941 INFO llmbo.optimizer |     -> feasible=True obj=[6.286e+03 5.278e-03 5.228e-03] acq=1.516202 (4.2s)
+2026-05-11 18:44:30,949 INFO DataBase.database | Iter 50: HV=4.003686  |PF|=32  n=56
+2026-05-11 18:44:30,951 INFO llmbo.optimizer | Iteration 49 complete: HV=4.003686 |PF|=32 n=56 (6.0s)
+2026-05-11 18:44:30,951 INFO llmbo.optimizer | Optimization finished: HV=4.003686
+2026-05-11 18:44:30,954 INFO Compare_Exp.Exp.parego_runner | ParEGO done: 56 evals, 56 feasible, 32 Pareto, HV=4.0037
+2026-05-11 18:44:31,033 INFO DataBase.database | 数据库已保存: optimized_experiments\parego_ecker_5seeds_56evals_2026_05_11_rerun\seed8410\parego_matlab_reference_Ecker2015\database.json (56 条记录)
+2026-05-11 18:44:31,039 INFO Compare_Exp.Exp.parego_runner | Results saved to optimized_experiments\parego_ecker_5seeds_56evals_2026_05_11_rerun\seed8410\parego_matlab_reference_Ecker2015
+2026-05-11 18:44:31,039 INFO __main__ | Seed 8410 done: canonical_hv=1.601474, pareto=32
+2026-05-11 18:44:31,039 INFO __main__ | === Seed 8411 ===
+2026-05-11 18:44:31,039 INFO Compare_Exp.Exp.parego_runner | ============================================================
+2026-05-11 18:44:31,039 INFO Compare_Exp.Exp.parego_runner | ParEGO Runner: seed=8411, n_evals=56, variant=matlab_reference
+2026-05-11 18:44:31,039 INFO Compare_Exp.Exp.parego_runner | ============================================================
+2026-05-11 18:44:31,039 INFO llmbo.optimizer | ============================================================
+2026-05-11 18:44:31,039 INFO llmbo.optimizer | Setting up 5D GP-LLM-coupled MOBO optimizer
+2026-05-11 18:44:31,039 INFO llmbo.optimizer | ============================================================
+2026-05-11 18:44:31,039 INFO llmbo.optimizer | Battery simulator parameter set: Ecker2015
+2026-05-11 18:44:31,039 INFO DataBase.database | ObservationDB 初始化: bounds={'I1': (2.0, 6.0), 'I2': (2.0, 5.0), 'I3': (2.0, 3.0), 'dSOC1': (0.1, 0.4), 'dSOC2': (0.1, 0.3)}
+2026-05-11 18:44:31,039 INFO llm.llm_interface | LLMInterface 初始化: backend=mock model=gpt-4.1-mini warmstart_level=full param_set=Ecker2015
+2026-05-11 18:44:31,043 INFO llmbo.optimizer | ParEGO Das-Dennis weight set ready: shape=(496, 3)
+2026-05-11 18:44:31,043 INFO llmbo.optimizer | ============================================================
+2026-05-11 18:44:31,043 INFO llmbo.optimizer | Initialization: strategy=manual warmstart=0 random_init=6
+2026-05-11 18:44:31,043 INFO llmbo.optimizer | ============================================================
+2026-05-11 18:44:31,043 INFO llmbo.optimizer | Init [1/6] src=random_init theta=[5.966  3.2563 2.533  0.2405 0.2059]
+2026-05-11 18:44:35,176 INFO pybamm_simulator | 仿真完成 | 时间: 4377.0s | 温升: 0.03K | 老化: 0.0069% | SOC终值: 0.396
+2026-05-11 18:44:35,177 INFO llmbo.optimizer |   -> feasible=True obj=[4.377e+03 3.171e-02 6.943e-03] (4.1s)
+2026-05-11 18:44:35,178 INFO llmbo.optimizer | Init [2/6] src=random_init theta=[4.9184 4.5172 2.4744 0.2534 0.2854]
+2026-05-11 18:44:39,058 INFO pybamm_simulator | 仿真完成 | 时间: 3965.0s | 温升: 0.02K | 老化: 0.0069% | SOC终值: 0.395
+2026-05-11 18:44:39,060 INFO llmbo.optimizer |   -> feasible=True obj=[3.9650e+03 2.2975e-02 6.8950e-03] (3.9s)
+2026-05-11 18:44:39,060 INFO llmbo.optimizer | Init [3/6] src=random_init theta=[2.9762 4.2742 2.841  0.389  0.13  ]
+2026-05-11 18:44:43,262 INFO pybamm_simulator | 仿真完成 | 时间: 4680.0s | 温升: 0.01K | 老化: 0.0058% | SOC终值: 0.395
+2026-05-11 18:44:43,267 INFO llmbo.optimizer |   -> feasible=True obj=[4.680e+03 1.116e-02 5.757e-03] (4.2s)
+2026-05-11 18:44:43,267 INFO llmbo.optimizer | Init [4/6] src=random_init theta=[4.3099 3.546  2.8315 0.3281 0.1392]
+2026-05-11 18:44:47,643 INFO pybamm_simulator | 仿真完成 | 时间: 4192.0s | 温升: 0.02K | 老化: 0.0065% | SOC终值: 0.395
+2026-05-11 18:44:47,648 INFO llmbo.optimizer |   -> feasible=True obj=[4.1920e+03 1.8456e-02 6.4510e-03] (4.4s)
+2026-05-11 18:44:47,649 INFO llmbo.optimizer | Init [5/6] src=random_init theta=[2.1944 2.9376 2.2715 0.1895 0.1814]
+2026-05-11 18:44:51,858 INFO pybamm_simulator | 仿真完成 | 时间: 6066.0s | 温升: 0.01K | 老化: 0.0058% | SOC终值: 0.395
+2026-05-11 18:44:51,859 INFO llmbo.optimizer |   -> feasible=True obj=[6.066e+03 6.122e-03 5.778e-03] (4.2s)
+2026-05-11 18:44:51,861 INFO llmbo.optimizer | Init [6/6] src=random_init theta=[3.4555 2.4406 2.1195 0.1149 0.2547]
+2026-05-11 18:44:56,235 INFO pybamm_simulator | 仿真完成 | 时间: 6132.0s | 温升: 0.01K | 老化: 0.0062% | SOC终值: 0.395
+2026-05-11 18:44:56,240 INFO llmbo.optimizer |   -> feasible=True obj=[6.1320e+03 1.2824e-02 6.2110e-03] (4.4s)
+2026-05-11 18:44:56,245 INFO llmbo.optimizer | ============================================================
+2026-05-11 18:44:56,245 INFO llmbo.optimizer | Optimization loop: 50 iterations
+2026-05-11 18:44:56,245 INFO llmbo.optimizer | ============================================================
+2026-05-11 18:44:56,245 INFO llmbo.optimizer | --- Iteration 0 ---
+2026-05-11 18:44:56,517 INFO llmbo.gp_model | Fitted Matern GP: n=6 y_best=0.676437 kernel=1.16**2 * Matern(length_scale=[0.533, 1e+03, 2.78, 1e+03, 3.4], nu=2.5) + WhiteKernel(noise_level=2.27e-10)
+2026-05-11 18:44:56,890 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.6489 3.4219 2.9892 0.2755 0.108 ]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:45:01,856 INFO pybamm_simulator | 仿真完成 | 时间: 4948.0s | 温升: 0.01K | 老化: 0.0055% | SOC终值: 0.395
+2026-05-11 18:45:01,858 INFO llmbo.optimizer |     -> feasible=True obj=[4.948e+03 8.307e-03 5.550e-03] acq=1.442816 (5.0s)
+2026-05-11 18:45:01,863 INFO DataBase.database | Iter 1: HV=2.581238  |PF|=5  n=7
+2026-05-11 18:45:01,864 INFO llmbo.optimizer | Iteration 0 complete: HV=2.581238 |PF|=5 n=7 (5.6s)
+2026-05-11 18:45:01,864 INFO llmbo.optimizer | --- Iteration 1 ---
+2026-05-11 18:45:02,327 INFO llmbo.gp_model | Fitted Matern GP: n=7 y_best=1.206198 kernel=1.12**2 * Matern(length_scale=[1e+03, 1.13, 1e+03, 1.98, 0.427], nu=2.5) + WhiteKernel(noise_level=2.7e-11)
+2026-05-11 18:45:02,902 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.7997 4.936  2.8325 0.3988 0.1087]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:45:07,818 INFO pybamm_simulator | 仿真完成 | 时间: 4819.0s | 温升: 0.01K | 老化: 0.0056% | SOC终值: 0.395
+2026-05-11 18:45:07,821 INFO llmbo.optimizer |     -> feasible=True obj=[4.8190e+03 1.4749e-02 5.6480e-03] acq=1.705948 (4.9s)
+2026-05-11 18:45:07,826 INFO DataBase.database | Iter 2: HV=2.581559  |PF|=6  n=8
+2026-05-11 18:45:07,827 INFO llmbo.optimizer | Iteration 1 complete: HV=2.581559 |PF|=6 n=8 (6.0s)
+2026-05-11 18:45:07,827 INFO llmbo.optimizer | --- Iteration 2 ---
+2026-05-11 18:45:08,276 INFO llmbo.gp_model | Fitted Matern GP: n=8 y_best=3.572195 kernel=0.991**2 * Matern(length_scale=[1e+03, 1e+03, 1e+03, 3.48, 0.167], nu=2.5) + WhiteKernel(noise_level=2.7e-11)
+2026-05-11 18:45:08,856 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.6038 3.8925 2.3724 0.3994 0.1235]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:45:13,847 INFO pybamm_simulator | 仿真完成 | 时间: 4236.0s | 温升: 0.02K | 老化: 0.0069% | SOC终值: 0.396
+2026-05-11 18:45:13,851 INFO llmbo.optimizer |     -> feasible=True obj=[4.2360e+03 2.0587e-02 6.8920e-03] acq=1.360200 (5.0s)
+2026-05-11 18:45:13,855 INFO DataBase.database | Iter 3: HV=2.581559  |PF|=6  n=9
+2026-05-11 18:45:13,855 INFO llmbo.optimizer | Iteration 2 complete: HV=2.581559 |PF|=6 n=9 (6.0s)
+2026-05-11 18:45:13,855 INFO llmbo.optimizer | --- Iteration 3 ---
+2026-05-11 18:45:14,407 INFO llmbo.gp_model | Fitted Matern GP: n=9 y_best=2.610087 kernel=1.08**2 * Matern(length_scale=[0.549, 1e+03, 1.8, 1e+03, 1e+03], nu=2.5) + WhiteKernel(noise_level=0.00577)
+2026-05-11 18:45:14,794 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.4694 3.2398 2.975  0.2331 0.1941]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:45:20,256 INFO pybamm_simulator | 仿真完成 | 时间: 5033.0s | 温升: 0.01K | 老化: 0.0055% | SOC终值: 0.395
+2026-05-11 18:45:20,263 INFO llmbo.optimizer |     -> feasible=True obj=[5.033e+03 7.412e-03 5.467e-03] acq=1.162948 (5.5s)
+2026-05-11 18:45:20,276 INFO DataBase.database | Iter 4: HV=2.585011  |PF|=7  n=10
+2026-05-11 18:45:20,278 INFO llmbo.optimizer | Iteration 3 complete: HV=2.585011 |PF|=7 n=10 (6.4s)
+2026-05-11 18:45:20,280 INFO llmbo.optimizer | --- Iteration 4 ---
+2026-05-11 18:45:20,858 INFO llmbo.gp_model | Fitted Matern GP: n=10 y_best=0.730867 kernel=1.57**2 * Matern(length_scale=[0.856, 1.23, 7.73, 1e+03, 1e+03], nu=2.5) + WhiteKernel(noise_level=0.000648)
+2026-05-11 18:45:21,594 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.2516 3.2092 2.9947 0.2976 0.2918]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:45:29,730 INFO pybamm_simulator | 仿真完成 | 时间: 5282.0s | 温升: 0.01K | 老化: 0.0052% | SOC终值: 0.395
+2026-05-11 18:45:29,737 INFO llmbo.optimizer |     -> feasible=True obj=[5.282e+03 6.597e-03 5.229e-03] acq=1.134847 (8.1s)
+2026-05-11 18:45:29,742 INFO DataBase.database | Iter 5: HV=2.593879  |PF|=8  n=11
+2026-05-11 18:45:29,742 INFO llmbo.optimizer | Iteration 4 complete: HV=2.593879 |PF|=8 n=11 (9.5s)
+2026-05-11 18:45:29,742 INFO llmbo.optimizer | --- Iteration 5 ---
+2026-05-11 18:45:30,574 INFO llmbo.gp_model | Fitted Matern GP: n=11 y_best=2.128462 kernel=1.41**2 * Matern(length_scale=[0.89, 1e+03, 1.27, 3.52, 18.7], nu=2.5) + WhiteKernel(noise_level=3.81e-12)
+2026-05-11 18:45:32,025 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0046 4.3687 2.9805 0.3986 0.2973]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:45:40,314 INFO pybamm_simulator | 仿真完成 | 时间: 5432.0s | 温升: 0.01K | 老化: 0.0047% | SOC终值: 0.395
+2026-05-11 18:45:40,319 INFO llmbo.optimizer |     -> feasible=True obj=[5.432e+03 1.161e-02 4.743e-03] acq=1.777003 (8.3s)
+2026-05-11 18:45:40,324 INFO DataBase.database | Iter 6: HV=2.611493  |PF|=9  n=12
+2026-05-11 18:45:40,330 INFO llmbo.optimizer | Iteration 5 complete: HV=2.611493 |PF|=9 n=12 (10.6s)
+2026-05-11 18:45:40,330 INFO llmbo.optimizer | --- Iteration 6 ---
+2026-05-11 18:45:41,345 INFO llmbo.gp_model | Fitted Matern GP: n=12 y_best=1.733225 kernel=1.1**2 * Matern(length_scale=[0.841, 1e+03, 1.27, 2.4, 10.4], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:45:42,643 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0041 4.567  2.9891 0.3852 0.2966]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:45:50,171 INFO pybamm_simulator | 仿真完成 | 时间: 5340.0s | 温升: 0.01K | 老化: 0.0047% | SOC终值: 0.395
+2026-05-11 18:45:50,173 INFO llmbo.optimizer |     -> feasible=True obj=[5.340e+03 1.272e-02 4.729e-03] acq=1.406590 (7.5s)
+2026-05-11 18:45:50,179 INFO DataBase.database | Iter 7: HV=2.613134  |PF|=10  n=13
+2026-05-11 18:45:50,181 INFO llmbo.optimizer | Iteration 6 complete: HV=2.613134 |PF|=10 n=13 (9.8s)
+2026-05-11 18:45:50,181 INFO llmbo.optimizer | --- Iteration 7 ---
+2026-05-11 18:45:51,053 INFO llmbo.gp_model | Fitted Matern GP: n=13 y_best=10.713613 kernel=1.39**2 * Matern(length_scale=[0.374, 1e+03, 0.502, 1e+03, 1e+03], nu=2.5) + WhiteKernel(noise_level=0.0105)
+2026-05-11 18:45:51,711 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.381  2.6174 2.8988 0.3032 0.295 ]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:46:00,657 INFO pybamm_simulator | 仿真完成 | 时间: 4896.0s | 温升: 0.01K | 老化: 0.0060% | SOC终值: 0.395
+2026-05-11 18:46:00,665 INFO llmbo.optimizer |     -> feasible=True obj=[4.8960e+03 1.2373e-02 5.9980e-03] acq=1.615481 (9.0s)
+2026-05-11 18:46:00,671 INFO DataBase.database | Iter 8: HV=2.613134  |PF|=10  n=14
+2026-05-11 18:46:00,671 INFO llmbo.optimizer | Iteration 7 complete: HV=2.613134 |PF|=10 n=14 (10.5s)
+2026-05-11 18:46:00,671 INFO llmbo.optimizer | --- Iteration 8 ---
+2026-05-11 18:46:01,506 INFO llmbo.gp_model | Fitted Matern GP: n=14 y_best=1.984980 kernel=3.59**2 * Matern(length_scale=[0.871, 5.02, 2.9, 4.8, 1e+03], nu=2.5) + WhiteKernel(noise_level=1.35e-10)
+2026-05-11 18:46:03,399 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.883  4.9993 2.9995 0.105  0.1122]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:46:11,573 INFO pybamm_simulator | 仿真完成 | 时间: 4557.0s | 温升: 0.02K | 老化: 0.0059% | SOC终值: 0.395
+2026-05-11 18:46:11,578 INFO llmbo.optimizer |     -> feasible=True obj=[4.5570e+03 1.7938e-02 5.9410e-03] acq=2.426382 (8.2s)
+2026-05-11 18:46:11,584 INFO DataBase.database | Iter 9: HV=2.614542  |PF|=11  n=15
+2026-05-11 18:46:11,584 INFO llmbo.optimizer | Iteration 8 complete: HV=2.614542 |PF|=11 n=15 (10.9s)
+2026-05-11 18:46:11,584 INFO llmbo.optimizer | --- Iteration 9 ---
+2026-05-11 18:46:12,641 INFO llmbo.gp_model | Fitted Matern GP: n=15 y_best=1.830434 kernel=1.91**2 * Matern(length_scale=[0.903, 1.41, 4.16, 6.22, 15.7], nu=2.5) + WhiteKernel(noise_level=5.15e-12)
+2026-05-11 18:46:14,222 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0389 2.9975 2.9979 0.3951 0.2873]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:46:21,882 INFO pybamm_simulator | 仿真完成 | 时间: 5919.0s | 温升: 0.01K | 老化: 0.0051% | SOC终值: 0.395
+2026-05-11 18:46:21,885 INFO llmbo.optimizer |     -> feasible=True obj=[5.919e+03 5.541e-03 5.072e-03] acq=1.309941 (7.7s)
+2026-05-11 18:46:21,890 INFO DataBase.database | Iter 10: HV=2.614556  |PF|=11  n=16
+2026-05-11 18:46:21,890 INFO llmbo.optimizer | Iteration 9 complete: HV=2.614556 |PF|=11 n=16 (10.3s)
+2026-05-11 18:46:21,891 INFO llmbo.optimizer | --- Iteration 10 ---
+2026-05-11 18:46:22,565 INFO llmbo.gp_model | Fitted Matern GP: n=16 y_best=2.012663 kernel=1.88**2 * Matern(length_scale=[1.11, 1.51, 1.02, 1.44, 1e+03], nu=2.5) + WhiteKernel(noise_level=2.27e-10)
+2026-05-11 18:46:23,603 INFO llmbo.optimizer |   Evaluate rank=0 theta=[5.9076 4.9172 2.7651 0.3764 0.1495]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:46:30,569 INFO pybamm_simulator | 仿真完成 | 时间: 3479.0s | 温升: 0.03K | 老化: 0.0071% | SOC终值: 0.395
+2026-05-11 18:46:30,574 INFO llmbo.optimizer |     -> feasible=True obj=[3.4790e+03 3.1193e-02 7.0780e-03] acq=1.872014 (7.0s)
+2026-05-11 18:46:30,582 INFO DataBase.database | Iter 11: HV=3.163983  |PF|=12  n=17
+2026-05-11 18:46:30,582 INFO llmbo.optimizer | Iteration 10 complete: HV=3.163983 |PF|=12 n=17 (8.7s)
+2026-05-11 18:46:30,582 INFO llmbo.optimizer | --- Iteration 11 ---
+2026-05-11 18:46:31,766 INFO llmbo.gp_model | Fitted Matern GP: n=17 y_best=2.274428 kernel=1.21**2 * Matern(length_scale=[0.396, 0.956, 0.423, 0.89, 1e+03], nu=2.5) + WhiteKernel(noise_level=9.97e-07)
+2026-05-11 18:46:32,283 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.2924 4.7624 2.9092 0.2515 0.1738]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:46:36,241 INFO pybamm_simulator | 仿真完成 | 时间: 4351.0s | 温升: 0.01K | 老化: 0.0060% | SOC终值: 0.396
+2026-05-11 18:46:36,242 INFO llmbo.optimizer |     -> feasible=True obj=[4.3510e+03 1.4594e-02 6.0360e-03] acq=1.721074 (4.0s)
+2026-05-11 18:46:36,248 INFO DataBase.database | Iter 12: HV=3.165981  |PF|=13  n=18
+2026-05-11 18:46:36,249 INFO llmbo.optimizer | Iteration 11 complete: HV=3.165981 |PF|=13 n=18 (5.7s)
+2026-05-11 18:46:36,249 INFO llmbo.optimizer | --- Iteration 12 ---
+2026-05-11 18:46:36,678 INFO llmbo.gp_model | Fitted Matern GP: n=18 y_best=1.840496 kernel=1.9**2 * Matern(length_scale=[0.806, 1.42, 1.36, 1.63, 20.3], nu=2.5) + WhiteKernel(noise_level=2.27e-10)
+2026-05-11 18:46:37,156 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.2639 4.5753 2.7447 0.3504 0.2956]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:46:40,892 INFO pybamm_simulator | 仿真完成 | 时间: 3652.0s | 温升: 0.02K | 老化: 0.0063% | SOC终值: 0.395
+2026-05-11 18:46:40,895 INFO llmbo.optimizer |     -> feasible=True obj=[3.6520e+03 1.8132e-02 6.2660e-03] acq=1.598433 (3.7s)
+2026-05-11 18:46:40,896 INFO DataBase.database | Iter 13: HV=3.176639  |PF|=12  n=19
+2026-05-11 18:46:40,896 INFO llmbo.optimizer | Iteration 12 complete: HV=3.176639 |PF|=12 n=19 (4.6s)
+2026-05-11 18:46:40,896 INFO llmbo.optimizer | --- Iteration 13 ---
+2026-05-11 18:46:41,270 INFO llmbo.gp_model | Fitted Matern GP: n=19 y_best=1.574974 kernel=1.89**2 * Matern(length_scale=[0.637, 1.41, 1.15, 1.71, 11.7], nu=2.5) + WhiteKernel(noise_level=9.98e-07)
+2026-05-11 18:46:42,032 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.4761 4.4978 2.9889 0.3078 0.2988]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:46:45,724 INFO pybamm_simulator | 仿真完成 | 时间: 3954.0s | 温升: 0.01K | 老化: 0.0059% | SOC终值: 0.395
+2026-05-11 18:46:45,726 INFO llmbo.optimizer |     -> feasible=True obj=[3.954e+03 1.295e-02 5.868e-03] acq=1.657780 (3.7s)
+2026-05-11 18:46:45,726 INFO DataBase.database | Iter 14: HV=3.181791  |PF|=11  n=20
+2026-05-11 18:46:45,732 INFO llmbo.optimizer | Iteration 13 complete: HV=3.181791 |PF|=11 n=20 (4.8s)
+2026-05-11 18:46:45,732 INFO llmbo.optimizer | --- Iteration 14 ---
+2026-05-11 18:46:46,422 INFO llmbo.gp_model | Fitted Matern GP: n=20 y_best=7.380685 kernel=1.37**2 * Matern(length_scale=[0.69, 1.93, 1.69, 5.22, 6.06], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:46:47,677 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0023 4.7612 2.9972 0.3993 0.2913]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:46:51,765 INFO pybamm_simulator | 仿真完成 | 时间: 5348.0s | 温升: 0.01K | 老化: 0.0047% | SOC终值: 0.395
+2026-05-11 18:46:51,767 INFO llmbo.optimizer |     -> feasible=True obj=[5.3480e+03 1.3742e-02 4.6890e-03] acq=1.809698 (4.1s)
+2026-05-11 18:46:51,772 INFO DataBase.database | Iter 15: HV=3.183374  |PF|=12  n=21
+2026-05-11 18:46:51,772 INFO llmbo.optimizer | Iteration 14 complete: HV=3.183374 |PF|=12 n=21 (6.0s)
+2026-05-11 18:46:51,772 INFO llmbo.optimizer | --- Iteration 15 ---
+2026-05-11 18:46:52,216 INFO llmbo.gp_model | Fitted Matern GP: n=21 y_best=1.370873 kernel=2.72**2 * Matern(length_scale=[0.823, 1.84, 2.03, 2.58, 14.1], nu=2.5) + WhiteKernel(noise_level=1.1e-10)
+2026-05-11 18:46:53,058 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.4901 4.3832 2.9948 0.3355 0.2922]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:46:57,048 INFO pybamm_simulator | 仿真完成 | 时间: 3966.0s | 温升: 0.01K | 老化: 0.0058% | SOC终值: 0.395
+2026-05-11 18:46:57,051 INFO llmbo.optimizer |     -> feasible=True obj=[3.9660e+03 1.3035e-02 5.8310e-03] acq=1.633494 (4.0s)
+2026-05-11 18:46:57,054 INFO DataBase.database | Iter 16: HV=3.184038  |PF|=13  n=22
+2026-05-11 18:46:57,054 INFO llmbo.optimizer | Iteration 15 complete: HV=3.184038 |PF|=13 n=22 (5.3s)
+2026-05-11 18:46:57,054 INFO llmbo.optimizer | --- Iteration 16 ---
+2026-05-11 18:46:57,764 INFO llmbo.gp_model | Fitted Matern GP: n=22 y_best=1.358722 kernel=2.35**2 * Matern(length_scale=[1.22, 1.6, 1e+03, 5.17, 30.4], nu=2.5) + WhiteKernel(noise_level=0.000805)
+2026-05-11 18:46:58,206 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0229 2.755  2.6193 0.2238 0.2979]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:47:02,508 INFO pybamm_simulator | 仿真完成 | 时间: 5851.0s | 温升: 0.01K | 老化: 0.0053% | SOC终值: 0.395
+2026-05-11 18:47:02,512 INFO llmbo.optimizer |     -> feasible=True obj=[5.851e+03 5.368e-03 5.344e-03] acq=1.260119 (4.3s)
+2026-05-11 18:47:02,520 INFO DataBase.database | Iter 17: HV=3.184044  |PF|=14  n=23
+2026-05-11 18:47:02,520 INFO llmbo.optimizer | Iteration 16 complete: HV=3.184044 |PF|=14 n=23 (5.5s)
+2026-05-11 18:47:02,520 INFO llmbo.optimizer | --- Iteration 17 ---
+2026-05-11 18:47:03,198 INFO llmbo.gp_model | Fitted Matern GP: n=23 y_best=5.566169 kernel=1.72**2 * Matern(length_scale=[1.06, 2.24, 1.56, 4.61, 6.08], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:47:04,186 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0254 4.9177 2.9991 0.3975 0.2968]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:47:08,661 INFO pybamm_simulator | 仿真完成 | 时间: 5252.0s | 温升: 0.01K | 老化: 0.0047% | SOC终值: 0.395
+2026-05-11 18:47:08,662 INFO llmbo.optimizer |     -> feasible=True obj=[5.252e+03 1.465e-02 4.673e-03] acq=1.667447 (4.5s)
+2026-05-11 18:47:08,668 INFO DataBase.database | Iter 18: HV=3.186104  |PF|=15  n=24
+2026-05-11 18:47:08,669 INFO llmbo.optimizer | Iteration 17 complete: HV=3.186104 |PF|=15 n=24 (6.1s)
+2026-05-11 18:47:08,669 INFO llmbo.optimizer | --- Iteration 18 ---
+2026-05-11 18:47:09,246 INFO llmbo.gp_model | Fitted Matern GP: n=24 y_best=1.353470 kernel=1.95**2 * Matern(length_scale=[1.49, 2.66, 2.44, 3.18, 4.24], nu=2.5) + WhiteKernel(noise_level=4.12e-06)
+2026-05-11 18:47:10,385 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.007  4.9742 2.9764 0.3982 0.2979]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:47:14,142 INFO pybamm_simulator | 仿真完成 | 时间: 5278.0s | 温升: 0.01K | 老化: 0.0047% | SOC终值: 0.395
+2026-05-11 18:47:14,148 INFO llmbo.optimizer |     -> feasible=True obj=[5.2780e+03 1.4982e-02 4.6550e-03] acq=1.588933 (3.8s)
+2026-05-11 18:47:14,155 INFO DataBase.database | Iter 19: HV=3.186833  |PF|=16  n=25
+2026-05-11 18:47:14,156 INFO llmbo.optimizer | Iteration 18 complete: HV=3.186833 |PF|=16 n=25 (5.5s)
+2026-05-11 18:47:14,156 INFO llmbo.optimizer | --- Iteration 19 ---
+2026-05-11 18:47:14,839 INFO llmbo.gp_model | Fitted Matern GP: n=25 y_best=9.403660 kernel=2.07**2 * Matern(length_scale=[0.937, 1.46, 1e+03, 6.94, 117], nu=2.5) + WhiteKernel(noise_level=0.000514)
+2026-05-11 18:47:15,252 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0031 2.4298 2.7054 0.3052 0.2708]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:47:19,238 INFO pybamm_simulator | 仿真完成 | 时间: 6238.0s | 温升: 0.01K | 老化: 0.0053% | SOC终值: 0.395
+2026-05-11 18:47:19,239 INFO llmbo.optimizer |     -> feasible=True obj=[6.238e+03 5.283e-03 5.255e-03] acq=1.406373 (4.0s)
+2026-05-11 18:47:19,247 INFO DataBase.database | Iter 20: HV=3.186834  |PF|=17  n=26
+2026-05-11 18:47:19,248 INFO llmbo.optimizer | Iteration 19 complete: HV=3.186834 |PF|=17 n=26 (5.1s)
+2026-05-11 18:47:19,248 INFO llmbo.optimizer | --- Iteration 20 ---
+2026-05-11 18:47:19,784 INFO llmbo.gp_model | Fitted Matern GP: n=26 y_best=1.355286 kernel=2.6**2 * Matern(length_scale=[0.747, 1.98, 2.69, 2.48, 15.6], nu=2.5) + WhiteKernel(noise_level=0.000466)
+2026-05-11 18:47:20,575 INFO llmbo.optimizer |   Evaluate rank=0 theta=[3.2191 4.1666 2.9754 0.3887 0.2989]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:47:24,136 INFO pybamm_simulator | 仿真完成 | 时间: 4144.0s | 温升: 0.01K | 老化: 0.0056% | SOC终值: 0.395
+2026-05-11 18:47:24,139 INFO llmbo.optimizer |     -> feasible=True obj=[4.1440e+03 1.1417e-02 5.5900e-03] acq=1.491832 (3.6s)
+2026-05-11 18:47:24,143 INFO DataBase.database | Iter 21: HV=3.190878  |PF|=17  n=27
+2026-05-11 18:47:24,143 INFO llmbo.optimizer | Iteration 20 complete: HV=3.190878 |PF|=17 n=27 (4.9s)
+2026-05-11 18:47:24,143 INFO llmbo.optimizer | --- Iteration 21 ---
+2026-05-11 18:47:24,875 INFO llmbo.gp_model | Fitted Matern GP: n=27 y_best=5.265477 kernel=2.1**2 * Matern(length_scale=[1.07, 1.31, 1e+03, 6.07, 1e+03], nu=2.5) + WhiteKernel(noise_level=0.000412)
+2026-05-11 18:47:25,271 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.004  2.6643 2.3968 0.3838 0.2187]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:47:29,061 INFO pybamm_simulator | 仿真完成 | 时间: 6408.0s | 温升: 0.01K | 老化: 0.0054% | SOC终值: 0.395
+2026-05-11 18:47:29,064 INFO llmbo.optimizer |     -> feasible=True obj=[6.408e+03 5.287e-03 5.358e-03] acq=1.297766 (3.8s)
+2026-05-11 18:47:29,068 INFO DataBase.database | Iter 22: HV=3.190878  |PF|=17  n=28
+2026-05-11 18:47:29,069 INFO llmbo.optimizer | Iteration 21 complete: HV=3.190878 |PF|=17 n=28 (4.9s)
+2026-05-11 18:47:29,069 INFO llmbo.optimizer | --- Iteration 22 ---
+2026-05-11 18:47:29,641 INFO llmbo.gp_model | Fitted Matern GP: n=28 y_best=1.631211 kernel=2.31**2 * Matern(length_scale=[0.89, 1.87, 2.72, 3.53, 9.39], nu=2.5) + WhiteKernel(noise_level=0.000139)
+2026-05-11 18:47:30,345 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.7954 4.7629 2.9918 0.3916 0.2956]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:47:33,747 INFO pybamm_simulator | 仿真完成 | 时间: 3266.0s | 温升: 0.02K | 老化: 0.0062% | SOC终值: 0.395
+2026-05-11 18:47:33,751 INFO llmbo.optimizer |     -> feasible=True obj=[3.2660e+03 2.2028e-02 6.2350e-03] acq=1.858072 (3.4s)
+2026-05-11 18:47:33,756 INFO DataBase.database | Iter 23: HV=3.465772  |PF|=17  n=29
+2026-05-11 18:47:33,757 INFO llmbo.optimizer | Iteration 22 complete: HV=3.465772 |PF|=17 n=29 (4.7s)
+2026-05-11 18:47:33,757 INFO llmbo.optimizer | --- Iteration 23 ---
+2026-05-11 18:47:34,287 INFO llmbo.gp_model | Fitted Matern GP: n=29 y_best=1.204109 kernel=2.09**2 * Matern(length_scale=[1.66, 2.92, 2.95, 2.57, 4.63], nu=2.5) + WhiteKernel(noise_level=1.78e-12)
+2026-05-11 18:47:35,468 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.001  4.9218 2.9751 0.3945 0.2999]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:47:39,148 INFO pybamm_simulator | 仿真完成 | 时间: 5285.0s | 温升: 0.01K | 老化: 0.0047% | SOC终值: 0.396
+2026-05-11 18:47:39,150 INFO llmbo.optimizer |     -> feasible=True obj=[5.2850e+03 1.4687e-02 4.6590e-03] acq=1.530656 (3.7s)
+2026-05-11 18:47:39,157 INFO DataBase.database | Iter 24: HV=3.465772  |PF|=18  n=30
+2026-05-11 18:47:39,158 INFO llmbo.optimizer | Iteration 23 complete: HV=3.465772 |PF|=18 n=30 (5.4s)
+2026-05-11 18:47:39,158 INFO llmbo.optimizer | --- Iteration 24 ---
+2026-05-11 18:47:39,618 INFO llmbo.gp_model | Fitted Matern GP: n=30 y_best=1.414854 kernel=1.62**2 * Matern(length_scale=[0.644, 1.48, 11.1, 4.95, 3.51], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:47:40,478 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.02   2.5429 2.9632 0.3979 0.2991]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:47:44,307 INFO pybamm_simulator | 仿真完成 | 时间: 6288.0s | 温升: 0.01K | 老化: 0.0052% | SOC终值: 0.395
+2026-05-11 18:47:44,309 INFO llmbo.optimizer |     -> feasible=True obj=[6.288e+03 5.355e-03 5.220e-03] acq=1.274856 (3.8s)
+2026-05-11 18:47:44,315 INFO DataBase.database | Iter 25: HV=3.465772  |PF|=19  n=31
+2026-05-11 18:47:44,315 INFO llmbo.optimizer | Iteration 24 complete: HV=3.465772 |PF|=19 n=31 (5.2s)
+2026-05-11 18:47:44,315 INFO llmbo.optimizer | --- Iteration 25 ---
+2026-05-11 18:47:44,835 INFO llmbo.gp_model | Fitted Matern GP: n=31 y_best=2.299150 kernel=2.37**2 * Matern(length_scale=[0.95, 1.61, 2.51, 3.43, 8.65], nu=2.5) + WhiteKernel(noise_level=7.32e-05)
+2026-05-11 18:47:45,425 INFO llmbo.optimizer |   Evaluate rank=0 theta=[4.04   4.125  2.9773 0.3375 0.2997]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:47:48,927 INFO pybamm_simulator | 仿真完成 | 时间: 3796.0s | 温升: 0.02K | 老化: 0.0061% | SOC终值: 0.395
+2026-05-11 18:47:48,930 INFO llmbo.optimizer |     -> feasible=True obj=[3.7960e+03 1.6586e-02 6.1130e-03] acq=1.531475 (3.5s)
+2026-05-11 18:47:48,938 INFO DataBase.database | Iter 26: HV=3.466297  |PF|=20  n=32
+2026-05-11 18:47:48,938 INFO llmbo.optimizer | Iteration 25 complete: HV=3.466297 |PF|=20 n=32 (4.6s)
+2026-05-11 18:47:48,938 INFO llmbo.optimizer | --- Iteration 26 ---
+2026-05-11 18:47:49,473 INFO llmbo.gp_model | Fitted Matern GP: n=32 y_best=1.862724 kernel=2.07**2 * Matern(length_scale=[1.72, 2.13, 2.51, 2.84, 5.17], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:47:50,796 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.0084 4.9881 2.9953 0.3998 0.2962]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:47:54,547 INFO pybamm_simulator | 仿真完成 | 时间: 5277.0s | 温升: 0.02K | 老化: 0.0047% | SOC终值: 0.395
+2026-05-11 18:47:54,547 INFO llmbo.optimizer |     -> feasible=True obj=[5.2770e+03 1.5057e-02 4.6510e-03] acq=1.488338 (3.8s)
+2026-05-11 18:47:54,558 INFO DataBase.database | Iter 27: HV=3.466487  |PF|=21  n=33
+2026-05-11 18:47:54,559 INFO llmbo.optimizer | Iteration 26 complete: HV=3.466487 |PF|=21 n=33 (5.6s)
+2026-05-11 18:47:54,559 INFO llmbo.optimizer | --- Iteration 27 ---
+2026-05-11 18:47:54,920 INFO llmbo.gp_model | Fitted Matern GP: n=33 y_best=1.880210 kernel=2.02**2 * Matern(length_scale=[0.94, 1.15, 1.96, 7.63, 15], nu=2.5) + WhiteKernel(noise_level=1.94e-06)
+2026-05-11 18:47:55,834 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.005  3.1628 2.9815 0.3973 0.2964]
+C:\Users\aa133\miniconda3\lib\site-packages\pybamm\models\full_battery_models\lithium_ion\electrode_soh.py:560: UserWarning: Q_Li=0.4282 Ah is greater than Q_p=0.3984 Ah.
+  warnings.warn(f"Q_Li={Q_Li:.4f} Ah is greater than Q_p={Q_p:.4f} Ah.")
+2026-05-11 18:47:59,670 INFO pybamm_simulator | 仿真完成 | 时间: 5896.0s | 温升: 0.01K | 老化: 0.0050% | SOC终值: 0.395
+2026-05-11 18:47:59,675 INFO llmbo.optimizer |     -> feasible=True obj=[5.896e+03 6.154e-03 5.004e-03] acq=1.345652 (3.8s)
+2026-05-11 18:47:59,679 INFO DataBase.database | Iter 28: HV=3.466488  |PF|=22  n=34
+2026-05-11 18:47:59,679 INFO llmbo.optimizer | Iteration 27 complete: HV=3.466488 |PF|=22 n=34 (5.1s)
+2026-05-11 18:47:59,679 INFO llmbo.optimizer | --- Iteration 28 ---
+2026-05-11 18:48:00,295 INFO llmbo.gp_model | Fitted Matern GP: n=34 y_best=1.293677 kernel=1.52**2 * Matern(length_scale=[0.58, 0.967, 10.4, 3.22, 3.99], nu=2.5) + WhiteKernel(noise_level=1e-12)
+2026-05-11 18:48:00,868 INFO llmbo.optimizer |   Evaluate rank=0 theta=[2.7105 3.4104 2.9492 0.2759 0.25  ]
