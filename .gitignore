@@ -16,14 +16,17 @@ parts/
 sdist/
 var/
 wheels/
+pip-wheel-metadata/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
 # Virtual environments
 venv/
-env/
 ENV/
+env/
 .venv/
 
 # IDE
@@ -34,62 +37,51 @@ ENV/
 *~
 
 # Jupyter Notebook
-.ipynb_checkpoints/
+.ipynb_checkpoints
 
-# PyBaMM simulation outputs
+# PyBaMM
+pybamm_output/
+casadi_cache/
+
+# Results and logs
 results/
-outputs/
-data/
-*.h5
-*.nc
-*.npy
-
-# Logs
 logs/
 *.log
-output.log
-
-# Environment variables
-.env
-.env.local
-.env.*.local
-
-# Checkpoints and temporary files
-checkpoints/
-tmp/
-temp/
-*.tmp
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Paper-related (if using LaTeX)
-*.pdf
-*.aux
-*.log
 *.out
-*.toc
-*.bbl
-*.blg
-*.fdb_latexmk
 
-# OS generated files
+# Temporary files
+*.tmp
+*.temp
+temp/
+
+# OS files
 .DS_Store
 Thumbs.db
 
-# Cache files
-.claude/
-.pyre/
-.mypy_cache/
-.ruff_cache/
-
-# Experiment specific
-experiment_records/
-paper_final_render/
-paper_desktop_build*/
-paper_figure_replacement/
-optimized_experiments/
-parego_rerun_*
+# Submodules - PlatEMO (keep as separate repo)
 PlatEMO/
+
+# Experimental outputs
+Ablation_Exp/
+Compare_Exp/
+Box_Fig/output/
+Patero/output/
+scalarization_Exp/images/
+experiment_records/
+checkpoints/
+optimized_experiments/
+paper/IEEE-LaTeX/*.pdf
+paper/Section/figures/*.pdf
+paper/main.*
+paper/output/
+paper/rendered/
+paper/tmp/
+paper_desktop_build_20260728/
+paper_figure_replacement/
+paper_final_render/
+parego_rerun_chen2020_seed8409/
+tmp/
+
+# Configuration with secrets
+.env
+config_local.json
